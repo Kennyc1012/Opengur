@@ -1,0 +1,26 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.kenny.openimgur.ui.MultiStateView
+        android:id="@+id/multiStateView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:contentView="@layout/grid_view"
+        app:loadingView="@layout/loading_view"
+        app:errorView="@layout/error_view" />
+
+    <ImageButton
+        android:id="@+id/uploadButton"
+        android:layout_width="@dimen/upload_button_radius"
+        android:layout_height="@dimen/upload_button_radius"
+        android:background="@drawable/white_circle"
+        android:src="@drawable/ic_action_camera"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/upload_button_margin"
+        android:layout_marginBottom="@dimen/upload_button_margin"
+        android:visibility="gone" />
+
+</RelativeLayout>

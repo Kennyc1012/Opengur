@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.devspark.robototextview.widget.RobotoTextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/image"
+        android:textColor="#000000"
+        android:paddingTop="8dp"
+        app:typeface="roboto_condensed_bold"
+        android:autoLink="web"
+        android:linksClickable="true" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageButton
+            android:id="@+id/play"
+            android:layout_width="@dimen/play_button_radius"
+            android:layout_height="@dimen/play_button_radius"
+            android:background="@drawable/black_circle"
+            android:src="@drawable/ic_action_play"
+            android:layout_centerInParent="true"
+            android:paddingRight="4dp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+
+    <com.devspark.robototextview.widget.RobotoTextView
+        android:id="@+id/desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/image"
+        android:textColor="#000000"
+        android:paddingTop="8dp"
+        app:typeface="roboto_condensed_regular"
+        android:autoLink="web"
+        android:linksClickable="true" />
+
+
+</LinearLayout>
