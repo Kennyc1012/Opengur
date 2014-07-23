@@ -1,1 +1,6 @@
 /build
+.idea
+.gradle
+.DS_Store
+bin/
+gen/
