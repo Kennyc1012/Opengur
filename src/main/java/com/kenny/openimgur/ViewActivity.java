@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.util.LongSparseArray;
@@ -38,6 +39,7 @@ import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.CustomLinkMovementMethod;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
+import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
@@ -48,7 +50,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +63,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 public class ViewActivity extends BaseActivity {
     private static final String REGEX_IMAGE_URL = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://\\S+(.jpg|.jpeg|.gif|.png)$";
 
-    private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/(imgur.com|i.imgur.com)\\/(?!=\\/)\\w+$";
+    private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+$";
 
     private static final String KEY_POSITION = "position";
 
@@ -217,9 +218,6 @@ public class ViewActivity extends BaseActivity {
             }
         });
 
-        String url = String.format(Endpoints.COMMENTS.getUrl(), mImgurObjects.get(mCurrentPosition).getId());
-        mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
-        handleComments();
         mViewPager.setCurrentItem(mCurrentPosition);
         mPointText.setText(mImgurObjects.get(mCurrentPosition).getScore() + " " + getString(R.string.points));
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -347,8 +345,7 @@ public class ViewActivity extends BaseActivity {
          * @return
          */
         private Spannable constructSpan(ImgurComment comment, Context context) {
-            CharSequence date = DateUtils.formatSameDayTime(comment.getDate() * 1000L,
-                    mCurrentTime, DateFormat.SHORT, DateFormat.SHORT);
+            CharSequence date = getDateFormattedTime(comment.getDate() * 1000L, context);
             StringBuilder sb = new StringBuilder(comment.getAuthor());
             sb.append(" ").append(comment.getPoints()).append(" ").append(context.getString(R.string.points))
                     .append(" : ").append(date);
@@ -363,6 +360,19 @@ public class ViewActivity extends BaseActivity {
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             return span;
+        }
+
+        private CharSequence getDateFormattedTime(long commentDate, Context context) {
+            long now = System.currentTimeMillis();
+            long difference = System.currentTimeMillis() - commentDate;
+
+            return (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) ?
+                    context.getResources().getString(R.string.moments_ago) :
+                    DateUtils.getRelativeTimeSpanString(
+                            commentDate,
+                            now,
+                            DateUtils.MINUTE_IN_MILLIS,
+                            DateUtils.FORMAT_ABBREV_RELATIVE);
         }
 
         private static class CommentViewHolder {
@@ -462,6 +472,7 @@ public class ViewActivity extends BaseActivity {
         mSlidingPane = null;
         mCommentArray.clear();
         mPreviousCommentPositionArray.clear();
+        mHandler.removeCallbacksAndMessages(null);
 
         if (mCommentAdapter != null) {
             mCommentAdapter.clear();
@@ -487,17 +498,17 @@ public class ViewActivity extends BaseActivity {
                         comments.add(new ImgurComment(data.getJSONObject(i)));
                     }
 
-                    onCommentsReceived(comments);
+                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, comments);
                 } else if (event.httpRequest == ApiClient.HttpRequest.DELETE) {
 
                 } else if (event.httpRequest == ApiClient.HttpRequest.POST) {
 
                 }
             } else {
-                onCommentsError(statusCode);
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
             }
         } catch (JSONException e) {
-            onCommentsError(ApiClient.STATUS_JSON_EXCEPTION);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_JSON_EXCEPTION);
         }
 
     }
@@ -507,7 +518,7 @@ public class ViewActivity extends BaseActivity {
      *
      * @param event
      */
-    public void onEventAsync(ThrowableFailureEvent event) {
+    public void onEventMainThread(ThrowableFailureEvent event) {
         Throwable e = event.getThrowable();
         e.printStackTrace();
 
@@ -519,53 +530,18 @@ public class ViewActivity extends BaseActivity {
     }
 
     /**
-     * Populates the Comment list when comments are received
-     *
-     * @param comments
-     */
-    private void onCommentsReceived(@NonNull final List<ImgurComment> comments) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (!comments.isEmpty()) {
-                    if (mCommentAdapter == null) {
-                        mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, mImgurListener);
-                        mCommentList.setAdapter(mCommentAdapter);
-                    } else {
-                        mCommentArray.clear();
-                        mPreviousCommentPositionArray.clear();
-                        mCommentAdapter.addComments(comments);
-                        mCommentAdapter.notifyDataSetChanged();
-                    }
-
-                    if (mMultiView.getViewState() != MultiStateView.ViewState.CONTENT) {
-                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                    }
-                } else {
-                    mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-                }
-            }
-        });
-    }
-
-    /**
      * Displays the appropriate error message based on the status code for the  comment list
      *
      * @param errorCode
      */
     private void onCommentsError(final int errorCode) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                switch (errorCode) {
-                    case ApiClient.STATUS_EMPTY_RESPONSE:
-                        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-                        break;
+        switch (errorCode) {
+            case ApiClient.STATUS_EMPTY_RESPONSE:
+                mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+                break;
 
-                    //TODO the rest of the errors
-                }
-            }
-        });
+            //TODO the rest of the errors
+        }
     }
 
     private ImgurListener mImgurListener = new ImgurListener() {
@@ -609,4 +585,40 @@ public class ViewActivity extends BaseActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private ImgurHandler mHandler = new ImgurHandler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_ACTION_COMPLETE:
+                    List<ImgurComment> comments = (List<ImgurComment>) msg.obj;
+
+                    if (!comments.isEmpty()) {
+                        if (mCommentAdapter == null) {
+                            mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, mImgurListener);
+                            mCommentList.setAdapter(mCommentAdapter);
+                        } else {
+                            mCommentArray.clear();
+                            mPreviousCommentPositionArray.clear();
+                            mCommentAdapter.addComments(comments);
+                            mCommentAdapter.notifyDataSetChanged();
+                        }
+
+                        if (mMultiView.getViewState() != MultiStateView.ViewState.CONTENT) {
+                            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                        }
+                    } else {
+                        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+                    }
+
+                    break;
+
+                case MESSAGE_ACTION_FAILED:
+                    onCommentsError((Integer) msg.obj);
+                    break;
+            }
+
+            super.handleMessage(msg);
+        }
+    };
 }

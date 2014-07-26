@@ -70,13 +70,14 @@ public class DownloaderService extends IntentService {
 
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType(photo.getType());
+                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                    PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), 0, shareIntent, 0);
+                    PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), 0, shareIntent, PendingIntent.FLAG_ONE_SHOT);
 
                     Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-                    viewIntent.setType(photo.getType());
-                    viewIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                    PendingIntent viewP = PendingIntent.getActivity(getApplicationContext(), 0, viewIntent, 0);
+                    viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    viewIntent.setDataAndType(fileUri,photo.getType());
+                    PendingIntent viewP = PendingIntent.getActivity(getApplicationContext(), 1, viewIntent, PendingIntent.FLAG_ONE_SHOT);
 
                     Bitmap bm = ImageUtil.toGrayscale(ImageUtil.decodeSampledBitmapFromResource(photoFile, 256, 256));
                     if (bm != null) {

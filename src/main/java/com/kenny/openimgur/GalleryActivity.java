@@ -8,8 +8,9 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.HeaderGridView;
@@ -351,6 +353,7 @@ public class GalleryActivity extends BaseActivity {
                         getGallery();
                     }
                 }).show();
+
                 return true;
 
             case R.id.settings:
@@ -358,6 +361,10 @@ public class GalleryActivity extends BaseActivity {
                 return true;
 
             case R.id.refresh:
+                if (mApiClient != null) {
+                    mApiClient.clearCache();
+                }
+
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                 mCurrentPage = 0;
                 mIsLoading = true;
@@ -555,6 +562,7 @@ public class GalleryActivity extends BaseActivity {
         mApiClient = null;
         mGridView = null;
         mMultiView = null;
+        mHandler.removeCallbacksAndMessages(null);
         SharedPreferences.Editor edit = app.getPreferences().edit();
         edit.putString("section", mSection.getSection()).apply();
         edit.putString("sort", mSort.getSort()).apply();
@@ -668,11 +676,14 @@ public class GalleryActivity extends BaseActivity {
                             objects.add(p);
                         }
                     }
+
+                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, objects);
+                } else {
+                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getErrorCodeStringResource(statusCode));
                 }
 
-                onGalleryLoadComplete(statusCode, objects);
             } catch (JSONException e) {
-                onGalleryLoadComplete(ApiClient.STATUS_JSON_EXCEPTION, null);
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
             }
         }
     }
@@ -689,84 +700,37 @@ public class GalleryActivity extends BaseActivity {
     }
 
     /**
-     * Handles the Api response for gallery queries
+     * Returns the string resource for the given error code
      *
-     * @param statusCode Status code returned from the Api
-     * @param gallery    List of objects to populate the list
+     * @param statusCode
+     * @return
      */
-    private void onGalleryLoadComplete(final int statusCode, final @Nullable List<ImgurBaseObject> gallery) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mIsLoading = false;
+    @StringRes
+    private int getErrorCodeStringResource(int statusCode) {
+        switch (statusCode) {
+            case ApiClient.STATUS_FORBIDDEN:
+                return R.string.error_403;
 
-                if (mFirstLoad) {
-                    initActionBar(getActionBar());
-                    mFirstLoad = false;
-                }
+            case ApiClient.STATUS_INVALID_PERMISSIONS:
+                return R.string.error_401;
 
-                switch (statusCode) {
-                    case ApiClient.STATUS_OK:
-                        mUploadButton.setVisibility(View.VISIBLE);
-                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                        if (mAdapter == null) {
-                            String quality = app.getPreferences().getString(SettingsActivity.THUMBNAIL_QUALITY_KEY,
-                                    String.valueOf(SettingsActivity.THUMBNAIL_QUALITY_LOW));
+            case ApiClient.STATUS_RATING_LIMIT:
+                return R.string.error_429;
 
-                            mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), gallery,
-                                    Integer.parseInt(quality));
+            case ApiClient.STATUS_OVER_CAPACITY:
+                return R.string.error_503;
 
-                            mGridView.setAdapter(mAdapter);
-                        } else {
-                            mAdapter.addItems(gallery);
-                            mAdapter.notifyDataSetChanged();
-                        }
+            case ApiClient.STATUS_EMPTY_RESPONSE:
+                return R.string.error_800;
 
-                        break;
-
-                    case ApiClient.STATUS_FORBIDDEN:
-                        ImageUtil.setErrorImage(mErrorImage, System.currentTimeMillis());
-                        mErrorMessage.setText(R.string.error_403);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                        break;
-
-                    case ApiClient.STATUS_INVALID_PERMISSIONS:
-                        ImageUtil.setErrorImage(mErrorImage, System.currentTimeMillis());
-                        mErrorMessage.setText(R.string.error_401);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                        break;
-
-                    case ApiClient.STATUS_RATING_LIMIT:
-                        ImageUtil.setErrorImage(mErrorImage, System.currentTimeMillis());
-                        mErrorMessage.setText(R.string.error_429);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                        break;
-
-                    case ApiClient.STATUS_OVER_CAPACITY:
-                        ImageUtil.setErrorImage(mErrorImage, System.currentTimeMillis());
-                        mErrorMessage.setText(R.string.error_503);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                        break;
-
-                    case ApiClient.STATUS_EMPTY_RESPONSE:
-                        ImageUtil.setErrorImage(mErrorImage, System.currentTimeMillis());
-                        mErrorMessage.setText(R.string.error_800);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                        break;
-
-                    case ApiClient.STATUS_IO_EXCEPTION:
-                    case ApiClient.STATUS_JSON_EXCEPTION:
-                    case ApiClient.STATUS_NOT_FOUND:
-                    case ApiClient.STATUS_INTERNAL_ERROR:
-                    case ApiClient.STATUS_INVALID_PARAM:
-                    default:
-                        ImageUtil.setErrorImage(mErrorImage, System.currentTimeMillis());
-                        mErrorMessage.setText(R.string.error_generic);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                        break;
-                }
-            }
-        });
+            case ApiClient.STATUS_IO_EXCEPTION:
+            case ApiClient.STATUS_JSON_EXCEPTION:
+            case ApiClient.STATUS_NOT_FOUND:
+            case ApiClient.STATUS_INTERNAL_ERROR:
+            case ApiClient.STATUS_INVALID_PARAM:
+            default:
+                return R.string.error_generic;
+        }
     }
 
     /**
@@ -786,4 +750,47 @@ public class GalleryActivity extends BaseActivity {
             }
         });
     }
+
+    private ImgurHandler mHandler = new ImgurHandler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (mFirstLoad) {
+                initActionBar(getActionBar());
+                mFirstLoad = false;
+            }
+
+            switch (msg.what) {
+                case MESSAGE_ACTION_COMPLETE:
+                    mUploadButton.setVisibility(View.VISIBLE);
+                    List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
+
+                    if (mAdapter == null) {
+                        String quality = app.getPreferences().getString(SettingsActivity.THUMBNAIL_QUALITY_KEY,
+                                String.valueOf(SettingsActivity.THUMBNAIL_QUALITY_LOW));
+
+                        mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), gallery,
+                                Integer.parseInt(quality));
+
+                        mGridView.setAdapter(mAdapter);
+                    } else {
+                        mAdapter.addItems(gallery);
+                        mAdapter.notifyDataSetChanged();
+                    }
+
+                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    break;
+
+                case MESSAGE_ACTION_FAILED:
+                    mUploadButton.setVisibility(View.GONE);
+                    ImageUtil.setErrorImage(mErrorImage, System.currentTimeMillis());
+                    mErrorMessage.setText((Integer) msg.obj);
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    break;
+            }
+
+            mIsLoading = false;
+            super.handleMessage(msg);
+        }
+    };
 }

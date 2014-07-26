@@ -3,6 +3,7 @@ package com.kenny.openimgur.fragments;
 import android.app.DialogFragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -110,6 +112,12 @@ public class PopupImageDialogFragment extends DialogFragment {
         EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    public void onDestroyView() {
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDestroyView();
+    }
+
     /**
      * Event Method that receives events from the Bus
      *
@@ -121,19 +129,14 @@ public class PopupImageDialogFragment extends DialogFragment {
 
             if (statusCode == ApiClient.STATUS_OK && event.eventType == ImgurBusEvent.EventType.ITEM_DETAILS) {
                 final ImgurPhoto photo = new ImgurPhoto(event.json.getJSONObject(ApiClient.KEY_DATA));
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        displayImage(photo.getLink(), photo.isAnimated());
-                    }
-                });
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photo);
             } else if (event.eventType == ImgurBusEvent.EventType.ITEM_DETAILS && statusCode != ApiClient.STATUS_OK) {
-                Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
-                dismissAllowingStateLoss();
+                String error = getString(R.string.loading_image_error);
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, error);
             }
         } catch (JSONException e) {
-            Toast.makeText(getActivity(), R.string.error_generic, Toast.LENGTH_SHORT).show();
-            dismissAllowingStateLoss();
+            String error = getString(R.string.error_generic);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, error);
         }
     }
 
@@ -183,4 +186,24 @@ public class PopupImageDialogFragment extends DialogFragment {
             }
         });
     }
+
+    private ImgurHandler mHandler = new ImgurHandler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_ACTION_COMPLETE:
+                    ImgurPhoto photo = (ImgurPhoto) msg.obj;
+                    displayImage(photo.getLink(), photo.isAnimated());
+                    break;
+
+                case MESSAGE_ACTION_FAILED:
+                    String errorMessage = (String) msg.obj;
+                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                    dismissAllowingStateLoss();
+                    break;
+            }
+
+            super.handleMessage(msg);
+        }
+    };
 }

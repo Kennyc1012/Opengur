@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -26,6 +27,7 @@ import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
@@ -303,6 +305,7 @@ public class ImgurViewFragment extends Fragment {
 
         mListView = null;
         mMultiView = null;
+        mHandler.removeCallbacksAndMessages(null);
         super.onDestroyView();
     }
 
@@ -331,12 +334,14 @@ public class ImgurViewFragment extends Fragment {
                         ImgurPhoto photo = new ImgurPhoto(arr.getJSONObject(i));
                         ((ImgurAlbum) mImgurObject).addPhotoToAlbum(photo);
                     }
-                }
 
-                onAlbumLoadComplete(statusCode);
+                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, statusCode);
+                } else {
+                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
-                onAlbumLoadComplete(ApiClient.STATUS_JSON_EXCEPTION);
+                handleError(ApiClient.STATUS_JSON_EXCEPTION);
             }
         }
     }
@@ -346,14 +351,14 @@ public class ImgurViewFragment extends Fragment {
      *
      * @param event
      */
-    public void onEventAsync(ThrowableFailureEvent event) {
+    public void onEventMainThread(ThrowableFailureEvent event) {
         Throwable e = event.getThrowable();
         e.printStackTrace();
 
         if (e instanceof JSONException) {
-            onAlbumLoadComplete(ApiClient.STATUS_JSON_EXCEPTION);
+            handleError(ApiClient.STATUS_JSON_EXCEPTION);
         } else if (e instanceof IOException) {
-            onAlbumLoadComplete(ApiClient.STATUS_IO_EXCEPTION);
+            handleError(ApiClient.STATUS_IO_EXCEPTION);
         }
     }
 
@@ -413,25 +418,34 @@ public class ImgurViewFragment extends Fragment {
     };
 
     /**
-     * Configures the List once the Api responds
+     * Handles any errors from the Api
      *
-     * @param statusCode
+     * @param errorCode
      */
-    private void onAlbumLoadComplete(final int statusCode) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                switch (statusCode) {
-                    case ApiClient.STATUS_OK:
-                        mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(),
-                                ((OpenImgurApp) getActivity().getApplication()).getImageLoader(), mImgurListener);
-
-                        createHeader();
-                        mListView.setAdapter(mPhotoAdapter);
-                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                        break;
-                }
-            }
-        });
+    private void handleError(int errorCode) {
+        // TODO handle errors
     }
+
+    private ImgurHandler mHandler = new ImgurHandler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_ACTION_COMPLETE:
+                    mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(),
+                            ((OpenImgurApp) getActivity().getApplication()).getImageLoader(), mImgurListener);
+
+                    createHeader();
+                    mListView.setAdapter(mPhotoAdapter);
+                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    break;
+
+                case MESSAGE_ACTION_FAILED:
+                    handleError((Integer) msg.obj);
+                    break;
+            }
+
+            super.handleMessage(msg);
+        }
+    };
 }

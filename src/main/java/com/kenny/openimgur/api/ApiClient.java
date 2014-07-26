@@ -62,7 +62,7 @@ public class ApiClient {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private static final String CLIENT_ID = "Client-ID YOUR CLIENT-ID";
+    private static final String CLIENT_ID = "Client-ID YOUR API KEY";
 
     private static final long DEFAULT_TIMEOUT = DateUtils.SECOND_IN_MILLIS * 15;
 
@@ -151,6 +151,25 @@ public class ApiClient {
                 EventBus.getDefault().post(new ImgurBusEvent(get(), type, HttpRequest.GET, id));
         }
 
+    }
+
+    /**
+     * Clears the HTTPRequest cache
+     *
+     * @return If successful
+     */
+    public boolean clearCache() {
+        if (mClient.getCache() != null) {
+            try {
+                mClient.getCache().flush();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        return false;
     }
 
 }
