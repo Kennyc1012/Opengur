@@ -49,7 +49,8 @@ public class ImgurUser implements Parcelable {
         parseJsonForValues(json);
     }
 
-    public ImgurUser(String accessToken, String refreshToken, long accessTokenExpiration) {
+    public ImgurUser(String username, String accessToken, String refreshToken, long accessTokenExpiration) {
+        mUsername = username;
         mAccessToken = accessToken;
         mRefreshToken = refreshToken;
         mAccessTokenExpiration = accessTokenExpiration;

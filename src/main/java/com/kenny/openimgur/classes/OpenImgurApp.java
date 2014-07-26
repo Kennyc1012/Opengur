@@ -136,4 +136,8 @@ public class OpenImgurApp extends Application {
     public ImgurUser getUser() {
         return mUser;
     }
+
+    public void setUser(ImgurUser user) {
+        this.mUser = user;
+    }
 }

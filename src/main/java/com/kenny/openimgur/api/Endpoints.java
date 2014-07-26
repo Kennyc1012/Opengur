@@ -21,7 +21,7 @@ public enum Endpoints {
     COMMENTS("https://api.imgur.com/3/gallery/%s/comments"),
 
     // Client-ID
-    LOGIN("https://api.imgur.com/oauth2/authorize?client_id=%s&response_type=token");
+    LOGIN("https://api.imgur.com/oauth2/authorize?client_id=" + ApiClient.CLIENT_ID + "&response_type=token");
 
     private String mUrl;
 

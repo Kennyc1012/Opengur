@@ -389,6 +389,10 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
 
                 getGallery();
                 return true;
+
+            case R.id.profile:
+                startActivity(ProfileActivity.createIntent(getApplicationContext(), null));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

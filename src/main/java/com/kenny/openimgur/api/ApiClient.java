@@ -60,9 +60,11 @@ public class ApiClient {
 
     public static final String KEY_DATA = "data";
 
+    public static final String CLIENT_ID = "YOUR API KEY";
+
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    public static final String CLIENT_ID = "Client-ID YOUR API KEY";
+    private static final String CLIENT_ID_HEADER = "Client-ID " + CLIENT_ID;
 
     private static final long DEFAULT_TIMEOUT = DateUtils.SECOND_IN_MILLIS * 15;
 
@@ -113,7 +115,7 @@ public class ApiClient {
 
         JSONObject json = null;
         Request request = new Request.Builder()
-                .addHeader(AUTHORIZATION_HEADER, mBearerToken != null ? mBearerToken : CLIENT_ID)
+                .addHeader(AUTHORIZATION_HEADER, mBearerToken != null ? mBearerToken : CLIENT_ID_HEADER)
                 .get()
                 .url(mUrl)
                 .build();

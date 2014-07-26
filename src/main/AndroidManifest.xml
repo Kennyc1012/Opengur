@@ -38,6 +38,10 @@
             android:theme="@style/Settings_Style"
             android:label="@string/action_settings" />
 
+        <activity
+            android:name=".ProfileActivity"
+            android:theme="@style/Style_Not_Translucent" />
+
         <service android:name=".DownloaderService" />
     </application>
 
