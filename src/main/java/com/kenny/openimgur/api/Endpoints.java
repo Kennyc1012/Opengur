@@ -18,7 +18,10 @@ public enum Endpoints {
     ALBUM_COVER("https://i.imgur.com/%s.jpg"),
 
     // albumid or imageid
-    COMMENTS("https://api.imgur.com/3/gallery/%s/comments");
+    COMMENTS("https://api.imgur.com/3/gallery/%s/comments"),
+
+    // Client-ID
+    LOGIN("https://api.imgur.com/oauth2/authorize?client_id=%s&response_type=token");
 
     private String mUrl;
 

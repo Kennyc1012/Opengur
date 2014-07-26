@@ -58,6 +58,7 @@
     <string name="cant_launch_intent">Your device in unable to handle this link</string>
     <string name="loading_image_error">Unable to load image.</string>
     <string name="moments_ago">Moments Ago</string>
+    <string name="profile">Profile</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">

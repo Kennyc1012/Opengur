@@ -62,11 +62,13 @@ public class ApiClient {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private static final String CLIENT_ID = "Client-ID YOUR API KEY";
+    public static final String CLIENT_ID = "Client-ID YOUR API KEY";
 
     private static final long DEFAULT_TIMEOUT = DateUtils.SECOND_IN_MILLIS * 15;
 
     private String mUrl;
+
+    private String mBearerToken;
 
     private OkHttpClient mClient = new OkHttpClient();
 
@@ -76,6 +78,17 @@ public class ApiClient {
         mRequestType = requestType;
         mUrl = url;
         mClient.setConnectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
+
+    public ApiClient(String url, HttpRequest requestType, String bearerToken) {
+        mRequestType = requestType;
+        mUrl = url;
+        mBearerToken = "Bearer " + bearerToken;
+        mClient.setConnectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
+
+    public void setBearerToken(String token) {
+        mBearerToken = "Bearer " + token;
     }
 
     public void setRequestType(HttpRequest requestType) {
@@ -100,7 +113,7 @@ public class ApiClient {
 
         JSONObject json = null;
         Request request = new Request.Builder()
-                .addHeader(AUTHORIZATION_HEADER, CLIENT_ID)
+                .addHeader(AUTHORIZATION_HEADER, mBearerToken != null ? mBearerToken : CLIENT_ID)
                 .get()
                 .url(mUrl)
                 .build();
@@ -152,24 +165,4 @@ public class ApiClient {
         }
 
     }
-
-    /**
-     * Clears the HTTPRequest cache
-     *
-     * @return If successful
-     */
-    public boolean clearCache() {
-        if (mClient.getCache() != null) {
-            try {
-                mClient.getCache().flush();
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-
-        return false;
-    }
-
 }

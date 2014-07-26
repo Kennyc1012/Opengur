@@ -361,16 +361,13 @@ public class GalleryActivity extends BaseActivity {
                 return true;
 
             case R.id.refresh:
-                if (mApiClient != null) {
-                    mApiClient.clearCache();
-                }
-
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                 mCurrentPage = 0;
                 mIsLoading = true;
 
                 if (mAdapter != null) {
                     mAdapter.clear();
+                    mAdapter.notifyDataSetChanged();
                 }
 
                 getGallery();
