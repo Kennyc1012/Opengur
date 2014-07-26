@@ -2,9 +2,11 @@ package com.kenny.openimgur.util;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.util.DBContracts.UserContract;
@@ -34,11 +36,11 @@ public class SqlHelper extends SQLiteOpenHelper {
     /**
      * Inserts the user to the database
      *
-     * @param db
      * @param user
      */
-    public void insertUser(SQLiteDatabase db, @NonNull ImgurUser user) {
+    public void insertUser(@NonNull ImgurUser user) {
         // Wipe any users before we add the new one in
+        SQLiteDatabase db = getWritableDatabase();
         db.delete(DBContracts.UserContract.TABLE_NAME, null, null);
 
         ContentValues values = new ContentValues();
@@ -53,5 +55,28 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(UserContract.COLUMN_REPUTATION, user.getReputation());
 
         db.insert(UserContract.TABLE_NAME, null, values);
+        db.close();
+        db = null;
+    }
+
+    /**
+     * Returns the currently logged in User
+     *
+     * @return User, or null if no one is logged in
+     */
+    @Nullable
+    public ImgurUser getUser() {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(UserContract.TABLE_NAME, null, null, null, null, null, null);
+        ImgurUser user = null;
+
+        if (cursor.moveToFirst()) {
+            user = new ImgurUser(cursor);
+        }
+
+        cursor.close();
+        db.close();
+        return user;
+
     }
 }

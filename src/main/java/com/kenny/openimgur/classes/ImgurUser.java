@@ -1,7 +1,10 @@
 package com.kenny.openimgur.classes;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.kenny.openimgur.util.DBContracts.UserContract;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +53,18 @@ public class ImgurUser implements Parcelable {
         mAccessToken = accessToken;
         mRefreshToken = refreshToken;
         mAccessTokenExpiration = accessTokenExpiration;
+    }
+
+    public ImgurUser(Cursor cursor) {
+        mId = cursor.getInt(UserContract.COLUMN_INDEX_ID);
+        mUsername = cursor.getString(UserContract.COLUMN_INDEX_NAME);
+        mBio = cursor.getString(UserContract.COLUMN_INDEX_BIO);
+        mCreated = cursor.getLong(UserContract.COLUMN_INDEX_CREATED);
+        mProExpiration = cursor.getLong(UserContract.COLUMN_INDEX_PRO_EXPIRATION);
+        mReputation = cursor.getLong(UserContract.COLUMN_INDEX_REPUTATION);
+        mAccessToken = cursor.getString(UserContract.COLUMN_INDEX_ACCESS_TOKEN);
+        mRefreshToken = cursor.getString(UserContract.COLUMN_INDEX_REFRESH_TOKEN);
+        mAccessTokenExpiration = cursor.getLong(UserContract.COLUMN_INDEX_ACCESS_TOKEN_EXPIRATION);
     }
 
     private ImgurUser(Parcel in) {

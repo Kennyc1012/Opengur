@@ -9,6 +9,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.kenny.openimgur.SettingsActivity;
+import com.kenny.openimgur.util.SqlHelper;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LargestLimitedMemoryCache;
@@ -39,11 +40,17 @@ public class OpenImgurApp extends Application {
 
     private SharedPreferences mPref;
 
+    private SqlHelper mSql;
+
+    private ImgurUser mUser;
+
     @Override
     public void onCreate() {
         super.onCreate();
         instance = this;
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mSql = new SqlHelper(getApplicationContext());
+        mUser = mSql.getUser();
     }
 
     public ImageLoader getImageLoader() {
@@ -120,5 +127,13 @@ public class OpenImgurApp extends Application {
 
     public SharedPreferences getPreferences() {
         return mPref;
+    }
+
+    public SqlHelper getSql() {
+        return mSql;
+    }
+
+    public ImgurUser getUser() {
+        return mUser;
     }
 }

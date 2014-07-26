@@ -31,5 +31,23 @@ public class DBContracts {
                 COLUMN_REPUTATION + " INTEGER," + COLUMN_ACCESS_TOKEN + " TEXT NOT NULL," + COLUMN_REFRESH_TOKEN + " TEXT NOT NULL," +
                 COLUMN_CREATED + " INTEGER," + COLUMN_ACCESS_TOKEN_EXPIRATION + " INTEGER," + COLUMN_BIO + " TEXT," +
                 COLUMN_PRO_EXPIRATION + " INTEGER);";
+
+        public static int COLUMN_INDEX_ID = 0;
+
+        public static int COLUMN_INDEX_NAME = 1;
+
+        public static int COLUMN_INDEX_REPUTATION = 2;
+
+        public static int COLUMN_INDEX_ACCESS_TOKEN = 3;
+
+        public static int COLUMN_INDEX_REFRESH_TOKEN = 4;
+
+        public static int COLUMN_INDEX_CREATED = 5;
+
+        public static int COLUMN_INDEX_ACCESS_TOKEN_EXPIRATION = 6;
+
+        public static int COLUMN_INDEX_BIO = 7;
+
+        public static int COLUMN_INDEX_PRO_EXPIRATION = 8;
     }
 }
