@@ -8,12 +8,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.util.Property;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -249,10 +251,13 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
 
     private boolean uploadMenuOpen = false;
 
+    private boolean isLandscape = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
+        isLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
         mUploadMenu = findViewById(R.id.uploadMenu);
         mMultiView = (MultiStateView) findViewById(R.id.multiStateView);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
@@ -663,19 +668,23 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
+    /**
+     * Animates the opening/closing of the Upload button
+     */
     private void animateUploadMenu() {
-        final int uploadButtonHeight = mUploadButton.getHeight();
-        final int menuButtonHeight = mCameraUpload.getHeight();
+        int uploadButtonHeight = mUploadButton.getHeight();
+        int menuButtonHeight = mCameraUpload.getHeight();
         DecelerateInterpolator interpolator = new DecelerateInterpolator();
         AnimatorSet set = new AnimatorSet();
         set.setDuration(500).setInterpolator(interpolator);
+        Property translation = isLandscape ? View.TRANSLATION_X : View.TRANSLATION_Y;
 
         if (!uploadMenuOpen) {
             uploadMenuOpen = true;
-            PropertyValuesHolder cameraY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0, (uploadButtonHeight + 25) * -1);
+            PropertyValuesHolder cameraY = PropertyValuesHolder.ofFloat(translation, 0, (uploadButtonHeight + 25) * -1);
             PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat(View.ROTATION, 0, 360);
-            PropertyValuesHolder photoY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, (menuButtonHeight + uploadButtonHeight + 50) * -1);
-            PropertyValuesHolder linkY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0, ((2 * menuButtonHeight) + uploadButtonHeight + 75) * -1);
+            PropertyValuesHolder photoY = PropertyValuesHolder.ofFloat(translation, (menuButtonHeight + uploadButtonHeight + 50) * -1);
+            PropertyValuesHolder linkY = PropertyValuesHolder.ofFloat(translation, 0, ((2 * menuButtonHeight) + uploadButtonHeight + 75) * -1);
 
             set.playTogether(
                     ObjectAnimator.ofPropertyValuesHolder(mCameraUpload, cameraY, rotation),
@@ -690,10 +699,10 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
             PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat(View.ROTATION, 0, -360);
 
             set.playTogether(
-                    ObjectAnimator.ofPropertyValuesHolder(mCameraUpload, PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0), rotation),
-                    ObjectAnimator.ofPropertyValuesHolder(mLinkUpload, PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0), rotation),
-                    ObjectAnimator.ofPropertyValuesHolder(mGalleryUpload, PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0), rotation),
-                    ObjectAnimator.ofFloat(mUploadButton, View.ROTATION, 0, 360)
+                    ObjectAnimator.ofPropertyValuesHolder(mCameraUpload, PropertyValuesHolder.ofFloat(translation, 0), rotation),
+                    ObjectAnimator.ofPropertyValuesHolder(mLinkUpload, PropertyValuesHolder.ofFloat(translation, 0), rotation),
+                    ObjectAnimator.ofPropertyValuesHolder(mGalleryUpload, PropertyValuesHolder.ofFloat(translation, 0), rotation),
+                    ObjectAnimator.ofFloat(mUploadButton, View.ROTATION, 0, -360)
             );
 
             set.start();
