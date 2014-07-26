@@ -1,5 +1,8 @@
 package com.kenny.openimgur;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -16,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,7 +27,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SpinnerAdapter;
-import android.widget.Toast;
 
 import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.api.ApiClient;
@@ -51,7 +54,7 @@ import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.AsyncExecutor;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
-public class GalleryActivity extends BaseActivity {
+public class GalleryActivity extends BaseActivity implements View.OnClickListener {
     public enum GallerySection {
         HOT("hot"),
         TOP("top"),
@@ -214,7 +217,15 @@ public class GalleryActivity extends BaseActivity {
 
     private HeaderGridView mGridView;
 
+    private View mUploadMenu;
+
     private ImageButton mUploadButton;
+
+    private ImageButton mCameraUpload;
+
+    private ImageButton mGalleryUpload;
+
+    private ImageButton mLinkUpload;
 
     private MultiStateView mMultiView;
 
@@ -236,11 +247,13 @@ public class GalleryActivity extends BaseActivity {
 
     private boolean mFirstLoad = true;
 
+    private boolean uploadMenuOpen = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
-        mUploadButton = (ImageButton) findViewById(R.id.uploadButton);
+        mUploadMenu = findViewById(R.id.uploadMenu);
         mMultiView = (MultiStateView) findViewById(R.id.multiStateView);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mGridView = (HeaderGridView) findViewById(R.id.grid);
@@ -259,15 +272,16 @@ public class GalleryActivity extends BaseActivity {
                     @Override
                     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                         // Hide the actionbar when scrolling down, show when scrolling up
-                        if (firstVisibleItem > mPreviousItem && mIsABShowing) {
+                        if (firstVisibleItem > mPreviousItem && mIsABShowing && !uploadMenuOpen) {
                             mIsABShowing = false;
                             getActionBar().hide();
-                            animateUploadButton(true);
+                            animateUploadMenuButton(true);
                         } else if (firstVisibleItem < mPreviousItem && !mIsABShowing) {
                             mIsABShowing = true;
                             getActionBar().show();
-                            animateUploadButton(false);
+                            animateUploadMenuButton(false);
                         }
+
                         mPreviousItem = firstVisibleItem;
 
                         // Load more items when hey get to the end of the list
@@ -293,12 +307,14 @@ public class GalleryActivity extends BaseActivity {
             }
         });
 
-        mUploadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "TODO Image Upload", Toast.LENGTH_SHORT).show();
-            }
-        });
+        mUploadButton = (ImageButton) mUploadMenu.findViewById(R.id.uploadButton);
+        mLinkUpload = (ImageButton) mUploadMenu.findViewById(R.id.linkUpload);
+        mCameraUpload = (ImageButton) mUploadMenu.findViewById(R.id.cameraUpload);
+        mGalleryUpload = (ImageButton) mUploadMenu.findViewById(R.id.galleryUpload);
+        mUploadButton.setOnClickListener(this);
+        mLinkUpload.setOnClickListener(this);
+        mCameraUpload.setOnClickListener(this);
+        mGalleryUpload.setOnClickListener(this);
 
         if (savedInstanceState != null) {
             mSort = GallerySort.getSortFromString(savedInstanceState.getString(KEY_SORT));
@@ -635,15 +651,52 @@ public class GalleryActivity extends BaseActivity {
      *
      * @param shouldHide If the button should be hidden
      */
-    private void animateUploadButton(boolean shouldHide) {
+    private void animateUploadMenuButton(boolean shouldHide) {
         mUploadButton.clearAnimation();
 
         if (shouldHide) {
             // Normally we would just do the buttons height, but since in KitKat the nav bar is transparent,
             // We need to add some extra space to fully hide it
-            mUploadButton.animate().translationY(mUploadButton.getHeight() * 2).setDuration(350).start();
+            mUploadMenu.animate().setInterpolator(new DecelerateInterpolator()).translationY(mUploadButton.getHeight() * 2).setDuration(350).start();
         } else {
-            mUploadButton.animate().translationY(0).setDuration(350).start();
+            mUploadMenu.animate().setInterpolator(new DecelerateInterpolator()).translationY(0).setDuration(350).start();
+        }
+    }
+
+    private void animateUploadMenu() {
+        final int uploadButtonHeight = mUploadButton.getHeight();
+        final int menuButtonHeight = mCameraUpload.getHeight();
+        DecelerateInterpolator interpolator = new DecelerateInterpolator();
+        AnimatorSet set = new AnimatorSet();
+        set.setDuration(500).setInterpolator(interpolator);
+
+        if (!uploadMenuOpen) {
+            uploadMenuOpen = true;
+            PropertyValuesHolder cameraY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0, (uploadButtonHeight + 25) * -1);
+            PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat(View.ROTATION, 0, 360);
+            PropertyValuesHolder photoY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, (menuButtonHeight + uploadButtonHeight + 50) * -1);
+            PropertyValuesHolder linkY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0, ((2 * menuButtonHeight) + uploadButtonHeight + 75) * -1);
+
+            set.playTogether(
+                    ObjectAnimator.ofPropertyValuesHolder(mCameraUpload, cameraY, rotation),
+                    ObjectAnimator.ofPropertyValuesHolder(mLinkUpload, linkY, rotation),
+                    ObjectAnimator.ofPropertyValuesHolder(mGalleryUpload, photoY, rotation),
+                    ObjectAnimator.ofFloat(mUploadButton, View.ROTATION, 0, 360)
+            );
+
+            set.start();
+        } else {
+            uploadMenuOpen = false;
+            PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat(View.ROTATION, 0, -360);
+
+            set.playTogether(
+                    ObjectAnimator.ofPropertyValuesHolder(mCameraUpload, PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0), rotation),
+                    ObjectAnimator.ofPropertyValuesHolder(mLinkUpload, PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0), rotation),
+                    ObjectAnimator.ofPropertyValuesHolder(mGalleryUpload, PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0), rotation),
+                    ObjectAnimator.ofFloat(mUploadButton, View.ROTATION, 0, 360)
+            );
+
+            set.start();
         }
     }
 
@@ -790,4 +843,13 @@ public class GalleryActivity extends BaseActivity {
             super.handleMessage(msg);
         }
     };
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.uploadButton:
+                animateUploadMenu();
+                break;
+        }
+    }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/gallery_column_height">
 
@@ -9,18 +10,21 @@
         android:layout_height="@dimen/gallery_column_height"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:id="@+id/image" />
+        android:id="@+id/image"
+        tools:src="@drawable/error_gif_1" />
 
     <com.devspark.robototextview.widget.RobotoTextView
         android:id="@+id/score"
         app:typeface="roboto_condensed_light"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:textColor="#FFFFFF"
         android:background="#80000000"
         android:textSize="@dimen/gallery_item_text_size"
         android:layout_alignParentBottom="true"
-        android:padding="8dp"
-        android:linksClickable="true" />
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:gravity="center_vertical"
+        tools:text="1020 points" />
 
 </RelativeLayout>
