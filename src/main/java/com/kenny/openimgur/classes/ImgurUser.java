@@ -186,4 +186,27 @@ public class ImgurUser implements Parcelable {
             return new ImgurUser[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "Username: " + mUsername + " Id: " + mId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+
+        if (!(o instanceof ImgurUser)) {
+            return false;
+        }
+
+        if (o == this) {
+            return true;
+        }
+
+        ImgurUser user = (ImgurUser) o;
+        return user.mId == this.mId;
+    }
 }

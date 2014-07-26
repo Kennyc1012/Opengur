@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.util.DBContracts.UserContract;
@@ -15,6 +16,8 @@ import com.kenny.openimgur.util.DBContracts.UserContract;
  * Created by kcampagna on 7/25/14.
  */
 public class SqlHelper extends SQLiteOpenHelper {
+    private static final String TAG = "SqlHelper";
+
     private static final int DB_VERSION = 1;
 
     private static final String DB_NAME = "open_imgur.db";
@@ -39,6 +42,7 @@ public class SqlHelper extends SQLiteOpenHelper {
      * @param user
      */
     public void insertUser(@NonNull ImgurUser user) {
+        Log.v(TAG, "Inserting user " + user.toString());
         // Wipe any users before we add the new one in
         SQLiteDatabase db = getWritableDatabase();
         db.delete(DBContracts.UserContract.TABLE_NAME, null, null);
@@ -71,7 +75,10 @@ public class SqlHelper extends SQLiteOpenHelper {
         ImgurUser user = null;
 
         if (cursor.moveToFirst()) {
+            Log.v(TAG, "User present");
             user = new ImgurUser(cursor);
+        } else {
+            Log.v(TAG, "No user present");
         }
 
         cursor.close();

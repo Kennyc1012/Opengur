@@ -6,15 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
-import android.support.annotation.NonNull;
-import android.widget.ImageView;
-
-import com.kenny.openimgur.R;
 
 import java.io.File;
-import java.io.IOException;
-
-import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Created by kcampagna on 7/1/14.
@@ -35,6 +28,8 @@ public class ImageUtil {
         height = bmpOriginal.getHeight();
         width = bmpOriginal.getWidth();
 
+        // RGB_565 uses half the amount of pixels than ARGB_8888. Since this will be used for a notification,
+        // we'll use RGB_565 to save on some memory
         Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         Canvas c = new Canvas(bmpGrayscale);
         Paint paint = new Paint();
@@ -82,28 +77,5 @@ public class ImageUtil {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-    }
-
-    /**
-     * Sets the Error image of an image view
-     *
-     * @param imageView   The ImageView to set the error image in
-     * @param currentTime The current time, used to determine which image to use
-     */
-    public static void setErrorImage(@NonNull ImageView imageView, long currentTime) {
-        long remainder = currentTime % 3;
-
-        if (remainder == 0) {
-            imageView.setImageResource(R.drawable.error_image_3);
-        } else {
-            int drawable = remainder % 2 == 0 ? R.drawable.error_gif_1 : R.drawable.error_gif_2;
-
-            try {
-                imageView.setImageDrawable(new GifDrawable(imageView.getResources(), drawable));
-            } catch (IOException e) {
-                imageView.setImageResource(R.drawable.error_image_3);
-                e.printStackTrace();
-            }
-        }
     }
 }

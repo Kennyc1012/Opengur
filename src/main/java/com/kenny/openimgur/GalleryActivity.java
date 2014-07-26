@@ -41,7 +41,6 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -231,8 +230,6 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
 
     private MultiStateView mMultiView;
 
-    private ImageView mErrorImage;
-
     private RobotoTextView mErrorMessage;
 
     private GalleryAdapter mAdapter;
@@ -263,7 +260,6 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mGridView = (HeaderGridView) findViewById(R.id.grid);
         mGridView.addHeaderView(createEmptyGridHeader());
-        mErrorImage = (ImageView) mMultiView.findViewById(R.id.errorImage);
         mErrorMessage = (RobotoTextView) mMultiView.findViewById(R.id.errorMessage);
 
         // Pauses the ImageLoader from loading when the user is flinging the list
@@ -580,6 +576,11 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         mApiClient = null;
         mGridView = null;
         mMultiView = null;
+        mCameraUpload = null;
+        mGalleryUpload = null;
+        mLinkUpload = null;
+        mUploadButton = null;
+        mErrorMessage = null;
         mHandler.removeCallbacksAndMessages(null);
         SharedPreferences.Editor edit = app.getPreferences().edit();
         edit.putString("section", mSection.getSection()).apply();
@@ -753,8 +754,8 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
      * @param event
      */
     public void onEventMainThread(ThrowableFailureEvent event) {
-        ImageUtil.setErrorImage(mErrorImage, System.currentTimeMillis());
         mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+        mErrorMessage.setText(R.string.error_generic);
         event.getThrowable().printStackTrace();
     }
 
@@ -842,7 +843,6 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
 
                 case MESSAGE_ACTION_FAILED:
                     mUploadButton.setVisibility(View.GONE);
-                    ImageUtil.setErrorImage(mErrorImage, System.currentTimeMillis());
                     mErrorMessage.setText((Integer) msg.obj);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
@@ -858,6 +858,15 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         switch (view.getId()) {
             case R.id.uploadButton:
                 animateUploadMenu();
+                break;
+
+            case R.id.cameraUpload:
+                break;
+
+            case R.id.galleryUpload:
+                break;
+
+            case R.id.linkUpload:
                 break;
         }
     }

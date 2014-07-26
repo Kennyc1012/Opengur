@@ -5,25 +5,24 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="?android:attr/actionBarSize"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin">
 
     <ImageView
         android:id="@+id/errorImage"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        tools:src="@drawable/error_image_3"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="?android:attr/actionBarSize" />
+        android:src="@drawable/error"
+        android:layout_centerInParent="true" />
 
     <com.devspark.robototextview.widget.RobotoTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:textColor="#000000"
         android:id="@+id/errorMessage"
-        android:text="@string/error_generic"
-        android:layout_below="@+id/errorImage"/>
+        tools:text="@string/error_generic"
+        android:layout_below="@+id/errorImage" />
 
 </RelativeLayout>
