@@ -70,51 +70,51 @@ public abstract class ImgurBaseObject implements Parcelable {
      */
     private void parseJson(JSONObject json) {
         try {
-            if (json.has(KEY_ID)) {
+            if (json.has(KEY_ID) && !json.get(KEY_ID).equals(null)) {
                 mId = json.getString(KEY_ID);
             }
 
-            if (json.has(KEY_UP_VOTES)) {
+            if (json.has(KEY_UP_VOTES) && !json.get(KEY_UP_VOTES).equals(null)) {
                 mUpVotes = json.getInt(KEY_UP_VOTES);
             }
 
-            if (json.has(KEY_DOWN_VOTES)) {
+            if (json.has(KEY_DOWN_VOTES) && !json.get(KEY_DOWN_VOTES).equals(null)) {
                 mDownVotes = json.getInt(KEY_DOWN_VOTES);
             }
 
-            if (json.has(KEY_VIEWS)) {
+            if (json.has(KEY_VIEWS) && !json.get(KEY_VIEWS).equals(null)) {
                 mViews = json.getInt(KEY_VIEWS);
             }
 
-            if (json.has(KEY_TITLE)) {
+            if (json.has(KEY_TITLE) && !json.get(KEY_TITLE).equals(null)) {
                 mTitle = json.getString(KEY_TITLE);
             }
 
-            if (json.has(KEY_DESCRIPTION)) {
+            if (json.has(KEY_DESCRIPTION) && !json.get(KEY_DESCRIPTION).equals(null)) {
                 mDescription = json.getString(KEY_DESCRIPTION);
             }
 
-            if (json.has(KEY_DATE)) {
+            if (json.has(KEY_DATE) && !json.get(KEY_DATE).equals(null)) {
                 mDate = json.getLong(KEY_DATE);
             }
 
-            if (json.has(KEY_BANDWIDTH)) {
+            if (json.has(KEY_BANDWIDTH) && !json.get(KEY_BANDWIDTH).equals(null)) {
                 mBandwidth = json.getLong(KEY_BANDWIDTH);
             }
 
-            if (json.has(KEY_ACCOUNT)) {
+            if (json.has(KEY_ACCOUNT) && !json.get(KEY_ACCOUNT).equals(null)) {
                 mAccount = json.getString(KEY_ACCOUNT);
             }
 
-            if (json.has(KEY_ACCOUNT_ID)) {
+            if (json.has(KEY_ACCOUNT_ID) && !json.get(KEY_ACCOUNT_ID).equals(null)) {
                 mAccountId = json.getString(KEY_ACCOUNT_ID);
             }
 
-            if (json.has(KEY_LINK)) {
+            if (json.has(KEY_LINK) && !json.get(KEY_LINK).equals(null)) {
                 mLink = json.getString(KEY_LINK);
             }
 
-            if (json.has(KEY_SCORE)) {
+            if (json.has(KEY_SCORE) && !json.get(KEY_SCORE).equals(null)) {
                 mScore = json.getInt(KEY_SCORE);
             }
 

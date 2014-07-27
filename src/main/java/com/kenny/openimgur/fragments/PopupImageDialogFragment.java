@@ -94,7 +94,7 @@ public class PopupImageDialogFragment extends DialogFragment {
                 public void run() throws Exception {
                     final ApiClient api = new ApiClient(String.format(Endpoints.IMAGE_DETAILS.getUrl(), url),
                             ApiClient.HttpRequest.GET);
-                    api.doWork(ImgurBusEvent.EventType.ITEM_DETAILS, null);
+                    api.doWork(ImgurBusEvent.EventType.ITEM_DETAILS, null, null);
                 }
             });
         }
@@ -126,7 +126,6 @@ public class PopupImageDialogFragment extends DialogFragment {
     public void onEventAsync(@NonNull ImgurBusEvent event) {
         try {
             int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
-
             if (statusCode == ApiClient.STATUS_OK && event.eventType == ImgurBusEvent.EventType.ITEM_DETAILS) {
                 final ImgurPhoto photo = new ImgurPhoto(event.json.getJSONObject(ApiClient.KEY_DATA));
                 mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photo);

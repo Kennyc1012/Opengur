@@ -1,5 +1,6 @@
 package com.kenny.openimgur.api;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -7,6 +8,7 @@ import android.util.Log;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONException;
@@ -62,6 +64,8 @@ public class ApiClient {
 
     public static final String CLIENT_ID = "YOUR API KEY";
 
+    public static final String CLIENT_SECRET = "YOUR API KEY";
+
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     private static final String CLIENT_ID_HEADER = "Client-ID " + CLIENT_ID;
@@ -109,17 +113,35 @@ public class ApiClient {
      * @throws JSONException
      */
     private JSONObject get() throws IOException, JSONException {
-        if (mUrl == null) {
-            throw new MalformedURLException("Url is null");
-        }
-
-        JSONObject json = null;
         Request request = new Request.Builder()
                 .addHeader(AUTHORIZATION_HEADER, mBearerToken != null ? mBearerToken : CLIENT_ID_HEADER)
                 .get()
                 .url(mUrl)
                 .build();
 
+        return makeRequest(request);
+    }
+
+    private JSONObject post(@NonNull RequestBody body) throws IOException, JSONException {
+        Request request = new Request.Builder()
+                .addHeader(AUTHORIZATION_HEADER, mBearerToken != null ? mBearerToken : CLIENT_ID_HEADER)
+                .post(body)
+                .url(mUrl)
+                .build();
+
+        return makeRequest(request);
+    }
+
+    /**
+     * Makes the request and returns the result
+     *
+     * @param request
+     * @return
+     * @throws IOException
+     * @throws JSONException
+     */
+    private JSONObject makeRequest(Request request) throws IOException, JSONException {
+        JSONObject json = null;
         Log.v(TAG, "Making request to " + mUrl);
         Response response = mClient.newCall(request).execute();
         if (response.isSuccessful()) {
@@ -148,14 +170,25 @@ public class ApiClient {
     /**
      * Calls the appropriate method based on the HTTPRequest type
      *
-     * @param type The Type of event
-     * @param id   An optional unique id for the EventBus
+     * @param type       The Type of event
+     * @param id         An optional unique id for the EventBus
+     * @param postParams Items to be posted. MUST be supplied if RequestType is POST
      * @throws IOException
      * @throws JSONException
      */
-    public void doWork(ImgurBusEvent.EventType type, @Nullable String id) throws IOException, JSONException {
+    public void doWork(ImgurBusEvent.EventType type, @Nullable String id, @Nullable RequestBody postParams)
+            throws IOException, JSONException {
+        if (mUrl == null) {
+            throw new MalformedURLException("Url is null");
+        }
+
         switch (mRequestType) {
             case POST:
+                if (postParams == null) {
+                    throw new NullPointerException("Post params can not be null when making a POST call");
+                }
+
+                post(postParams);
                 break;
 
             case DELETE:

@@ -100,7 +100,7 @@ public class ImgurViewFragment extends Fragment {
                 public void run() throws Exception {
                     String url = String.format(Endpoints.ALBUM.getUrl(), mImgurObject.getId());
                     ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
-                    api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId());
+                    api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
                 }
             });
         }

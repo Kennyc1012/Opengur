@@ -9,28 +9,23 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.util.Property;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.SpinnerAdapter;
 
 import com.devspark.robototextview.widget.RobotoTextView;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
@@ -41,7 +36,7 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
 import org.json.JSONArray;
@@ -61,7 +56,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         TOP("top"),
         USER("user");
 
-        private String mSection;
+        private final String mSection;
 
         private GallerySection(String s) {
             mSection = s;
@@ -144,7 +139,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         TIME("time"),
         VIRAL("viral");
 
-        private String mSort;
+        private final String mSort;
 
         private GallerySort(String s) {
             mSort = s;
@@ -259,7 +254,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         mMultiView = (MultiStateView) findViewById(R.id.multiStateView);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mGridView = (HeaderGridView) findViewById(R.id.grid);
-        mGridView.addHeaderView(createEmptyGridHeader());
+        mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getApplicationContext()));
         mErrorMessage = (RobotoTextView) mMultiView.findViewById(R.id.errorMessage);
 
         // Pauses the ImageLoader from loading when the user is flinging the list
@@ -397,144 +392,6 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         return super.onOptionsItemSelected(item);
     }
 
-    private static class GalleryAdapter extends BaseAdapter {
-        private LayoutInflater mInflater;
-
-        private ImageLoader mImageLoader;
-
-        private List<ImgurBaseObject> mObjects;
-
-        private String mThumbnailQuality;
-
-        public GalleryAdapter(Context context, ImageLoader imageLoader, List<ImgurBaseObject> objects, int quality) {
-            mInflater = LayoutInflater.from(context);
-            mImageLoader = imageLoader;
-            this.mObjects = objects;
-
-            switch (quality) {
-                case SettingsActivity.THUMBNAIL_QUALITY_MEDIUM:
-                    mThumbnailQuality = ImgurPhoto.THUMBNAIL_MEDIUM;
-                    break;
-
-                case SettingsActivity.THUMBNAIL_QUALITY_HIGH:
-                    mThumbnailQuality = ImgurPhoto.THUMBNAIL_LARGE;
-                    break;
-
-                case SettingsActivity.THUMBNAIL_QUALITY_LOW:
-                default:
-                    mThumbnailQuality = ImgurPhoto.THUMBNAIL_SMALL;
-            }
-        }
-
-        /**
-         * Clears all the items from the adapter
-         */
-        public void clear() {
-            if (mObjects != null) {
-                mObjects.clear();
-            }
-
-            notifyDataSetChanged();
-        }
-
-        /**
-         * Adds an object to the adapter
-         *
-         * @param obj
-         */
-        public void addItem(ImgurBaseObject obj) {
-            if (mObjects == null) {
-                mObjects = new ArrayList<ImgurBaseObject>();
-            }
-
-            mObjects.add(obj);
-            notifyDataSetChanged();
-        }
-
-        /**
-         * Adds a list of items into the current list
-         *
-         * @param items
-         */
-        public void addItems(List<ImgurBaseObject> items) {
-            if (mObjects == null) {
-                mObjects = items;
-            } else {
-                for (ImgurBaseObject obj : items) {
-                    mObjects.add(obj);
-                }
-            }
-
-            notifyDataSetChanged();
-        }
-
-        /**
-         * Returns the entire list of objects
-         *
-         * @return
-         */
-        public List<ImgurBaseObject> getItems() {
-            return mObjects;
-        }
-
-        @Override
-        public int getCount() {
-            if (mObjects != null) {
-                return mObjects.size();
-            }
-            return 0;
-        }
-
-        @Override
-        public ImgurBaseObject getItem(int position) {
-            if (mObjects != null) {
-                return mObjects.get(position);
-            }
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.gallery_item, parent, false);
-                holder = new ViewHolder();
-                holder.image = (ImageView) convertView.findViewById(R.id.image);
-                holder.tv = (RobotoTextView) convertView.findViewById(R.id.score);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            ImgurBaseObject obj = getItem(position);
-            mImageLoader.cancelDisplayTask(holder.image);
-            String photoUrl = null;
-
-            // Get the appropriate photo to display
-            if (obj instanceof ImgurPhoto) {
-                photoUrl = ((ImgurPhoto) obj).getThumbnail(mThumbnailQuality);
-            } else {
-                photoUrl = ((ImgurAlbum) obj).getCoverUrl(mThumbnailQuality);
-            }
-
-            mImageLoader.displayImage(photoUrl, holder.image);
-            holder.tv.setText(obj.getScore() + " " + holder.tv.getContext().getString(R.string.points));
-            return convertView;
-        }
-
-        class ViewHolder {
-            ImageView image;
-
-            RobotoTextView tv;
-        }
-
-    }
-
     /**
      * Called after data is loaded upon first opening the app
      *
@@ -609,6 +466,13 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // We want to check for an invalid refresh token when starting the activity
+        app.checkRefreshToken();
+    }
+
     /**
      * Returns the URL based on the selected sort and section
      *
@@ -630,30 +494,6 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
         outState.putString(KEY_SORT, mSort.getSort());
         outState.putString(KEY_GALLERY_SECTION, mSection.getSection());
-    }
-
-    /**
-     * Creates the empty header for the gridview
-     *
-     * @return
-     */
-    private View createEmptyGridHeader() {
-        View v = View.inflate(getApplicationContext(), R.layout.empty_header, null);
-        final TypedArray styledAttributes = getTheme().obtainStyledAttributes(new int[]{android.R.attr.actionBarSize});
-        int abHeight = (int) styledAttributes.getDimension(0, 0);
-        styledAttributes.recycle();
-        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, abHeight);
-
-        // On 4.4 + devices, we need to account for the status bar
-        if (OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.KITKAT) {
-            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-            if (resourceId > 0) {
-                lp.height += getResources().getDimensionPixelSize(resourceId);
-            }
-        }
-
-        v.setLayoutParams(lp);
-        return v;
     }
 
     /**
@@ -720,7 +560,13 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
      * @param event
      */
     public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == ImgurBusEvent.EventType.GALLERY) {
+        if (event.eventType == ImgurBusEvent.EventType.REFRESH_TOKEN) {
+            app.onReceivedRefreshToken(event.json);
+
+            if (mApiClient != null) {
+                mApiClient.setBearerToken(app.getUser().getAccessToken());
+            }
+        } else if (event.eventType == ImgurBusEvent.EventType.GALLERY) {
             try {
                 int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
                 List<ImgurBaseObject> objects = null;
@@ -810,7 +656,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
             @Override
             public void run() throws Exception {
-                mApiClient.doWork(ImgurBusEvent.EventType.GALLERY, null);
+                mApiClient.doWork(ImgurBusEvent.EventType.GALLERY, null, null);
             }
         });
     }

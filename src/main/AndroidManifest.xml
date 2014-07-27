@@ -16,7 +16,7 @@
 
         <activity
             android:name=".GalleryActivity"
-            android:theme="@style/Style_Translucent">
+            android:theme="@style/Style_Fully_Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,7 +40,8 @@
 
         <activity
             android:name=".ProfileActivity"
-            android:theme="@style/Style_Not_Translucent" />
+            android:label="@string/profile"
+            android:theme="@style/Style_Fully_Translucent" />
 
         <service android:name=".DownloaderService" />
     </application>

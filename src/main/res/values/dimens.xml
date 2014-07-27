@@ -21,5 +21,8 @@
     <dimen name="upload_menu_sub_button_radius">48dp</dimen>
     <dimen name="upload_button_margin">48dp</dimen>
     <dimen name="point_text_size">18sp</dimen>
+    <dimen name="notoriety_text_size">24sp</dimen>
+    <dimen name="profile_rep_text_size">18sp</dimen>
+    <dimen name="profile_bio_text_size">16sp</dimen>
 
 </resources>

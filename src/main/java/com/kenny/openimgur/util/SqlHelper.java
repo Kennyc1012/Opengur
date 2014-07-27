@@ -50,13 +50,11 @@ public class SqlHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(UserContract._ID, user.getId());
         values.put(UserContract.COLUMN_NAME, user.getUsername());
-        values.put(UserContract.COLUMN_BIO, user.getBio());
         values.put(UserContract.COLUMN_ACCESS_TOKEN, user.getAccessToken());
         values.put(UserContract.COLUMN_REFRESH_TOKEN, user.getRefreshToken());
         values.put(UserContract.COLUMN_ACCESS_TOKEN_EXPIRATION, user.getAccessTokenExpiration());
         values.put(UserContract.COLUMN_CREATED, user.getCreated());
         values.put(UserContract.COLUMN_PRO_EXPIRATION, user.getProExpiration());
-        values.put(UserContract.COLUMN_REPUTATION, user.getReputation());
 
         db.insert(UserContract.TABLE_NAME, null, values);
         db.close();
@@ -85,5 +83,23 @@ public class SqlHelper extends SQLiteOpenHelper {
         db.close();
         return user;
 
+    }
+
+    /**
+     * Updates the users tokens
+     *
+     * @param accessToken
+     * @param refreshToken
+     * @param expiration
+     */
+    public void updateUserTokens(String accessToken, String refreshToken, long expiration) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues(3);
+
+        values.put(UserContract.COLUMN_ACCESS_TOKEN_EXPIRATION, expiration);
+        values.put(UserContract.COLUMN_ACCESS_TOKEN, accessToken);
+        values.put(UserContract.COLUMN_REFRESH_TOKEN, refreshToken);
+
+        db.update(UserContract.TABLE_NAME, values, null, null);
     }
 }

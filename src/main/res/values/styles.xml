@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Style_Translucent" parent="Style_Not_Translucent"></style>
+    <style name="Style_Fully_Translucent" parent="Style_Not_Translucent"></style>
 
     <style name="Style_Not_Translucent" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:windowContentOverlay">@null</item>

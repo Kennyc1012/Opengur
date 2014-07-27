@@ -388,7 +388,7 @@ public class ViewActivity extends BaseActivity {
             AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
                 @Override
                 public void run() throws Exception {
-                    mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null);
+                    mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, null);
                 }
             });
         }
@@ -490,7 +490,13 @@ public class ViewActivity extends BaseActivity {
     public void onEventAsync(@NonNull ImgurBusEvent event) {
         try {
             int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
-            if (statusCode == ApiClient.STATUS_OK && event.eventType == ImgurBusEvent.EventType.COMMENTS) {
+            if (event.eventType == ImgurBusEvent.EventType.REFRESH_TOKEN) {
+                app.onReceivedRefreshToken(event.json);
+
+                if (mApiClient != null) {
+                    mApiClient.setBearerToken(app.getUser().getAccessToken());
+                }
+            } else if (statusCode == ApiClient.STATUS_OK && event.eventType == ImgurBusEvent.EventType.COMMENTS) {
                 if (event.httpRequest == ApiClient.HttpRequest.GET) {
                     JSONArray data = event.json.getJSONArray(ApiClient.KEY_DATA);
                     List<ImgurComment> comments = new ArrayList<ImgurComment>(data.length());

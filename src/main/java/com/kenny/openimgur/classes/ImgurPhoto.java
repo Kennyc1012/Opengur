@@ -61,23 +61,23 @@ public class ImgurPhoto extends ImgurBaseObject {
      */
     private void parseJson(JSONObject json) {
         try {
-            if (json.has(KEY_TYPE)) {
+            if (json.has(KEY_TYPE) && !json.get(KEY_TYPE).equals(null)) {
                 mType = json.getString(KEY_TYPE);
             }
 
-            if (json.has((KEY_ANIMATED))) {
+            if (json.has(KEY_ANIMATED) && !json.get(KEY_ANIMATED).equals(null)) {
                 mIsAnimated = json.getBoolean(KEY_ANIMATED);
             }
 
-            if (json.has(KEY_HEIGHT)) {
+            if (json.has(KEY_HEIGHT) && !json.get(KEY_HEIGHT).equals(null)) {
                 mHeight = json.getInt(KEY_HEIGHT);
             }
 
-            if (json.has(KEY_WIDTH)) {
+            if (json.has(KEY_WIDTH) && !json.get(KEY_WIDTH).equals(null)) {
                 mWidth = json.getInt(KEY_WIDTH);
             }
 
-            if (json.has(KEY_SIZE)) {
+            if (json.has(KEY_SIZE) && !json.get(KEY_SIZE).equals(null)) {
                 mSize = json.getInt(KEY_SIZE);
             }
         } catch (JSONException ex) {
