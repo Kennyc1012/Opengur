@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -111,6 +112,7 @@ public class OpenImgurApp extends Application {
                 .resetViewBeforeLoading(true)
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
+                .showImageOnLoading(R.drawable.place_holder)
                 .build();
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)

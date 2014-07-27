@@ -4,7 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:padding="16dp"
+    android:background="@drawable/card_bg">
 
     <com.devspark.robototextview.widget.RobotoTextView
         android:id="@+id/title"
@@ -12,7 +16,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/image"
         android:textColor="#000000"
-        android:paddingTop="8dp"
         app:typeface="roboto_condensed_bold"
         android:autoLink="web"
         android:linksClickable="true" />
@@ -55,7 +58,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/image"
         android:textColor="#000000"
-        android:paddingTop="8dp"
         app:typeface="roboto_condensed_regular"
         android:autoLink="web"
         android:linksClickable="true" />
