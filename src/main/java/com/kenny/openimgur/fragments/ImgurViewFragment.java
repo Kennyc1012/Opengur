@@ -114,11 +114,11 @@ public class ImgurViewFragment extends Fragment {
         RobotoTextView author = (RobotoTextView) headerView.findViewById(R.id.author);
 
 
-        if (!TextUtils.isEmpty(mImgurObject.getTitle()) && !mImgurObject.getTitle().equals("null")) {
+        if (!TextUtils.isEmpty(mImgurObject.getTitle())) {
             title.setText(mImgurObject.getTitle());
         }
 
-        if (!TextUtils.isEmpty(mImgurObject.getAccount()) && !mImgurObject.getAccount().equals("null")) {
+        if (!TextUtils.isEmpty(mImgurObject.getAccount())) {
             author.setText("- " + mImgurObject.getAccount());
         } else {
             author.setText("- ?????");
@@ -126,7 +126,6 @@ public class ImgurViewFragment extends Fragment {
 
         mListView.addHeaderView(headerView);
     }
-
 
     /**
      * Plays the gif file from the list item

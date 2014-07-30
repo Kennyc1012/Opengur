@@ -14,17 +14,9 @@ import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.view.ViewPager;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.format.DateUtils;
-import android.text.style.ForegroundColorSpan;
-import android.text.util.Linkify;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -33,10 +25,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.devspark.robototextview.widget.RobotoTextView;
+import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
-import com.kenny.openimgur.classes.CustomLinkMovementMethod;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurHandler;
@@ -129,6 +121,7 @@ public class ViewActivity extends BaseActivity {
         mPointText = (RobotoTextView) findViewById(R.id.pointText);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setOffscreenPageLimit(1);
+        mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         mSlidingPane = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         mSlidingPane.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -218,8 +211,6 @@ public class ViewActivity extends BaseActivity {
             }
         });
 
-        mViewPager.setCurrentItem(mCurrentPosition);
-        mPointText.setText(mImgurObjects.get(mCurrentPosition).getScore() + " " + getString(R.string.points));
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setDisplayShowHomeEnabled(true);
     }
@@ -244,139 +235,6 @@ public class ViewActivity extends BaseActivity {
             }
 
             return 0;
-        }
-    }
-
-    private static class CommentAdapter extends BaseAdapter {
-
-        private List<ImgurComment> mCurrentComments;
-
-        private LayoutInflater mInflater;
-
-        private long mCurrentTime;
-
-        private ImgurListener mListener;
-
-        public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
-            mCurrentComments = comments;
-            mInflater = LayoutInflater.from(context);
-            mCurrentTime = System.currentTimeMillis();
-            mListener = listener;
-        }
-
-        /**
-         * Returns all comments in the adapter
-         *
-         * @return
-         */
-        public List<ImgurComment> getItems() {
-            return mCurrentComments;
-        }
-
-        public void clear() {
-            if (mCurrentComments != null) {
-                mCurrentComments.clear();
-
-            }
-        }
-
-        public void addComments(List<ImgurComment> comments) {
-            if (mCurrentComments == null) {
-                mCurrentComments = new ArrayList<ImgurComment>();
-            }
-
-            mCurrentComments.addAll(comments);
-        }
-
-        @Override
-        public int getCount() {
-            if (mCurrentComments != null) {
-                return mCurrentComments.size();
-            }
-            return 0;
-        }
-
-        @Override
-        public ImgurComment getItem(int position) {
-            if (mCurrentComments != null && !mCurrentComments.isEmpty()) {
-                return mCurrentComments.get(position);
-            }
-            return null;
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            CommentViewHolder holder;
-            if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.comment_item, parent, false);
-                holder = new CommentViewHolder();
-                holder.comment = (RobotoTextView) convertView.findViewById(R.id.comment);
-                holder.author = (RobotoTextView) convertView.findViewById(R.id.author);
-                holder.replies = (RobotoTextView) convertView.findViewById(R.id.replies);
-                holder.comment.setMovementMethod(CustomLinkMovementMethod.getInstance(mListener));
-                convertView.setTag(holder);
-            } else {
-                holder = (CommentViewHolder) convertView.getTag();
-            }
-
-            ImgurComment comment = getItem(position);
-            holder.comment.setText(comment.getComment());
-            Linkify.addLinks(holder.comment, Linkify.WEB_URLS);
-            holder.author.setText(constructSpan(comment, holder.author.getContext()));
-            if (comment.getReplyCount() <= 0) {
-                holder.replies.setVisibility(View.GONE);
-            } else {
-                holder.replies.setVisibility(View.VISIBLE);
-                holder.replies.setText(comment.getReplyCount() + " " + holder.replies.getContext().getString(R.string.replies));
-            }
-            return convertView;
-        }
-
-        /**
-         * Creates the spannable object for the authors name, points, and time
-         *
-         * @param comment
-         * @param context
-         * @return
-         */
-        private Spannable constructSpan(ImgurComment comment, Context context) {
-            CharSequence date = getDateFormattedTime(comment.getDate() * 1000L, context);
-            StringBuilder sb = new StringBuilder(comment.getAuthor());
-            sb.append(" ").append(comment.getPoints()).append(" ").append(context.getString(R.string.points))
-                    .append(" : ").append(date);
-            Spannable span = new SpannableString(sb.toString());
-
-            int color = context.getResources().getColor(android.R.color.holo_green_light);
-            if (comment.getPoints() < 0) {
-                color = context.getResources().getColor(android.R.color.holo_red_light);
-            }
-
-            span.setSpan(new ForegroundColorSpan(color), comment.getAuthor().length(), sb.length() - date.length() - 2,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            return span;
-        }
-
-        private CharSequence getDateFormattedTime(long commentDate, Context context) {
-            long now = System.currentTimeMillis();
-            long difference = System.currentTimeMillis() - commentDate;
-
-            return (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) ?
-                    context.getResources().getString(R.string.moments_ago) :
-                    DateUtils.getRelativeTimeSpanString(
-                            commentDate,
-                            now,
-                            DateUtils.MINUTE_IN_MILLIS,
-                            DateUtils.FORMAT_ABBREV_RELATIVE);
-        }
-
-        private static class CommentViewHolder {
-            RobotoTextView author, replies, comment;
         }
     }
 
@@ -447,6 +305,12 @@ public class ViewActivity extends BaseActivity {
         }
 
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mViewPager.setCurrentItem(mCurrentPosition);
     }
 
     @Override
@@ -553,12 +417,10 @@ public class ViewActivity extends BaseActivity {
     private ImgurListener mImgurListener = new ImgurListener() {
         @Override
         public void onPhotoTap(ImageView parent) {
-
         }
 
         @Override
         public void onPlayTap(ProgressBar prog, ImageView image, ImageButton play) {
-
         }
 
         @Override
@@ -627,4 +489,44 @@ public class ViewActivity extends BaseActivity {
             super.handleMessage(msg);
         }
     };
+
+    private static class ZoomOutPageTransformer implements ViewPager.PageTransformer {
+        private static final float MIN_SCALE = 0.5f;
+
+        private static final float MIN_ALPHA = 1.0f;
+
+        public void transformPage(View view, float position) {
+            int pageWidth = view.getWidth();
+            int pageHeight = view.getHeight();
+
+            if (position < -1) { // [-Infinity,-1)
+                // This page is way off-screen to the left.
+                view.setAlpha(0);
+
+            } else if (position <= 1) { // [-1,1]
+                // Modify the default slide transition to shrink the page as well
+                float scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position));
+                float vertMargin = pageHeight * (1 - scaleFactor) / 2;
+                float horzMargin = pageWidth * (1 - scaleFactor) / 2;
+                if (position < 0) {
+                    view.setTranslationX(horzMargin - vertMargin / 2);
+                } else {
+                    view.setTranslationX(-horzMargin + vertMargin / 2);
+                }
+
+                // Scale the page down (between MIN_SCALE and 1)
+                view.setScaleX(scaleFactor);
+                view.setScaleY(scaleFactor);
+
+                // Fade the page relative to its size.
+                view.setAlpha(MIN_ALPHA +
+                        (scaleFactor - MIN_SCALE) /
+                                (1 - MIN_SCALE) * (1 - MIN_ALPHA));
+
+            } else { // (1,+Infinity]
+                // This page is way off-screen to the right.
+                view.setAlpha(0);
+            }
+        }
+    }
 }

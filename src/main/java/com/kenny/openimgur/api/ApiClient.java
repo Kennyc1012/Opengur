@@ -149,7 +149,7 @@ public class ApiClient {
             String serverResponse = response.body().string();
             response.body().close();
 
-            // Sometimes the Api response with an empty string
+            // Sometimes the Api response with an empty string when it is experiencing problems
             if (TextUtils.isEmpty(serverResponse)) {
                 json = new JSONObject();
                 json.put(KEY_SUCCESS, false);

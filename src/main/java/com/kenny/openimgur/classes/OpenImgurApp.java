@@ -184,7 +184,7 @@ public class OpenImgurApp extends Application {
             });
             return true;
         } else {
-            Log.v(TAG, "User is not or token is still valid, no need to request a new token");
+            Log.v(TAG, "User is null or token is still valid, no need to request a new token");
         }
 
         return false;

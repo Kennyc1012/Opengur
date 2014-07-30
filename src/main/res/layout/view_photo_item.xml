@@ -5,9 +5,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:padding="16dp"
     android:background="@drawable/card_bg">
 
     <com.devspark.robototextview.widget.RobotoTextView
@@ -16,14 +13,14 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/image"
         android:textColor="#000000"
+        android:padding="8dp"
         app:typeface="roboto_condensed_bold"
         android:autoLink="web"
         android:linksClickable="true" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/image"
@@ -57,6 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/image"
+        android:padding="8dp"
         android:textColor="#000000"
         app:typeface="roboto_condensed_regular"
         android:autoLink="web"
