@@ -101,8 +101,8 @@ public class ApiClient {
         this.mRequestType = requestType;
     }
 
-    public void setUrl(String mUrl) {
-        this.mUrl = mUrl;
+    public void setUrl(String url) {
+        this.mUrl = url;
     }
 
     /**
@@ -144,6 +144,7 @@ public class ApiClient {
         JSONObject json = null;
         Log.v(TAG, "Making request to " + mUrl);
         Response response = mClient.newCall(request).execute();
+
         if (response.isSuccessful()) {
             Log.v(TAG, "Request Successful with status code " + response.code());
             String serverResponse = response.body().string();
@@ -188,7 +189,7 @@ public class ApiClient {
                     throw new NullPointerException("Post params can not be null when making a POST call");
                 }
 
-                post(postParams);
+                EventBus.getDefault().post(new ImgurBusEvent(post(postParams), type, HttpRequest.GET, id));
                 break;
 
             case DELETE:

@@ -1,5 +1,7 @@
 package com.kenny.openimgur;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -9,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -505,9 +508,9 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         mUploadButton.clearAnimation();
 
         if (shouldHide) {
-            // Normally we would just do the buttons height, but since in KitKat the nav bar is transparent,
-            // We need to add some extra space to fully hide it
-            mUploadMenu.animate().setInterpolator(new DecelerateInterpolator()).translationY(mUploadButton.getHeight() * 2).setDuration(350).start();
+            // Add extra distance to the hiding of the button if on KitKat due to the translucent nav bar
+            float hideDistance = OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.KITKAT ? mUploadButton.getHeight() * 2 : mUploadButton.getHeight();
+            mUploadMenu.animate().setInterpolator(new DecelerateInterpolator()).translationY(hideDistance).setDuration(350).start();
         } else {
             mUploadMenu.animate().setInterpolator(new DecelerateInterpolator()).translationY(0).setDuration(350).start();
         }
@@ -538,6 +541,24 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
                     ObjectAnimator.ofFloat(mUploadButton, View.ROTATION, 0, 360)
             );
 
+            set.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mCameraUpload.setVisibility(View.VISIBLE);
+                    mLinkUpload.setVisibility(View.VISIBLE);
+                    mGalleryUpload.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    animation.removeAllListeners();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    animation.removeAllListeners();
+                }
+            });
             set.start();
         } else {
             uploadMenuOpen = false;
@@ -549,6 +570,24 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
                     ObjectAnimator.ofPropertyValuesHolder(mGalleryUpload, PropertyValuesHolder.ofFloat(translation, 0), rotation),
                     ObjectAnimator.ofFloat(mUploadButton, View.ROTATION, 0, -360)
             );
+
+            set.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    animation.removeAllListeners();
+                    mCameraUpload.setVisibility(View.GONE);
+                    mLinkUpload.setVisibility(View.GONE);
+                    mGalleryUpload.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    animation.removeAllListeners();
+                    mCameraUpload.setVisibility(View.GONE);
+                    mLinkUpload.setVisibility(View.GONE);
+                    mGalleryUpload.setVisibility(View.GONE);
+                }
+            });
 
             set.start();
         }
@@ -672,7 +711,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
 
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
-                    mUploadButton.setVisibility(View.VISIBLE);
+                    mUploadMenu.setVisibility(View.VISIBLE);
                     List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
 
                     if (mAdapter == null) {
@@ -692,7 +731,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
                     break;
 
                 case MESSAGE_ACTION_FAILED:
-                    mUploadButton.setVisibility(View.GONE);
+                    mUploadMenu.setVisibility(View.GONE);
                     mErrorMessage.setText((Integer) msg.obj);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;

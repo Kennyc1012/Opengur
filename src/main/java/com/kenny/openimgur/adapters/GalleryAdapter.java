@@ -47,6 +47,7 @@ public class GalleryAdapter extends BaseAdapter {
             case SettingsActivity.THUMBNAIL_QUALITY_LOW:
             default:
                 mThumbnailQuality = ImgurPhoto.THUMBNAIL_SMALL;
+                break;
         }
     }
 
