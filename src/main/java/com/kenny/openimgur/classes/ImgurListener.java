@@ -1,5 +1,6 @@
 package com.kenny.openimgur.classes;
 
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -11,4 +12,8 @@ public interface ImgurListener {
     void onPlayTap(ProgressBar prog, ImageView image, ImageButton play);
 
     void onLinkTap(TextView textView, String url);
+
+    void onVoteCast(String vote, View view);
+
+    void onViewRepliesTap(View view);
 }

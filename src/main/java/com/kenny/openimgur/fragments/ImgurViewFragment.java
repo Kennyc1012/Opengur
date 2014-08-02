@@ -271,6 +271,16 @@ public class ImgurViewFragment extends Fragment {
         public void onLinkTap(TextView textView, String url) {
             //NOOP
         }
+
+        @Override
+        public void onVoteCast(String vote, View view) {
+
+        }
+
+        @Override
+        public void onViewRepliesTap(View view) {
+
+        }
     };
 
     /**

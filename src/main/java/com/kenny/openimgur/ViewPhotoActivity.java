@@ -80,6 +80,7 @@ public class ViewPhotoActivity extends BaseActivity {
             public void onLoadingComplete(String s, View view, Bitmap bitmap) {
                 mProgressBar.setVisibility(View.GONE);
                 PhotoViewAttacher photoView = new PhotoViewAttacher(mImageView);
+                photoView.setMaximumScale(10f);
 
                 if (photo.isAnimated()) {
                     // The file SHOULD be in our cache if the image has successfully loaded
@@ -102,6 +103,7 @@ public class ViewPhotoActivity extends BaseActivity {
 
                 // Setup a listener to hide the UI if the photo is tapped (only for api 19 and higher)
                 if (app.SDK_VERSION >= Build.VERSION_CODES.KITKAT) {
+
                     photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
                         @Override
                         public void onPhotoTap(View view, float x, float y) {

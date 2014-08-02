@@ -11,7 +11,7 @@
     <string name="top_score">Top Scoring</string>
     <string name="user_sub">User Submitted</string>
     <string name="filter">Filter</string>
-    <string name="replies">replies</string>
+    <string name="comment_replies">View %d Replies</string>
     <string name="pref_cache_title">Image Cache</string>
     <string name="pref_cache_size">Maximum Cache Size</string>
     <string-array name="pref_cache_size_items">

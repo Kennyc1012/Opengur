@@ -1,8 +1,10 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
@@ -10,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.R;
@@ -90,8 +94,38 @@ public class CommentAdapter extends BaseAdapter {
             holder = new CommentViewHolder();
             holder.comment = (RobotoTextView) convertView.findViewById(R.id.comment);
             holder.author = (RobotoTextView) convertView.findViewById(R.id.author);
-            holder.replies = (RobotoTextView) convertView.findViewById(R.id.replies);
+            holder.replies = (Button) convertView.findViewById(R.id.replies);
             holder.comment.setMovementMethod(CustomLinkMovementMethod.getInstance(mListener));
+            holder.up = (ImageButton) convertView.findViewById(R.id.upVote);
+            holder.down = (ImageButton) convertView.findViewById(R.id.downVote);
+
+            holder.up.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mListener != null) {
+                        mListener.onVoteCast(ImgurComment.VOTE_UP, view);
+                    }
+                }
+            });
+
+            holder.down.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mListener != null) {
+                        mListener.onVoteCast(ImgurComment.VOTE_DOWN, view);
+                    }
+                }
+            });
+
+            holder.replies.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mListener != null) {
+                        mListener.onViewRepliesTap(view);
+                    }
+                }
+            });
+
             convertView.setTag(holder);
         } else {
             holder = (CommentViewHolder) convertView.getTag();
@@ -105,8 +139,19 @@ public class CommentAdapter extends BaseAdapter {
             holder.replies.setVisibility(View.GONE);
         } else {
             holder.replies.setVisibility(View.VISIBLE);
-            holder.replies.setText(comment.getReplyCount() + " " + holder.replies.getContext().getString(R.string.replies));
+            holder.replies.setText(convertView.getContext().getString(R.string.comment_replies, comment.getReplyCount()));
         }
+
+        if (!TextUtils.isEmpty(comment.getVote())) {
+            if (comment.getVote().equals(ImgurComment.VOTE_DOWN)) {
+                convertView.setBackgroundResource(R.drawable.downvote_border);
+            } else {
+                convertView.setBackgroundResource(R.drawable.upvote_border);
+            }
+        } else {
+            convertView.setBackgroundColor(Color.TRANSPARENT);
+        }
+
         return convertView;
     }
 
@@ -149,6 +194,10 @@ public class CommentAdapter extends BaseAdapter {
     }
 
     private static class CommentViewHolder {
-        RobotoTextView author, replies, comment;
+        RobotoTextView author, comment;
+
+        ImageButton up, down;
+
+        Button replies;
     }
 }

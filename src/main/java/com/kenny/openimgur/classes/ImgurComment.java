@@ -14,6 +14,10 @@ import java.util.List;
  * Created by kcampagna on 6/21/14.
  */
 public class ImgurComment extends ImgurBaseObject {
+    public static final String VOTE_UP = "up";
+
+    public static final String VOTE_DOWN = "down";
+
     private static final String KEY_AUTHOR = "author";
 
     private static final String KEY_AUTHOR_ID = "author_id";
@@ -28,11 +32,15 @@ public class ImgurComment extends ImgurBaseObject {
 
     private static final String KEY_POINTS = "points";
 
+    private static final String KEY_VOTE = "vote";
+
     private String mAuthor;
 
     private String mAuthorId;
 
     private String mComment;
+
+    private String mVote;
 
     private boolean mIsDeleted;
 
@@ -82,6 +90,10 @@ public class ImgurComment extends ImgurBaseObject {
                 mPoints = json.getLong(KEY_POINTS);
             }
 
+            if (json.has(KEY_VOTE) && !json.get(KEY_VOTE).equals(null)) {
+                mVote = json.getString(KEY_VOTE);
+            }
+
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
@@ -92,6 +104,7 @@ public class ImgurComment extends ImgurBaseObject {
         mAuthor = in.readString();
         mAuthorId = in.readString();
         mComment = in.readString();
+        mVote = in.readString();
         mIsDeleted = in.readInt() == 1;
         mChildrenComments = new ArrayList<ImgurComment>();
         in.readList(mChildrenComments, null);
@@ -104,6 +117,7 @@ public class ImgurComment extends ImgurBaseObject {
         out.writeString(mAuthor);
         out.writeString(mAuthorId);
         out.writeString(mComment);
+        out.writeString(mVote);
         out.writeInt(mIsDeleted ? 1 : 0);
         out.writeTypedList(mChildrenComments);
         out.writeLong(mParentId);
@@ -162,5 +176,9 @@ public class ImgurComment extends ImgurBaseObject {
 
     public long getParentId() {
         return mParentId;
+    }
+
+    public String getVote() {
+        return mVote;
     }
 }

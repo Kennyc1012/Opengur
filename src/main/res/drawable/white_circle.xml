@@ -1,39 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:color="@color/white_circle_button_pressed" android:state_pressed="true">
+    <item android:drawable="@drawable/white_circle_pressed" android:state_pressed="true" />
 
-        <shape android:shape="oval">
+    <item android:drawable="@drawable/white_circle_pressed" android:state_focused="true" />
 
-            <solid android:color="@color/white_circle_button_pressed" />
-
-            <padding android:bottom="8dp" android:top="8dp" android:left="8dp" android:right="8dp" />
-
-        </shape>
-
-    </item>
-
-    <item android:color="@color/white_circle_button_pressed" android:state_focused="true">
-
-        <shape android:shape="oval">
-
-            <solid android:color="@color/white_circle_button_pressed" />
-
-            <padding android:bottom="8dp" android:top="8dp" android:left="8dp" android:right="8dp" />
-
-        </shape>
-    </item>
-
-    <item android:color="@color/white_circle_button_default">
-
-        <shape android:shape="oval">
-
-            <solid android:color="@color/white_circle_button_default" />
-
-            <padding android:bottom="8dp" android:top="8dp" android:left="8dp" android:right="8dp" />
-
-        </shape>
-
-    </item>
+    <item android:drawable="@drawable/white_circle_default" />
 
 </selector>

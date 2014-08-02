@@ -16,7 +16,6 @@ import android.support.v4.util.LongSparseArray;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -187,16 +186,6 @@ public class ViewActivity extends BaseActivity {
             @Override
             public void onPageScrollStateChanged(int state) {
 
-            }
-        });
-
-        mCommentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                final ImgurComment comment = mCommentAdapter.getItem(position);
-                if (comment.getReplyCount() > 0) {
-                    nextComments(comment);
-                }
             }
         });
 
@@ -439,6 +428,21 @@ public class ViewActivity extends BaseActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
                 }
+            }
+        }
+
+        @Override
+        public void onVoteCast(String vote, View view) {
+
+        }
+
+        @Override
+        public void onViewRepliesTap(View view) {
+            int position = mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount();
+            ImgurComment comment = mCommentAdapter.getItem(position);
+
+            if (comment.getReplyCount() > 0) {
+                nextComments(comment);
             }
         }
     };
