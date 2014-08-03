@@ -31,7 +31,12 @@ public enum Endpoints {
     ACCOUNT_GALLERY_FAVORITES("https://api.imgur.com/3/account/%s/gallery_favorites"),
 
     // Username/Page
-    ACCOUNT_SUBMISSIONS("https://api.imgur.com/3/account/%s/submissions/%d");
+    ACCOUNT_SUBMISSIONS("https://api.imgur.com/3/account/%s/submissions/%d"),
+
+    // comment id/vote
+    COMMENT_VOTE("https://api.imgur.com/3/comment/%s/vote/%s"),
+
+    GALLERY_VOTE("https://api.imgur.com/3/gallery/%s/vote/%s");
 
     private final String mUrl;
 

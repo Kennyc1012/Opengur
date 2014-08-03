@@ -1,6 +1,8 @@
 package com.kenny.openimgur;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
@@ -91,7 +93,7 @@ public class ProfileActivity extends BaseActivity {
             Log.v(TAG, "User already logged in");
             mSelectedUser = app.getUser();
             String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), app.getUser().getUsername());
-            mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET, app.getUser().getAccessToken());
+            mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
             AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
                 @Override
                 public void run() throws Exception {
@@ -159,7 +161,7 @@ public class ProfileActivity extends BaseActivity {
                             mSelectedUser = newUser;
                             Log.v(TAG, "User " + newUser.getUsername() + " logged in");
                             String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), newUser.getUsername());
-                            mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET, app.getUser().getAccessToken());
+                            mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
 
                             AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
                                 @Override
@@ -216,6 +218,7 @@ public class ProfileActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
+        
         switch (itemId) {
             case android.R.id.home:
                 finish();
@@ -235,6 +238,18 @@ public class ProfileActivity extends BaseActivity {
                 getGalleryData();
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                 return true;
+
+            case R.id.logout:
+                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+                builder.setTitle(R.string.logout).setMessage(R.string.logout_confirm).setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                app.onLogout();
+                                invalidateOptionsMenu();
+                            }
+                        }).show();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -244,11 +259,18 @@ public class ProfileActivity extends BaseActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem favorites = menu.findItem(R.id.favorites);
         MenuItem submissions = menu.findItem(R.id.submissions);
+        MenuItem logout = menu.findItem(R.id.logout);
 
         if (mSelectedUser == null) {
             favorites.setVisible(false);
             submissions.setVisible(false);
+            logout.setVisible(false);
         } else {
+
+            if (mSelectedUser.isSelf()) {
+                logout.setVisible(true);
+            }
+
             favorites.setVisible(mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS);
             submissions.setVisible(mCurrentEndpoint == Endpoints.ACCOUNT_GALLERY_FAVORITES);
         }
@@ -346,7 +368,7 @@ public class ProfileActivity extends BaseActivity {
         notoriety.setTextColor(notorietyColor);
         ((RobotoTextView) header.findViewById(R.id.rep)).setText(reputationText);
 
-        if (!TextUtils.isEmpty(mSelectedUser.getBio()) && !mSelectedUser.getBio().equals("null")) {
+        if (!TextUtils.isEmpty(mSelectedUser.getBio())) {
             ((RobotoTextView) header.findViewById(R.id.bio)).setText(mSelectedUser.getBio());
         }
 
@@ -362,8 +384,8 @@ public class ProfileActivity extends BaseActivity {
 
                     if (mAdapter == null) {
                         String quality = app.getPreferences().getString(SettingsActivity.THUMBNAIL_QUALITY_KEY,
-                                String.valueOf(SettingsActivity.THUMBNAIL_QUALITY_LOW));
-                        mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), objects, Integer.parseInt(quality));
+                                SettingsActivity.THUMBNAIL_QUALITY_LOW);
+                        mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), objects, quality);
                         mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getApplicationContext()));
                         mGridView.addHeaderView(getHeaderView());
                         mGridView.setAdapter(mAdapter);

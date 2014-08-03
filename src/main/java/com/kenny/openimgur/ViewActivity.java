@@ -36,6 +36,8 @@ import com.kenny.openimgur.fragments.ImgurViewFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.RequestBody;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,7 +56,8 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 public class ViewActivity extends BaseActivity {
     private static final String REGEX_IMAGE_URL = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://\\S+(.jpg|.jpeg|.gif|.png)$";
 
-    private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+$";
+    private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
+            "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+$";
 
     private static final String KEY_POSITION = "position";
 
@@ -343,13 +346,8 @@ public class ViewActivity extends BaseActivity {
     public void onEventAsync(@NonNull ImgurBusEvent event) {
         try {
             int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
-            if (event.eventType == ImgurBusEvent.EventType.REFRESH_TOKEN) {
-                app.onReceivedRefreshToken(event.json);
 
-                if (mApiClient != null) {
-                    mApiClient.setBearerToken(app.getUser().getAccessToken());
-                }
-            } else if (statusCode == ApiClient.STATUS_OK && event.eventType == ImgurBusEvent.EventType.COMMENTS) {
+            if (statusCode == ApiClient.STATUS_OK && event.eventType == ImgurBusEvent.EventType.COMMENTS) {
                 if (event.httpRequest == ApiClient.HttpRequest.GET) {
                     JSONArray data = event.json.getJSONArray(ApiClient.KEY_DATA);
                     List<ImgurComment> comments = new ArrayList<ImgurComment>(data.length());
@@ -433,7 +431,27 @@ public class ViewActivity extends BaseActivity {
 
         @Override
         public void onVoteCast(String vote, View view) {
+            if (user == null) {
+                // TODO Login user
+            } else {
+                int position = mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount();
+                ImgurComment comment = mCommentAdapter.getItem(position);
 
+                String url = String.format(Endpoints.COMMENT_VOTE.getUrl(), comment.getId(), vote);
+                mApiClient.setUrl(url);
+                mApiClient.setRequestType(ApiClient.HttpRequest.GET);
+
+                // The id param is not needed, but okhttp bodies can not be empty :/
+                final RequestBody body =new FormEncodingBuilder().add("id", comment.getId()).build();
+
+                AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
+                    @Override
+                    public void run() throws Exception {
+                        mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
+                    }
+                });
+
+            }
         }
 
         @Override

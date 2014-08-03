@@ -70,19 +70,24 @@
     <string name="notoriety_idolized">Idolized</string>
     <string name="notoriety_trusted">Trusted</string>
     <string name="profile_rep_date">Reputation - Since %s</string>
+    <string name="upload_photo">Upload Photo</string>
+    <string name="link_upload_desc">Enter URL to Upload From Web</string>
+    <string name="upload_desc">Description (Optional)</string>
+    <string name="logout">Logout</string>
+    <string name="logout_confirm">Are you sure you want to logout?</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
+        <item>128</item>
+        <item>256</item>
+        <item>512</item>
+        <item>1024</item>
     </string-array>
 
     <string-array name="pref_thumbnail_quality_keys">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
+        <item>low</item>
+        <item>medium</item>
+        <item>high</item>
     </string-array>
 
 </resources>

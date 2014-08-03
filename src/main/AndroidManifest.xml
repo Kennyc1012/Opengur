@@ -43,6 +43,11 @@
             android:label="@string/profile"
             android:theme="@style/Style_Fully_Translucent" />
 
+        <activity
+            android:name=".UploadActivity"
+            android:label="@string/upload_photo"
+            android:theme="@style/Style_Not_Translucent" />
+
         <service android:name=".DownloaderService" />
     </application>
 

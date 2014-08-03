@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
@@ -14,7 +15,6 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.util.SqlHelper;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
@@ -28,27 +28,22 @@ import com.squareup.okhttp.RequestBody;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.greenrobot.event.util.AsyncExecutor;
-
 /**
  * Created by kcampagna on 6/14/14.
  */
 public class OpenImgurApp extends Application {
     private static final String TAG = "OpenImgur";
 
-    private static final long FILE_CACHE_LIMIT_1_GB = 1073741824L;
+    public static final long FILE_CACHE_LIMIT_1_GB = 1073741824L;
 
-    private static final long FILE_CACHE_LIMIT_512_MB = 536870912L;
+    public static final long FILE_CACHE_LIMIT_512_MB = 536870912L;
 
-    private static final long FILE_CACHE_LIMIT_256_MB = 268435456L;
+    public static final long FILE_CACHE_LIMIT_256_MB = 268435456L;
 
-    private static final long FILE_CACHE_LIMIT_128_MB = 134217728L;
+    public static final long FILE_CACHE_LIMIT_128_MB = 134217728L;
 
     // 8MB
     private static final int MEMORY_CACHE_LIMIT = 8388608;
-
-    // We will get a new refresh token when it expires in 5 minutes or less
-    private static final long TOKEN_CUTOFF_TIME = DateUtils.MINUTE_IN_MILLIS * 5;
 
     private static OpenImgurApp instance;
 
@@ -85,27 +80,17 @@ public class OpenImgurApp extends Application {
      */
     private void initImageLoader() {
         Context context = getApplicationContext();
-        int cacheLimit = Integer.parseInt(mPref.getString(SettingsActivity.CACHE_SIZE_KEY, "0"));
+        String cacheLimit = mPref.getString(SettingsActivity.CACHE_SIZE_KEY, SettingsActivity.CACHE_SIZE_256_MB);
         long cache;
 
-        switch (cacheLimit) {
-            case SettingsActivity.CACHE_SIZE_128_MB:
-                cache = FILE_CACHE_LIMIT_128_MB;
-                break;
-
-            case SettingsActivity.CACHE_SIZE_512_MB:
-                cache = FILE_CACHE_LIMIT_512_MB;
-                break;
-
-            case SettingsActivity.CACHE_SIZE_1_GB:
-                cache = FILE_CACHE_LIMIT_1_GB;
-                break;
-
-
-            case SettingsActivity.CACHE_SIZE_256_MB:
-            default:
-                cache = FILE_CACHE_LIMIT_256_MB;
-                break;
+        if (SettingsActivity.CACHE_SIZE_128_MB.equals(cacheLimit)) {
+            cache = FILE_CACHE_LIMIT_128_MB;
+        } else if (SettingsActivity.CACHE_SIZE_256_MB.equals(cacheLimit)) {
+            cache = FILE_CACHE_LIMIT_256_MB;
+        } else if (SettingsActivity.CACHE_SIZE_512_MB.equals(cacheLimit)) {
+            cache = FILE_CACHE_LIMIT_512_MB;
+        } else {
+            cache = FILE_CACHE_LIMIT_1_GB;
         }
 
         DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -162,26 +147,22 @@ public class OpenImgurApp extends Application {
     }
 
     /**
+     * Called when the user logs out.
+     */
+    public void onLogout() {
+        mUser = null;
+        mSql.onUserLogout();
+    }
+
+    /**
      * Refreshes the user's access token
      *
      * @return If the token will be refreshed
      */
     public boolean checkRefreshToken() {
-        if (mUser != null && mUser.getAccessTokenExpiration() - System.currentTimeMillis() <= TOKEN_CUTOFF_TIME) {
+        if (mUser != null && !mUser.isAccessTokenValid()) {
             Log.v(TAG, "Token expired or is expiring soon, requesting new token");
-            final ApiClient client = new ApiClient(Endpoints.REFRESH_TOKEN.getUrl(), ApiClient.HttpRequest.POST);
-            final RequestBody body = new FormEncodingBuilder()
-                    .add("client_id", ApiClient.CLIENT_ID)
-                    .add("client_secret", ApiClient.CLIENT_SECRET)
-                    .add("refresh_token", mUser.getRefreshToken())
-                    .add("grant_type", "refresh_token").build();
-
-            AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-                @Override
-                public void run() throws Exception {
-                    client.doWork(ImgurBusEvent.EventType.REFRESH_TOKEN, null, body);
-                }
-            });
+            new RefreshTokenTask().execute(mUser);
             return true;
         } else {
             Log.v(TAG, "User is null or token is still valid, no need to request a new token");
@@ -195,18 +176,58 @@ public class OpenImgurApp extends Application {
      *
      * @param json
      */
-    public void onReceivedRefreshToken(JSONObject json) {
+    private boolean onReceivedRefreshToken(JSONObject json) {
         try {
             String accessToken = json.getString(ImgurUser.KEY_ACCESS_TOKEN);
             String refreshToken = json.getString(ImgurUser.KEY_REFRESH_TOKEN);
             long expiresIn = json.getLong(ImgurUser.KEY_EXPIRES_IN);
-            mUser.setTokens(accessToken, refreshToken, expiresIn);
-            mSql.updateUserTokens(accessToken, refreshToken, System.currentTimeMillis() + expiresIn);
+
+            synchronized (mUser) {
+                mUser.setTokens(accessToken, refreshToken, expiresIn);
+            }
+
+            mSql.updateUserTokens(accessToken, refreshToken, System.currentTimeMillis() + (expiresIn * DateUtils.SECOND_IN_MILLIS));
             Log.v(TAG, "New refresh token received");
+            return true;
         } catch (JSONException e) {
             e.printStackTrace();
             Log.w(TAG, "Error parsing refresh token result");
+            return false;
         }
 
+    }
+
+    private class RefreshTokenTask extends AsyncTask<ImgurUser, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(ImgurUser... imgurUsers) {
+            if (imgurUsers == null || imgurUsers.length <= 0) {
+                return false;
+            }
+
+            try {
+                ImgurUser user = imgurUsers[0];
+
+                final RequestBody body = new FormEncodingBuilder()
+                        .add("client_id", ApiClient.CLIENT_ID)
+                        .add("client_secret", ApiClient.CLIENT_SECRET)
+                        .add("refresh_token", user.getRefreshToken())
+                        .add("grant_type", "refresh_token").build();
+
+                ApiClient client = new ApiClient(Endpoints.REFRESH_TOKEN.getUrl(), ApiClient.HttpRequest.POST);
+                JSONObject json = client.doWork(body);
+                int status = json.getInt(ApiClient.KEY_STATUS);
+
+                if (status == ApiClient.STATUS_OK) {
+                    return onReceivedRefreshToken(json);
+                }
+
+                return false;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
     }
 }

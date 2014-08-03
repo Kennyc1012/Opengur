@@ -16,7 +16,9 @@ public class ImgurBusEvent {
         PROFILE_DETAILS,
         REFRESH_TOKEN,
         ACCOUNT_GALLERY_FAVORITES,
-        ACCOUNT_SUBMISSIONS;
+        ACCOUNT_SUBMISSIONS,
+        COMMENT_VOTE,
+        GALLERY_VOTE;
     }
 
     public JSONObject json;

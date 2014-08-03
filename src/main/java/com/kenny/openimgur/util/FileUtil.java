@@ -1,7 +1,11 @@
 package com.kenny.openimgur.util;
 
+import android.content.ContentResolver;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.kenny.openimgur.classes.ImgurPhoto;
 
@@ -11,11 +15,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by kcampagna on 6/22/14.
  */
 public class FileUtil {
+    private static final String TAG = "FileUtil";
+
+    private static final String FOLDER_NAME = "OpenImgur";
 
     /**
      * Saves a photo to the given file. If the file currently exists, it will be deleted
@@ -49,6 +58,7 @@ public class FileUtil {
 
             didFinish = true;
         } catch (IOException e) {
+            Log.w(TAG, "Error saving photo");
             e.printStackTrace();
             didFinish = false;
         } finally {
@@ -99,5 +109,71 @@ public class FileUtil {
         }
 
         return size;
+    }
+
+    /**
+     * Creates a new file
+     *
+     * @return
+     */
+    public static File createFile() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File dir = new File(Environment.getExternalStorageDirectory(), FOLDER_NAME);
+        dir.mkdirs();
+
+        File file = new File(dir.getAbsolutePath(), timeStamp + ".jpg");
+        try {
+            file.createNewFile();
+            return file;
+        } catch (Exception e) {
+            Log.w(TAG, "Error creating file");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Takes a Uri and saves it to a file
+     *
+     * @param uri
+     * @param resolver
+     * @return
+     */
+    public static File createFile(Uri uri, ContentResolver resolver) {
+        BufferedOutputStream buffer = null;
+        InputStream in = null;
+        try {
+            in = resolver.openInputStream(uri);
+            File tempFile = createFile();
+
+            if (tempFile != null) {
+                buffer = new BufferedOutputStream(new FileOutputStream(tempFile));
+                byte byt[] = new byte[1024];
+                int i;
+                for (long l = 0L; (i = in.read(byt)) != -1; l += i) {
+                    buffer.write(byt, 0, i);
+                }
+            }
+
+        } catch (Exception ex) {
+            Log.w(TAG, "Error creating file");
+            ex.printStackTrace();
+            return null;
+        } finally {
+            try {
+                if (buffer != null) {
+                    buffer.close();
+                }
+
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        return null;
     }
 }

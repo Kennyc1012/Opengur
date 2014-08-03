@@ -4,9 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="8dp"
     android:paddingRight="8dp"
-    android:paddingTop="8dp"
     android:descendantFocusability="blocksDescendants"
     android:orientation="horizontal">
 
@@ -41,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:layout_gravity="center_vertical">
+        android:layout_marginTop="8dp">
 
         <com.devspark.robototextview.widget.RobotoTextView
             android:id="@+id/author"
@@ -67,7 +65,7 @@
             android:layout_height="wrap_content"
             style="@android:style/Widget.ActionButton"
             android:gravity="right|center_vertical"
-            android:textColor="#000000"/>
+            android:textColor="#000000" />
 
     </LinearLayout>
 

@@ -6,6 +6,8 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -15,7 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.concurrent.TimeUnit;
 
 import de.greenrobot.event.EventBus;
@@ -68,13 +69,9 @@ public class ApiClient {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private static final String CLIENT_ID_HEADER = "Client-ID " + CLIENT_ID;
-
     private static final long DEFAULT_TIMEOUT = DateUtils.SECOND_IN_MILLIS * 15;
 
     private String mUrl;
-
-    private String mBearerToken;
 
     private OkHttpClient mClient = new OkHttpClient();
 
@@ -84,17 +81,6 @@ public class ApiClient {
         mRequestType = requestType;
         mUrl = url;
         mClient.setConnectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
-    }
-
-    public ApiClient(String url, HttpRequest requestType, String bearerToken) {
-        mRequestType = requestType;
-        mUrl = url;
-        mBearerToken = "Bearer " + bearerToken;
-        mClient.setConnectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
-    }
-
-    public void setBearerToken(String token) {
-        mBearerToken = "Bearer " + token;
     }
 
     public void setRequestType(HttpRequest requestType) {
@@ -114,7 +100,7 @@ public class ApiClient {
      */
     private JSONObject get() throws IOException, JSONException {
         Request request = new Request.Builder()
-                .addHeader(AUTHORIZATION_HEADER, mBearerToken != null ? mBearerToken : CLIENT_ID_HEADER)
+                .addHeader(AUTHORIZATION_HEADER, getAuthorizationHeader())
                 .get()
                 .url(mUrl)
                 .build();
@@ -124,7 +110,7 @@ public class ApiClient {
 
     private JSONObject post(@NonNull RequestBody body) throws IOException, JSONException {
         Request request = new Request.Builder()
-                .addHeader(AUTHORIZATION_HEADER, mBearerToken != null ? mBearerToken : CLIENT_ID_HEADER)
+                .addHeader(AUTHORIZATION_HEADER, getAuthorizationHeader())
                 .post(body)
                 .url(mUrl)
                 .build();
@@ -180,7 +166,7 @@ public class ApiClient {
     public void doWork(ImgurBusEvent.EventType type, @Nullable String id, @Nullable RequestBody postParams)
             throws IOException, JSONException {
         if (mUrl == null) {
-            throw new MalformedURLException("Url is null");
+            throw new NullPointerException("Url is null");
         }
 
         switch (mRequestType) {
@@ -200,5 +186,55 @@ public class ApiClient {
                 EventBus.getDefault().post(new ImgurBusEvent(get(), type, HttpRequest.GET, id));
         }
 
+    }
+
+    /**
+     * Calls the appropriate method based on the HTTPRequest type. This does not fire an event through EventBus
+     *
+     * @param postParams Items to be posted. MUST be supplied if RequestType is POST
+     * @return
+     * @throws IOException
+     * @throws JSONException
+     */
+    public JSONObject doWork(@Nullable RequestBody postParams) throws IOException, JSONException {
+        if (mUrl == null) {
+            throw new NullPointerException("Url is null");
+        }
+
+        switch (mRequestType) {
+            case POST:
+                if (postParams == null) {
+                    throw new NullPointerException("Post params can not be null when making a POST call");
+                }
+
+                return post(postParams);
+
+            case DELETE:
+                return null;
+
+            case GET:
+            default:
+                return get();
+        }
+
+    }
+
+    /**
+     * Returns the header for the Authorization header
+     *
+     * @return
+     */
+    private String getAuthorizationHeader() {
+        ImgurUser user = OpenImgurApp.getInstance().getUser();
+
+        // Check if we have a token from a logged in user that is valid
+        if (user != null && user.isAccessTokenValid()) {
+            Log.v(TAG, "Access Token present and valid");
+            return "Bearer " + user.getAccessToken();
+        } else {
+            OpenImgurApp.getInstance().checkRefreshToken();
+        }
+
+        return "Client-ID " + CLIENT_ID;
     }
 }

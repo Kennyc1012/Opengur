@@ -30,24 +30,17 @@ public class GalleryAdapter extends BaseAdapter {
 
     private String mThumbnailQuality;
 
-    public GalleryAdapter(Context context, ImageLoader imageLoader, List<ImgurBaseObject> objects, int quality) {
+    public GalleryAdapter(Context context, ImageLoader imageLoader, List<ImgurBaseObject> objects, String quality) {
         mInflater = LayoutInflater.from(context);
         mImageLoader = imageLoader;
         this.mObjects = objects;
 
-        switch (quality) {
-            case SettingsActivity.THUMBNAIL_QUALITY_MEDIUM:
-                mThumbnailQuality = ImgurPhoto.THUMBNAIL_MEDIUM;
-                break;
-
-            case SettingsActivity.THUMBNAIL_QUALITY_HIGH:
-                mThumbnailQuality = ImgurPhoto.THUMBNAIL_LARGE;
-                break;
-
-            case SettingsActivity.THUMBNAIL_QUALITY_LOW:
-            default:
-                mThumbnailQuality = ImgurPhoto.THUMBNAIL_SMALL;
-                break;
+        if (SettingsActivity.THUMBNAIL_QUALITY_LOW.equals(quality)) {
+            mThumbnailQuality = ImgurPhoto.THUMBNAIL_SMALL;
+        } else if (SettingsActivity.THUMBNAIL_QUALITY_MEDIUM.equals(quality)) {
+            mThumbnailQuality = ImgurPhoto.THUMBNAIL_MEDIUM;
+        } else {
+            mThumbnailQuality = ImgurPhoto.THUMBNAIL_LARGE;
         }
     }
 

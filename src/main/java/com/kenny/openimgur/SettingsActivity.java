@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
@@ -23,28 +24,29 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     public static final String THUMBNAIL_QUALITY_KEY = "thumbnailQuality";
 
-    public static final int CACHE_SIZE_128_MB = 0;
+    public static final String CACHE_SIZE_128_MB = "128";
 
-    public static final int CACHE_SIZE_256_MB = 1;
+    public static final String CACHE_SIZE_256_MB = "256";
 
-    public static final int CACHE_SIZE_512_MB = 2;
+    public static final String CACHE_SIZE_512_MB = "512";
 
-    public static final int CACHE_SIZE_1_GB = 3;
+    public static final String CACHE_SIZE_1_GB = "1024";
 
-    public static final int THUMBNAIL_QUALITY_LOW = 0;
+    public static final String THUMBNAIL_QUALITY_LOW = "low";
 
-    public static final int THUMBNAIL_QUALITY_MEDIUM = 1;
+    public static final String THUMBNAIL_QUALITY_MEDIUM = "medium";
 
-    public static final int THUMBNAIL_QUALITY_HIGH = 2;
+    public static final String THUMBNAIL_QUALITY_HIGH = "high";
 
     private OpenImgurApp mApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mApp = ((OpenImgurApp) getApplication());
         addPreferencesFromResource(R.xml.settings);
-        findPreference(CACHE_SIZE_KEY).setOnPreferenceChangeListener(this);
-        findPreference(THUMBNAIL_QUALITY_KEY).setOnPreferenceChangeListener(this);
+        bindPreference(findPreference(CACHE_SIZE_KEY));
+        bindPreference(findPreference(THUMBNAIL_QUALITY_KEY));
 
         findPreference(CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -80,18 +82,14 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     @Override
     protected void onResume() {
         super.onResume();
-        mApp = ((OpenImgurApp) getApplication());
         long cacheSize = FileUtil.getDirectorySize(mApp.getImageLoader().getDiskCache().getDirectory());
         findPreference(CURRENT_CACHE_SIZE_KEY).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
+    }
 
-        int cacheLimit = Integer.parseInt(mApp.getPreferences().getString(CACHE_SIZE_KEY, String.valueOf(CACHE_SIZE_256_MB)));
-        String[] cacheLimits = getResources().getStringArray(R.array.pref_cache_size_items);
-        findPreference(CACHE_SIZE_KEY).setSummary(cacheLimits[cacheLimit]);
+    private void bindPreference(Preference preference) {
+        preference.setOnPreferenceChangeListener(this);
 
-        int quality = Integer.parseInt(mApp.getPreferences().getString(THUMBNAIL_QUALITY_KEY, String.valueOf(THUMBNAIL_QUALITY_LOW)));
-        String[] qualities = getResources().getStringArray(R.array.pref_thumbnail_quality);
-        findPreference(THUMBNAIL_QUALITY_KEY).setSummary(qualities[quality]);
-
+        onPreferenceChange(preference, mApp.getPreferences().getString(preference.getKey(), ""));
     }
 
     public static Intent createIntent(Context context) {
@@ -100,18 +98,15 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object o) {
-        String key = preference.getKey();
-
-        if (key.equals(CACHE_SIZE_KEY)) {
-            int cacheLimit = Integer.parseInt(o.toString());
-            String[] cacheLimits = getResources().getStringArray(R.array.pref_cache_size_items);
-            preference.setSummary(cacheLimits[cacheLimit]);
+        if (preference instanceof ListPreference) {
+            ListPreference listPreference = (ListPreference) preference;
+            int prefIndex = listPreference.findIndexOfValue(o.toString());
+            if (prefIndex >= 0) {
+                preference.setSummary(listPreference.getEntries()[prefIndex]);
+            }
             return true;
-        } else if (key.equals(THUMBNAIL_QUALITY_KEY)) {
-            int quality = Integer.parseInt(o.toString());
-            String[] qualities = getResources().getStringArray(R.array.pref_thumbnail_quality);
-            preference.setSummary(qualities[quality]);
-            return true;
+        } else {
+            // Only have list preferences so far
         }
 
         return false;

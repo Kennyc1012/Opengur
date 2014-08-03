@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
 
 /**
@@ -14,11 +15,14 @@ public class BaseActivity extends Activity {
 
     public OpenImgurApp app;
 
+    public ImgurUser user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         app = OpenImgurApp.getInstance();
+        user = app.getUser();
     }
 
     @Override

@@ -323,8 +323,8 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
             mApiClient = new ApiClient(getGalleryUrl(), ApiClient.HttpRequest.GET);
 
             if (data != null && !data.isEmpty()) {
-                String quality = app.getPreferences().getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, String.valueOf(SettingsActivity.THUMBNAIL_QUALITY_LOW));
-                mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), data, Integer.parseInt(quality));
+                String quality = app.getPreferences().getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
+                mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), data, quality);
                 mGridView.setAdapter(mAdapter);
                 mGridView.setSelection(savedInstanceState.getInt(KEY_LIST_POSITION, 0));
                 initActionBar(getActionBar());
@@ -469,13 +469,6 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // We want to check for an invalid refresh token when starting the activity
-        app.checkRefreshToken();
-    }
-
     /**
      * Returns the URL based on the selected sort and section
      *
@@ -599,13 +592,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
      * @param event
      */
     public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == ImgurBusEvent.EventType.REFRESH_TOKEN) {
-            app.onReceivedRefreshToken(event.json);
-
-            if (mApiClient != null) {
-                mApiClient.setBearerToken(app.getUser().getAccessToken());
-            }
-        } else if (event.eventType == ImgurBusEvent.EventType.GALLERY) {
+        if (event.eventType == ImgurBusEvent.EventType.GALLERY) {
             try {
                 int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
                 List<ImgurBaseObject> objects = null;
@@ -716,11 +703,9 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
 
                     if (mAdapter == null) {
                         String quality = app.getPreferences().getString(SettingsActivity.THUMBNAIL_QUALITY_KEY,
-                                String.valueOf(SettingsActivity.THUMBNAIL_QUALITY_LOW));
+                                SettingsActivity.THUMBNAIL_QUALITY_LOW);
 
-                        mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), gallery,
-                                Integer.parseInt(quality));
-
+                        mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), gallery, quality);
                         mGridView.setAdapter(mAdapter);
                     } else {
                         mAdapter.addItems(gallery);
@@ -750,12 +735,15 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
                 break;
 
             case R.id.cameraUpload:
+                startActivity(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_CAMERA));
                 break;
 
             case R.id.galleryUpload:
+                startActivity(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_GALLERY));
                 break;
 
             case R.id.linkUpload:
+                startActivity(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_LINK));
                 break;
         }
     }

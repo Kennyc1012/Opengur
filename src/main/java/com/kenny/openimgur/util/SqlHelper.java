@@ -102,4 +102,13 @@ public class SqlHelper extends SQLiteOpenHelper {
 
         db.update(UserContract.TABLE_NAME, values, null, null);
     }
+
+    /**
+     * Clears the user from the database
+     */
+    public void onUserLogout() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(UserContract.TABLE_NAME, null, null);
+        db.close();
+    }
 }

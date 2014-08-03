@@ -11,6 +11,7 @@
     <item
         android:bottom="2px"
         android:right="2px"
+        android:top="2px"
         android:left="2px">
         <shape android:shape="oval">
             <solid android:color="@color/white_circle_button_default" />

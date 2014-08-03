@@ -9,7 +9,7 @@
     android:layout_marginRight="@dimen/activity_horizontal_margin"
     android:background="@drawable/card_bg"
     android:gravity="center_horizontal"
-    android:padding="8dp">
+    android:padding="16dp">
 
     <com.devspark.robototextview.widget.RobotoTextView
         android:id="@+id/notoriety"

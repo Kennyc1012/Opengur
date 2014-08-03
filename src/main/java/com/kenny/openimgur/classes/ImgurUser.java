@@ -3,6 +3,8 @@ package com.kenny.openimgur.classes;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.util.DBContracts.UserContract;
@@ -33,6 +35,9 @@ public class ImgurUser implements Parcelable {
     public static final String KEY_REFRESH_TOKEN = "refresh_token";
 
     public static final String KEY_EXPIRES_IN = "expires_in";
+
+    // We will get a new refresh token when it expires in 5 minutes or less
+    private static final long TOKEN_CUTOFF_TIME = DateUtils.MINUTE_IN_MILLIS * 5;
 
     private int mId;
 
@@ -311,6 +316,19 @@ public class ImgurUser implements Parcelable {
 
         if (user != null) {
             return user.equals(this);
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns if the users Access Token is valid. Will return false if one is not present
+     *
+     * @return
+     */
+    public boolean isAccessTokenValid() {
+        if (!TextUtils.isEmpty(mAccessToken)) {
+            return mAccessTokenExpiration - System.currentTimeMillis() > TOKEN_CUTOFF_TIME;
         }
 
         return false;
