@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -106,6 +107,7 @@ public class ProfileActivity extends BaseActivity {
             mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
             mWebView.setPadding(0, ViewUtils.getHeightForTranslucentStyle(getApplicationContext()), 0, 0);
             mWebView.loadUrl(Endpoints.LOGIN.getUrl());
+            CookieManager.getInstance().setAcceptCookie(false);
             mWebView.setWebViewClient(new WebViewClient() {
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -170,9 +172,9 @@ public class ProfileActivity extends BaseActivity {
                                 }
                             });
 
-                            mWebView.clearCache(true);
                             mWebView.clearHistory();
-
+                            mWebView.clearCache(true);
+                            mWebView.clearFormData();
                         } else {
                             // TODO Error
                         }
@@ -218,7 +220,7 @@ public class ProfileActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        
+
         switch (itemId) {
             case android.R.id.home:
                 finish();
@@ -259,16 +261,15 @@ public class ProfileActivity extends BaseActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem favorites = menu.findItem(R.id.favorites);
         MenuItem submissions = menu.findItem(R.id.submissions);
-        MenuItem logout = menu.findItem(R.id.logout);
 
         if (mSelectedUser == null) {
             favorites.setVisible(false);
             submissions.setVisible(false);
-            logout.setVisible(false);
+            menu.removeItem(R.id.logout);
         } else {
 
-            if (mSelectedUser.isSelf()) {
-                logout.setVisible(true);
+            if (!mSelectedUser.isSelf()) {
+                menu.removeItem(R.id.logout);
             }
 
             favorites.setVisible(mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS);
@@ -294,6 +295,13 @@ public class ProfileActivity extends BaseActivity {
                         // Update our user application variable if it is the logged in user
                         if (mSelectedUser.isSelf()) {
                             app.getUser().parseJsonForValues(event.json);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getActionBar().show();
+                                    invalidateOptionsMenu();
+                                }
+                            });
                         }
 
                         getGalleryData();

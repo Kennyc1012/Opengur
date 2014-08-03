@@ -63,10 +63,9 @@ public class DownloaderService extends IntentService {
                 if (FileUtil.savePhoto(photo, photoFile)) {
                     Log.v(TAG, "Image download completed");
                     Uri fileUri = Uri.fromFile(photoFile);
+
                     // Let the system know we have a new file
-                    Intent scan = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                    scan.setData(fileUri);
-                    sendBroadcast(scan);
+                    FileUtil.scanFile(fileUri, getApplicationContext());
 
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType(photo.getType());
@@ -76,7 +75,7 @@ public class DownloaderService extends IntentService {
 
                     Intent viewIntent = new Intent(Intent.ACTION_VIEW);
                     viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    viewIntent.setDataAndType(fileUri,photo.getType());
+                    viewIntent.setDataAndType(fileUri, photo.getType());
                     PendingIntent viewP = PendingIntent.getActivity(getApplicationContext(), 1, viewIntent, PendingIntent.FLAG_ONE_SHOT);
 
                     Bitmap bm = ImageUtil.toGrayscale(ImageUtil.decodeSampledBitmapFromResource(photoFile, 256, 256));

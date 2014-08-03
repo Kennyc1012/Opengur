@@ -31,6 +31,7 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.ui.PointsBar;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -114,7 +115,8 @@ public class ImgurViewFragment extends Fragment {
         View headerView = View.inflate(getActivity(), R.layout.image_header, null);
         RobotoTextView title = (RobotoTextView) headerView.findViewById(R.id.title);
         RobotoTextView author = (RobotoTextView) headerView.findViewById(R.id.author);
-
+        PointsBar pointsBar = (PointsBar) headerView.findViewById(R.id.pointsBar);
+        RobotoTextView pointText = (RobotoTextView) headerView.findViewById(R.id.pointText);
 
         if (!TextUtils.isEmpty(mImgurObject.getTitle())) {
             title.setText(mImgurObject.getTitle());
@@ -126,6 +128,9 @@ public class ImgurViewFragment extends Fragment {
             author.setText("- ?????");
         }
 
+        pointText.setText(mImgurObject.getScore() + " " + getString(R.string.points));
+        pointsBar.setUpVotes(mImgurObject.getUpVotes());
+        pointsBar.setTotalPoints(mImgurObject.getDownVotes() + mImgurObject.getUpVotes());
         mListView.addHeaderView(headerView);
     }
 

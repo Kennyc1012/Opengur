@@ -14,10 +14,6 @@ import java.util.List;
  * Created by kcampagna on 6/21/14.
  */
 public class ImgurComment extends ImgurBaseObject {
-    public static final String VOTE_UP = "up";
-
-    public static final String VOTE_DOWN = "down";
-
     private static final String KEY_AUTHOR = "author";
 
     private static final String KEY_AUTHOR_ID = "author_id";

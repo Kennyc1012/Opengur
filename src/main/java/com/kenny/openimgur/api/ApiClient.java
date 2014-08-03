@@ -231,10 +231,11 @@ public class ApiClient {
         if (user != null && user.isAccessTokenValid()) {
             Log.v(TAG, "Access Token present and valid");
             return "Bearer " + user.getAccessToken();
-        } else {
+        } else if (user != null) {
             OpenImgurApp.getInstance().checkRefreshToken();
         }
 
+        Log.v(TAG, "No access token present, using Client-ID");
         return "Client-ID " + CLIENT_ID;
     }
 }

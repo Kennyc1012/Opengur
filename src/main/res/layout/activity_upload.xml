@@ -15,9 +15,9 @@
         android:layout_marginTop="?android:attr/actionBarSize">
 
         <ImageView
-            android:id="@+id/uploadedImage"
+            android:id="@+id/previewImage"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:src="@drawable/photo_placeholder" />

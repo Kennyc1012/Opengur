@@ -19,6 +19,7 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_open_imgur_style</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_open_imgur_style</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Open_imgur_style</item>
+        <item name="android:windowBackground">@color/window_bg_color</item>
 
         <!-- Light.DarkActionBar specific -->
         <item name="android:actionBarWidgetTheme">@style/Theme.Open_imgur_style.Widget</item>

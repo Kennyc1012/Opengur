@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -23,11 +24,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurHandler;
@@ -53,7 +54,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 7/12/14.
  */
-public class ViewActivity extends BaseActivity {
+public class ViewActivity extends BaseActivity implements View.OnClickListener {
     private static final String REGEX_IMAGE_URL = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://\\S+(.jpg|.jpeg|.gif|.png)$";
 
     private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
@@ -70,8 +71,6 @@ public class ViewActivity extends BaseActivity {
     private MultiStateView mMultiView;
 
     private ListView mCommentList;
-
-    private RobotoTextView mPointText;
 
     private ImageButton mPanelButton;
 
@@ -120,7 +119,6 @@ public class ViewActivity extends BaseActivity {
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mCommentList = (ListView) mMultiView.findViewById(R.id.commentList);
         mPanelButton = (ImageButton) findViewById(R.id.panelUpBtn);
-        mPointText = (RobotoTextView) findViewById(R.id.pointText);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setOffscreenPageLimit(1);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
@@ -182,7 +180,6 @@ public class ViewActivity extends BaseActivity {
                 }
 
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-                mPointText.setText(imgurBaseObject.getScore() + " " + getString(R.string.points));
                 handleComments();
             }
 
@@ -192,17 +189,10 @@ public class ViewActivity extends BaseActivity {
             }
         });
 
-        mPanelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mSlidingPane.isPanelExpanded()) {
-                    mSlidingPane.collapsePanel();
-                } else {
-                    mSlidingPane.expandPanel();
-                }
-            }
-        });
-
+        mPanelButton.setOnClickListener(this);
+        findViewById(R.id.upVoteBtn).setOnClickListener(this);
+        findViewById(R.id.downVoteBtn).setOnClickListener(this);
+        findViewById(R.id.commentBtn).setOnClickListener(this);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setDisplayShowHomeEnabled(true);
     }
@@ -319,7 +309,6 @@ public class ViewActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        mPointText = null;
         mPanelButton = null;
         mApiClient = null;
         mCommentList = null;
@@ -336,6 +325,71 @@ public class ViewActivity extends BaseActivity {
         }
 
         super.onDestroy();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.panelUpBtn:
+                if (mSlidingPane.isPanelExpanded()) {
+                    mSlidingPane.collapsePanel();
+                } else {
+                    mSlidingPane.expandPanel();
+                }
+
+                break;
+
+            case R.id.upVoteBtn:
+                if (user != null) {
+                    String upVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(),
+                            mImgurObjects.get(mCurrentPosition).getId(), ImgurBaseObject.VOTE_UP);
+
+                    if (mApiClient == null) {
+                        mApiClient = new ApiClient(upVoteUrl, ApiClient.HttpRequest.GET);
+                    } else {
+                        mApiClient.setUrl(upVoteUrl);
+                        mApiClient.setRequestType(ApiClient.HttpRequest.GET);
+                    }
+
+                    AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
+                        @Override
+                        public void run() throws Exception {
+                            mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, null, null);
+                        }
+                    });
+                } else {
+                    // TODO User login
+                }
+
+                break;
+
+            case R.id.downVoteBtn:
+                if (user != null) {
+                    String downVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(),
+                            mImgurObjects.get(mCurrentPosition).getId(), ImgurBaseObject.VOTE_DOWN);
+
+                    if (mApiClient == null) {
+                        mApiClient = new ApiClient(downVoteUrl, ApiClient.HttpRequest.GET);
+                    } else {
+                        mApiClient.setUrl(downVoteUrl);
+                        mApiClient.setRequestType(ApiClient.HttpRequest.GET);
+                    }
+
+                    AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
+                        @Override
+                        public void run() throws Exception {
+                            mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, null, null);
+                        }
+                    });
+                } else {
+                    // TODO User login
+                }
+
+                break;
+
+            case R.id.commentBtn:
+                break;
+        }
     }
 
     /**
@@ -442,7 +496,7 @@ public class ViewActivity extends BaseActivity {
                 mApiClient.setRequestType(ApiClient.HttpRequest.GET);
 
                 // The id param is not needed, but okhttp bodies can not be empty :/
-                final RequestBody body =new FormEncodingBuilder().add("id", comment.getId()).build();
+                final RequestBody body = new FormEncodingBuilder().add("id", comment.getId()).build();
 
                 AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
                     @Override
@@ -466,10 +520,43 @@ public class ViewActivity extends BaseActivity {
     };
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.view_activity, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
+
+            case R.id.favorite:
+                if (user != null) {
+                    final ImgurBaseObject imgurObj = mImgurObjects.get(mCurrentPosition);
+                    String url = null;
+
+                    if (imgurObj instanceof ImgurAlbum) {
+                        url = String.format(Endpoints.FAVORITE_ALBUM.getUrl(), imgurObj.getId());
+                    } else {
+                        url = String.format(Endpoints.FAVORITE_IMAGE.getUrl(), imgurObj.getId());
+                    }
+
+                    final RequestBody body = new FormEncodingBuilder().add("id", imgurObj.getId()).build();
+                    mApiClient.setUrl(url);
+                    mApiClient.setRequestType(ApiClient.HttpRequest.POST);
+
+                    AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
+                        @Override
+                        public void run() throws Exception {
+                            mApiClient.doWork(ImgurBusEvent.EventType.FAVORITE, imgurObj.getId(), body);
+                        }
+                    });
+                } else {
+
+                }
+
                 return true;
         }
 

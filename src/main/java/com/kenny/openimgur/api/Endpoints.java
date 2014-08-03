@@ -36,7 +36,14 @@ public enum Endpoints {
     // comment id/vote
     COMMENT_VOTE("https://api.imgur.com/3/comment/%s/vote/%s"),
 
-    GALLERY_VOTE("https://api.imgur.com/3/gallery/%s/vote/%s");
+    // id,vote
+    GALLERY_VOTE("https://api.imgur.com/3/gallery/%s/vote/%s"),
+
+    // Image id
+    FAVORITE_IMAGE("https://api.imgur.com/3/image/%s/favorite"),
+
+    // Album id
+    FAVORITE_ALBUM("https://api.imgur.com/3/album/%s/favorite");
 
     private final String mUrl;
 

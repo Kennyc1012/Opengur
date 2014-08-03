@@ -1,6 +1,8 @@
 package com.kenny.openimgur.util;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -155,10 +157,11 @@ public class FileUtil {
                 }
             }
 
+            return tempFile;
+
         } catch (Exception ex) {
             Log.w(TAG, "Error creating file");
             ex.printStackTrace();
-            return null;
         } finally {
             try {
                 if (buffer != null) {
@@ -175,5 +178,17 @@ public class FileUtil {
         }
 
         return null;
+    }
+
+    /**
+     * Tells the Media Scanner that a new file is present
+     *
+     * @param file
+     * @param context
+     */
+    public static void scanFile(Uri file, Context context) {
+        Intent scan = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        scan.setData(file);
+        context.sendBroadcast(scan);
     }
 }

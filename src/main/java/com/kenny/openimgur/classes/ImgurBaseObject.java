@@ -10,6 +10,11 @@ import org.json.JSONObject;
  * Base class to hold common values between Imgur Api responses
  */
 public abstract class ImgurBaseObject implements Parcelable {
+
+    public static final String VOTE_UP = "up";
+
+    public static final String VOTE_DOWN = "down";
+
     private static final String KEY_ID = "id";
 
     private static final String KEY_UP_VOTES = "ups";

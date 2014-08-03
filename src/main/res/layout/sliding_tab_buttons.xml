@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/slide_up_panel_height">
+
+    <ImageButton
+        android:id="@+id/panelUpBtn"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/ic_arrow_up"
+        style="@android:style/Widget.ActionButton" />
+
+    <ImageButton
+        android:id="@+id/commentBtn"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/ic_action_sms"
+        style="@android:style/Widget.ActionButton" />
+
+    <ImageButton
+        android:id="@+id/upVoteBtn"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/ic_action_arrow_top"
+        style="@android:style/Widget.ActionButton" />
+
+    <ImageButton
+        android:id="@+id/downVoteBtn"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/ic_action_arrow_bottom"
+        style="@android:style/Widget.ActionButton" />
+
+</LinearLayout>

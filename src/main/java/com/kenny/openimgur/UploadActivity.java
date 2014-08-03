@@ -1,16 +1,16 @@
 package com.kenny.openimgur;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.widget.ImageView;
 
 import com.kenny.openimgur.util.FileUtil;
+import com.kenny.openimgur.util.ImageUtil;
 
 import java.io.File;
 
@@ -34,6 +34,8 @@ public class UploadActivity extends BaseActivity {
 
     private File mCameraFile = null;
 
+    private ImageView mPreviewImage;
+
     public static Intent createIntent(Context context, int uploadType) {
         return new Intent(context, UploadActivity.class).putExtra(KEY_UPLOAD_TYPE, uploadType);
     }
@@ -42,10 +44,7 @@ public class UploadActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
-        ActionBar ab = getActionBar();
-        ab.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        ab.setDisplayHomeAsUpEnabled(true);
-        ab.setDisplayShowHomeEnabled(true);
+        mPreviewImage = (ImageView) findViewById(R.id.previewImage);
 
         if (getIntent().getExtras() != null) {
             int uploadType = getIntent().getExtras().getInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
@@ -69,6 +68,13 @@ public class UploadActivity extends BaseActivity {
             switch (requestCode) {
                 case REQUEST_CODE_CAMERA:
                     if (mCameraFile != null && mCameraFile.exists()) {
+                        FileUtil.scanFile(Uri.fromFile(mCameraFile), getApplicationContext());
+                        Bitmap cameraBm = ImageUtil.decodeSampledBitmapFromResource(mCameraFile, getResources().getDisplayMetrics().widthPixels,
+                                getResources().getDisplayMetrics().heightPixels / 3);
+
+                        if (cameraBm != null) {
+                            mPreviewImage.setImageBitmap(cameraBm);
+                        }
 
                     } else {
                         // TODO Error
@@ -80,7 +86,12 @@ public class UploadActivity extends BaseActivity {
                     mTempFile = FileUtil.createFile(data.getData(), getContentResolver());
 
                     if (mTempFile != null && mTempFile.exists()) {
+                        Bitmap tempBm = ImageUtil.decodeSampledBitmapFromResource(mTempFile, getResources().getDisplayMetrics().widthPixels,
+                                getResources().getDisplayMetrics().widthPixels / 3);
 
+                        if (tempBm != null) {
+                            mPreviewImage.setImageBitmap(tempBm);
+                        }
                     } else {
                         // TODO Error
                     }
@@ -97,6 +108,7 @@ public class UploadActivity extends BaseActivity {
             mTempFile.delete();
         }
 
+        mPreviewImage = null;
         super.onDestroy();
     }
 

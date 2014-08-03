@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.CustomLinkMovementMethod;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurListener;
 
@@ -103,7 +104,7 @@ public class CommentAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View view) {
                     if (mListener != null) {
-                        mListener.onVoteCast(ImgurComment.VOTE_UP, view);
+                        mListener.onVoteCast(ImgurBaseObject.VOTE_UP, view);
                     }
                 }
             });
@@ -112,7 +113,7 @@ public class CommentAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View view) {
                     if (mListener != null) {
-                        mListener.onVoteCast(ImgurComment.VOTE_DOWN, view);
+                        mListener.onVoteCast(ImgurBaseObject.VOTE_DOWN, view);
                     }
                 }
             });
