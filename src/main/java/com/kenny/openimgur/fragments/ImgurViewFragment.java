@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -32,9 +33,11 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.PointsBar;
+import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -48,9 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import de.greenrobot.event.util.AsyncExecutor;
 import de.greenrobot.event.util.ThrowableFailureEvent;
-import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Created by kcampagna on 7/12/14.
@@ -97,15 +98,24 @@ public class ImgurViewFragment extends Fragment {
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
         } else {
-            AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-                @Override
-                public void run() throws Exception {
-                    String url = String.format(Endpoints.ALBUM.getUrl(), mImgurObject.getId());
-                    ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
-                    api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
-                }
-            });
+            String url = String.format(Endpoints.ALBUM.getUrl(), mImgurObject.getId());
+            ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
+            api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
         }
+
+        mListView.setOnScrollListener(new PauseOnScrollListener(OpenImgurApp.getInstance().getImageLoader(), false, true,
+                new AbsListView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+                        // NOP
+                    }
+
+                    @Override
+                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                        // NOOP
+                    }
+                }
+        ));
     }
 
     /**
@@ -132,31 +142,6 @@ public class ImgurViewFragment extends Fragment {
         pointsBar.setUpVotes(mImgurObject.getUpVotes());
         pointsBar.setTotalPoints(mImgurObject.getDownVotes() + mImgurObject.getUpVotes());
         mListView.addHeaderView(headerView);
-    }
-
-    /**
-     * Plays the gif file from the list item
-     *
-     * @param file  Gif file
-     * @param image The ImageView where it is to be displayed
-     * @param prog  The ProgressBar that is in a visible state
-     * @param play  The ImageButton that is in a visible state
-     */
-    private void playGif(File file, ImageView image, ProgressBar prog, ImageButton play) {
-        if (file != null && file.exists()) {
-            try {
-                GifDrawable drawable = new GifDrawable(file);
-                image.setImageDrawable(drawable);
-                prog.setVisibility(View.GONE);
-            } catch (IOException e) {
-                Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-                prog.setVisibility(View.GONE);
-                play.setVisibility(View.VISIBLE);
-            }
-        } else {
-            Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
@@ -239,16 +224,12 @@ public class ImgurViewFragment extends Fragment {
             prog.setVisibility(View.VISIBLE);
             play.setVisibility(View.GONE);
             final ImgurPhoto photo = mPhotoAdapter.getItem(position);
-            File file = DiskCacheUtils.findInCache(photo.getLink(),
-                    loader.getDiskCache());
+            ImageLoader imageLoader = OpenImgurApp.getInstance().getImageLoader();
+            File file = DiskCacheUtils.findInCache(photo.getLink(), imageLoader.getDiskCache());
 
-            // If the gif is not in the cache, we will load it from the network and display it
-            if (file != null) {
-                playGif(file, image, prog, play);
-            } else {
-                // Cancel the image from loading
-                loader.cancelDisplayTask(image);
-                loader.loadImage(photo.getLink(), new ImageLoadingListener() {
+            // Need to do a check since we might be loading a thumbnail and not the actual gif here
+            if (file == null || !file.exists()) {
+                imageLoader.loadImage(photo.getLink(), new ImageLoadingListener() {
                     @Override
                     public void onLoadingStarted(String s, View view) {
 
@@ -257,20 +238,36 @@ public class ImgurViewFragment extends Fragment {
                     @Override
                     public void onLoadingFailed(String s, View view, FailReason failReason) {
                         Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                        prog.setVisibility(View.GONE);
+                        play.setVisibility(View.VISIBLE);
                     }
 
                     @Override
                     public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                        File file = DiskCacheUtils.findInCache(photo.getLink(),
-                                loader.getDiskCache());
-                        playGif(file, image, prog, play);
+                        if (!ImageUtil.loadAndDisplayGif(image,s, OpenImgurApp.getInstance().getImageLoader())) {
+                            Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                            prog.setVisibility(View.GONE);
+                            play.setVisibility(View.VISIBLE);
+                        } else {
+                            prog.setVisibility(View.GONE);
+                        }
                     }
 
                     @Override
                     public void onLoadingCancelled(String s, View view) {
-
+                        Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                        prog.setVisibility(View.GONE);
+                        play.setVisibility(View.VISIBLE);
                     }
                 });
+            } else {
+                if (!ImageUtil.loadAndDisplayGif(image, photo.getLink(), OpenImgurApp.getInstance().getImageLoader())) {
+                    Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                    prog.setVisibility(View.GONE);
+                    play.setVisibility(View.VISIBLE);
+                } else {
+                    prog.setVisibility(View.GONE);
+                }
             }
         }
 
@@ -281,22 +278,17 @@ public class ImgurViewFragment extends Fragment {
         @Override
         public void onVoteCast(final String vote, View view) {
             if (OpenImgurApp.getInstance().getUser() == null) {
-                // TODO Login user
+                Toast.makeText(getActivity(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
             } else {
-                AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-                    @Override
-                    public void run() throws Exception {
-                        RequestBody body = new FormEncodingBuilder().add("id", mImgurObject.getId()).build();
-                        String url = String.format(Endpoints.GALLERY_VOTE.getUrl(), mImgurObject.getId(), vote);
-                        new ApiClient(url, ApiClient.HttpRequest.POST).doWork(ImgurBusEvent.EventType.GALLERY_VOTE, null, body);
-                    }
-                });
+                RequestBody body = new FormEncodingBuilder().add("id", mImgurObject.getId()).build();
+                String url = String.format(Endpoints.GALLERY_VOTE.getUrl(), mImgurObject.getId(), vote);
+                new ApiClient(url, ApiClient.HttpRequest.POST).doWork(ImgurBusEvent.EventType.GALLERY_VOTE, null, body);
             }
         }
 
         @Override
         public void onViewRepliesTap(View view) {
-
+            // NOOP
         }
     };
 

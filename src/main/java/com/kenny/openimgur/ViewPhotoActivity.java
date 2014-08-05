@@ -18,14 +18,10 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
-import java.io.File;
-import java.io.IOException;
-
-import pl.droidsonroids.gif.GifDrawable;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
@@ -84,20 +80,10 @@ public class ViewPhotoActivity extends BaseActivity {
 
                 if (photo.isAnimated()) {
                     // The file SHOULD be in our cache if the image has successfully loaded
-                    File file = DiskCacheUtils.findInCache(photo.getLink(), app.getImageLoader().getDiskCache());
-
-                    if (file != null && file.exists()) {
-                        try {
-                            GifDrawable drawable = new GifDrawable(file);
-                            mImageView.setImageDrawable(drawable);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            finish();
-                            Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
+                    if (!ImageUtil.loadAndDisplayGif(mImageView, photo.getLink(), app.getImageLoader())) {
                         finish();
                         Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                        return;
                     }
                 }
 

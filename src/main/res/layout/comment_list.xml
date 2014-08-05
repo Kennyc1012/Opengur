@@ -4,4 +4,6 @@
     android:id="@+id/commentList"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:scrollingCache="false"
+    android:animationCache="false"
     android:choiceMode="none" />

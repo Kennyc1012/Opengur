@@ -76,6 +76,8 @@
     <string name="upload_desc">Description (Optional)</string>
     <string name="logout">Logout</string>
     <string name="logout_confirm">Are you sure you want to logout?</string>
+    <string name="user_not_logged_in">You must be logged in to complete this action</string>
+    <string name="invalid_url">The url does not appear to be an image</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">

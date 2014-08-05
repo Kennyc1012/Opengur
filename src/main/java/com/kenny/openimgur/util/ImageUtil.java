@@ -6,8 +6,16 @@ import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
+import android.widget.ImageView;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
 import java.io.File;
+import java.io.IOException;
+
+import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Created by kcampagna on 7/1/14.
@@ -20,7 +28,7 @@ public class ImageUtil {
      * @param bmpOriginal
      * @return
      */
-    public static Bitmap toGrayscale(Bitmap bmpOriginal) {
+    public static Bitmap toGrayScale(Bitmap bmpOriginal) {
         if (bmpOriginal == null) {
             return null;
         }
@@ -29,7 +37,7 @@ public class ImageUtil {
         width = bmpOriginal.getWidth();
 
         // RGB_565 uses half the amount of pixels than ARGB_8888. Since this will be used for a notification,
-        // we'll use RGB_565 to save on some memory
+        // and is just gray we'll use RGB_565 to save on some memory
         Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         Canvas c = new Canvas(bmpGrayscale);
         Paint paint = new Paint();
@@ -41,8 +49,7 @@ public class ImageUtil {
         return bmpGrayscale;
     }
 
-    public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
@@ -77,5 +84,28 @@ public class ImageUtil {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+    }
+
+    /**
+     * Loads a gif into an image view. The gif must have been saved to the disk cache before calling this method or it will fail
+     *
+     * @param imageView   The ImageView where the gif will be displayed
+     * @param url         The url of the image. This is the key for the cached image
+     * @param imageLoader The Imageloader where we will retreive the image from
+     * @return if successful
+     */
+    public static boolean loadAndDisplayGif(@NonNull ImageView imageView, @NonNull String url, @NonNull ImageLoader imageLoader) {
+        File file = DiskCacheUtils.findInCache(url, imageLoader.getDiskCache());
+
+        if (file != null && file.exists()) {
+            try {
+                imageView.setImageDrawable(new GifDrawable(file));
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
     }
 }

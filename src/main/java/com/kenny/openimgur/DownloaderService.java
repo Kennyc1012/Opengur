@@ -78,7 +78,7 @@ public class DownloaderService extends IntentService {
                     viewIntent.setDataAndType(fileUri, photo.getType());
                     PendingIntent viewP = PendingIntent.getActivity(getApplicationContext(), 1, viewIntent, PendingIntent.FLAG_ONE_SHOT);
 
-                    Bitmap bm = ImageUtil.toGrayscale(ImageUtil.decodeSampledBitmapFromResource(photoFile, 256, 256));
+                    Bitmap bm = ImageUtil.toGrayScale(ImageUtil.decodeSampledBitmapFromResource(photoFile, 256, 256));
                     if (bm != null) {
                         NotificationCompat.BigPictureStyle bigPicStyle = new NotificationCompat.BigPictureStyle();
                         bigPicStyle.setBigContentTitle(getString(R.string.download_complete));

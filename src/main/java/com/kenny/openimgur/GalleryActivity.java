@@ -1,10 +1,7 @@
 package com.kenny.openimgur;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -16,15 +13,14 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.util.Property;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.SpinnerAdapter;
 
 import com.devspark.robototextview.widget.RobotoTextView;
@@ -37,6 +33,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.ViewUtils;
@@ -50,7 +47,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import de.greenrobot.event.util.AsyncExecutor;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
 public class GalleryActivity extends BaseActivity implements View.OnClickListener {
@@ -218,13 +214,13 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
 
     private View mUploadMenu;
 
-    private ImageButton mUploadButton;
+    private FloatingActionButton mUploadButton;
 
-    private ImageButton mCameraUpload;
+    private FloatingActionButton mCameraUpload;
 
-    private ImageButton mGalleryUpload;
+    private FloatingActionButton mGalleryUpload;
 
-    private ImageButton mLinkUpload;
+    private FloatingActionButton mLinkUpload;
 
     private MultiStateView mMultiView;
 
@@ -301,15 +297,15 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
 
                 // Don't respond to the header being clicked
                 if (actualPosition >= 0) {
-                    startActivity(ViewActivity.createIntent(getApplicationContext(), (ArrayList<ImgurBaseObject>) mAdapter.getItems(), actualPosition));
+                    startActivity(ViewActivity.createIntent(getApplicationContext(), mAdapter.getItems(), actualPosition));
                 }
             }
         });
 
-        mUploadButton = (ImageButton) mUploadMenu.findViewById(R.id.uploadButton);
-        mLinkUpload = (ImageButton) mUploadMenu.findViewById(R.id.linkUpload);
-        mCameraUpload = (ImageButton) mUploadMenu.findViewById(R.id.cameraUpload);
-        mGalleryUpload = (ImageButton) mUploadMenu.findViewById(R.id.galleryUpload);
+        mUploadButton = (FloatingActionButton) mUploadMenu.findViewById(R.id.uploadButton);
+        mLinkUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.linkUpload);
+        mCameraUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.cameraUpload);
+        mGalleryUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.galleryUpload);
         mUploadButton.setOnClickListener(this);
         mLinkUpload.setOnClickListener(this);
         mCameraUpload.setOnClickListener(this);
@@ -483,7 +479,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArrayList(KEY_DATA, (ArrayList<ImgurBaseObject>) mAdapter.getItems());
+            outState.putParcelableArray(KEY_DATA, mAdapter.getItems());
             outState.putInt(KEY_LIST_POSITION, mGridView.getFirstVisiblePosition());
         }
 
@@ -515,73 +511,30 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
     private void animateUploadMenu() {
         int uploadButtonHeight = mUploadButton.getHeight();
         int menuButtonHeight = mCameraUpload.getHeight();
-        DecelerateInterpolator interpolator = new DecelerateInterpolator();
-        AnimatorSet set = new AnimatorSet();
-        set.setDuration(500).setInterpolator(interpolator);
-        Property translation = isLandscape ? View.TRANSLATION_X : View.TRANSLATION_Y;
+        AnimatorSet set = new AnimatorSet().setDuration(500L);
+        String translation = isLandscape ? "translationX" : "translationY";
 
         if (!uploadMenuOpen) {
             uploadMenuOpen = true;
-            PropertyValuesHolder cameraY = PropertyValuesHolder.ofFloat(translation, 0, (uploadButtonHeight + 25) * -1);
-            PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat(View.ROTATION, 0, 360);
-            PropertyValuesHolder photoY = PropertyValuesHolder.ofFloat(translation, (menuButtonHeight + uploadButtonHeight + 50) * -1);
-            PropertyValuesHolder linkY = PropertyValuesHolder.ofFloat(translation, 0, ((2 * menuButtonHeight) + uploadButtonHeight + 75) * -1);
 
             set.playTogether(
-                    ObjectAnimator.ofPropertyValuesHolder(mCameraUpload, cameraY, rotation),
-                    ObjectAnimator.ofPropertyValuesHolder(mLinkUpload, linkY, rotation),
-                    ObjectAnimator.ofPropertyValuesHolder(mGalleryUpload, photoY, rotation),
-                    ObjectAnimator.ofFloat(mUploadButton, View.ROTATION, 0, 360)
+                    ObjectAnimator.ofFloat(mCameraUpload, translation, 0, (uploadButtonHeight + 25) * -1),
+                    ObjectAnimator.ofFloat(mLinkUpload, translation, 0, ((2 * menuButtonHeight) + uploadButtonHeight + 75) * -1),
+                    ObjectAnimator.ofFloat(mGalleryUpload, translation, (menuButtonHeight + uploadButtonHeight + 50) * -1)
             );
 
-            set.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    mCameraUpload.setVisibility(View.VISIBLE);
-                    mLinkUpload.setVisibility(View.VISIBLE);
-                    mGalleryUpload.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    animation.removeAllListeners();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    animation.removeAllListeners();
-                }
-            });
+            set.setInterpolator(new OvershootInterpolator());
             set.start();
         } else {
             uploadMenuOpen = false;
-            PropertyValuesHolder rotation = PropertyValuesHolder.ofFloat(View.ROTATION, 0, -360);
 
             set.playTogether(
-                    ObjectAnimator.ofPropertyValuesHolder(mCameraUpload, PropertyValuesHolder.ofFloat(translation, 0), rotation),
-                    ObjectAnimator.ofPropertyValuesHolder(mLinkUpload, PropertyValuesHolder.ofFloat(translation, 0), rotation),
-                    ObjectAnimator.ofPropertyValuesHolder(mGalleryUpload, PropertyValuesHolder.ofFloat(translation, 0), rotation),
-                    ObjectAnimator.ofFloat(mUploadButton, View.ROTATION, 0, -360)
+                    ObjectAnimator.ofFloat(mCameraUpload, translation, 0),
+                    ObjectAnimator.ofFloat(mLinkUpload, translation, 0),
+                    ObjectAnimator.ofFloat(mGalleryUpload, translation, 0)
             );
 
-            set.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    animation.removeAllListeners();
-                    mCameraUpload.setVisibility(View.GONE);
-                    mLinkUpload.setVisibility(View.GONE);
-                    mGalleryUpload.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    animation.removeAllListeners();
-                    mCameraUpload.setVisibility(View.GONE);
-                    mLinkUpload.setVisibility(View.GONE);
-                    mGalleryUpload.setVisibility(View.GONE);
-                }
-            });
-
+            set.setInterpolator(new DecelerateInterpolator());
             set.start();
         }
     }
@@ -679,12 +632,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
             mApiClient.setUrl(getGalleryUrl());
         }
 
-        AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-            @Override
-            public void run() throws Exception {
-                mApiClient.doWork(ImgurBusEvent.EventType.GALLERY, null, null);
-            }
-        });
+        mApiClient.doWork(ImgurBusEvent.EventType.GALLERY, null, null);
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {

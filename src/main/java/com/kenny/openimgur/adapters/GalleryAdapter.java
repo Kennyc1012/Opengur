@@ -15,6 +15,8 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import org.apache.commons.collections15.list.SetUniqueList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,14 +28,14 @@ public class GalleryAdapter extends BaseAdapter {
 
     private ImageLoader mImageLoader;
 
-    private List<ImgurBaseObject> mObjects;
+    private SetUniqueList<ImgurBaseObject> mObjects;
 
     private String mThumbnailQuality;
 
     public GalleryAdapter(Context context, ImageLoader imageLoader, List<ImgurBaseObject> objects, String quality) {
         mInflater = LayoutInflater.from(context);
         mImageLoader = imageLoader;
-        this.mObjects = objects;
+        mObjects = SetUniqueList.decorate(objects);
 
         if (SettingsActivity.THUMBNAIL_QUALITY_LOW.equals(quality)) {
             mThumbnailQuality = ImgurPhoto.THUMBNAIL_SMALL;
@@ -62,10 +64,13 @@ public class GalleryAdapter extends BaseAdapter {
      */
     public void addItem(ImgurBaseObject obj) {
         if (mObjects == null) {
-            mObjects = new ArrayList<ImgurBaseObject>();
+            List<ImgurBaseObject> list = new ArrayList<ImgurBaseObject>();
+            list.add(obj);
+            mObjects = SetUniqueList.decorate(list);
+        } else {
+            mObjects.add(obj);
         }
 
-        mObjects.add(obj);
         notifyDataSetChanged();
     }
 
@@ -76,7 +81,7 @@ public class GalleryAdapter extends BaseAdapter {
      */
     public void addItems(List<ImgurBaseObject> items) {
         if (mObjects == null) {
-            mObjects = items;
+            mObjects = SetUniqueList.decorate(items);
         } else {
             for (ImgurBaseObject obj : items) {
                 mObjects.add(obj);
@@ -91,8 +96,10 @@ public class GalleryAdapter extends BaseAdapter {
      *
      * @return
      */
-    public List<ImgurBaseObject> getItems() {
-        return mObjects;
+    public ImgurBaseObject[] getItems() {
+        ImgurBaseObject[] array = new ImgurBaseObject[mObjects.size()];
+        mObjects.toArray(array);
+        return array;
     }
 
     @Override

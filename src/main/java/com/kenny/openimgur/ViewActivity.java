@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.util.LongSparseArray;
@@ -48,7 +49,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import de.greenrobot.event.util.AsyncExecutor;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
 /**
@@ -76,7 +76,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
     private CommentAdapter mCommentAdapter;
 
-    private List<ImgurBaseObject> mImgurObjects;
+    private ImgurBaseObject[] mImgurObjects;
 
     // Keeps track of the previous list of comments as we progress in the stack
     private LongSparseArray<ArrayList<ImgurComment>> mCommentArray = new LongSparseArray<ArrayList<ImgurComment>>();
@@ -98,7 +98,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
      * @param position The position to start initially
      * @return
      */
-    public static Intent createIntent(Context context, ArrayList<ImgurBaseObject> objects, int position) {
+    public static Intent createIntent(Context context, ImgurBaseObject[] objects, int position) {
         Intent intent = new Intent(context, ViewActivity.class);
         intent.putExtra(KEY_POSITION, position);
         intent.putExtra(KEY_OBJECTS, objects);
@@ -155,8 +155,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         });
 
         mCurrentPosition = getIntent().getIntExtra(KEY_POSITION, 0);
-        mImgurObjects = getIntent().getParcelableArrayListExtra(KEY_OBJECTS);
+        Parcelable[] passedArray = getIntent().getParcelableArrayExtra(KEY_OBJECTS);
+        mImgurObjects = new ImgurBaseObject[passedArray.length];
+        System.arraycopy(passedArray, 0, mImgurObjects, 0, passedArray.length);
         mViewPager.setAdapter(new BrowsingAdapter(getFragmentManager(), mImgurObjects));
+
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -164,7 +167,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onPageSelected(int position) {
-                ImgurBaseObject imgurBaseObject = mImgurObjects.get(position);
+                ImgurBaseObject imgurBaseObject = mImgurObjects[position];
                 String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId());
 
                 if (mApiClient == null) {
@@ -198,22 +201,22 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private static class BrowsingAdapter extends FragmentStatePagerAdapter {
-        private List<ImgurBaseObject> objects;
+        private ImgurBaseObject[] objects;
 
-        public BrowsingAdapter(FragmentManager fm, List<ImgurBaseObject> objects) {
+        public BrowsingAdapter(FragmentManager fm, ImgurBaseObject[] objects) {
             super(fm);
             this.objects = objects;
         }
 
         @Override
         public Fragment getItem(int position) {
-            return ImgurViewFragment.createInstance(objects.get(position));
+            return ImgurViewFragment.createInstance(objects[position]);
         }
 
         @Override
         public int getCount() {
             if (objects != null) {
-                return objects.size();
+                return objects.length;
             }
 
             return 0;
@@ -225,12 +228,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
      */
     private void handleComments() {
         if (mApiClient != null) {
-            AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-                @Override
-                public void run() throws Exception {
-                    mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, null);
-                }
-            });
+            mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, null);
         }
     }
 
@@ -239,6 +237,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
      *
      * @param comment
      */
+
     private void nextComments(final ImgurComment comment) {
         mCommentList.animate().translationX(-mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
             @Override
@@ -312,7 +311,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         mPanelButton = null;
         mApiClient = null;
         mCommentList = null;
-        mImgurObjects.clear();
         mImgurObjects = null;
         mSlidingPane = null;
         mCommentArray.clear();
@@ -342,7 +340,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
             case R.id.upVoteBtn:
                 if (user != null) {
                     String upVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(),
-                            mImgurObjects.get(mCurrentPosition).getId(), ImgurBaseObject.VOTE_UP);
+                            mImgurObjects[mCurrentPosition].getId(), ImgurBaseObject.VOTE_UP);
 
                     if (mApiClient == null) {
                         mApiClient = new ApiClient(upVoteUrl, ApiClient.HttpRequest.GET);
@@ -351,14 +349,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                         mApiClient.setRequestType(ApiClient.HttpRequest.GET);
                     }
 
-                    AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-                        @Override
-                        public void run() throws Exception {
-                            mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, null, null);
-                        }
-                    });
+                    mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, null, null);
+
                 } else {
-                    // TODO User login
+                    Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
                 }
 
                 break;
@@ -366,7 +360,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
             case R.id.downVoteBtn:
                 if (user != null) {
                     String downVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(),
-                            mImgurObjects.get(mCurrentPosition).getId(), ImgurBaseObject.VOTE_DOWN);
+                            mImgurObjects[mCurrentPosition].getId(), ImgurBaseObject.VOTE_DOWN);
 
                     if (mApiClient == null) {
                         mApiClient = new ApiClient(downVoteUrl, ApiClient.HttpRequest.GET);
@@ -375,19 +369,19 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                         mApiClient.setRequestType(ApiClient.HttpRequest.GET);
                     }
 
-                    AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-                        @Override
-                        public void run() throws Exception {
-                            mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, null, null);
-                        }
-                    });
+                    mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, null, null);
                 } else {
-                    // TODO User login
+                    Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
                 }
 
                 break;
 
             case R.id.commentBtn:
+                if (user != null) {
+
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }
@@ -486,7 +480,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         @Override
         public void onVoteCast(String vote, View view) {
             if (user == null) {
-                // TODO Login user
+                Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
             } else {
                 int position = mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount();
                 ImgurComment comment = mCommentAdapter.getItem(position);
@@ -497,14 +491,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
                 // The id param is not needed, but okhttp bodies can not be empty :/
                 final RequestBody body = new FormEncodingBuilder().add("id", comment.getId()).build();
-
-                AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-                    @Override
-                    public void run() throws Exception {
-                        mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
-                    }
-                });
-
+                mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
             }
         }
 
@@ -534,7 +521,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
             case R.id.favorite:
                 if (user != null) {
-                    final ImgurBaseObject imgurObj = mImgurObjects.get(mCurrentPosition);
+                    final ImgurBaseObject imgurObj = mImgurObjects[mCurrentPosition];
                     String url = null;
 
                     if (imgurObj instanceof ImgurAlbum) {
@@ -546,15 +533,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                     final RequestBody body = new FormEncodingBuilder().add("id", imgurObj.getId()).build();
                     mApiClient.setUrl(url);
                     mApiClient.setRequestType(ApiClient.HttpRequest.POST);
-
-                    AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-                        @Override
-                        public void run() throws Exception {
-                            mApiClient.doWork(ImgurBusEvent.EventType.FAVORITE, imgurObj.getId(), body);
-                        }
-                    });
+                    mApiClient.doWork(ImgurBusEvent.EventType.FAVORITE, imgurObj.getId(), body);
                 } else {
-
+                    Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
                 }
 
                 return true;

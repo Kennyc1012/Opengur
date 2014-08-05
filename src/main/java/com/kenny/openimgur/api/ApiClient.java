@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import de.greenrobot.event.EventBus;
+import de.greenrobot.event.util.AsyncExecutor;
 
 /**
  * Created by kcampagna on 6/14/14.
@@ -138,6 +139,7 @@ public class ApiClient {
 
             // Sometimes the Api response with an empty string when it is experiencing problems
             if (TextUtils.isEmpty(serverResponse)) {
+                Log.w(TAG, "Response body is empty");
                 json = new JSONObject();
                 json.put(KEY_SUCCESS, false);
                 json.put(KEY_STATUS, STATUS_EMPTY_RESPONSE);
@@ -163,8 +165,7 @@ public class ApiClient {
      * @throws IOException
      * @throws JSONException
      */
-    public void doWork(ImgurBusEvent.EventType type, @Nullable String id, @Nullable RequestBody postParams)
-            throws IOException, JSONException {
+    public void doWork(final ImgurBusEvent.EventType type, final @Nullable String id, final @Nullable RequestBody postParams) {
         if (mUrl == null) {
             throw new NullPointerException("Url is null");
         }
@@ -175,7 +176,13 @@ public class ApiClient {
                     throw new NullPointerException("Post params can not be null when making a POST call");
                 }
 
-                EventBus.getDefault().post(new ImgurBusEvent(post(postParams), type, HttpRequest.GET, id));
+                AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
+                    @Override
+                    public void run() throws Exception {
+                        EventBus.getDefault().post(new ImgurBusEvent(post(postParams), type, HttpRequest.GET, id));
+                    }
+                });
+
                 break;
 
             case DELETE:
@@ -183,7 +190,14 @@ public class ApiClient {
 
             case GET:
             default:
-                EventBus.getDefault().post(new ImgurBusEvent(get(), type, HttpRequest.GET, id));
+                AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
+                    @Override
+                    public void run() throws Exception {
+                        EventBus.getDefault().post(new ImgurBusEvent(get(), type, HttpRequest.GET, id));
+                    }
+                });
+
+                break;
         }
 
     }

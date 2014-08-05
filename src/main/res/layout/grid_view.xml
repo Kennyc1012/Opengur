@@ -8,4 +8,5 @@
     android:verticalSpacing="4dp"
     android:numColumns="@integer/gallery_num_columns"
     android:drawSelectorOnTop="true"
-    android:smoothScrollbar="true" />
+    android:scrollingCache="false"
+    android:animationCache="false" />

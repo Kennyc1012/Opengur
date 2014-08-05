@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Locale;
 
 import de.greenrobot.event.EventBus;
-import de.greenrobot.event.util.AsyncExecutor;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
 /**
@@ -95,12 +94,7 @@ public class ProfileActivity extends BaseActivity {
             mSelectedUser = app.getUser();
             String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), app.getUser().getUsername());
             mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
-            AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-                @Override
-                public void run() throws Exception {
-                    mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
-                }
-            });
+            mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
         } else {
             Log.v(TAG, "No user present, going to login view");
             getActionBar().hide();
@@ -164,14 +158,7 @@ public class ProfileActivity extends BaseActivity {
                             Log.v(TAG, "User " + newUser.getUsername() + " logged in");
                             String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), newUser.getUsername());
                             mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
-
-                            AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-                                @Override
-                                public void run() throws Exception {
-                                    mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
-                                }
-                            });
-
+                            mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
                             mWebView.clearHistory();
                             mWebView.clearCache(true);
                             mWebView.clearFormData();
@@ -351,13 +338,7 @@ public class ProfileActivity extends BaseActivity {
             url = String.format(mCurrentEndpoint.getUrl(), mSelectedUser.getUsername(), mCurrentPage);
         }
 
-        mApiClient.setUrl(url);
-        AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-            @Override
-            public void run() throws Exception {
-                mApiClient.doWork(ImgurBusEvent.EventType.ACCOUNT_GALLERY_FAVORITES, null, null);
-            }
-        });
+        mApiClient.doWork(ImgurBusEvent.EventType.ACCOUNT_GALLERY_FAVORITES, null, null);
     }
 
     /**

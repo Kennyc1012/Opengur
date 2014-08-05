@@ -10,7 +10,7 @@
     <item
         android:id="@+id/submissions"
         android:title="@string/submissions"
-        android:icon="@drawable/ic_upload"
+        android:icon="@drawable/ic_action_upload_white"
         android:showAsAction="ifRoom" />
 
     <item

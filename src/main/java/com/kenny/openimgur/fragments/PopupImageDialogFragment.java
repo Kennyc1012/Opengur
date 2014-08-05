@@ -20,19 +20,14 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
 import org.json.JSONException;
 
-import java.io.File;
-import java.io.IOException;
-
 import de.greenrobot.event.EventBus;
-import de.greenrobot.event.util.AsyncExecutor;
-import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Created by kcampagna on 7/19/14.
@@ -89,14 +84,8 @@ public class PopupImageDialogFragment extends DialogFragment {
         if (isDirectLink) {
             displayImage(url, isAnimated);
         } else {
-            AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
-                @Override
-                public void run() throws Exception {
-                    final ApiClient api = new ApiClient(String.format(Endpoints.IMAGE_DETAILS.getUrl(), url),
-                            ApiClient.HttpRequest.GET);
-                    api.doWork(ImgurBusEvent.EventType.ITEM_DETAILS, null, null);
-                }
-            });
+            ApiClient api = new ApiClient(String.format(Endpoints.IMAGE_DETAILS.getUrl(), url), ApiClient.HttpRequest.GET);
+            api.doWork(ImgurBusEvent.EventType.ITEM_DETAILS, null, null);
         }
     }
 
@@ -163,16 +152,7 @@ public class PopupImageDialogFragment extends DialogFragment {
             public void onLoadingComplete(String s, View view, Bitmap bitmap) {
                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                 if (isAnimated) {
-                    File file = DiskCacheUtils.findInCache(s, loader.getDiskCache());
-                    if (file != null && file.exists()) {
-                        try {
-                            ((ImageView) view).setImageDrawable(new GifDrawable(file));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
-                            dismissAllowingStateLoss();
-                        }
-                    } else {
+                    if (!ImageUtil.loadAndDisplayGif((ImageView) view, s, OpenImgurApp.getInstance().getImageLoader())) {
                         Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
                         dismissAllowingStateLoss();
                     }
@@ -181,7 +161,8 @@ public class PopupImageDialogFragment extends DialogFragment {
 
             @Override
             public void onLoadingCancelled(String s, View view) {
-
+                dismissAllowingStateLoss();
+                Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
             }
         });
     }

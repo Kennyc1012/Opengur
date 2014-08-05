@@ -220,7 +220,7 @@ public abstract class ImgurBaseObject implements Parcelable {
             return false;
         }
 
-        return ((ImgurBaseObject) object).mId == this.mId;
+        return ((ImgurBaseObject) object).mId.equals(this.mId);
     }
 
     @Override
