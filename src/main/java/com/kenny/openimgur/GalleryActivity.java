@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -415,6 +414,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
                         mAdapter.notifyDataSetChanged();
                     }
 
+                    mUploadMenu.setVisibility(View.GONE);
                     mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                     getGallery();
                     return true;
@@ -568,11 +568,11 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
 
                     mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, objects);
                 } else {
-                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getErrorCodeStringResource(statusCode));
+                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
                 }
 
             } catch (JSONException e) {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
             }
         }
     }
@@ -583,43 +583,12 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
      * @param event
      */
     public void onEventMainThread(ThrowableFailureEvent event) {
-        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-        mErrorMessage.setText(R.string.error_generic);
-        event.getThrowable().printStackTrace();
-    }
-
-    /**
-     * Returns the string resource for the given error code
-     *
-     * @param statusCode
-     * @return
-     */
-    @StringRes
-    private int getErrorCodeStringResource(int statusCode) {
-        switch (statusCode) {
-            case ApiClient.STATUS_FORBIDDEN:
-                return R.string.error_403;
-
-            case ApiClient.STATUS_INVALID_PERMISSIONS:
-                return R.string.error_401;
-
-            case ApiClient.STATUS_RATING_LIMIT:
-                return R.string.error_429;
-
-            case ApiClient.STATUS_OVER_CAPACITY:
-                return R.string.error_503;
-
-            case ApiClient.STATUS_EMPTY_RESPONSE:
-                return R.string.error_800;
-
-            case ApiClient.STATUS_IO_EXCEPTION:
-            case ApiClient.STATUS_JSON_EXCEPTION:
-            case ApiClient.STATUS_NOT_FOUND:
-            case ApiClient.STATUS_INTERNAL_ERROR:
-            case ApiClient.STATUS_INVALID_PARAM:
-            default:
-                return R.string.error_generic;
+        if (mAdapter == null || mAdapter.isEmpty()) {
+            mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+            mErrorMessage.setText(R.string.error_generic);
         }
+
+        event.getThrowable().printStackTrace();
     }
 
     /**
@@ -664,9 +633,12 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
                     break;
 
                 case MESSAGE_ACTION_FAILED:
-                    mUploadMenu.setVisibility(View.GONE);
-                    mErrorMessage.setText((Integer) msg.obj);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    if (mAdapter == null || mAdapter.isEmpty()) {
+                        mUploadMenu.setVisibility(View.GONE);
+                        mErrorMessage.setText((Integer) msg.obj);
+                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    }
+
                     break;
             }
 

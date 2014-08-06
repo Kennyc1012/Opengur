@@ -33,6 +33,7 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.PointsBar;
+import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -228,7 +229,7 @@ public class ImgurViewFragment extends Fragment {
             File file = DiskCacheUtils.findInCache(photo.getLink(), imageLoader.getDiskCache());
 
             // Need to do a check since we might be loading a thumbnail and not the actual gif here
-            if (file == null || !file.exists()) {
+            if (!FileUtil.isFileValid(file)) {
                 imageLoader.loadImage(photo.getLink(), new ImageLoadingListener() {
                     @Override
                     public void onLoadingStarted(String s, View view) {
@@ -244,7 +245,7 @@ public class ImgurViewFragment extends Fragment {
 
                     @Override
                     public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                        if (!ImageUtil.loadAndDisplayGif(image,s, OpenImgurApp.getInstance().getImageLoader())) {
+                        if (!ImageUtil.loadAndDisplayGif(image, s, OpenImgurApp.getInstance().getImageLoader())) {
                             Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
                             prog.setVisibility(View.GONE);
                             play.setVisibility(View.VISIBLE);

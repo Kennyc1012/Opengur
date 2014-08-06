@@ -2,10 +2,12 @@ package com.kenny.openimgur.api;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.squareup.okhttp.OkHttpClient;
@@ -251,5 +253,39 @@ public class ApiClient {
 
         Log.v(TAG, "No access token present, using Client-ID");
         return "Client-ID " + CLIENT_ID;
+    }
+
+    /**
+     * Returns the string resource for the given error code
+     *
+     * @param statusCode
+     * @return
+     */
+    @StringRes
+    public static int getErrorCodeStringResource(int statusCode) {
+        switch (statusCode) {
+            case ApiClient.STATUS_FORBIDDEN:
+                return R.string.error_403;
+
+            case ApiClient.STATUS_INVALID_PERMISSIONS:
+                return R.string.error_401;
+
+            case ApiClient.STATUS_RATING_LIMIT:
+                return R.string.error_429;
+
+            case ApiClient.STATUS_OVER_CAPACITY:
+                return R.string.error_503;
+
+            case ApiClient.STATUS_EMPTY_RESPONSE:
+                return R.string.error_800;
+
+            case ApiClient.STATUS_IO_EXCEPTION:
+            case ApiClient.STATUS_JSON_EXCEPTION:
+            case ApiClient.STATUS_NOT_FOUND:
+            case ApiClient.STATUS_INTERNAL_ERROR:
+            case ApiClient.STATUS_INVALID_PARAM:
+            default:
+                return R.string.error_generic;
+        }
     }
 }

@@ -3,10 +3,13 @@ package com.kenny.openimgur;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
@@ -15,9 +18,12 @@ import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.view.ViewPager;
+import android.text.InputFilter;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -167,7 +173,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onPageSelected(int position) {
-                ImgurBaseObject imgurBaseObject = mImgurObjects[position];
+                mCurrentPosition = position;
+                ImgurBaseObject imgurBaseObject = mImgurObjects[mCurrentPosition];
                 String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId());
 
                 if (mApiClient == null) {
@@ -291,7 +298,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mViewPager.setCurrentItem(mCurrentPosition);
+
+        // If we start on the 0 page, the onPageSelected event won't fire
+        if (mCurrentPosition == 0) {
+            ImgurBaseObject imgurBaseObject = mImgurObjects[mCurrentPosition];
+            String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId());
+            mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
+            handleComments();
+        } else {
+            mViewPager.setCurrentItem(mCurrentPosition);
+        }
     }
 
     @Override
@@ -377,11 +393,37 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                 break;
 
             case R.id.commentBtn:
-                if (user != null) {
+                if (user != null && user.isAccessTokenValid()) {
+                    final EditText editText = new EditText(getApplicationContext());
+                    editText.setHint(R.string.comment_hint);
+                    editText.setMaxLines(4);
+                    editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(140)});
+                    editText.setTextColor(Color.BLACK);
 
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ViewActivity.this);
+                    builder.setTitle(R.string.comment).setNegativeButton(R.string.cancel, null);
+                    builder.setPositiveButton(R.string.post, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            String comment = editText.getText().toString();
+
+                            if (!TextUtils.isEmpty(comment)) {
+                                String url = String.format(Endpoints.COMMENT.getUrl(), mImgurObjects[mCurrentPosition].getId());
+                                mApiClient.setUrl(url);
+                                mApiClient.setRequestType(ApiClient.HttpRequest.POST);
+                                RequestBody body = new FormEncodingBuilder().add("comment", comment).build();
+                                mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, body);
+                            } else {
+                                // TODO error
+                            }
+                        }
+                    });
+
+                    builder.setView(editText).show();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
                 }
+
                 break;
         }
     }

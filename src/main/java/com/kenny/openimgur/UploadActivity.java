@@ -132,7 +132,7 @@ public class UploadActivity extends BaseActivity {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CODE_CAMERA:
-                    if (mCameraFile != null && mCameraFile.exists()) {
+                    if (FileUtil.isFileValid(mCameraFile)) {
                         FileUtil.scanFile(Uri.fromFile(mCameraFile), getApplicationContext());
                         Bitmap cameraBm = ImageUtil.decodeSampledBitmapFromResource(mCameraFile, getResources().getDisplayMetrics().widthPixels,
                                 getResources().getDisplayMetrics().heightPixels / 3);
@@ -151,7 +151,7 @@ public class UploadActivity extends BaseActivity {
                 case REQUEST_CODE_GALLERY:
                     mTempFile = FileUtil.createFile(data.getData(), getContentResolver());
 
-                    if (mTempFile != null && mTempFile.exists()) {
+                    if (FileUtil.isFileValid(mTempFile)) {
                         if (mTempFile.getAbsolutePath().endsWith(".gif")) {
                             try {
                                 mPreviewImage.setImageDrawable(new GifDrawable(mTempFile));
@@ -186,7 +186,7 @@ public class UploadActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         // Delete the temporary file if one exists
-        if (mTempFile != null && mTempFile.exists()) {
+        if (FileUtil.isFileValid(mTempFile)) {
             mTempFile.delete();
         }
 

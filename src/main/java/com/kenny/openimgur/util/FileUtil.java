@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -206,5 +207,15 @@ public class FileUtil {
         Intent scan = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         scan.setData(file);
         context.sendBroadcast(scan);
+    }
+
+    /**
+     * Returns if the given file is not null and exists in the file system
+     *
+     * @param file
+     * @return
+     */
+    public static boolean isFileValid(@Nullable File file) {
+        return file != null && file.exists();
     }
 }

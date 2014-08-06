@@ -43,7 +43,10 @@ public enum Endpoints {
     FAVORITE_IMAGE("https://api.imgur.com/3/image/%s/favorite"),
 
     // Album id
-    FAVORITE_ALBUM("https://api.imgur.com/3/album/%s/favorite");
+    FAVORITE_ALBUM("https://api.imgur.com/3/album/%s/favorite"),
+
+    // Album/Image id
+    COMMENT("https://api.imgur.com/3/gallery/%s/comment");
 
     private final String mUrl;
 

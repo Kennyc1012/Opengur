@@ -97,7 +97,7 @@ public class ImageUtil {
     public static boolean loadAndDisplayGif(@NonNull ImageView imageView, @NonNull String url, @NonNull ImageLoader imageLoader) {
         File file = DiskCacheUtils.findInCache(url, imageLoader.getDiskCache());
 
-        if (file != null && file.exists()) {
+        if (FileUtil.isFileValid(file)) {
             try {
                 imageView.setImageDrawable(new GifDrawable(file));
                 return true;
