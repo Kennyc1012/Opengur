@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,27 +31,34 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 public class ViewPhotoActivity extends BaseActivity {
     private static final long HIDE_DELAY = DateUtils.SECOND_IN_MILLIS * 3;
 
+    public static final String KEY_URL = "url";
+
+    public static final String KEY_IMAGE = "image";
+
     private ImageView mImageView;
 
     private ProgressBar mProgressBar;
-
-    public static final String KEY_IMAGE = "image";
 
     private ImgurPhoto photo;
 
     private View mDecorView;
 
+    private String mUrl;
+
     public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {
-        Intent intent = new Intent(context, ViewPhotoActivity.class);
-        intent.putExtra(KEY_IMAGE, photo);
-        return intent;
+        return new Intent(context, ViewPhotoActivity.class).putExtra(KEY_IMAGE, photo);
+    }
+
+    public static Intent createIntent(@NonNull Context context, @NonNull String url) {
+        return new Intent(context, ViewPhotoActivity.class).putExtra(KEY_URL, url);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
 
-        if (!getIntent().hasExtra(KEY_IMAGE)) {
+        if (intent == null || (!intent.hasExtra(KEY_IMAGE) && !intent.hasExtra(KEY_URL))) {
             //TODO Error message
             finish();
             return;
@@ -59,9 +67,10 @@ public class ViewPhotoActivity extends BaseActivity {
         setContentView(R.layout.activity_view_photo);
         mDecorView = getWindow().getDecorView();
         photo = getIntent().getParcelableExtra(KEY_IMAGE);
+        mUrl = intent.getStringExtra(KEY_URL);
         mImageView = (ImageView) findViewById(R.id.image);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        app.getImageLoader().displayImage(photo.getLink(), mImageView, new ImageLoadingListener() {
+        app.getImageLoader().displayImage(photo != null ? photo.getLink() : mUrl, mImageView, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String s, View view) {
             }
@@ -78,9 +87,9 @@ public class ViewPhotoActivity extends BaseActivity {
                 PhotoViewAttacher photoView = new PhotoViewAttacher(mImageView);
                 photoView.setMaximumScale(10f);
 
-                if (photo.isAnimated()) {
+                if ((photo != null && photo.isAnimated()) || (!TextUtils.isEmpty(mUrl) && mUrl.endsWith(".gif"))) {
                     // The file SHOULD be in our cache if the image has successfully loaded
-                    if (!ImageUtil.loadAndDisplayGif(mImageView, photo.getLink(), app.getImageLoader())) {
+                    if (!ImageUtil.loadAndDisplayGif(mImageView, photo != null ? photo.getLink() : mUrl, app.getImageLoader())) {
                         finish();
                         Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
                         return;
@@ -100,6 +109,7 @@ public class ViewPhotoActivity extends BaseActivity {
                         }
                     });
                 }
+
                 photoView.update();
             }
 
@@ -144,13 +154,20 @@ public class ViewPhotoActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.download:
-                Intent intent = new Intent(getApplicationContext(), DownloaderService.class);
-                intent.putExtra(DownloaderService.KEY_IMAGE, photo);
-                startService(intent);
+                startService(DownloaderService.createIntent(getApplicationContext(), photo));
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (photo == null) {
+            menu.findItem(R.id.download).setVisible(false);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
     private final Handler mHideHandler = new Handler() {

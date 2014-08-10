@@ -13,7 +13,5 @@ public interface ImgurListener {
 
     void onLinkTap(TextView textView, String url);
 
-    void onVoteCast(String vote, View view);
-
     void onViewRepliesTap(View view);
 }

@@ -4,4 +4,5 @@
     <color name="black_circle_button_pressed">#50000000</color>
     <color name="black_circle_button_default">#80000000</color>
     <color name="window_bg_color">#eeeeee</color>
+    <color name="divider_color">#bdbdbd</color>
 </resources>

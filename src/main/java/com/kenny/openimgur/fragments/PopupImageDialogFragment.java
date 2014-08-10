@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.ViewPhotoActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
@@ -42,6 +43,8 @@ public class PopupImageDialogFragment extends DialogFragment {
     private MultiStateView mMultiView;
 
     private ImageView mImage;
+
+    private String mImageUrl;
 
     public static PopupImageDialogFragment getInstance(String url, boolean isAnimated, boolean isDirectLink) {
         PopupImageDialogFragment fragment = new PopupImageDialogFragment();
@@ -77,16 +80,24 @@ public class PopupImageDialogFragment extends DialogFragment {
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mImage = (ImageView) mMultiView.findViewById(R.id.image);
         getDialog().setTitle(R.string.photo);
-        final String url = bundle.getString(KEY_URL, null);
+        mImageUrl = bundle.getString(KEY_URL, null);
         final boolean isAnimated = bundle.getBoolean(KEY_ANIMATED, false);
         final boolean isDirectLink = bundle.getBoolean(KEY_DIRECT_LINK, true);
 
         if (isDirectLink) {
-            displayImage(url, isAnimated);
+            displayImage(mImageUrl, isAnimated);
         } else {
-            ApiClient api = new ApiClient(String.format(Endpoints.IMAGE_DETAILS.getUrl(), url), ApiClient.HttpRequest.GET);
+            ApiClient api = new ApiClient(String.format(Endpoints.IMAGE_DETAILS.getUrl(), mImageUrl), ApiClient.HttpRequest.GET);
             api.doWork(ImgurBusEvent.EventType.ITEM_DETAILS, null, null);
         }
+
+        mImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismissAllowingStateLoss();
+                startActivity(ViewPhotoActivity.createIntent(getActivity(), mImageUrl));
+            }
+        });
     }
 
     @Override
@@ -119,12 +130,10 @@ public class PopupImageDialogFragment extends DialogFragment {
                 final ImgurPhoto photo = new ImgurPhoto(event.json.getJSONObject(ApiClient.KEY_DATA));
                 mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photo);
             } else if (event.eventType == ImgurBusEvent.EventType.ITEM_DETAILS && statusCode != ApiClient.STATUS_OK) {
-                String error = getString(R.string.loading_image_error);
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, error);
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(R.string.loading_image_error));
             }
         } catch (JSONException e) {
-            String error = getString(R.string.error_generic);
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, error);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(R.string.error_generic));
         }
     }
 
@@ -173,12 +182,12 @@ public class PopupImageDialogFragment extends DialogFragment {
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
                     ImgurPhoto photo = (ImgurPhoto) msg.obj;
-                    displayImage(photo.getLink(), photo.isAnimated());
+                    mImageUrl = photo.getLink();
+                    displayImage(mImageUrl, photo.isAnimated());
                     break;
 
                 case MESSAGE_ACTION_FAILED:
-                    String errorMessage = (String) msg.obj;
-                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), (String) msg.obj, Toast.LENGTH_SHORT).show();
                     dismissAllowingStateLoss();
                     break;
             }

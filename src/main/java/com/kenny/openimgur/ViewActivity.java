@@ -20,9 +20,11 @@ import android.support.v4.util.LongSparseArray;
 import android.support.v4.view.ViewPager;
 import android.text.InputFilter;
 import android.text.TextUtils;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -96,14 +98,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
     private boolean mIsActionBarShowing = true;
 
-    /**
-     * Creates an intent for Viewing an image/album
-     *
-     * @param context  App context
-     * @param objects  List of objects for viewing
-     * @param position The position to start initially
-     * @return
-     */
+    private ActionMode mActionMode;
+
+    private ImgurComment mSelectedComment;
+
     public static Intent createIntent(Context context, ImgurBaseObject[] objects, int position) {
         Intent intent = new Intent(context, ViewActivity.class);
         intent.putExtra(KEY_POSITION, position);
@@ -196,6 +194,18 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void onPageScrollStateChanged(int state) {
 
+            }
+        });
+
+        mCommentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mActionMode != null) {
+                    mActionMode.finish();
+                }
+
+                mSelectedComment = mCommentAdapter.getItem(i);
+                mActionMode = startActionMode(new ActionBarCallBack());
             }
         });
 
@@ -520,24 +530,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         }
 
         @Override
-        public void onVoteCast(String vote, View view) {
-            if (user == null) {
-                Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
-            } else {
-                int position = mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount();
-                ImgurComment comment = mCommentAdapter.getItem(position);
-
-                String url = String.format(Endpoints.COMMENT_VOTE.getUrl(), comment.getId(), vote);
-                mApiClient.setUrl(url);
-                mApiClient.setRequestType(ApiClient.HttpRequest.GET);
-
-                // The id param is not needed, but okhttp bodies can not be empty :/
-                final RequestBody body = new FormEncodingBuilder().add("id", comment.getId()).build();
-                mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
-            }
-        }
-
-        @Override
         public void onViewRepliesTap(View view) {
             int position = mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount();
             ImgurComment comment = mCommentAdapter.getItem(position);
@@ -595,7 +587,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
                     if (!comments.isEmpty()) {
                         if (mCommentAdapter == null) {
-                            mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, mImgurListener);
+                            mCommentAdapter = new CommentAdapter(ViewActivity.this, comments, mImgurListener);
                             mCommentList.setAdapter(mCommentAdapter);
                         } else {
                             mCommentArray.clear();
@@ -660,5 +652,63 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                 view.setAlpha(0);
             }
         }
+    }
+
+    private class ActionBarCallBack implements ActionMode.Callback {
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.upVote:
+                case R.id.downVote:
+                    if (user != null) {
+                        String vote = item.getItemId() == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
+                        String url = String.format(Endpoints.COMMENT_VOTE.getUrl(), mSelectedComment.getId(), vote);
+                        RequestBody body = new FormEncodingBuilder().add("id", mSelectedComment.getId()).build();
+                        mApiClient.setUrl(url);
+                        mApiClient.setRequestType(ApiClient.HttpRequest.POST);
+                        mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, body);
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
+                    }
+
+                    mode.finish();
+                    return true;
+
+                case R.id.profile:
+                    startActivity(ProfileActivity.createIntent(getApplicationContext(), mSelectedComment.getAuthor()));
+                    mode.finish();
+                    return true;
+
+                case R.id.reply:
+                    if (user != null) {
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
+                    }
+
+                    return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.comment_cab_menu, menu);
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+            mSelectedComment = null;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
     }
 }

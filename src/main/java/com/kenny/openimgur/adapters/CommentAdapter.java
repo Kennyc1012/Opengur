@@ -7,18 +7,14 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 
 import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.classes.CustomLinkMovementMethod;
-import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurListener;
 
@@ -26,6 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommentAdapter extends BaseAdapter {
+    public enum ButtonType {
+        UPVOTE,
+        DOWNVOTE,
+        REPLY,
+        USER;
+    }
 
     private List<ImgurComment> mCurrentComments;
 
@@ -90,34 +92,14 @@ public class CommentAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         CommentViewHolder holder;
+        final ImgurComment comment = getItem(position);
+
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.comment_item, parent, false);
             holder = new CommentViewHolder();
             holder.comment = (RobotoTextView) convertView.findViewById(R.id.comment);
             holder.author = (RobotoTextView) convertView.findViewById(R.id.author);
             holder.replies = (Button) convertView.findViewById(R.id.replies);
-            holder.comment.setMovementMethod(CustomLinkMovementMethod.getInstance(mListener));
-            holder.up = (ImageButton) convertView.findViewById(R.id.upVote);
-            holder.down = (ImageButton) convertView.findViewById(R.id.downVote);
-
-            holder.up.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null) {
-                        mListener.onVoteCast(ImgurBaseObject.VOTE_UP, view);
-                    }
-                }
-            });
-
-            holder.down.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mListener != null) {
-                        mListener.onVoteCast(ImgurBaseObject.VOTE_DOWN, view);
-                    }
-                }
-            });
-
             holder.replies.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -132,10 +114,9 @@ public class CommentAdapter extends BaseAdapter {
             holder = (CommentViewHolder) convertView.getTag();
         }
 
-        ImgurComment comment = getItem(position);
         holder.comment.setText(comment.getComment());
-        Linkify.addLinks(holder.comment, Linkify.WEB_URLS);
         holder.author.setText(constructSpan(comment, holder.author.getContext()));
+
         if (comment.getReplyCount() <= 0) {
             holder.replies.setVisibility(View.GONE);
         } else {
@@ -196,8 +177,6 @@ public class CommentAdapter extends BaseAdapter {
 
     private static class CommentViewHolder {
         RobotoTextView author, comment;
-
-        ImageButton up, down;
 
         Button replies;
     }

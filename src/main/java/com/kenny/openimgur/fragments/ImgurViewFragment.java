@@ -40,8 +40,6 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.RequestBody;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -274,17 +272,6 @@ public class ImgurViewFragment extends Fragment {
 
         @Override
         public void onLinkTap(TextView textView, String url) {
-        }
-
-        @Override
-        public void onVoteCast(final String vote, View view) {
-            if (OpenImgurApp.getInstance().getUser() == null) {
-                Toast.makeText(getActivity(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
-            } else {
-                RequestBody body = new FormEncodingBuilder().add("id", mImgurObject.getId()).build();
-                String url = String.format(Endpoints.GALLERY_VOTE.getUrl(), mImgurObject.getId(), vote);
-                new ApiClient(url, ApiClient.HttpRequest.POST).doWork(ImgurBusEvent.EventType.GALLERY_VOTE, null, body);
-            }
         }
 
         @Override

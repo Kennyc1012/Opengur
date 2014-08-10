@@ -81,6 +81,11 @@
     <string name="comment_hint">Enter Comment</string>
     <string name="comment">Comment</string>
     <string name="post">Post</string>
+    <string name="up_vote">Up Vote</string>
+    <string name="down_vote">Down Vote</string>
+    <string name="reply">Reply</string>
+    <string name="view_user">View User Profile</string>
+
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">
         <item>128</item>

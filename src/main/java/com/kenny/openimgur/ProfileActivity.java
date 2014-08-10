@@ -89,10 +89,14 @@ public class ProfileActivity extends BaseActivity {
 
         if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(KEY_USERNAME)) {
             Log.v(TAG, "User present in Bundle extras");
+            String username = getIntent().getStringExtra(KEY_USERNAME);
+            String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), username);
+            mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
+            mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
         } else if (app.getUser() != null) {
             Log.v(TAG, "User already logged in");
             mSelectedUser = app.getUser();
-            String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), app.getUser().getUsername());
+            String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), mSelectedUser.getUsername());
             mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
             mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
         } else {
@@ -338,6 +342,7 @@ public class ProfileActivity extends BaseActivity {
             url = String.format(mCurrentEndpoint.getUrl(), mSelectedUser.getUsername(), mCurrentPage);
         }
 
+        mApiClient.setUrl(url);
         mApiClient.doWork(ImgurBusEvent.EventType.ACCOUNT_GALLERY_FAVORITES, null, null);
     }
 
@@ -383,6 +388,7 @@ public class ProfileActivity extends BaseActivity {
                         mAdapter.notifyDataSetChanged();
                     }
 
+                    invalidateOptionsMenu();
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                     break;
 

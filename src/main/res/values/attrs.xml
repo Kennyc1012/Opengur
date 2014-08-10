@@ -17,4 +17,9 @@
         <attr name="shadowColor" format="integer" />
     </declare-styleable>
 
+    <declare-styleable name="SwipeableView">
+        <attr name="foregoundView" format="reference" />
+        <attr name="backgroundView" format="reference" />
+    </declare-styleable>
+
 </resources>
