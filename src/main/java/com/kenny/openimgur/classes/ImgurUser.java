@@ -120,6 +120,9 @@ public class ImgurUser implements Parcelable {
                 case RENOWNED:
                     return R.string.notoriety_renowned;
 
+                case GLORIOUS:
+                    return R.string.notoriety_glorious;
+
                 default:
                 case FOREVER_ALONE:
                     return R.string.notoriety_forever_alone;

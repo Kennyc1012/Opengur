@@ -18,6 +18,7 @@ import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
 
 import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.adapters.GalleryAdapter;
@@ -86,6 +87,18 @@ public class ProfileActivity extends BaseActivity {
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mWebView = (WebView) mMultiView.findViewById(R.id.loginWebView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                int headerSize = mGridView.getNumColumns() * mGridView.getHeaderViewCount();
+                int adapterPosition = position - headerSize;
+
+                // Don't respond to the header being clicked
+                if (adapterPosition >= 0) {
+                    startActivity(ViewActivity.createIntent(getApplicationContext(), mAdapter.getItems(), adapterPosition));
+                }
+            }
+        });
 
         if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(KEY_USERNAME)) {
             Log.v(TAG, "User present in Bundle extras");
@@ -100,86 +113,93 @@ public class ProfileActivity extends BaseActivity {
             mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
             mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
         } else {
-            Log.v(TAG, "No user present, going to login view");
-            getActionBar().hide();
-            mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-            mWebView.setPadding(0, ViewUtils.getHeightForTranslucentStyle(getApplicationContext()), 0, 0);
-            mWebView.loadUrl(Endpoints.LOGIN.getUrl());
-            CookieManager.getInstance().setAcceptCookie(false);
-            mWebView.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    if (url.contains("#")) {
-                        // We will extract the info from the callback url
-                        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-                        String[] outerSplit = url.split("\\#")[1].split("\\&");
-                        String username = null;
-                        String accessToken = null;
-                        String refreshToken = null;
-                        long accessTokenExpiration = 0;
-                        int index = 0;
+            configWebView();
+        }
 
-                        for (String s : outerSplit) {
-                            String[] innerSplit = s.split("\\=");
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayShowHomeEnabled(true);
+    }
 
-                            switch (index) {
-                                // Access Token
-                                case 0:
-                                    accessToken = innerSplit[1];
-                                    break;
+    private void configWebView() {
+        Log.v(TAG, "No user present, going to login view");
+        getActionBar().hide();
+        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+        mWebView.setPadding(0, ViewUtils.getHeightForTranslucentStyle(getApplicationContext()), 0, 0);
+        mWebView.loadUrl(Endpoints.LOGIN.getUrl());
+        CookieManager.getInstance().setAcceptCookie(false);
+        mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url.contains("#")) {
+                    // We will extract the info from the callback url
+                    mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                    String[] outerSplit = url.split("\\#")[1].split("\\&");
+                    String username = null;
+                    String accessToken = null;
+                    String refreshToken = null;
+                    long accessTokenExpiration = 0;
+                    int index = 0;
 
-                                // Access Token Expiration
-                                case 1:
-                                    long expiresIn = Long.parseLong(innerSplit[1]);
-                                    accessTokenExpiration = System.currentTimeMillis() + (expiresIn * DateUtils.SECOND_IN_MILLIS);
-                                    break;
+                    for (String s : outerSplit) {
+                        String[] innerSplit = s.split("\\=");
 
-                                // Token Type, not using
-                                case 2:
-                                    //NO OP
-                                    break;
+                        switch (index) {
+                            // Access Token
+                            case 0:
+                                accessToken = innerSplit[1];
+                                break;
 
-                                // Refresh Token
-                                case 3:
-                                    refreshToken = innerSplit[1];
-                                    break;
+                            // Access Token Expiration
+                            case 1:
+                                long expiresIn = Long.parseLong(innerSplit[1]);
+                                accessTokenExpiration = System.currentTimeMillis() + (expiresIn * DateUtils.SECOND_IN_MILLIS);
+                                break;
 
-                                // Username
-                                case 4:
-                                    username = innerSplit[1];
-                                    break;
-                            }
+                            // Token Type, not using
+                            case 2:
+                                //NO OP
+                                break;
 
-                            index++;
+                            // Refresh Token
+                            case 3:
+                                refreshToken = innerSplit[1];
+                                break;
+
+                            // Username
+                            case 4:
+                                username = innerSplit[1];
+                                break;
                         }
 
-                        // Make sure that everything was set
-                        if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(accessToken) &&
-                                !TextUtils.isEmpty(refreshToken) && accessTokenExpiration > 0) {
-                            ImgurUser newUser = new ImgurUser(username, accessToken, refreshToken, accessTokenExpiration);
-                            app.setUser(newUser);
-                            mSelectedUser = newUser;
-                            Log.v(TAG, "User " + newUser.getUsername() + " logged in");
-                            String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), newUser.getUsername());
-                            mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
-                            mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
-                            mWebView.clearHistory();
-                            mWebView.clearCache(true);
-                            mWebView.clearFormData();
-                        } else {
-                            // TODO Error
-                        }
-
-                    } else {
-                        // Didn't get our tokens from the response, they probably denied accessed
-                        Log.w(TAG, "URL didn't contain a '#'. User denied access");
-                        finish();
+                        index++;
                     }
 
-                    return false;
+                    // Make sure that everything was set
+                    if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(accessToken) &&
+                            !TextUtils.isEmpty(refreshToken) && accessTokenExpiration > 0) {
+                        ImgurUser newUser = new ImgurUser(username, accessToken, refreshToken, accessTokenExpiration);
+                        app.setUser(newUser);
+                        mSelectedUser = newUser;
+                        Log.v(TAG, "User " + newUser.getUsername() + " logged in");
+                        String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), newUser.getUsername());
+                        mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
+                        mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
+                        mWebView.clearHistory();
+                        mWebView.clearCache(true);
+                        mWebView.clearFormData();
+                    } else {
+                        // TODO Error
+                    }
+
+                } else {
+                    // Didn't get our tokens from the response, they probably denied accessed
+                    Log.w(TAG, "URL didn't contain a '#'. User denied access");
+                    finish();
                 }
-            });
-        }
+
+                return false;
+            }
+        });
     }
 
     @Override
@@ -352,7 +372,7 @@ public class ProfileActivity extends BaseActivity {
      * @return
      */
     private View getHeaderView() {
-        View header = LayoutInflater.from(getApplicationContext()).inflate(R.layout.profile_header, mGridView, false);
+        View header = LayoutInflater.from(getApplicationContext()).inflate(R.layout.profile_header, mMultiView, false);
         String date = new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(new Date(mSelectedUser.getCreated()));
         String reputationText = mSelectedUser.getReputation() + " " + getString(R.string.profile_rep_date, date);
         RobotoTextView notoriety = (RobotoTextView) header.findViewById(R.id.notoriety);

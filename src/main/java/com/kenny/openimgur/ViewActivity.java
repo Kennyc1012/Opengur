@@ -30,7 +30,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kenny.openimgur.adapters.CommentAdapter;
@@ -189,6 +188,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                 handleComments();
+                invalidateOptionsMenu();
             }
 
             @Override
@@ -200,12 +200,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         mCommentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (mActionMode != null) {
-                    mActionMode.finish();
-                }
-
-                mSelectedComment = mCommentAdapter.getItem(i);
-                mActionMode = startActionMode(new ActionBarCallBack());
+                onListItemClick(i);
             }
         });
 
@@ -256,6 +251,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
      */
 
     private void nextComments(final ImgurComment comment) {
+        mSelectedComment = null;
+        mCommentAdapter.setSelectedIndex(-1);
+        if (mActionMode != null) mActionMode.finish();
+
         mCommentList.animate().translationX(-mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -275,6 +274,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
      * @param comment
      */
     private void previousComments(final ImgurComment comment) {
+        mSelectedComment = null;
+        mCommentAdapter.setSelectedIndex(-1);
+        if (mActionMode != null) mActionMode.finish();
+
         mCommentList.animate().translationX(mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -511,21 +514,25 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         }
 
         @Override
-        public void onLinkTap(TextView textView, String url) {
-            if (url.matches(REGEX_IMAGE_URL)) {
-                PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
-                        .show(getFragmentManager(), "popup");
-            } else if (url.matches(REGEX_IMGUR_IMAGE)) {
-                String[] split = url.split("\\/");
-                PopupImageDialogFragment.getInstance(split[split.length - 1], false, false)
-                        .show(getFragmentManager(), "popup");
-            } else {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                if (browserIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(browserIntent);
+        public void onLinkTap(View view, String url) {
+            if (!TextUtils.isEmpty(url)) {
+                if (url.matches(REGEX_IMAGE_URL)) {
+                    PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
+                            .show(getFragmentManager(), "popup");
+                } else if (url.matches(REGEX_IMGUR_IMAGE)) {
+                    String[] split = url.split("\\/");
+                    PopupImageDialogFragment.getInstance(split[split.length - 1], false, false)
+                            .show(getFragmentManager(), "popup");
                 } else {
-                    Toast.makeText(getApplicationContext(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    if (browserIntent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(browserIntent);
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
+                    }
                 }
+            } else {
+                onListItemClick(mCommentList.getPositionForView(view));
             }
         }
 
@@ -571,11 +578,38 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
                 }
+                return true;
 
+            case R.id.refresh:
+                return true;
+
+            case R.id.profile:
+                startActivity(ProfileActivity.createIntent(getApplicationContext(), mImgurObjects[mCurrentPosition].getAccount()));
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(TextUtils.isEmpty(mImgurObjects[mCurrentPosition].getAccount())){
+            menu.removeItem(R.id.profile);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void onListItemClick(int position) {
+        boolean shouldClose = mCommentAdapter.setSelectedIndex(position);
+
+        if (shouldClose) {
+            mSelectedComment = null;
+            if (mActionMode != null) mActionMode.finish();
+        } else {
+            mSelectedComment = mCommentAdapter.getItem(position);
+            if (mActionMode == null) mActionMode = startActionMode(new ActionBarCallBack());
+        }
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {
@@ -587,7 +621,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
                     if (!comments.isEmpty()) {
                         if (mCommentAdapter == null) {
-                            mCommentAdapter = new CommentAdapter(ViewActivity.this, comments, mImgurListener);
+                            mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, mImgurListener);
                             mCommentList.setAdapter(mCommentAdapter);
                         } else {
                             mCommentArray.clear();
@@ -703,6 +737,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         public void onDestroyActionMode(ActionMode mode) {
             mActionMode = null;
             mSelectedComment = null;
+            mCommentAdapter.setSelectedIndex(-1);
         }
 
         @Override

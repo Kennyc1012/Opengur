@@ -292,11 +292,11 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 int headerSize = mGridView.getNumColumns() * mGridView.getHeaderViewCount();
-                int actualPosition = position - headerSize;
+                int adapterPosition = position - headerSize;
 
                 // Don't respond to the header being clicked
-                if (actualPosition >= 0) {
-                    startActivity(ViewActivity.createIntent(getApplicationContext(), mAdapter.getItems(), actualPosition));
+                if (adapterPosition >= 0) {
+                    startActivity(ViewActivity.createIntent(getApplicationContext(), mAdapter.getItems(), adapterPosition));
                 }
             }
         });
@@ -572,6 +572,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
                 }
 
             } catch (JSONException e) {
+                e.printStackTrace();
                 mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
             }
         }

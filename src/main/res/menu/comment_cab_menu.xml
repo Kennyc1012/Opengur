@@ -17,13 +17,13 @@
     <item
         android:title="@string/reply"
         android:id="@+id/reply"
-        android:icon="@drawable/ic_action_sms"
+        android:icon="@drawable/ic_action_sms_white"
         android:showAsAction="always" />
 
     <item
         android:title="@string/view_user"
         android:id="@+id/profile"
         android:icon="@drawable/ic_action_user"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="always" />
 
 </menu>

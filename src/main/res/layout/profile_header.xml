@@ -37,6 +37,8 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/profile_bio_text_size"
         android:textColor="@android:color/black"
+        android:linksClickable="true"
+        android:autoLink="all"
         app:typeface="roboto_condensed_light"
         tools:text="So this is where the bio will be place
         blah blah blah blah blah blah" />

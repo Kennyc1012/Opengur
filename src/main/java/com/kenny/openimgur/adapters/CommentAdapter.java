@@ -7,6 +7,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.Button;
 
 import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurListener;
 
@@ -36,6 +38,8 @@ public class CommentAdapter extends BaseAdapter {
     private long mCurrentTime;
 
     private ImgurListener mListener;
+
+    private int mSelectedIndex = -1;
 
     public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
         mCurrentComments = comments;
@@ -109,6 +113,7 @@ public class CommentAdapter extends BaseAdapter {
                 }
             });
 
+            holder.comment.setMovementMethod(CustomLinkMovement.getInstance(mListener));
             convertView.setTag(holder);
         } else {
             holder = (CommentViewHolder) convertView.getTag();
@@ -116,6 +121,7 @@ public class CommentAdapter extends BaseAdapter {
 
         holder.comment.setText(comment.getComment());
         holder.author.setText(constructSpan(comment, holder.author.getContext()));
+        Linkify.addLinks(holder.comment, Linkify.WEB_URLS);
 
         if (comment.getReplyCount() <= 0) {
             holder.replies.setVisibility(View.GONE);
@@ -134,7 +140,23 @@ public class CommentAdapter extends BaseAdapter {
             convertView.setBackgroundColor(Color.TRANSPARENT);
         }
 
+        convertView.setBackgroundColor(position == mSelectedIndex ? convertView.getResources().getColor(R.color.comment_bg_selected) : convertView.getResources().getColor(R.color.comment_bg_default));
+
         return convertView;
+    }
+
+    /**
+     * Sets the currently selected item. If the item selected is the one that is already selected, it is deselected
+     *
+     * @param index
+     * @return If the selected item was already selected
+     */
+    public boolean setSelectedIndex(int index) {
+        boolean wasSelected = mSelectedIndex == index;
+        mSelectedIndex = wasSelected ? -1 : index;
+        notifyDataSetChanged();
+
+        return wasSelected;
     }
 
     /**
