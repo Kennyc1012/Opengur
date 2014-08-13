@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 /**
  * Created by kcampagna on 6/21/14.
@@ -17,12 +18,21 @@ public class BaseActivity extends Activity {
 
     public ImgurUser user;
 
+    private boolean mShouldTint = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         app = OpenImgurApp.getInstance();
         user = app.getUser();
+
+        if (mShouldTint) {
+            SystemBarTintManager tintManager = new SystemBarTintManager(this);
+            // enable status bar tint
+            tintManager.setStatusBarTintEnabled(true);
+            tintManager.setTintColor(getResources().getColor(R.color.status_bar_tint));
+        }
     }
 
     @Override
@@ -59,5 +69,14 @@ public class BaseActivity extends Activity {
     protected void onDestroy() {
         Log.v(TAG, "onDestroy");
         super.onDestroy();
+    }
+
+    /**
+     * Sets if the activity should allow for status bar tinting, will only affect devices 4.4+
+     *
+     * @param tint
+     */
+    public void setShouldTint(boolean tint) {
+        mShouldTint = tint;
     }
 }

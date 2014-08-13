@@ -3,15 +3,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/refresh"
-        android:title="@string/refresh"
-        android:icon="@drawable/ic_action_navigation_refresh"
-        android:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/favorite"
         android:title="@string/favorite"
         android:icon="@drawable/ic_action_heart"
+        android:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/refresh"
+        android:title="@string/refresh"
+        android:icon="@drawable/ic_action_navigation_refresh"
         android:showAsAction="ifRoom" />
 
     <item

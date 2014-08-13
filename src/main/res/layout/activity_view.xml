@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    app:panelHeight="@dimen/slide_up_panel_height"
+    app:panelHeight="?android:attr/actionBarSize"
     app:shadowHeight="4dp"
     app:dragView="@+id/topContainer">
 
@@ -25,7 +25,7 @@
             android:id="@+id/topContainer"
             layout="@layout/sliding_tab_buttons"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/slide_up_panel_height" />
+            android:layout_height="?android:attr/actionBarSize" />
 
         <com.kenny.openimgur.ui.MultiStateView
             android:id="@+id/multiView"

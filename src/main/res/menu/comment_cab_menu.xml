@@ -17,7 +17,7 @@
     <item
         android:title="@string/reply"
         android:id="@+id/reply"
-        android:icon="@drawable/ic_action_sms_white"
+        android:icon="@drawable/ic_action_message"
         android:showAsAction="always" />
 
     <item

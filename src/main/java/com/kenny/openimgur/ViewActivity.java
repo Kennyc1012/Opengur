@@ -62,10 +62,6 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  * Created by kcampagna on 7/12/14.
  */
 public class ViewActivity extends BaseActivity implements View.OnClickListener {
-    private static final String REGEX_IMAGE_URL = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://\\S+(.jpg|.jpeg|.gif|.png)$";
-
-    private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+$";
 
     private static final String KEY_POSITION = "position";
 
@@ -171,24 +167,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void onPageSelected(int position) {
                 mCurrentPosition = position;
-                ImgurBaseObject imgurBaseObject = mImgurObjects[mCurrentPosition];
-                String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId());
-
-                if (mApiClient == null) {
-                    mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
-                } else {
-                    mApiClient.setRequestType(ApiClient.HttpRequest.GET);
-                    mApiClient.setUrl(url);
-                }
-
-                if (mCommentAdapter != null) {
-                    mCommentAdapter.clear();
-                    mCommentAdapter.notifyDataSetChanged();
-                }
-
-                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-                handleComments();
-                invalidateOptionsMenu();
+                loadComments();
             }
 
             @Override
@@ -210,6 +189,27 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.commentBtn).setOnClickListener(this);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setDisplayShowHomeEnabled(true);
+    }
+
+    private void loadComments() {
+        ImgurBaseObject imgurBaseObject = mImgurObjects[mCurrentPosition];
+        String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId());
+
+        if (mApiClient == null) {
+            mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
+        } else {
+            mApiClient.setRequestType(ApiClient.HttpRequest.GET);
+            mApiClient.setUrl(url);
+        }
+
+        if (mCommentAdapter != null) {
+            mCommentAdapter.clear();
+            mCommentAdapter.notifyDataSetChanged();
+        }
+
+        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+        handleComments();
+        invalidateOptionsMenu();
     }
 
     private static class BrowsingAdapter extends FragmentStatePagerAdapter {
@@ -314,10 +314,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
         // If we start on the 0 page, the onPageSelected event won't fire
         if (mCurrentPosition == 0) {
-            ImgurBaseObject imgurBaseObject = mImgurObjects[mCurrentPosition];
-            String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId());
-            mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
-            handleComments();
+            loadComments();
         } else {
             mViewPager.setCurrentItem(mCurrentPosition);
         }
@@ -581,6 +578,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                 return true;
 
             case R.id.refresh:
+                loadComments();
                 return true;
 
             case R.id.profile:
@@ -593,7 +591,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(TextUtils.isEmpty(mImgurObjects[mCurrentPosition].getAccount())){
+        if (TextUtils.isEmpty(mImgurObjects[mCurrentPosition].getAccount())) {
             menu.removeItem(R.id.profile);
         }
 

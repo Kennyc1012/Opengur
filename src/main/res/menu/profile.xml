@@ -14,6 +14,12 @@
         android:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/refresh"
+        android:title="@string/refresh"
+        android:icon="@drawable/ic_action_navigation_refresh"
+        android:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/logout"
         android:title="@string/logout"
         android:showAsAction="never" />

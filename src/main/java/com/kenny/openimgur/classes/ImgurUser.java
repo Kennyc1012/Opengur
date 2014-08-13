@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.DBContracts.UserContract;
 
 import org.json.JSONException;
@@ -50,6 +51,8 @@ public class ImgurUser implements Parcelable {
     private long mProExpiration = -1;
 
     private long mReputation;
+
+    private long mLastSeen;
 
     private String mAccessToken;
 
@@ -141,14 +144,23 @@ public class ImgurUser implements Parcelable {
         mAccessTokenExpiration = accessTokenExpiration;
     }
 
-    public ImgurUser(Cursor cursor) {
-        mId = cursor.getInt(UserContract.COLUMN_INDEX_ID);
-        mUsername = cursor.getString(UserContract.COLUMN_INDEX_NAME);
-        mCreated = cursor.getLong(UserContract.COLUMN_INDEX_CREATED);
-        mProExpiration = cursor.getLong(UserContract.COLUMN_INDEX_PRO_EXPIRATION);
-        mAccessToken = cursor.getString(UserContract.COLUMN_INDEX_ACCESS_TOKEN);
-        mRefreshToken = cursor.getString(UserContract.COLUMN_INDEX_REFRESH_TOKEN);
-        mAccessTokenExpiration = cursor.getLong(UserContract.COLUMN_INDEX_ACCESS_TOKEN_EXPIRATION);
+    public ImgurUser(Cursor cursor, boolean isLoggedInUser) {
+        if (isLoggedInUser) {
+            mId = cursor.getInt(UserContract.COLUMN_INDEX_ID);
+            mUsername = cursor.getString(UserContract.COLUMN_INDEX_NAME);
+            mCreated = cursor.getLong(UserContract.COLUMN_INDEX_CREATED);
+            mProExpiration = cursor.getLong(UserContract.COLUMN_INDEX_PRO_EXPIRATION);
+            mAccessToken = cursor.getString(UserContract.COLUMN_INDEX_ACCESS_TOKEN);
+            mRefreshToken = cursor.getString(UserContract.COLUMN_INDEX_REFRESH_TOKEN);
+            mAccessTokenExpiration = cursor.getLong(UserContract.COLUMN_INDEX_ACCESS_TOKEN_EXPIRATION);
+        } else {
+            mId = cursor.getInt(DBContracts.ProfileContract.COLUMN_INDEX_ID);
+            mUsername = cursor.getString(DBContracts.ProfileContract.COLUMN_INDEX_USERNAME);
+            mBio = cursor.getString(DBContracts.ProfileContract.COLUMN_INDEX_BIO);
+            mReputation = cursor.getLong(DBContracts.ProfileContract.COLUMN_INDEX_REP);
+            mLastSeen = cursor.getLong(DBContracts.ProfileContract.COLUMN_INDEX_LAST_SEEN);
+            mNotoriety = Notoriety.getNotoriety(mReputation);
+        }
     }
 
     private ImgurUser(Parcel in) {
@@ -161,6 +173,7 @@ public class ImgurUser implements Parcelable {
         mProExpiration = in.readLong();
         mCreated = in.readLong();
         mReputation = in.readLong();
+        mLastSeen = in.readLong();
         mNotoriety = Notoriety.getNotoriety(mReputation);
     }
 
@@ -201,12 +214,15 @@ public class ImgurUser implements Parcelable {
                         && data.get(KEY_PRO_EXPIRATION) instanceof Long) {
                     mProExpiration = data.getLong(KEY_PRO_EXPIRATION) * 1000L;
                 }
+
+                mLastSeen = System.currentTimeMillis();
                 return true;
             }
 
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
+
         return false;
     }
 
@@ -250,6 +266,10 @@ public class ImgurUser implements Parcelable {
         return mNotoriety;
     }
 
+    public long getLastSeen() {
+        return mLastSeen;
+    }
+
     /**
      * Sets the user's tokens
      *
@@ -279,6 +299,7 @@ public class ImgurUser implements Parcelable {
         parcel.writeLong(mProExpiration);
         parcel.writeLong(mCreated);
         parcel.writeLong(mReputation);
+        parcel.writeLong(mLastSeen);
     }
 
     public static final Parcelable.Creator<ImgurUser> CREATOR = new Parcelable.Creator<ImgurUser>() {

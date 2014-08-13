@@ -85,6 +85,8 @@
     <string name="down_vote">Down Vote</string>
     <string name="reply">Reply</string>
     <string name="view_user">View User Profile</string>
+    <string name="profile_no_submissions">User has no submissions</string>
+    <string name="profile_no_favorites">User has no favorites</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">

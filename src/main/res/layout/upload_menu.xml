@@ -29,7 +29,7 @@
         android:layout_width="@dimen/fab_button_radius_smaller"
         android:layout_height="@dimen/fab_button_radius_smaller"
         android:layout_gravity="center_horizontal|bottom"
-        app:drawable="@drawable/ic_action_link"
+        app:drawable="@drawable/ic_action_web"
         app:shadowColor="@android:color/black"
         app:color="@color/accent_color_blue_200" />
 

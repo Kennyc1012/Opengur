@@ -256,7 +256,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         mErrorMessage = (RobotoTextView) mMultiView.findViewById(R.id.errorMessage);
 
         // Pauses the ImageLoader from loading when the user is flinging the list
-        PauseOnScrollListener scrollListner = new PauseOnScrollListener(OpenImgurApp.getInstance().getImageLoader(), false, true,
+        PauseOnScrollListener scrollListener = new PauseOnScrollListener(OpenImgurApp.getInstance().getImageLoader(), false, true,
                 new AbsListView.OnScrollListener() {
                     @Override
                     public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -287,7 +287,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
                     }
                 }
         );
-        mGridView.setOnScrollListener(scrollListner);
+        mGridView.setOnScrollListener(scrollListener);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {

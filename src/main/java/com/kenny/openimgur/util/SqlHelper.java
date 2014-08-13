@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.util.DBContracts.ProfileContract;
 import com.kenny.openimgur.util.DBContracts.UserContract;
 
 /**
@@ -29,6 +30,7 @@ public class SqlHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(UserContract.CREATE_TABLE_SQL);
+        sqLiteDatabase.execSQL(ProfileContract.CREATE_TABLE_SQL);
     }
 
     @Override
@@ -74,7 +76,7 @@ public class SqlHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             Log.v(TAG, "User present");
-            user = new ImgurUser(cursor);
+            user = new ImgurUser(cursor, true);
         } else {
             Log.v(TAG, "No user present");
         }
@@ -109,6 +111,44 @@ public class SqlHelper extends SQLiteOpenHelper {
     public void onUserLogout() {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(UserContract.TABLE_NAME, null, null);
+        db.close();
+    }
+
+    /**
+     * Returns a user based on the username
+     *
+     * @param username
+     * @return Profile of user, or null if none exists
+     */
+    @Nullable
+    public ImgurUser getUser(String username) {
+        ImgurUser user = null;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(String.format(ProfileContract.SEARCH_USER_SQL, username), null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new ImgurUser(cursor, false);
+            cursor.close();
+        }
+
+        db.close();
+        return user;
+    }
+
+    /**
+     * Inserts a new profile into the database for caching purposes
+     *
+     * @param profile
+     */
+    public void insertProfile(@NonNull ImgurUser profile) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues(5);
+        values.put(ProfileContract._ID, profile.getId());
+        values.put(ProfileContract.COLUMN_USERNAME, profile.getUsername());
+        values.put(ProfileContract.COLUMN_BIO, profile.getBio());
+        values.put(ProfileContract.COLUMN_REP, profile.getReputation());
+        values.put(ProfileContract.COLUMN_LAST_SEEN, profile.getLastSeen());
+        db.insertWithOnConflict(ProfileContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 }

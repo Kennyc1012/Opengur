@@ -23,9 +23,13 @@ public class DBContracts {
         public static final String COLUMN_PRO_EXPIRATION = "pro_expiration";
 
         public static String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
-                " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " + COLUMN_NAME + " TEXT NOT NULL," +
-                COLUMN_ACCESS_TOKEN + " TEXT NOT NULL," + COLUMN_REFRESH_TOKEN + " TEXT NOT NULL," +
-                COLUMN_CREATED + " INTEGER," + COLUMN_ACCESS_TOKEN_EXPIRATION + " INTEGER," + COLUMN_PRO_EXPIRATION + " INTEGER);";
+                " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
+                COLUMN_NAME + " TEXT NOT NULL," +
+                COLUMN_ACCESS_TOKEN + " TEXT NOT NULL," +
+                COLUMN_REFRESH_TOKEN + " TEXT NOT NULL," +
+                COLUMN_CREATED + " INTEGER," +
+                COLUMN_ACCESS_TOKEN_EXPIRATION + " INTEGER," +
+                COLUMN_PRO_EXPIRATION + " INTEGER);";
 
         public static int COLUMN_INDEX_ID = 0;
 
@@ -40,5 +44,37 @@ public class DBContracts {
         public static int COLUMN_INDEX_ACCESS_TOKEN_EXPIRATION = 5;
 
         public static int COLUMN_INDEX_PRO_EXPIRATION = 6;
+    }
+
+    public static class ProfileContract implements BaseColumns {
+        public static final String TABLE_NAME = "profiles";
+
+        public static final String COLUMN_USERNAME = "username";
+
+        public static final String COLUMN_REP = "rep";
+
+        public static final String COLUMN_BIO = "bio";
+
+        public static final String COLUMN_LAST_SEEN = "last_seen";
+
+        public static final int COLUMN_INDEX_ID = 0;
+
+        public static final int COLUMN_INDEX_USERNAME = 1;
+
+        public static final int COLUMN_INDEX_REP = 2;
+
+        public static final int COLUMN_INDEX_BIO = 3;
+
+        public static final int COLUMN_INDEX_LAST_SEEN = 4;
+
+        public static String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
+                " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
+                COLUMN_USERNAME + " TEXT NOT NULL, " +
+                COLUMN_REP + " INTEGER, " +
+                COLUMN_BIO + " TEXT, " +
+                COLUMN_LAST_SEEN + " INTEGER);";
+
+        public static String SEARCH_USER_SQL = "SELECT * FROM " + TABLE_NAME +
+                " WHERE " + COLUMN_USERNAME + " = '%s' LIMIT 0,1";
     }
 }

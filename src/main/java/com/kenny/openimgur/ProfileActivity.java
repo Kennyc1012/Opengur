@@ -1,15 +1,18 @@
 package com.kenny.openimgur;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,21 +21,31 @@ import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
+import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.ViewUtils;
+import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,7 +63,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 7/26/14.
  */
-public class ProfileActivity extends BaseActivity {
+public class ProfileActivity extends BaseActivity implements ImgurListener {
     public static final String KEY_USERNAME = "username";
 
     private MultiStateView mMultiView;
@@ -61,13 +74,21 @@ public class ProfileActivity extends BaseActivity {
 
     private ImgurUser mSelectedUser;
 
-    private int mCurrentPage;
+    private int mCurrentPage = 0;
 
     private Endpoints mCurrentEndpoint = Endpoints.ACCOUNT_GALLERY_FAVORITES;
 
     private GalleryAdapter mAdapter;
 
     private HeaderGridView mGridView;
+
+    private boolean mIsABShowing = true;
+
+    private int mPreviousItem;
+
+    private boolean mIsLoading = false;
+
+    private boolean mHasMore = true;
 
     public static Intent createIntent(Context context, @Nullable String user) {
         Intent intent = new Intent(context, ProfileActivity.class);
@@ -82,9 +103,9 @@ public class ProfileActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActionBar ab = getActionBar();
         setContentView(R.layout.activity_profile);
         mMultiView = (MultiStateView) findViewById(R.id.multiView);
-        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mWebView = (WebView) mMultiView.findViewById(R.id.loginWebView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -100,26 +121,86 @@ public class ProfileActivity extends BaseActivity {
             }
         });
 
+        PauseOnScrollListener scrollListener = new PauseOnScrollListener(OpenImgurApp.getInstance().getImageLoader(), false, true,
+                new AbsListView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                    }
+
+                    @Override
+                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                        // Hide the actionbar when scrolling down, show when scrolling up
+                        if (firstVisibleItem > mPreviousItem && mIsABShowing) {
+                            mIsABShowing = false;
+                            getActionBar().hide();
+                        } else if (firstVisibleItem < mPreviousItem && !mIsABShowing) {
+                            mIsABShowing = true;
+                            getActionBar().show();
+                        }
+
+                        mPreviousItem = firstVisibleItem;
+
+                        // Load more items when hey get to the end of the list
+                        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading && mHasMore) {
+                            mIsLoading = true;
+                            mCurrentPage++;
+                            getGalleryData();
+                        }
+                    }
+                }
+        );
+
+        mGridView.setOnScrollListener(scrollListener);
+
         if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(KEY_USERNAME)) {
             Log.v(TAG, "User present in Bundle extras");
             String username = getIntent().getStringExtra(KEY_USERNAME);
-            String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), username);
-            mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
-            mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
+            mSelectedUser = app.getSql().getUser(username);
+            configUser(username);
         } else if (app.getUser() != null) {
             Log.v(TAG, "User already logged in");
             mSelectedUser = app.getUser();
-            String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), mSelectedUser.getUsername());
-            mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
-            mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
+            configUser(null);
         } else {
             configWebView();
         }
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setDisplayShowHomeEnabled(true);
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setDisplayShowHomeEnabled(true);
     }
 
+    /**
+     * Checks the database if there is cached data for the user and whether data should be loaded if it is old
+     *
+     * @param username
+     */
+    private void configUser(String username) {
+        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+
+        // Load the new user data if we haven't viewed the user within 24 hours
+        if (mSelectedUser == null || System.currentTimeMillis() - mSelectedUser.getLastSeen() >= DateUtils.DAY_IN_MILLIS) {
+            Log.v(TAG, "Selected user is null or data is too old, fetching new data");
+            String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), mSelectedUser == null ? username : mSelectedUser.getUsername());
+
+            if (mApiClient == null) {
+                mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
+            } else {
+                mApiClient.setRequestType(ApiClient.HttpRequest.GET);
+                mApiClient.setUrl(detailsUrls);
+            }
+
+            mIsLoading = true;
+            mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
+        } else {
+            Log.v(TAG, "Selected user present in database and has valid data, fetching gallery");
+            getGalleryData();
+        }
+    }
+
+    /**
+     * Configures the webview to handle a user logging in
+     */
     private void configWebView() {
         Log.v(TAG, "No user present, going to login view");
         getActionBar().hide();
@@ -219,6 +300,7 @@ public class ProfileActivity extends BaseActivity {
         mWebView = null;
         mMultiView = null;
         mHandler.removeCallbacksAndMessages(null);
+
         super.onDestroy();
     }
 
@@ -262,7 +344,15 @@ public class ProfileActivity extends BaseActivity {
                                 invalidateOptionsMenu();
                             }
                         }).show();
-                break;
+
+                return true;
+
+            case R.id.refresh:
+                // Force the app to fetch new data for the user
+                String username = mSelectedUser.getUsername();
+                mSelectedUser = null;
+                configUser(username);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -270,21 +360,23 @@ public class ProfileActivity extends BaseActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem favorites = menu.findItem(R.id.favorites);
-        MenuItem submissions = menu.findItem(R.id.submissions);
 
         if (mSelectedUser == null) {
-            favorites.setVisible(false);
-            submissions.setVisible(false);
+            menu.removeItem(R.id.favorites);
+            menu.removeItem(R.id.submissions);
             menu.removeItem(R.id.logout);
+            menu.removeItem(R.id.refresh);
         } else {
 
             if (!mSelectedUser.isSelf()) {
                 menu.removeItem(R.id.logout);
             }
 
-            favorites.setVisible(mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS);
-            submissions.setVisible(mCurrentEndpoint == Endpoints.ACCOUNT_GALLERY_FAVORITES);
+            if (mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS) {
+                menu.removeItem(R.id.submissions);
+            } else {
+                menu.removeItem(R.id.favorites);
+            }
         }
 
         return super.onPrepareOptionsMenu(menu);
@@ -302,6 +394,8 @@ public class ProfileActivity extends BaseActivity {
                         } else {
                             mSelectedUser.parseJsonForValues(event.json);
                         }
+
+                        app.getSql().insertProfile(mSelectedUser);
 
                         // Update our user application variable if it is the logged in user
                         if (mSelectedUser.isSelf()) {
@@ -335,7 +429,6 @@ public class ProfileActivity extends BaseActivity {
                             }
                         }
 
-
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, objects);
                         break;
                 }
@@ -362,7 +455,14 @@ public class ProfileActivity extends BaseActivity {
             url = String.format(mCurrentEndpoint.getUrl(), mSelectedUser.getUsername(), mCurrentPage);
         }
 
-        mApiClient.setUrl(url);
+        if (mApiClient == null) {
+            mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
+        } else {
+            mApiClient.setRequestType(ApiClient.HttpRequest.GET);
+            mApiClient.setUrl(url);
+        }
+
+        mIsLoading = true;
         mApiClient.doWork(ImgurBusEvent.EventType.ACCOUNT_GALLERY_FAVORITES, null, null);
     }
 
@@ -381,9 +481,13 @@ public class ProfileActivity extends BaseActivity {
                 getResources().getColor(android.R.color.holo_red_light) : getResources().getColor(android.R.color.holo_green_light);
         notoriety.setTextColor(notorietyColor);
         ((RobotoTextView) header.findViewById(R.id.rep)).setText(reputationText);
+        ((RobotoTextView) header.findViewById(R.id.username)).setText(mSelectedUser.getUsername());
 
         if (!TextUtils.isEmpty(mSelectedUser.getBio())) {
-            ((RobotoTextView) header.findViewById(R.id.bio)).setText(mSelectedUser.getBio());
+            RobotoTextView bio = (RobotoTextView) header.findViewById(R.id.bio);
+            bio.setText(mSelectedUser.getBio());
+            bio.setMovementMethod(CustomLinkMovement.getInstance(this));
+            Linkify.addLinks(bio, Linkify.WEB_URLS);
         }
 
         return header;
@@ -392,20 +496,27 @@ public class ProfileActivity extends BaseActivity {
     private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
+            mIsLoading = false;
+
             switch (msg.what) {
                 case ImgurHandler.MESSAGE_ACTION_COMPLETE:
                     List<ImgurBaseObject> objects = (List<ImgurBaseObject>) msg.obj;
+                    mHasMore = !objects.isEmpty();
 
-                    if (mAdapter == null) {
-                        String quality = app.getPreferences().getString(SettingsActivity.THUMBNAIL_QUALITY_KEY,
-                                SettingsActivity.THUMBNAIL_QUALITY_LOW);
-                        mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), objects, quality);
-                        mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getApplicationContext()));
-                        mGridView.addHeaderView(getHeaderView());
-                        mGridView.setAdapter(mAdapter);
-                    } else {
-                        mAdapter.addItems(objects);
-                        mAdapter.notifyDataSetChanged();
+                    if (objects.size() > 0) {
+                        if (mAdapter == null) {
+                            String quality = app.getPreferences().getString(SettingsActivity.THUMBNAIL_QUALITY_KEY,
+                                    SettingsActivity.THUMBNAIL_QUALITY_LOW);
+                            mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), objects, quality);
+                            mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getApplicationContext()));
+                            mGridView.addHeaderView(getHeaderView());
+                            mGridView.setAdapter(mAdapter);
+                        } else {
+                            mAdapter.addItems(objects);
+                            mAdapter.notifyDataSetChanged();
+                        }
+                    } else if (mAdapter == null || mAdapter.isEmpty()) {
+                        // TODO Show empty view
                     }
 
                     invalidateOptionsMenu();
@@ -414,9 +525,47 @@ public class ProfileActivity extends BaseActivity {
 
                 case ImgurHandler.MESSAGE_ACTION_FAILED:
                     break;
-            }
 
-            super.handleMessage(msg);
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
         }
     };
+
+    @Override
+    public void onPhotoTap(ImageView parent) {
+        // NOOP
+    }
+
+    @Override
+    public void onPlayTap(ProgressBar prog, ImageView image, ImageButton play) {
+        // NOOP
+    }
+
+    @Override
+    public void onLinkTap(View view, @Nullable String url) {
+        if (!TextUtils.isEmpty(url)) {
+            if (url.matches(REGEX_IMAGE_URL)) {
+                PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
+                        .show(getFragmentManager(), "popup");
+            } else if (url.matches(REGEX_IMGUR_IMAGE)) {
+                String[] split = url.split("\\/");
+                PopupImageDialogFragment.getInstance(split[split.length - 1], false, false)
+                        .show(getFragmentManager(), "popup");
+            } else {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                if (browserIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(browserIntent);
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onViewRepliesTap(View view) {
+        // NOOP
+    }
 }
