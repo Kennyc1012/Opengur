@@ -9,5 +9,5 @@
     <color name="accent_color_blue_700">#4d69ff</color>
     <color name="comment_bg_default">#ffffff</color>
     <color name="comment_bg_selected">#e5e5e5</color>
-    <color name="status_bar_tint">#455ede</color>
+    <color name="status_bar_tint">#5677fc</color>
 </resources>

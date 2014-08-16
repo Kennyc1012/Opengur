@@ -188,7 +188,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.downVoteBtn).setOnClickListener(this);
         findViewById(R.id.commentBtn).setOnClickListener(this);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setDisplayShowHomeEnabled(true);
     }
 
     private void loadComments() {

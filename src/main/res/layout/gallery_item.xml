@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/gallery_column_height">
 
-    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="@dimen/gallery_column_height"
         android:adjustViewBounds="true"
@@ -21,10 +21,10 @@
         android:textColor="#FFFFFF"
         android:background="#80000000"
         android:textSize="@dimen/gallery_item_text_size"
-        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:gravity="center_vertical"
         tools:text="1020 points" />
 
-</RelativeLayout>
+</FrameLayout>

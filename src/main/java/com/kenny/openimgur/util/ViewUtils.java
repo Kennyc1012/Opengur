@@ -40,12 +40,13 @@ public class ViewUtils {
      * Returns an empty view to occupy the space present in the translucent style
      *
      * @param context
+     * @param additionalHeight Additonal height to be added to the view
      * @return
      */
-    public static View getHeaderViewForTranslucentStyle(Context context) {
+    public static View getHeaderViewForTranslucentStyle(Context context, int additionalHeight) {
         View v = View.inflate(context, R.layout.empty_header, null);
         int height = getHeightForTranslucentStyle(context);
-        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
+        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height + additionalHeight);
         v.setLayoutParams(lp);
         return v;
     }

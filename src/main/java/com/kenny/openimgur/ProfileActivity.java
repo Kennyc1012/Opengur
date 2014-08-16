@@ -508,7 +508,7 @@ public class ProfileActivity extends BaseActivity implements ImgurListener {
                             String quality = app.getPreferences().getString(SettingsActivity.THUMBNAIL_QUALITY_KEY,
                                     SettingsActivity.THUMBNAIL_QUALITY_LOW);
                             mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), objects, quality);
-                            mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getApplicationContext()));
+                            mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getApplicationContext(),0));
                             mGridView.addHeaderView(getHeaderView());
                             mGridView.setAdapter(mAdapter);
                         } else {

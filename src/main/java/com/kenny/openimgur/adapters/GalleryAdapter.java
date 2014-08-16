@@ -26,11 +26,12 @@ import java.util.List;
 public class GalleryAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
 
-    private ImageLoader mImageLoader;
+     private ImageLoader mImageLoader;
 
     private SetUniqueList<ImgurBaseObject> mObjects;
 
     private String mThumbnailQuality;
+
 
     public GalleryAdapter(Context context, ImageLoader imageLoader, List<ImgurBaseObject> objects, String quality) {
         mInflater = LayoutInflater.from(context);
@@ -137,8 +138,8 @@ public class GalleryAdapter extends BaseAdapter {
         }
 
         ImgurBaseObject obj = getItem(position);
-        mImageLoader.cancelDisplayTask(holder.image);
-        String photoUrl = null;
+         mImageLoader.cancelDisplayTask(holder.image);
+        String photoUrl;
 
         // Get the appropriate photo to display
         if (obj instanceof ImgurPhoto) {
@@ -152,7 +153,7 @@ public class GalleryAdapter extends BaseAdapter {
         return convertView;
     }
 
-    static class ViewHolder {
+    private final static class ViewHolder {
         ImageView image;
 
         RobotoTextView tv;

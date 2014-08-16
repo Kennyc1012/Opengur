@@ -87,6 +87,8 @@ public class MultiStateView extends FrameLayout {
 
             a.recycle();
         }
+
+        setViewState(mViewState);
     }
 
     /**

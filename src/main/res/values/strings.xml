@@ -7,9 +7,11 @@
     <string name="action_settings">Settings</string>
     <string name="show_comments">Show Comments</string>
     <string name="hide_comments">Hide Comments</string>
-    <string name="viral">Most Viral</string>
+    <!-- TODO REMOVE -->
     <string name="top_score">Top Scoring</string>
+    <string name="viral">Most Viral</string>
     <string name="user_sub">User Submitted</string>
+    <string name="sub_reddit">Sub Reddit</string>
     <string name="filter">Filter</string>
     <string name="comment_replies">View %d Replies</string>
     <string name="pref_cache_title">Image Cache</string>
@@ -36,7 +38,7 @@
     <string name="error">Error</string>
     <string name="filter_popup_title">Filter By</string>
     <string name="filter_popular">Popularity</string>
-    <string name="filter_time">Newest First</string>
+    <string name="filter_time">Newest</string>
     <string name="error_occurred">An error has occurred</string>
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
     <string name="error_401">This requires you to be logged in. Please login and try again.</string>
@@ -87,6 +89,7 @@
     <string name="view_user">View User Profile</string>
     <string name="profile_no_submissions">User has no submissions</string>
     <string name="profile_no_favorites">User has no favorites</string>
+    <string name="enter_sub_reddit">Enter Sub Reddit</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">

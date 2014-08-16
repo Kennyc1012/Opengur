@@ -1,8 +1,13 @@
 package com.kenny.openimgur;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
@@ -20,10 +25,17 @@ public class BaseActivity extends Activity {
 
     private boolean mShouldTint = true;
 
+    private boolean mIsActionBarShowing = true;
+
+    private boolean mIsLandscape = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        getActionBar().setTitle(null);
+        getActionBar().setIcon(new ColorDrawable(Color.TRANSPARENT));
+        mIsLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
         app = OpenImgurApp.getInstance();
         user = app.getUser();
 
@@ -78,5 +90,39 @@ public class BaseActivity extends Activity {
      */
     public void setShouldTint(boolean tint) {
         mShouldTint = tint;
+    }
+
+    /**
+     * Sets the action bars view
+     *
+     * @param view
+     */
+    public void setActionBarView(View view) {
+        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getActionBar().setCustomView(view);
+    }
+
+    /**
+     * Shows or hides the actionbar
+     *
+     * @param shouldShow If the actionbar should be shown
+     */
+    public void setActionBarVisibility(boolean shouldShow) {
+        if (shouldShow && !mIsActionBarShowing) {
+            mIsActionBarShowing = true;
+            getActionBar().show();
+        } else if (!shouldShow && mIsActionBarShowing) {
+            mIsActionBarShowing = false;
+            getActionBar().hide();
+        }
+    }
+
+    /**
+     * Returns if the current activity is in landscape orientation
+     *
+     * @return
+     */
+    public boolean isLandscape() {
+        return mIsLandscape;
     }
 }

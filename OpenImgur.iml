@@ -98,6 +98,7 @@
     <orderEntry type="library" exported="" name="library-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.0.0-RC2" level="project" />
     <orderEntry type="library" exported="" name="universal-image-loader-1.9.2" level="project" />
+    <orderEntry type="module" module-name="TabBarView" exported="" />
   </component>
 </module>
 

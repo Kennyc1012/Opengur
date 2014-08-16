@@ -3,9 +3,7 @@ package com.kenny.openimgur;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -252,7 +250,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
         mMultiView = (MultiStateView) findViewById(R.id.multiStateView);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mGridView = (HeaderGridView) findViewById(R.id.grid);
-        mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getApplicationContext()));
+        mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getApplicationContext(),0));
         mErrorMessage = (RobotoTextView) mMultiView.findViewById(R.id.errorMessage);
 
         // Pauses the ImageLoader from loading when the user is flinging the list
@@ -344,7 +342,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.filter:
+           /* case R.id.filter:
                 AlertDialog.Builder builder = new AlertDialog.Builder(GalleryActivity.this);
                 builder.setTitle(R.string.filter_popup_title);
                 builder.setItems(GallerySort.getPopupArray(getApplicationContext()), new DialogInterface.OnClickListener() {
@@ -368,7 +366,7 @@ public class GalleryActivity extends BaseActivity implements View.OnClickListene
 
             case R.id.settings:
                 startActivity(SettingsActivity.createIntent(getApplicationContext()));
-                return true;
+                return true;*/
 
             case R.id.refresh:
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);

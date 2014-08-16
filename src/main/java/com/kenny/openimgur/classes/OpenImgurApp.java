@@ -101,7 +101,7 @@ public class OpenImgurApp extends Application {
                 .build();
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                .threadPoolSize(7)
+                .threadPoolSize(5)
                 .denyCacheImageMultipleSizesInMemory()
                 .diskCache(new LruDiscCache(getCacheDir(), new HashCodeFileNameGenerator(), cache))
                 .defaultDisplayImageOptions(options)
