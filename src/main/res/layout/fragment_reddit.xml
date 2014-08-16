@@ -12,6 +12,7 @@
         android:layout_height="match_parent"
         app:contentView="@layout/grid_view"
         app:loadingView="@layout/loading_view"
+        app:emptyView="@layout/reddit_empty"
         app:errorView="@layout/error_view" />
 
     <EditText
@@ -23,6 +24,7 @@
         android:padding="8dp"
         android:background="@drawable/card_bg"
         android:hint="@string/enter_sub_reddit"
-        android:imeOptions="actionSearch" />
+        android:imeOptions="actionSearch"
+        android:inputType="textAutoComplete" />
 
 </FrameLayout>

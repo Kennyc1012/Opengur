@@ -15,6 +15,12 @@
         android:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/reddit"
+        android:title="@string/view_reddit"
+        android:icon="@drawable/ic_action_reddit"
+        android:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/profile"
         android:title="@string/profile"
         android:icon="@drawable/ic_action_user"

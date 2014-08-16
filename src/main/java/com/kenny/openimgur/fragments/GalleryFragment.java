@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -169,8 +170,6 @@ public class GalleryFragment extends Fragment {
 
     private int mQuickReturnAnimationHeight = 0;
 
-    private String mQuality;
-
     private View mQuickReturnView;
 
     private RadioGroup mRadioGroup;
@@ -179,14 +178,12 @@ public class GalleryFragment extends Fragment {
      * Creates an instance of Gallery Fragment
      *
      * @param section The section of the gallery to view
-     * @param quality The quality the thumbnails should be
      * @return
      */
-    public static GalleryFragment createInstance(GallerySection section, String quality) {
+    public static GalleryFragment createInstance(GallerySection section) {
         Bundle args = new Bundle();
         GalleryFragment fragment = new GalleryFragment();
         args.putString(KEY_SECTION, section.getSection());
-        args.putString(KEY_QUALITY, quality);
         fragment.setArguments(args);
         return fragment;
     }
@@ -265,45 +262,7 @@ public class GalleryFragment extends Fragment {
         mErrorMessage = (RobotoTextView) mMultiView.findViewById(R.id.errorMessage);
         mQuickReturnView = view.findViewById(R.id.quickReturnView);
         mRadioGroup = (RadioGroup) mQuickReturnView.findViewById(R.id.filterGroup);
-        // Pauses the ImageLoader from loading when the user is flinging the list
-        PauseOnScrollListener scrollListener = new PauseOnScrollListener(OpenImgurApp.getInstance().getImageLoader(), false, true,
-                new AbsListView.OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-                    }
-
-                    @Override
-                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                        // Hide the actionbar when scrolling down, show when scrolling up
-                        if (firstVisibleItem > mPreviousItem && mListener != null) {
-                            mListener.oHideActionBar(false);
-
-                            if (mIsFilterShowing) {
-                                mIsFilterShowing = false;
-                                mQuickReturnView.animate().translationY(-mQuickReturnAnimationHeight).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
-                            }
-                        } else if (firstVisibleItem < mPreviousItem && mListener != null) {
-                            mListener.oHideActionBar(true);
-
-                            if (!mIsFilterShowing) {
-                                mIsFilterShowing = true;
-                                mQuickReturnView.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
-                            }
-                        }
-
-                        mPreviousItem = firstVisibleItem;
-
-                        // Load more items when hey get to the end of the list
-                        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading) {
-                            mIsLoading = true;
-                            mCurrentPage++;
-                            getGallery();
-                        }
-                    }
-                }
-        );
-        mGridView.setOnScrollListener(scrollListener);
+        mGridView.setOnScrollListener(mScrollListener);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -319,7 +278,6 @@ public class GalleryFragment extends Fragment {
 
         if (getArguments() != null) {
             mSection = GallerySection.getSectionFromString(getArguments().getString(KEY_SECTION, null));
-            mQuality = getArguments().getString(KEY_QUALITY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
         }
 
         mRadioGroup.check(mSort == GallerySort.VIRAL ? R.id.filter_popular : R.id.filter_newest);
@@ -363,11 +321,6 @@ public class GalleryFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
-            /*case R.id.settings:
-                startActivity(SettingsActivity.createIntent(getActivity()));
-                return true;*/
-
             case R.id.refresh:
                 mCurrentPage = 0;
                 mIsLoading = true;
@@ -465,6 +418,44 @@ public class GalleryFragment extends Fragment {
         event.getThrowable().printStackTrace();
     }
 
+    private PauseOnScrollListener mScrollListener = new PauseOnScrollListener(OpenImgurApp.getInstance().getImageLoader(), false, true,
+            new AbsListView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                }
+
+                @Override
+                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                    // Hide the actionbar when scrolling down, show when scrolling up
+                    if (firstVisibleItem > mPreviousItem && mListener != null) {
+                        mListener.oHideActionBar(false);
+
+                        if (mIsFilterShowing) {
+                            mIsFilterShowing = false;
+                            mQuickReturnView.animate().translationY(-mQuickReturnAnimationHeight).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+                        }
+                    } else if (firstVisibleItem < mPreviousItem && mListener != null) {
+                        mListener.oHideActionBar(true);
+
+                        if (!mIsFilterShowing) {
+                            mIsFilterShowing = true;
+                            mQuickReturnView.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+                        }
+                    }
+
+                    mPreviousItem = firstVisibleItem;
+
+                    // Load more items when hey get to the end of the list
+                    if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading) {
+                        mIsLoading = true;
+                        mCurrentPage++;
+                        getGallery();
+                    }
+                }
+            }
+    );
+
     private ImgurHandler mHandler = new ImgurHandler() {
 
         @Override
@@ -474,7 +465,9 @@ public class GalleryFragment extends Fragment {
                     List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
 
                     if (mAdapter == null) {
-                        mAdapter = new GalleryAdapter(getActivity(), OpenImgurApp.getInstance().getImageLoader(), gallery, mQuality);
+                        String quality = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                .getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
+                        mAdapter = new GalleryAdapter(getActivity(), OpenImgurApp.getInstance().getImageLoader(), gallery, quality);
                         int emptySpace = ViewUtils.getHeightForTranslucentStyle(getActivity());
                         View header = ViewUtils.getHeaderViewForTranslucentStyle(getActivity(),
                                 (int) getResources().getDimension(R.dimen.quick_return_filter_height) + (int) getResources().getDimension(R.dimen.quick_return_additional_padding));

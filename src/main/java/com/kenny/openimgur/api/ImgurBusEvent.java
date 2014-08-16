@@ -14,12 +14,12 @@ public class ImgurBusEvent {
         ITEM_DETAILS,
         ALBUM_DETAILS,
         PROFILE_DETAILS,
-        REFRESH_TOKEN,
         ACCOUNT_GALLERY_FAVORITES,
         ACCOUNT_SUBMISSIONS,
         COMMENT_VOTE,
         GALLERY_VOTE,
-        FAVORITE;
+        FAVORITE,
+        GALLERY_ITEM_INFO;
     }
 
     public JSONObject json;

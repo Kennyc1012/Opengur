@@ -191,8 +191,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             switch (position) {
                 case 0:
                 case 1:
-                    String quality = app.getPreferences().getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
-                    return GalleryFragment.createInstance(position == 0 ? GalleryFragment.GallerySection.HOT : GalleryFragment.GallerySection.USER, quality);
+                    return GalleryFragment.createInstance(position == 0 ? GalleryFragment.GallerySection.HOT : GalleryFragment.GallerySection.USER);
 
                 case 2:
                     return RedditFragment.createInstance();

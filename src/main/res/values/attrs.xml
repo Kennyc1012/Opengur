@@ -17,9 +17,12 @@
         <attr name="shadowColor" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="SwipeableView">
-        <attr name="foregoundView" format="reference" />
-        <attr name="backgroundView" format="reference" />
+    <declare-styleable name="FlatButton">
+        <attr name="shadowEnabled" format="boolean" />
+        <attr name="buttonColor" format="color" />
+        <attr name="buttonShadowColor" format="color" />
+        <attr name="buttonShadowHeight" format="dimension" />
+        <attr name="cornerRadius" format="dimension" />
     </declare-styleable>
 
 </resources>

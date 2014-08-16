@@ -24,20 +24,41 @@
             </intent-filter>
         </activity>
 
-        <!--<activity
-            android:name=".GalleryActivity"
-            android:theme="@style/Style_Fully_Translucent">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>-->
-
         <activity
             android:name=".ViewActivity"
             android:theme="@style/Style_Not_Translucent"
-            android:exported="true" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="www.imgur.com"
+                    android:path="/gallery/"
+                    android:scheme="http" />
+                <data
+                    android:host="imgur.com"
+                    android:path="/gallery/"
+                    android:scheme="http" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="www.m.imgur.com"
+                    android:pathPrefix="/gallery/"
+                    android:scheme="http" />
+                <data
+                    android:host="m.imgur.com"
+                    android:pathPrefix="/gallery/"
+                    android:scheme="http" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".ViewPhotoActivity"
@@ -50,7 +71,38 @@
 
         <activity
             android:name=".ProfileActivity"
-            android:theme="@style/Style_Fully_Translucent" />
+            android:theme="@style/Style_Fully_Translucent">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="www.imgur.com"
+                    android:pathPrefix="/user/"
+                    android:scheme="http" />
+                <data
+                    android:host="imgur.com"
+                    android:pathPrefix="/user/"
+                    android:scheme="http" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="www.m.imgur.com"
+                    android:pathPrefix="/user/"
+                    android:scheme="http" />
+                <data
+                    android:host="m.imgur.com"
+                    android:pathPrefix="/user/"
+                    android:scheme="http" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".UploadActivity"

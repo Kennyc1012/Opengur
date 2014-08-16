@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -63,6 +64,8 @@ public class PopupImageDialogFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setBackgroundDrawableResource(R.drawable.dropshadow);
         return inflater.inflate(R.layout.image_popup_fragment, container, false);
     }
 
@@ -79,7 +82,6 @@ public class PopupImageDialogFragment extends DialogFragment {
         mMultiView = (MultiStateView) view.findViewById(R.id.multiView);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mImage = (ImageView) mMultiView.findViewById(R.id.image);
-        getDialog().setTitle(R.string.photo);
         mImageUrl = bundle.getString(KEY_URL, null);
         final boolean isAnimated = bundle.getBoolean(KEY_ANIMATED, false);
         final boolean isDirectLink = bundle.getBoolean(KEY_DIRECT_LINK, true);

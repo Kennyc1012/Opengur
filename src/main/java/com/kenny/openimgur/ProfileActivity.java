@@ -162,6 +162,10 @@ public class ProfileActivity extends BaseActivity implements ImgurListener {
             Log.v(TAG, "User already logged in");
             mSelectedUser = app.getUser();
             configUser(null);
+        } else if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
+            String username = getIntent().getData().getPathSegments().get(1);
+            mSelectedUser = app.getSql().getUser(username);
+            configUser(username);
         } else {
             configWebView();
         }
@@ -501,14 +505,14 @@ public class ProfileActivity extends BaseActivity implements ImgurListener {
             switch (msg.what) {
                 case ImgurHandler.MESSAGE_ACTION_COMPLETE:
                     List<ImgurBaseObject> objects = (List<ImgurBaseObject>) msg.obj;
-                    mHasMore = !objects.isEmpty();
+                    mHasMore = !objects.isEmpty() && mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS;
 
                     if (objects.size() > 0) {
                         if (mAdapter == null) {
                             String quality = app.getPreferences().getString(SettingsActivity.THUMBNAIL_QUALITY_KEY,
                                     SettingsActivity.THUMBNAIL_QUALITY_LOW);
                             mAdapter = new GalleryAdapter(getApplicationContext(), app.getImageLoader(), objects, quality);
-                            mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getApplicationContext(),0));
+                            mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getApplicationContext(), 0));
                             mGridView.addHeaderView(getHeaderView());
                             mGridView.setAdapter(mAdapter);
                         } else {

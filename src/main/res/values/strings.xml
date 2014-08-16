@@ -90,6 +90,9 @@
     <string name="profile_no_submissions">User has no submissions</string>
     <string name="profile_no_favorites">User has no favorites</string>
     <string name="enter_sub_reddit">Enter Sub Reddit</string>
+    <string name="subreddit_desc">Enter a subreddit above to view images</string>
+    <string name="reddit_empty">Did not find any result for %s</string>
+    <string name="view_reddit">View on Reddit</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">

@@ -14,6 +14,9 @@ public enum Endpoints {
     // albumid
     ALBUM("https://api.imgur.com/3/gallery/%s/images"),
 
+    // Album or Image id
+    GALLERY_ITEM_DETAILS("https://api.imgur.com/3/gallery/%s"),
+
     //cover id
     ALBUM_COVER("https://i.imgur.com/%s.jpg"),
 
@@ -46,7 +49,10 @@ public enum Endpoints {
     FAVORITE_ALBUM("https://api.imgur.com/3/album/%s/favorite"),
 
     // Album/Image id
-    COMMENT("https://api.imgur.com/3/gallery/%s/comment");
+    COMMENT("https://api.imgur.com/3/gallery/%s/comment"),
+
+    // Subreddit,sort,page
+    SUBREDDIT("https://api.imgur.com/3/gallery/r/%s/%s/%d");
 
     private final String mUrl;
 

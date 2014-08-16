@@ -39,6 +39,8 @@ public abstract class ImgurBaseObject implements Parcelable {
 
     private static final String KEY_SCORE = "score";
 
+    private static final String KEY_REDDIT_LINK = "reddit_comments";
+
     private int mUpVotes;
 
     private int mDownVotes;
@@ -58,6 +60,8 @@ public abstract class ImgurBaseObject implements Parcelable {
     private String mAccountId;
 
     private String mLink;
+
+    private String mRedditLink;
 
     private long mDate;
 
@@ -123,6 +127,10 @@ public abstract class ImgurBaseObject implements Parcelable {
                 mScore = json.getInt(KEY_SCORE);
             }
 
+            if (json.has(KEY_REDDIT_LINK) && !json.get(KEY_REDDIT_LINK).equals(null)) {
+                mRedditLink = json.getString(KEY_REDDIT_LINK);
+            }
+
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
@@ -176,6 +184,10 @@ public abstract class ImgurBaseObject implements Parcelable {
         return mBandwidth;
     }
 
+    public String getRedditLink() {
+        return mRedditLink;
+    }
+
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(mUpVotes);
         out.writeInt(mDownVotes);
@@ -187,6 +199,8 @@ public abstract class ImgurBaseObject implements Parcelable {
         out.writeString(mAccount);
         out.writeString(mAccountId);
         out.writeString(mLink);
+        out.writeString(mRedditLink);
+
         out.writeLong(mDate);
         out.writeLong(mBandwidth);
     }
@@ -202,6 +216,7 @@ public abstract class ImgurBaseObject implements Parcelable {
         mAccount = in.readString();
         mAccountId = in.readString();
         mLink = in.readString();
+        mRedditLink = in.readString();
         mDate = in.readLong();
         mBandwidth = in.readLong();
     }

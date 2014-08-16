@@ -95,10 +95,16 @@ public class ImgurViewFragment extends Fragment {
             createHeader();
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-        } else {
+        } else if (((ImgurAlbum) mImgurObject).getAlbumPhotos() == null || ((ImgurAlbum) mImgurObject).getAlbumPhotos().isEmpty()) {
             String url = String.format(Endpoints.ALBUM.getUrl(), mImgurObject.getId());
             ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
             api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
+        } else {
+            mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(),
+                    ((OpenImgurApp) getActivity().getApplication()).getImageLoader(), mImgurListener);
+            createHeader();
+            mListView.setAdapter(mPhotoAdapter);
+            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
         }
 
         mListView.setOnScrollListener(new PauseOnScrollListener(OpenImgurApp.getInstance().getImageLoader(), false, true,
