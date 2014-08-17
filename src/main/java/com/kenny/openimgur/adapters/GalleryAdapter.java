@@ -7,12 +7,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.ui.TextViewRoboto;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -24,9 +24,11 @@ import java.util.List;
  * Created by kcampagna on 7/27/14.
  */
 public class GalleryAdapter extends BaseAdapter {
+    public static final int MAX_ITEMS = 100;
+
     private LayoutInflater mInflater;
 
-     private ImageLoader mImageLoader;
+    private ImageLoader mImageLoader;
 
     private SetUniqueList<ImgurBaseObject> mObjects;
 
@@ -93,13 +95,22 @@ public class GalleryAdapter extends BaseAdapter {
     }
 
     /**
-     * Returns the entire list of objects
+     * Returns a list of objects for the viewing activity. This will return a max of 100 items to avoid memory issues.
+     * 50 before and 50 after the currently selected position. If there are not 50 available before or after, it will go to as many as it can
      *
+     * @param position The position of the selected items
      * @return
      */
-    public ImgurBaseObject[] getItems() {
-        ImgurBaseObject[] array = new ImgurBaseObject[mObjects.size()];
-        mObjects.toArray(array);
+    public ImgurBaseObject[] getItems(int position) {
+        List<ImgurBaseObject> objects;
+        if (position - MAX_ITEMS / 2 < 0) {
+            objects = mObjects.subList(0, mObjects.size() > MAX_ITEMS ? position + (MAX_ITEMS / 2) : mObjects.size());
+        } else {
+            objects = mObjects.subList(position - (MAX_ITEMS / 2), position + (MAX_ITEMS / 2) <= mObjects.size() ? position + (MAX_ITEMS / 2) : mObjects.size());
+        }
+
+        ImgurBaseObject[] array = new ImgurBaseObject[objects.size()];
+        objects.toArray(array);
         return array;
     }
 
@@ -131,14 +142,14 @@ public class GalleryAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.gallery_item, parent, false);
             holder = new ViewHolder();
             holder.image = (ImageView) convertView.findViewById(R.id.image);
-            holder.tv = (RobotoTextView) convertView.findViewById(R.id.score);
+            holder.tv = (TextViewRoboto) convertView.findViewById(R.id.score);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
         ImgurBaseObject obj = getItem(position);
-         mImageLoader.cancelDisplayTask(holder.image);
+        mImageLoader.cancelDisplayTask(holder.image);
         String photoUrl;
 
         // Get the appropriate photo to display
@@ -156,6 +167,6 @@ public class GalleryAdapter extends BaseAdapter {
     private final static class ViewHolder {
         ImageView image;
 
-        RobotoTextView tv;
+        TextViewRoboto tv;
     }
 }

@@ -7,17 +7,17 @@
     android:padding="16dp"
     android:descendantFocusability="blocksDescendants">
 
-    <com.devspark.robototextview.widget.RobotoTextView
+    <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/author"
-        app:typeface="roboto_condensed_light"
+        app:robotoFont="light"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
         android:layout_marginBottom="8dp" />
 
-    <com.devspark.robototextview.widget.RobotoTextView
+    <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/comment"
-        app:typeface="roboto_condensed_regular"
+        app:robotoFont="regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"

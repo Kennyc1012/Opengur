@@ -5,4 +5,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:loadingView="@layout/loading_view"
-    app:contentView="@layout/popup_image" />
+    app:contentView="@layout/popup_image"
+    android:padding="4dp"/>

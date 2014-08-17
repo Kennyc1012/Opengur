@@ -94,7 +94,6 @@
     <orderEntry type="library" exported="" name="support-v13-18.0.0" level="project" />
     <orderEntry type="library" exported="" name="collections-generic-4.01" level="project" />
     <orderEntry type="library" exported="" name="eventbus-2.2.1" level="project" />
-    <orderEntry type="library" exported="" name="robototextview-2.0.1" level="project" />
     <orderEntry type="library" exported="" name="library-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.0.0-RC2" level="project" />
     <orderEntry type="library" exported="" name="universal-image-loader-1.9.2" level="project" />

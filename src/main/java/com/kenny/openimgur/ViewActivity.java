@@ -101,6 +101,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
     private String mGalleryId = null;
 
+    private View mCommentListHeader;
+
     public static Intent createIntent(Context context, ImgurBaseObject[] objects, int position) {
         Intent intent = new Intent(context, ViewActivity.class);
         intent.putExtra(KEY_POSITION, position);
@@ -114,6 +116,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         setContentView(R.layout.activity_view);
         mMultiView = (MultiStateView) findViewById(R.id.multiView);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+        mCommentListHeader = View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
         mCommentList = (ListView) mMultiView.findViewById(R.id.commentList);
         mPanelButton = (ImageButton) findViewById(R.id.panelUpBtn);
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -170,8 +173,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
         mCommentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                onListItemClick(i);
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                onListItemClick(position - mCommentList.getHeaderViewsCount());
             }
         });
 
@@ -268,6 +271,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                 mCommentArray.put(Long.valueOf(comment.getId()), new ArrayList<ImgurComment>(mCommentAdapter.getItems()));
                 mPreviousCommentPositionArray.put(Long.valueOf(comment.getId()), mCommentList.getFirstVisiblePosition());
                 mCommentAdapter.clear();
+
+                if (mCommentList.getHeaderViewsCount() <= 0) {
+                    mCommentList.addHeaderView(mCommentListHeader);
+                }
+
                 mCommentAdapter.addComments(comment.getReplies());
                 mCommentAdapter.notifyDataSetChanged();
                 ObjectAnimator.ofFloat(mCommentList, "translationX", mCommentList.getWidth(), 0).setDuration(250).start();
@@ -288,6 +296,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         mCommentList.animate().translationX(mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                if (mPreviousCommentPositionArray.size() <= 1) {
+                    mCommentList.removeHeaderView(mCommentListHeader);
+                }
+
                 mCommentAdapter.clear();
                 mCommentAdapter.addComments(mCommentArray.get(comment.getParentId()));
                 mCommentArray.remove(comment.getParentId());
@@ -670,14 +682,19 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void onListItemClick(int position) {
-        boolean shouldClose = mCommentAdapter.setSelectedIndex(position);
+        if (position >= 0) {
+            boolean shouldClose = mCommentAdapter.setSelectedIndex(position);
 
-        if (shouldClose) {
-            mSelectedComment = null;
-            if (mActionMode != null) mActionMode.finish();
+            if (shouldClose) {
+                mSelectedComment = null;
+                if (mActionMode != null) mActionMode.finish();
+            } else {
+                mSelectedComment = mCommentAdapter.getItem(position);
+                if (mActionMode == null) mActionMode = startActionMode(new ActionBarCallBack());
+            }
         } else {
-            mSelectedComment = mCommentAdapter.getItem(position);
-            if (mActionMode == null) mActionMode = startActionMode(new ActionBarCallBack());
+            // Header view
+            previousComments(mCommentAdapter.getItem(0));
         }
     }
 
@@ -691,17 +708,26 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                     if (!comments.isEmpty()) {
                         if (mCommentAdapter == null) {
                             mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, mImgurListener);
+                            // Add and remove the header view for pre 4.4 header support
+                            mCommentList.addHeaderView(mCommentListHeader);
+                            mCommentList.removeHeaderView(mCommentListHeader);
                             mCommentList.setAdapter(mCommentAdapter);
                         } else {
                             mCommentArray.clear();
                             mPreviousCommentPositionArray.clear();
+                            mCommentList.removeHeaderView(mCommentListHeader);
                             mCommentAdapter.addComments(comments);
                             mCommentAdapter.notifyDataSetChanged();
                         }
 
-                        if (mMultiView.getViewState() != MultiStateView.ViewState.CONTENT) {
-                            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                        }
+                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+
+                        mMultiView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mCommentList.setSelection(0);
+                            }
+                        });
                     } else {
                         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
                     }

@@ -10,10 +10,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.ui.TextViewRoboto;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
@@ -85,8 +85,8 @@ public class PhotoAdapter extends BaseAdapter {
             holder.play = (ImageButton) convertView.findViewById(R.id.play);
             holder.image = (ImageView) convertView.findViewById(R.id.image);
             holder.prog = (ProgressBar) convertView.findViewById(R.id.progressBar);
-            holder.desc = (RobotoTextView) convertView.findViewById(R.id.desc);
-            holder.title = (RobotoTextView) convertView.findViewById(R.id.title);
+            holder.desc = (TextViewRoboto) convertView.findViewById(R.id.desc);
+            holder.title = (TextViewRoboto) convertView.findViewById(R.id.title);
 
             holder.image.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -158,7 +158,7 @@ public class PhotoAdapter extends BaseAdapter {
 
         ProgressBar prog;
 
-        RobotoTextView desc, title;
+        TextViewRoboto desc, title;
     }
 
 }

@@ -25,10 +25,10 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -44,6 +44,7 @@ import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -90,6 +91,8 @@ public class ProfileActivity extends BaseActivity implements ImgurListener {
 
     private boolean mHasMore = true;
 
+    private boolean mDidAddProfileToErrorView = false;
+
     public static Intent createIntent(Context context, @Nullable String user) {
         Intent intent = new Intent(context, ProfileActivity.class);
 
@@ -113,10 +116,18 @@ public class ProfileActivity extends BaseActivity implements ImgurListener {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 int headerSize = mGridView.getNumColumns() * mGridView.getHeaderViewCount();
                 int adapterPosition = position - headerSize;
-
                 // Don't respond to the header being clicked
                 if (adapterPosition >= 0) {
-                    startActivity(ViewActivity.createIntent(getApplicationContext(), mAdapter.getItems(), adapterPosition));
+                    ImgurBaseObject[] items = mAdapter.getItems(adapterPosition);
+                    int itemPosition = adapterPosition;
+
+                    // Get the correct array index of the selected item
+                    if (itemPosition > GalleryAdapter.MAX_ITEMS / 2) {
+                        itemPosition = items.length == GalleryAdapter.MAX_ITEMS ? GalleryAdapter.MAX_ITEMS / 2 :
+                                items.length - (mAdapter.getCount() - itemPosition);
+                    }
+
+                    startActivity(ViewActivity.createIntent(getApplicationContext(), items, itemPosition));
                 }
             }
         });
@@ -133,10 +144,10 @@ public class ProfileActivity extends BaseActivity implements ImgurListener {
                         // Hide the actionbar when scrolling down, show when scrolling up
                         if (firstVisibleItem > mPreviousItem && mIsABShowing) {
                             mIsABShowing = false;
-                            getActionBar().hide();
+                            // getActionBar().hide();
                         } else if (firstVisibleItem < mPreviousItem && !mIsABShowing) {
                             mIsABShowing = true;
-                            getActionBar().show();
+                            // getActionBar().show();
                         }
 
                         mPreviousItem = firstVisibleItem;
@@ -181,7 +192,6 @@ public class ProfileActivity extends BaseActivity implements ImgurListener {
      */
     private void configUser(String username) {
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-
         // Load the new user data if we haven't viewed the user within 24 hours
         if (mSelectedUser == null || System.currentTimeMillis() - mSelectedUser.getLastSeen() >= DateUtils.DAY_IN_MILLIS) {
             Log.v(TAG, "Selected user is null or data is too old, fetching new data");
@@ -479,16 +489,16 @@ public class ProfileActivity extends BaseActivity implements ImgurListener {
         View header = LayoutInflater.from(getApplicationContext()).inflate(R.layout.profile_header, mMultiView, false);
         String date = new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(new Date(mSelectedUser.getCreated()));
         String reputationText = mSelectedUser.getReputation() + " " + getString(R.string.profile_rep_date, date);
-        RobotoTextView notoriety = (RobotoTextView) header.findViewById(R.id.notoriety);
+        TextViewRoboto notoriety = (TextViewRoboto) header.findViewById(R.id.notoriety);
         notoriety.setText(mSelectedUser.getNotoriety().getStringId());
         int notorietyColor = mSelectedUser.getNotoriety() == ImgurUser.Notoriety.FOREVER_ALONE ?
                 getResources().getColor(android.R.color.holo_red_light) : getResources().getColor(android.R.color.holo_green_light);
         notoriety.setTextColor(notorietyColor);
-        ((RobotoTextView) header.findViewById(R.id.rep)).setText(reputationText);
-        ((RobotoTextView) header.findViewById(R.id.username)).setText(mSelectedUser.getUsername());
+        ((TextViewRoboto) header.findViewById(R.id.rep)).setText(reputationText);
+        ((TextViewRoboto) header.findViewById(R.id.username)).setText(mSelectedUser.getUsername());
 
         if (!TextUtils.isEmpty(mSelectedUser.getBio())) {
-            RobotoTextView bio = (RobotoTextView) header.findViewById(R.id.bio);
+            TextViewRoboto bio = (TextViewRoboto) header.findViewById(R.id.bio);
             bio.setText(mSelectedUser.getBio());
             bio.setMovementMethod(CustomLinkMovement.getInstance(this));
             Linkify.addLinks(bio, Linkify.WEB_URLS);
@@ -520,11 +530,30 @@ public class ProfileActivity extends BaseActivity implements ImgurListener {
                             mAdapter.notifyDataSetChanged();
                         }
                     } else if (mAdapter == null || mAdapter.isEmpty()) {
-                        // TODO Show empty view
+                        if (!mDidAddProfileToErrorView) {
+                            mDidAddProfileToErrorView = true;
+                            LinearLayout container = (LinearLayout) mMultiView.getErrorView().findViewById(R.id.container);
+                            container.addView(getHeaderView(), 0);
+                            container.addView(ViewUtils.getHeaderViewForTranslucentStyle(getApplicationContext(), 0), 0);
+                        }
+
+                        String errorMessage = mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS ?
+                                getString(R.string.profile_no_submissions, mSelectedUser.getUsername()) :
+                                getString(R.string.profile_no_favorites, mSelectedUser.getUsername());
+
+                        mMultiView.setErrorText(R.id.errorMessage, errorMessage);
                     }
 
                     invalidateOptionsMenu();
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiView.setViewState(mAdapter == null || mAdapter.isEmpty() ? MultiStateView.ViewState.ERROR : MultiStateView.ViewState.CONTENT);
+                    if (mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS && mCurrentPage == 0) {
+                        mMultiView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mGridView.setSelection(0);
+                            }
+                        });
+                    }
                     break;
 
                 case ImgurHandler.MESSAGE_ACTION_FAILED:

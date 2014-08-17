@@ -243,6 +243,23 @@ public class MultiStateView extends FrameLayout {
     }
 
     /**
+     * Sets the text for the Error View
+     *
+     * @param textViewId   TextView id in the ErrorView
+     * @param errorMessage String  of the error message
+     */
+    public void setErrorText(@IdRes int textViewId, String errorMessage) {
+        if (mErrorView == null) {
+            throw new IllegalStateException("Error view is null");
+        }
+
+        TextView errorTextView = (TextView) mErrorView.findViewById(textViewId);
+        if (errorTextView != null) {
+            errorTextView.setText(errorMessage);
+        }
+    }
+
+    /**
      * Sets the text for the Empty View
      *
      * @param textViewId   TextView id in the Empty View
@@ -276,6 +293,9 @@ public class MultiStateView extends FrameLayout {
         }
     }
 
+    public View getErrorView() {
+        return mErrorView;
+    }
 
     /**
      * Gets the current view state

@@ -180,7 +180,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private class TabPageAdapter extends FragmentStatePagerAdapter implements TabBarView.IconTabProvider {
 
-        private final int[] mTabIcons = {R.drawable.ic_action_line_chart, R.drawable.ic_action_usersgroup, R.drawable.ic_action_reddit, R.drawable.ic_action_user};
+        private final int[] mTabIcons = {R.drawable.ic_action_gallery, R.drawable.ic_action_reddit, R.drawable.ic_action_user};
 
         public TabPageAdapter(FragmentManager fm) {
             super(fm);
@@ -190,13 +190,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                case 1:
-                    return GalleryFragment.createInstance(position == 0 ? GalleryFragment.GallerySection.HOT : GalleryFragment.GallerySection.USER);
+                    return GalleryFragment.createInstance();
 
-                case 2:
+                case 1:
                     return RedditFragment.createInstance();
 
-                case 3:
+                case 2:
                     return RedditFragment.createInstance();
 
                 default:
@@ -219,12 +218,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.viral).toUpperCase(l);
+                    return getString(R.string.gallery).toUpperCase(l);
                 case 1:
-                    return getString(R.string.user_sub).toUpperCase(l);
-                case 2:
                     return getString(R.string.sub_reddit).toUpperCase(l);
-                case 3:
+                case 2:
                     return getString(R.string.profile);
                 default:
                     throw new IndexOutOfBoundsException();

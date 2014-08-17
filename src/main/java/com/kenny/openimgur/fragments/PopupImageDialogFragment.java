@@ -23,7 +23,6 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.ImageUtil;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
@@ -65,7 +64,6 @@ public class PopupImageDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        getDialog().getWindow().setBackgroundDrawableResource(R.drawable.dropshadow);
         return inflater.inflate(R.layout.image_popup_fragment, container, false);
     }
 
@@ -146,8 +144,7 @@ public class PopupImageDialogFragment extends DialogFragment {
      * @param isAnimated
      */
     public void displayImage(String url, final boolean isAnimated) {
-        final ImageLoader loader = OpenImgurApp.getInstance().getImageLoader();
-        loader.displayImage(url, mImage, new ImageLoadingListener() {
+        OpenImgurApp.getInstance().getImageLoader().displayImage(url, mImage, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String s, View view) {
 

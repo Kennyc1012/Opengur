@@ -3,6 +3,7 @@ package com.kenny.openimgur.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -14,13 +15,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.RadioGroup;
 
-import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.ViewActivity;
@@ -34,8 +31,10 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.classes.TabActivityListener;
+import com.kenny.openimgur.ui.FilterDialogFragment;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -52,14 +51,15 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class GalleryFragment extends Fragment {
+public class GalleryFragment extends Fragment implements FilterDialogFragment.FilterListener {
     private static final String KEY_SECTION = "section";
 
     private static final String KEY_QUALITY = "quality";
 
     public enum GallerySection {
         HOT("hot"),
-        USER("user");
+        USER("user"),
+        TOP("top");
 
         private final String mSection;
 
@@ -154,7 +154,7 @@ public class GalleryFragment extends Fragment {
 
     private HeaderGridView mGridView;
 
-    private RobotoTextView mErrorMessage;
+    private TextViewRoboto mErrorMessage;
 
     private GalleryAdapter mAdapter;
 
@@ -164,28 +164,10 @@ public class GalleryFragment extends Fragment {
 
     private boolean mIsLoading = false;
 
-    private boolean mIsFilterShowing = true;
-
     private int mPreviousItem = 0;
 
-    private int mQuickReturnAnimationHeight = 0;
-
-    private View mQuickReturnView;
-
-    private RadioGroup mRadioGroup;
-
-    /**
-     * Creates an instance of Gallery Fragment
-     *
-     * @param section The section of the gallery to view
-     * @return
-     */
-    public static GalleryFragment createInstance(GallerySection section) {
-        Bundle args = new Bundle();
-        GalleryFragment fragment = new GalleryFragment();
-        args.putString(KEY_SECTION, section.getSection());
-        fragment.setArguments(args);
-        return fragment;
+    public static GalleryFragment createInstance() {
+        return new GalleryFragment();
     }
 
     @Override
@@ -207,6 +189,9 @@ public class GalleryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mSort = GallerySort.getSortFromString(pref.getString("sort", null));
+        mSection = GallerySection.getSectionFromString(pref.getString("section", null));
     }
 
     @Override
@@ -237,7 +222,6 @@ public class GalleryFragment extends Fragment {
         mMultiView = null;
         mErrorMessage = null;
         mGridView = null;
-        mQuickReturnView = null;
         mHandler.removeCallbacksAndMessages(null);
 
         if (mAdapter != null) {
@@ -245,6 +229,9 @@ public class GalleryFragment extends Fragment {
             mAdapter = null;
         }
 
+        SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
+        edit.putString("section", mSection.getSection());
+        edit.putString("sort", mSort.getSort()).apply();
         super.onDestroyView();
     }
 
@@ -259,9 +246,7 @@ public class GalleryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
-        mErrorMessage = (RobotoTextView) mMultiView.findViewById(R.id.errorMessage);
-        mQuickReturnView = view.findViewById(R.id.quickReturnView);
-        mRadioGroup = (RadioGroup) mQuickReturnView.findViewById(R.id.filterGroup);
+        mErrorMessage = (TextViewRoboto) mMultiView.findViewById(R.id.errorMessage);
         mGridView.setOnScrollListener(mScrollListener);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -271,7 +256,16 @@ public class GalleryFragment extends Fragment {
                 // Don't respond to the header being clicked
 
                 if (adapterPosition >= 0) {
-                    startActivity(ViewActivity.createIntent(getActivity(), mAdapter.getItems(), adapterPosition));
+                    ImgurBaseObject[] items = mAdapter.getItems(adapterPosition);
+                    int itemPosition = adapterPosition;
+
+                    // Get the correct array index of the selected item
+                    if (itemPosition > GalleryAdapter.MAX_ITEMS / 2) {
+                        itemPosition = items.length == GalleryAdapter.MAX_ITEMS ? GalleryAdapter.MAX_ITEMS / 2 :
+                                items.length - (mAdapter.getCount() - itemPosition);
+                    }
+
+                    startActivity(ViewActivity.createIntent(getActivity(), items, itemPosition));
                 }
             }
         });
@@ -279,37 +273,6 @@ public class GalleryFragment extends Fragment {
         if (getArguments() != null) {
             mSection = GallerySection.getSectionFromString(getArguments().getString(KEY_SECTION, null));
         }
-
-        mRadioGroup.check(mSort == GallerySort.VIRAL ? R.id.filter_popular : R.id.filter_newest);
-        mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch (i) {
-                    case R.id.filter_newest:
-                        mSort = GallerySort.TIME;
-                        break;
-
-                    case R.id.filter_popular:
-                        mSort = GallerySort.VIRAL;
-                        break;
-                }
-
-                if (mAdapter != null) {
-                    mAdapter.clear();
-                    mAdapter.notifyDataSetChanged();
-                }
-
-                if (mListener != null) {
-                    mListener.onLoadingStarted();
-                }
-
-                mCurrentPage = 0;
-                mIsLoading = true;
-                mQuickReturnView.setVisibility(View.GONE);
-                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-                getGallery();
-            }
-        });
     }
 
     @Override
@@ -336,6 +299,12 @@ public class GalleryFragment extends Fragment {
 
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                 getGallery();
+                return true;
+
+            case R.id.filter:
+                FilterDialogFragment filter = FilterDialogFragment.createInstance(mSort, mSection);
+                filter.setFilterListner(this);
+                filter.show(getFragmentManager(), "filter");
                 return true;
         }
 
@@ -418,6 +387,21 @@ public class GalleryFragment extends Fragment {
         event.getThrowable().printStackTrace();
     }
 
+    @Override
+    public void onFilterChange(GallerySection section, GallerySort sort) {
+        if (mAdapter != null) {
+            mAdapter.clear();
+            mAdapter.notifyDataSetChanged();
+        }
+
+        mSection = section;
+        mSort = sort;
+        mCurrentPage = 0;
+        mIsLoading = true;
+        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+        getGallery();
+    }
+
     private PauseOnScrollListener mScrollListener = new PauseOnScrollListener(OpenImgurApp.getInstance().getImageLoader(), false, true,
             new AbsListView.OnScrollListener() {
                 @Override
@@ -430,18 +414,8 @@ public class GalleryFragment extends Fragment {
                     // Hide the actionbar when scrolling down, show when scrolling up
                     if (firstVisibleItem > mPreviousItem && mListener != null) {
                         mListener.oHideActionBar(false);
-
-                        if (mIsFilterShowing) {
-                            mIsFilterShowing = false;
-                            mQuickReturnView.animate().translationY(-mQuickReturnAnimationHeight).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
-                        }
                     } else if (firstVisibleItem < mPreviousItem && mListener != null) {
                         mListener.oHideActionBar(true);
-
-                        if (!mIsFilterShowing) {
-                            mIsFilterShowing = true;
-                            mQuickReturnView.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
-                        }
                     }
 
                     mPreviousItem = firstVisibleItem;
@@ -468,14 +442,7 @@ public class GalleryFragment extends Fragment {
                         String quality = PreferenceManager.getDefaultSharedPreferences(getActivity())
                                 .getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
                         mAdapter = new GalleryAdapter(getActivity(), OpenImgurApp.getInstance().getImageLoader(), gallery, quality);
-                        int emptySpace = ViewUtils.getHeightForTranslucentStyle(getActivity());
-                        View header = ViewUtils.getHeaderViewForTranslucentStyle(getActivity(),
-                                (int) getResources().getDimension(R.dimen.quick_return_filter_height) + (int) getResources().getDimension(R.dimen.quick_return_additional_padding));
-                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mQuickReturnView.getLayoutParams();
-                        mQuickReturnAnimationHeight = (int) getResources().getDimension(R.dimen.quick_return_additional_padding) + emptySpace;
-                        lp.setMargins(lp.leftMargin, mQuickReturnAnimationHeight, lp.rightMargin, lp.bottomMargin);
-                        mQuickReturnAnimationHeight += (int) getResources().getDimension(R.dimen.quick_return_filter_height);
-                        mGridView.addHeaderView(header);
+                        mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                         mGridView.setAdapter(mAdapter);
                     } else {
                         mAdapter.addItems(gallery);
@@ -486,8 +453,19 @@ public class GalleryFragment extends Fragment {
                         mListener.onLoadingComplete();
                     }
 
-                    mQuickReturnView.setVisibility(View.VISIBLE);
+
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+
+                    // Due to MultiStateView setting the views visibility to GONE, the list will not reset to the top
+                    // If they change the filter or refresh
+                    if (mCurrentPage == 0) {
+                        mMultiView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mGridView.setSelection(0);
+                            }
+                        });
+                    }
                     break;
 
                 case MESSAGE_ACTION_FAILED:

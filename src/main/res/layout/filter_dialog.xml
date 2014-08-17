@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.kenny.openimgur.ui.TextViewRoboto
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section"
+            android:textSize="18sp"
+            app:robotoFont="bold" />
+
+        <RadioGroup
+            android:id="@+id/sectionRG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <RadioButton
+                android:id="@+id/viral"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/filter_radio_button"
+                android:textColor="@android:color/white"
+                android:text="@string/viral"
+                android:gravity="center"
+                android:button="@android:color/transparent" />
+
+            <RadioButton
+                android:id="@+id/top"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/filter_radio_button"
+                android:textColor="@android:color/white"
+                android:text="@string/top_score"
+                android:gravity="center"
+                android:button="@android:color/transparent" />
+
+            <RadioButton
+                android:id="@+id/user"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/filter_radio_button"
+                android:textColor="@android:color/white"
+                android:text="@string/user_sub"
+                android:gravity="center"
+                android:button="@android:color/transparent" />
+
+        </RadioGroup>
+
+        <com.kenny.openimgur.ui.TextViewRoboto
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/filter"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            app:robotoFont="bold" />
+
+        <RadioGroup
+            android:id="@+id/filterRG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <RadioButton
+                android:id="@+id/popular"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/filter_radio_button"
+                android:textColor="@android:color/white"
+                android:text="@string/filter_popular"
+                android:gravity="center"
+                android:button="@android:color/transparent" />
+
+            <RadioButton
+                android:id="@+id/time"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/filter_radio_button"
+                android:textColor="@android:color/white"
+                android:text="@string/filter_time"
+                android:gravity="center"
+                android:button="@android:color/transparent" />
+
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:textColor="#000000"
+                android:text="@string/cancel"
+                style="@style/action_button" />
+
+            <Button
+                android:id="@+id/accept"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:textColor="@color/accent_color_blue_700"
+                android:text="@string/accept"
+                style="@style/action_button" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

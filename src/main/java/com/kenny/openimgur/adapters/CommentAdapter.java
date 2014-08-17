@@ -14,11 +14,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 
-import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurListener;
+import com.kenny.openimgur.ui.TextViewRoboto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,8 +101,8 @@ public class CommentAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.comment_item, parent, false);
             holder = new CommentViewHolder();
-            holder.comment = (RobotoTextView) convertView.findViewById(R.id.comment);
-            holder.author = (RobotoTextView) convertView.findViewById(R.id.author);
+            holder.comment = (TextViewRoboto) convertView.findViewById(R.id.comment);
+            holder.author = (TextViewRoboto) convertView.findViewById(R.id.author);
             holder.replies = (Button) convertView.findViewById(R.id.replies);
             holder.replies.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -198,7 +198,7 @@ public class CommentAdapter extends BaseAdapter {
     }
 
     private static class CommentViewHolder {
-        RobotoTextView author, comment;
+        TextViewRoboto author, comment;
 
         Button replies;
     }

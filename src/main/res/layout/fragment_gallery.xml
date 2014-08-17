@@ -1,70 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<com.kenny.openimgur.ui.MultiStateView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:id="@+id/multiStateView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <com.kenny.openimgur.ui.MultiStateView
-        android:id="@+id/multiStateView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:contentView="@layout/grid_view"
-        app:loadingView="@layout/loading_view"
-        app:errorView="@layout/error_view" />
-
-    <LinearLayout
-        android:id="@+id/quickReturnView"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/quick_return_filter_height"
-        android:orientation="vertical"
-        android:background="@drawable/card_bg"
-        android:layout_marginTop="@dimen/quick_return_additional_padding"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="8dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:visibility="gone">
-
-        <com.devspark.robototextview.widget.RobotoTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/filter_popup_title"
-            app:typeface="roboto_condensed_light"
-            android:textSize="16sp" />
-
-        <RadioGroup
-            android:id="@+id/filterGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp">
-
-            <RadioButton
-                android:id="@+id/filter_popular"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/filter_radio_button"
-                android:textColor="@android:color/white"
-                android:text="@string/filter_popular"
-                android:gravity="center_horizontal"
-                android:button="@android:color/transparent" />
-
-            <RadioButton
-                android:id="@+id/filter_newest"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/filter_radio_button"
-                android:textColor="@android:color/white"
-                android:text="@string/filter_time"
-                android:gravity="center_horizontal"
-                android:button="@android:color/transparent" />
-
-        </RadioGroup>
-
-    </LinearLayout>
-
-</FrameLayout>
+    android:layout_height="match_parent"
+    app:contentView="@layout/grid_view"
+    app:loadingView="@layout/loading_view"
+    app:errorView="@layout/error_view" />

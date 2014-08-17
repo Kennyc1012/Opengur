@@ -14,7 +14,7 @@
         android:src="@drawable/reddit_large"
         android:layout_centerInParent="true" />
 
-    <com.devspark.robototextview.widget.RobotoTextView
+    <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/empty"
         android:layout_marginTop="16dp"
         android:layout_width="wrap_content"
@@ -22,6 +22,6 @@
         android:text="@string/subreddit_desc"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/reddit_image"
-        app:typeface="roboto_condensed_light" />
+        app:robotoFont="light" />
 
 </RelativeLayout>

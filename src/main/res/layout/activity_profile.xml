@@ -5,8 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:loadingView="@layout/loading_view"
-    app:errorView="@layout/error_view"
+    app:errorView="@layout/profile_error"
     app:contentView="@layout/grid_view"
-    app:emptyView="@layout/login_view">
-
-</com.kenny.openimgur.ui.MultiStateView>
+    app:emptyView="@layout/login_view" />

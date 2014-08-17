@@ -3,6 +3,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/filter"
+        android:title="@string/filter"
+        android:showAsAction="never" />
+
+    <item
         android:id="@+id/refresh"
         android:title="@string/refresh"
         android:showAsAction="never" />

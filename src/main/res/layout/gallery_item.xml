@@ -13,9 +13,9 @@
         android:id="@+id/image"
         tools:src="@drawable/error_gif_1" />
 
-    <com.devspark.robototextview.widget.RobotoTextView
+    <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/score"
-        app:typeface="roboto_condensed_light"
+        app:robotoFont="light"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:textColor="#FFFFFF"
@@ -24,7 +24,6 @@
         android:layout_gravity="bottom"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:gravity="center_vertical"
-        tools:text="1020 points" />
+        android:gravity="center_vertical" />
 
 </FrameLayout>

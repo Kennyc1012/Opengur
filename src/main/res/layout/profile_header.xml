@@ -8,46 +8,45 @@
     android:layout_marginLeft="@dimen/activity_horizontal_margin"
     android:layout_marginRight="@dimen/activity_horizontal_margin"
     android:background="@drawable/card_bg"
-    android:gravity="center_horizontal"
-    android:padding="16dp">
+    android:gravity="center_horizontal">
 
-    <com.devspark.robototextview.widget.RobotoTextView
+    <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/profile_username_textsize"
-        app:typeface="roboto_condensed_bold"
+        app:robotoFont="bold"
         android:layout_marginBottom="8dp"
         android:textColor="#000000"
         tools:text="DrButtersMD" />
 
-    <com.devspark.robototextview.widget.RobotoTextView
+    <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/notoriety"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/notoriety_text_size"
-        app:typeface="roboto_condensed_bold"
+        app:robotoFont="bold"
         android:layout_marginBottom="8dp"
         tools:text="@string/notoriety_liked"
         tools:textColor="@android:color/holo_green_light" />
 
-    <com.devspark.robototextview.widget.RobotoTextView
+    <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/rep"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:textSize="@dimen/profile_rep_text_size"
         android:textColor="@android:color/black"
-        app:typeface="roboto_condensed_light"
+        app:robotoFont="light"
         tools:text="400 Reputation since June 2014" />
 
-    <com.devspark.robototextview.widget.RobotoTextView
+    <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/bio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/profile_bio_text_size"
         android:textColor="@android:color/black"
-        app:typeface="roboto_condensed_light"
+        app:robotoFont="light"
         tools:text="So this is where the bio will be place
         blah blah blah blah blah blah" />
 

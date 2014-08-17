@@ -34,7 +34,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.github.johnkil.android-robototextview:robototextview:2.0.1'
     compile 'com.sothree.slidinguppanel:library:+'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.0.+'
     compile 'com.github.chrisbanes.photoview:library:1.2.2'

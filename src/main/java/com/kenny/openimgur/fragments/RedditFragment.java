@@ -59,6 +59,8 @@ public class RedditFragment extends Fragment {
 
     private EditText mSearchEditText;
 
+    private View mQuickReturnView;
+
     private MultiStateView mMultiView;
 
     private HeaderGridView mGridView;
@@ -156,7 +158,16 @@ public class RedditFragment extends Fragment {
                 // Don't respond to the header being clicked
 
                 if (adapterPosition >= 0) {
-                    startActivity(ViewActivity.createIntent(getActivity(), mAdapter.getItems(), adapterPosition));
+                    ImgurBaseObject[] items = mAdapter.getItems(adapterPosition);
+                    int itemPosition = adapterPosition;
+
+                    // Get the correct array index of the selected item
+                    if (itemPosition > GalleryAdapter.MAX_ITEMS / 2) {
+                        itemPosition = items.length == GalleryAdapter.MAX_ITEMS ? GalleryAdapter.MAX_ITEMS / 2 :
+                                items.length - (mAdapter.getCount() - itemPosition);
+                    }
+
+                    startActivity(ViewActivity.createIntent(getActivity(), items, itemPosition));
                 }
             }
         });
@@ -206,9 +217,16 @@ public class RedditFragment extends Fragment {
             }
         });
 
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mSearchEditText.getLayoutParams();
+        mQuickReturnView = view.findViewById(R.id.quickReturnView);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mQuickReturnView.getLayoutParams();
         float extraSpace = ViewUtils.getHeightForTranslucentStyle(getActivity()) + getResources().getDimension(R.dimen.quick_return_additional_padding);
         lp.setMargins(lp.leftMargin, (int) extraSpace, lp.rightMargin, lp.bottomMargin);
+        view.findViewById(R.id.clear).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSearchEditText.setText(null);
+            }
+        });
     }
 
     /**
@@ -336,6 +354,14 @@ public class RedditFragment extends Fragment {
 
                     mIsLoading = false;
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    if (mCurrentPage == 0) {
+                        mGridView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mGridView.setSelection(0);
+                            }
+                        });
+                    }
                     break;
 
                 default:
@@ -360,14 +386,14 @@ public class RedditFragment extends Fragment {
 
                         if (mInputIsShowing) {
                             mInputIsShowing = false;
-                            mSearchEditText.animate().translationY(-mAnimationHeight).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+                            mQuickReturnView.animate().translationY(-mAnimationHeight).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
                         }
                     } else if (firstVisibleItem < mPreviousItem && mListener != null) {
                         mListener.oHideActionBar(true);
 
                         if (!mInputIsShowing) {
                             mInputIsShowing = true;
-                            mSearchEditText.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+                            mQuickReturnView.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
                         }
                     }
 

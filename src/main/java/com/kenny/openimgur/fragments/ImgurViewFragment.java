@@ -17,7 +17,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.devspark.robototextview.widget.RobotoTextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.ViewPhotoActivity;
 import com.kenny.openimgur.adapters.PhotoAdapter;
@@ -32,6 +31,7 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.PointsBar;
+import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -127,10 +127,10 @@ public class ImgurViewFragment extends Fragment {
      */
     private void createHeader() {
         View headerView = View.inflate(getActivity(), R.layout.image_header, null);
-        RobotoTextView title = (RobotoTextView) headerView.findViewById(R.id.title);
-        RobotoTextView author = (RobotoTextView) headerView.findViewById(R.id.author);
+        TextViewRoboto title = (TextViewRoboto) headerView.findViewById(R.id.title);
+        TextViewRoboto author = (TextViewRoboto) headerView.findViewById(R.id.author);
         PointsBar pointsBar = (PointsBar) headerView.findViewById(R.id.pointsBar);
-        RobotoTextView pointText = (RobotoTextView) headerView.findViewById(R.id.pointText);
+        TextViewRoboto pointText = (TextViewRoboto) headerView.findViewById(R.id.pointText);
 
         if (!TextUtils.isEmpty(mImgurObject.getTitle())) {
             title.setText(mImgurObject.getTitle());
