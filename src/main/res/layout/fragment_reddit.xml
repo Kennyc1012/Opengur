@@ -32,7 +32,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/search"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -41,7 +41,8 @@
             android:hint="@string/enter_sub_reddit"
             android:imeOptions="actionSearch"
             android:inputType="textAutoComplete"
-            android:layout_toLeftOf="@id/clear" />
+            android:layout_toLeftOf="@id/clear"
+            android:layout_toStartOf="@id/clear" />
 
     </RelativeLayout>
 

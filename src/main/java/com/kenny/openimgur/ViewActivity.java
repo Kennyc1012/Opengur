@@ -182,7 +182,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         findViewById(R.id.upVoteBtn).setOnClickListener(this);
         findViewById(R.id.downVoteBtn).setOnClickListener(this);
         findViewById(R.id.commentBtn).setOnClickListener(this);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
         handleIntent(getIntent());
     }
 

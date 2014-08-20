@@ -40,8 +40,8 @@ public class DownloaderService extends IntentService {
                 ImgurPhoto photo = intent.getParcelableExtra(KEY_IMAGE);
                 File file = new File(Environment.getExternalStorageDirectory(), FOLDER_NAME);
                 file.mkdirs();
+                String photoFileName;
 
-                String photoFileName = null;
                 if (photo.getType().equals(ImgurPhoto.IMAGE_TYPE_JPEG)) {
                     photoFileName = photo.getId() + ".jpeg";
                 } else if (photo.getType().equals(ImgurPhoto.IMAGE_TYPE_GIF)) {
@@ -52,7 +52,6 @@ public class DownloaderService extends IntentService {
 
                 File photoFile = new File(file.getAbsolutePath(), photoFileName);
                 Log.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
-
                 int notificationId = photo.getLink().hashCode();
                 Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

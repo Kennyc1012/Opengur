@@ -43,6 +43,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -54,7 +55,17 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 public class GalleryFragment extends Fragment implements FilterDialogFragment.FilterListener {
     private static final String KEY_SECTION = "section";
 
+    private static final String KEY_SORT = "sort";
+
+    private static final String KEY_CURRENT_POSITION = "position";
+
+    private static final String KEY_ITEMS = "items";
+
     private static final String KEY_QUALITY = "quality";
+
+    private static final String KEY_CURRENT_PAGE = "page";
+
+    private static final int PAGE = 0;
 
     public enum GallerySection {
         HOT("hot"),
@@ -166,6 +177,8 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
 
     private int mPreviousItem = 0;
 
+    private String mQuality;
+
     public static GalleryFragment createInstance() {
         return new GalleryFragment();
     }
@@ -189,9 +202,6 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mSort = GallerySort.getSortFromString(pref.getString("sort", null));
-        mSection = GallerySection.getSectionFromString(pref.getString("section", null));
     }
 
     @Override
@@ -204,7 +214,7 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
             mIsLoading = true;
 
             if (mListener != null) {
-                mListener.onLoadingStarted();
+                mListener.onLoadingStarted(PAGE);
             }
 
             getGallery();
@@ -270,8 +280,35 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
             }
         });
 
-        if (getArguments() != null) {
-            mSection = GallerySection.getSectionFromString(getArguments().getString(KEY_SECTION, null));
+        handleBundle(savedInstanceState);
+    }
+
+    private void handleBundle(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            mQuality = pref.getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
+            mSort = GallerySort.getSortFromString(pref.getString("sort", null));
+            mSection = GallerySection.getSectionFromString(pref.getString("section", null));
+        } else {
+            mSort = GallerySort.getSortFromString(savedInstanceState.getString(KEY_SORT, GallerySort.TIME.getSort()));
+            mSection = GallerySection.getSectionFromString(savedInstanceState.getString(KEY_SECTION, GallerySection.HOT.getSection()));
+            mQuality = savedInstanceState.getString(KEY_QUALITY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
+            mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
+
+            if (savedInstanceState.containsKey(KEY_ITEMS)) {
+                ImgurBaseObject[] items = (ImgurBaseObject[]) savedInstanceState.getParcelableArray(KEY_ITEMS);
+                int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
+                mAdapter = new GalleryAdapter(getActivity(), new ArrayList<ImgurBaseObject>(Arrays.asList(items)), mQuality);
+                mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
+                mGridView.setAdapter(mAdapter);
+                mGridView.setSelection(currentPosition);
+
+                if (mListener != null) {
+                    mListener.onLoadingComplete(PAGE);
+                }
+
+                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            }
         }
     }
 
@@ -294,7 +331,7 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
                 }
 
                 if (mListener != null) {
-                    mListener.onLoadingStarted();
+                    mListener.onLoadingStarted(PAGE);
                 }
 
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);
@@ -439,9 +476,7 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
                     List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
 
                     if (mAdapter == null) {
-                        String quality = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                .getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
-                        mAdapter = new GalleryAdapter(getActivity(), OpenImgurApp.getInstance().getImageLoader(), gallery, quality);
+                        mAdapter = new GalleryAdapter(getActivity(), gallery, mQuality);
                         mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                         mGridView.setAdapter(mAdapter);
                     } else {
@@ -450,7 +485,7 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
                     }
 
                     if (mListener != null) {
-                        mListener.onLoadingComplete();
+                        mListener.onLoadingComplete(PAGE);
                     }
 
 
@@ -473,7 +508,7 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
                         mErrorMessage.setText((Integer) msg.obj);
 
                         if (mListener != null) {
-                            mListener.onError((Integer) msg.obj);
+                            mListener.onError((Integer) msg.obj, PAGE);
                         }
 
                         mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -483,7 +518,7 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
 
                 default:
                     if (mListener != null) {
-                        mListener.onLoadingComplete();
+                        mListener.onLoadingComplete(PAGE);
                     }
 
                     super.handleMessage(msg);
@@ -494,4 +529,18 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
         }
     };
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(KEY_SECTION, mSection.getSection());
+        outState.putString(KEY_SORT, mSort.getSort());
+        outState.putString(KEY_QUALITY, mQuality);
+        outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
+
+        if (mAdapter != null && !mAdapter.isEmpty()) {
+            outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllitems());
+            outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
+        }
+
+        super.onSaveInstanceState(outState);
+    }
 }

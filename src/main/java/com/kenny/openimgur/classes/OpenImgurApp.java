@@ -129,6 +129,10 @@ public class OpenImgurApp extends Application {
         return instance;
     }
 
+    public static OpenImgurApp getInstance(Context context) {
+        return (OpenImgurApp) context.getApplicationContext();
+    }
+
     public SharedPreferences getPreferences() {
         return mPref;
     }

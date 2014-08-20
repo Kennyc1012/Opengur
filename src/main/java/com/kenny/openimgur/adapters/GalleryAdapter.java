@@ -12,6 +12,7 @@ import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.TextViewRoboto;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -34,10 +35,9 @@ public class GalleryAdapter extends BaseAdapter {
 
     private String mThumbnailQuality;
 
-
-    public GalleryAdapter(Context context, ImageLoader imageLoader, List<ImgurBaseObject> objects, String quality) {
+    public GalleryAdapter(Context context, List<ImgurBaseObject> objects, String quality) {
         mInflater = LayoutInflater.from(context);
-        mImageLoader = imageLoader;
+        mImageLoader = OpenImgurApp.getInstance(context).getImageLoader();
         mObjects = SetUniqueList.decorate(objects);
 
         if (SettingsActivity.THUMBNAIL_QUALITY_LOW.equals(quality)) {
@@ -114,6 +114,12 @@ public class GalleryAdapter extends BaseAdapter {
         return array;
     }
 
+    public ImgurBaseObject[] getAllitems() {
+        ImgurBaseObject[] items = new ImgurBaseObject[mObjects.size()];
+        mObjects.toArray(items);
+        return items;
+    }
+
     @Override
     public int getCount() {
         if (mObjects != null) {
@@ -158,11 +164,11 @@ public class GalleryAdapter extends BaseAdapter {
         } else {
             photoUrl = ((ImgurAlbum) obj).getCoverUrl(mThumbnailQuality);
         }
-
         mImageLoader.displayImage(photoUrl, holder.image);
         holder.tv.setText(obj.getScore() + " " + holder.tv.getContext().getString(R.string.points));
         return convertView;
     }
+
 
     private final static class ViewHolder {
         ImageView image;

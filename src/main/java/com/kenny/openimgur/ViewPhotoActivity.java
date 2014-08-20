@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,6 +57,7 @@ public class ViewPhotoActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setShouldTint(false);
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
 
@@ -117,6 +120,7 @@ public class ViewPhotoActivity extends BaseActivity {
             public void onLoadingCancelled(String s, View view) {
             }
         });
+        getActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
     @Override
@@ -164,7 +168,7 @@ public class ViewPhotoActivity extends BaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (photo == null) {
-            menu.findItem(R.id.download).setVisible(false);
+            menu.removeItem(R.id.download);
         }
 
         return super.onPrepareOptionsMenu(menu);

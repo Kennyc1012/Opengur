@@ -26,20 +26,31 @@
             android:id="@+id/uploadBtn"
             android:layout_width="@dimen/fab_button_radius"
             android:layout_height="@dimen/fab_button_radius"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:layout_marginTop="@dimen/upload_image_button_top"
             android:layout_marginRight="@dimen/fab_button_radius"
-            app:drawable="@drawable/ic_action_upload_gray"
+            android:layout_marginEnd="@dimen/fab_button_radius"
+            app:drawable="@drawable/ic_action_upload"
             app:shadowColor="@android:color/black"
-            app:color="#ffffff" />
+            app:color="@color/accent_color_blue_200" />
+
+        <EditText
+            android:id="@+id/url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:inputType="textUri"
+            android:hint="@string/link_upload_desc"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin" />
 
         <EditText
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:inputType="textCapCharacters"
-            android:hint="@string/link_upload_desc"
+            android:inputType="textCapSentences|textMultiLine"
+            android:hint="@string/upload_title"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin" />
 

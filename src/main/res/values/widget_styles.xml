@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="action_button">
+    <style name="Action_Button">
         <item name="android:minWidth">88dp</item>
         <item name="android:minHeight">36dp</item>
         <item name="android:background">@drawable/action_button_bg</item>
-        <item name="android:padding">8dp</item>
+        <item name="android:padding">16dp</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Radio_Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/filter_radio_button</item>
+        <item name="android:gravity">center</item>
+        <item name="android:button">@null</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
 </resources>

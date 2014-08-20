@@ -6,9 +6,9 @@ package com.kenny.openimgur.classes;
 public interface TabActivityListener {
     void oHideActionBar(boolean shouldShow);
 
-    void onLoadingStarted();
+    void onLoadingStarted(int page);
 
-    void onLoadingComplete();
+    void onLoadingComplete(int page);
 
-    void onError(int errorCode);
+    void onError(int errorCode, int page);
 }

@@ -18,6 +18,11 @@
             android:key="currentCacheSize"
             android:title="@string/pref_current_cache_size" />
 
+        <Preference
+            android:key="subreddit"
+            android:title="@string/pref_reddit_cache"
+            android:summary="@string/pref_reddit_desc" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

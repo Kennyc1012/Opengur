@@ -46,7 +46,7 @@ public class UploadActivity extends BaseActivity {
 
     private static final long TEXT_DELAY = 1000L;
 
-    private static final int MESSSGE_SEARCH_URL = 11;
+    private static final int MSG_SEARCH_URL = 11;
 
     private File mTempFile = null;
 
@@ -56,10 +56,11 @@ public class UploadActivity extends BaseActivity {
 
     private FloatingActionButton mUploadBtn;
 
-    // Will double as the url edit text as well
     private EditText mTitle;
 
     private EditText mDesc;
+
+    private EditText mLink;
 
     private boolean mIsValidLink = false;
 
@@ -74,6 +75,7 @@ public class UploadActivity extends BaseActivity {
         mPreviewImage = (ImageView) findViewById(R.id.previewImage);
         mTitle = (EditText) findViewById(R.id.title);
         mDesc = (EditText) findViewById(R.id.desc);
+        mLink = (EditText) findViewById(R.id.url);
         mUploadBtn = (FloatingActionButton) findViewById(R.id.uploadBtn);
         mUploadBtn.setEnabled(false);
 
@@ -82,13 +84,7 @@ public class UploadActivity extends BaseActivity {
 
             if (uploadType != UPLOAD_TYPE_LINK) {
                 int requestCode = uploadType == UPLOAD_TYPE_GALLERY ? REQUEST_CODE_GALLERY : REQUEST_CODE_CAMERA;
-                Intent intent = createPhotoIntent(uploadType);
-
-                if (intent != null) {
-                    startActivityForResult(intent, requestCode);
-                } else {
-                    // TODO Error
-                }
+                startActivityForResult(createPhotoIntent(uploadType), requestCode);
             }
         }
 
@@ -96,7 +92,7 @@ public class UploadActivity extends BaseActivity {
     }
 
     private void init() {
-        mTitle.addTextChangedListener(new TextWatcher() {
+        mLink.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
@@ -108,8 +104,8 @@ public class UploadActivity extends BaseActivity {
                 mIsValidLink = false;
 
                 if (mTempFile == null && mCameraFile == null && !TextUtils.isEmpty(charSequence)) {
-                    mHandler.removeMessages(MESSSGE_SEARCH_URL);
-                    mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSSGE_SEARCH_URL, charSequence.toString()), TEXT_DELAY);
+                    mHandler.removeMessages(MSG_SEARCH_URL);
+                    mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SEARCH_URL, charSequence.toString()), TEXT_DELAY);
                 }
             }
 
@@ -134,14 +130,14 @@ public class UploadActivity extends BaseActivity {
                 case REQUEST_CODE_CAMERA:
                     if (FileUtil.isFileValid(mCameraFile)) {
                         FileUtil.scanFile(Uri.fromFile(mCameraFile), getApplicationContext());
-                        Bitmap cameraBm = ImageUtil.decodeSampledBitmapFromResource(mCameraFile, getResources().getDisplayMetrics().widthPixels,
-                                getResources().getDisplayMetrics().heightPixels / 3);
+                        Bitmap cameraBm = ImageUtil.decodeSampledBitmapFromResource(mCameraFile, getResources().getDisplayMetrics().widthPixels, 1024);
 
                         if (cameraBm != null) {
                             mPreviewImage.setImageBitmap(cameraBm);
                             mUploadBtn.setEnabled(true);
+                        } else {
+                            // TODO Error
                         }
-
                     } else {
                         // TODO Error
                     }
@@ -161,8 +157,7 @@ public class UploadActivity extends BaseActivity {
                                 // TODO Error
                             }
                         } else {
-                            Bitmap tempBm = ImageUtil.decodeSampledBitmapFromResource(mTempFile, getResources().getDisplayMetrics().widthPixels,
-                                    getResources().getDisplayMetrics().widthPixels / 3);
+                            Bitmap tempBm = ImageUtil.decodeSampledBitmapFromResource(mTempFile, getResources().getDisplayMetrics().widthPixels, 1024);
 
                             if (tempBm != null) {
                                 mPreviewImage.setImageBitmap(tempBm);
@@ -233,7 +228,7 @@ public class UploadActivity extends BaseActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MESSSGE_SEARCH_URL:
+                case MSG_SEARCH_URL:
                     app.getImageLoader().loadImage((String) msg.obj, new ImageLoadingListener() {
                         @Override
                         public void onLoadingStarted(String s, View view) {
@@ -253,7 +248,11 @@ public class UploadActivity extends BaseActivity {
                             mUploadBtn.setEnabled(true);
                             mIsValidLink = true;
 
-                            if (!ImageUtil.loadAndDisplayGif(mPreviewImage, url, app.getImageLoader())) {
+                            if (url.endsWith(".gif")) {
+                                if (!ImageUtil.loadAndDisplayGif(mPreviewImage, url, app.getImageLoader())) {
+                                    mPreviewImage.setImageBitmap(bitmap);
+                                }
+                            } else {
                                 mPreviewImage.setImageBitmap(bitmap);
                             }
                         }

@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.kenny.openimgur.classes.ImgurUser;
@@ -29,12 +30,15 @@ public class BaseActivity extends Activity {
 
     private boolean mIsLandscape = false;
 
+    private boolean mShouldShowHome = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        getActionBar().setTitle(null);
-        getActionBar().setIcon(new ColorDrawable(Color.TRANSPARENT));
+        ActionBar ab = getActionBar();
+        ab.setTitle(null);
+        ab.setIcon(new ColorDrawable(Color.TRANSPARENT));
         mIsLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
         app = OpenImgurApp.getInstance();
         user = app.getUser();
@@ -44,6 +48,11 @@ public class BaseActivity extends Activity {
             // enable status bar tint
             tintManager.setStatusBarTintEnabled(true);
             tintManager.setTintColor(getResources().getColor(R.color.status_bar_tint));
+        }
+
+        if (mShouldShowHome) {
+            ab.setDisplayHomeAsUpEnabled(true);
+            ab.setDisplayShowHomeEnabled(true);
         }
     }
 
@@ -93,6 +102,15 @@ public class BaseActivity extends Activity {
     }
 
     /**
+     * Sets if the actionbar will display the back arrow in the action bar
+     *
+     * @param display
+     */
+    public void setShouldDisplayHome(boolean display) {
+        mShouldShowHome = display;
+    }
+
+    /**
      * Sets the action bars view
      *
      * @param view
@@ -124,5 +142,15 @@ public class BaseActivity extends Activity {
      */
     public boolean isLandscape() {
         return mIsLandscape;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

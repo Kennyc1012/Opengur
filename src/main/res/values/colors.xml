@@ -10,8 +10,8 @@
     <color name="blue_500">#5677fc</color>
     <color name="comment_bg_default">#ffffff</color>
     <color name="comment_bg_selected">#e5e5e5</color>
-    <color name="status_bar_tint">#5677fc</color>
+    <color name="status_bar_tint">#4d69ff</color>
     <color name="action_button_pressed">#66999999</color>
     <color name="action_button_disabled">#1A999999</color>
-    <color name="test">#664d69ff</color>
+    <color name="dialog_accept">#2196f3</color>
 </resources>

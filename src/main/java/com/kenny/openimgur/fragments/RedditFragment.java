@@ -2,6 +2,7 @@ package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -17,7 +18,8 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -36,6 +38,7 @@ import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -44,6 +47,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -53,11 +57,25 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  * Created by kcampagna on 8/14/14.
  */
 public class RedditFragment extends Fragment {
+    private static final String KEY_QUERY = "query";
+
+    private static final String KEY_SORT = "sort";
+
+    private static final String KEY_CURRENT_POSITION = "position";
+
+    private static final String KEY_ITEMS = "items";
+
+    private static final String KEY_QUALITY = "quality";
+
+    private static final String KEY_CURRENT_PAGE = "page";
+
+    private static final int PAGE = 1;
+
     private static final long SEARCH_DELAY = 1000L;
 
     private static final int MIN_SEARCH_CHAR = 4;
 
-    private EditText mSearchEditText;
+    private AutoCompleteTextView mSearchEditText;
 
     private View mQuickReturnView;
 
@@ -77,6 +95,10 @@ public class RedditFragment extends Fragment {
 
     private TabActivityListener mListener;
 
+    private String[] mPreviousSearches = null;
+
+    private SqlHelper mSql;
+
     private int mCurrentPage = 0;
 
     private boolean mIsLoading = false;
@@ -85,9 +107,15 @@ public class RedditFragment extends Fragment {
 
     private boolean mInputIsShowing = true;
 
+    private boolean mIsRestoring = false;
+
     private float mAnimationHeight;
 
     private int mPreviousItem;
+
+    private String mQuality;
+
+    private ArrayAdapter<String> mSearchAdapter;
 
     public static RedditFragment createInstance() {
         return new RedditFragment();
@@ -96,6 +124,7 @@ public class RedditFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mSql = OpenImgurApp.getInstance(getActivity()).getSql();
         return inflater.inflate(R.layout.fragment_reddit, container, false);
     }
 
@@ -172,10 +201,13 @@ public class RedditFragment extends Fragment {
             }
         });
 
-        mSearchEditText = (EditText) view.findViewById(R.id.search);
+        mSearchEditText = (AutoCompleteTextView) view.findViewById(R.id.search);
+        configurePreviousSearches();
+
         mSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+
                 mHandler.removeMessages(RedditHandler.MESSAGE_AUTO_SEARCH);
                 String text = textView.getText().toString();
 
@@ -183,6 +215,10 @@ public class RedditFragment extends Fragment {
                     if (mAdapter != null) {
                         mAdapter.clear();
                         mAdapter.notifyDataSetChanged();
+                    }
+
+                    if (mListener != null) {
+                        mListener.onLoadingStarted(PAGE);
                     }
 
                     mQuery = text;
@@ -204,11 +240,15 @@ public class RedditFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                mHandler.removeMessages(RedditHandler.MESSAGE_AUTO_SEARCH);
-
-                if (!TextUtils.isEmpty(charSequence) && charSequence.length() >= MIN_SEARCH_CHAR) {
-                    mHandler.sendMessageDelayed(RedditHandler.MESSAGE_AUTO_SEARCH, charSequence.toString(), SEARCH_DELAY);
+                if (!mIsRestoring) {
+                    mHandler.removeMessages(RedditHandler.MESSAGE_AUTO_SEARCH);
+                    if (!TextUtils.isEmpty(charSequence) && charSequence.length() >= MIN_SEARCH_CHAR) {
+                        mHandler.sendMessageDelayed(RedditHandler.MESSAGE_AUTO_SEARCH, charSequence.toString(), SEARCH_DELAY);
+                    }
+                } else {
+                    mIsRestoring = false;
                 }
+
             }
 
             @Override
@@ -227,6 +267,50 @@ public class RedditFragment extends Fragment {
                 mSearchEditText.setText(null);
             }
         });
+        handleBundle(savedInstanceState);
+    }
+
+    private void handleBundle(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            mQuality = pref.getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
+            mSort = GalleryFragment.GallerySort.getSortFromString(pref.getString("sort", null));
+        } else {
+            mIsRestoring = true;
+            mSort = GalleryFragment.GallerySort.getSortFromString(savedInstanceState.getString(KEY_SORT, GalleryFragment.GallerySort.TIME.getSort()));
+            mQuality = savedInstanceState.getString(KEY_QUALITY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
+            mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
+            mQuery = savedInstanceState.getString(KEY_QUERY, null);
+
+            if (savedInstanceState.containsKey(KEY_ITEMS)) {
+                ImgurBaseObject[] items = (ImgurBaseObject[]) savedInstanceState.getParcelableArray(KEY_ITEMS);
+                int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
+                setupAdapter(new ArrayList<ImgurBaseObject>(Arrays.asList(items)));
+                mGridView.setSelection(currentPosition);
+
+                if (mListener != null) {
+                    mListener.onLoadingComplete(PAGE);
+                }
+            }
+        }
+    }
+
+    /**
+     * Configures the previous search adapter to the AutoCompleteTextView
+     */
+    private void configurePreviousSearches() {
+        mPreviousSearches = mSql.getSubReddits();
+
+        if (mPreviousSearches != null && mPreviousSearches.length > 0) {
+            if (mSearchAdapter == null) {
+                mSearchAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, mPreviousSearches);
+                mSearchEditText.setAdapter(mSearchAdapter);
+            } else {
+                mSearchAdapter.clear();
+                mSearchAdapter.addAll(mPreviousSearches);
+                mSearchAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     /**
@@ -247,6 +331,21 @@ public class RedditFragment extends Fragment {
      */
     private String getUrl() {
         return String.format(Endpoints.SUBREDDIT.getUrl(), mQuery.replaceAll("\\s", ""), mSort.getSort(), mCurrentPage);
+    }
+
+    private void setupAdapter(List<ImgurBaseObject> objects) {
+        if (mAdapter == null) {
+            mAdapter = new GalleryAdapter(getActivity(), objects, mQuality);
+            mAnimationHeight = getResources().getDimension(R.dimen.quick_return_edit_text_height) +
+                    getResources().getDimension(R.dimen.quick_return_additional_padding);
+            View header = ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), (int) mAnimationHeight);
+            mAnimationHeight += ViewUtils.getHeightForTranslucentStyle(getActivity());
+            mGridView.addHeaderView(header);
+            mGridView.setAdapter(mAdapter);
+        } else {
+            mAdapter.addItems(objects);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     /**
@@ -270,6 +369,9 @@ public class RedditFragment extends Fragment {
                     }
 
                     objects = new ArrayList<ImgurBaseObject>();
+                    // Only enter into the database if we received results
+                    mSql.insertSubReddit(mQuery);
+
 
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject item = arr.getJSONObject(i);
@@ -319,6 +421,10 @@ public class RedditFragment extends Fragment {
                         mAdapter.notifyDataSetChanged();
                     }
 
+                    if (mListener != null) {
+                        mListener.onLoadingStarted(PAGE);
+                    }
+
                     mQuery = (String) msg.obj;
                     mCurrentPage = 0;
                     search();
@@ -335,25 +441,16 @@ public class RedditFragment extends Fragment {
                     break;
 
                 case MESSAGE_ACTION_COMPLETE:
-                    List<ImgurBaseObject> objects = (List<ImgurBaseObject>) msg.obj;
-
-                    if (mAdapter == null) {
-                        String quality = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                .getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
-                        mAdapter = new GalleryAdapter(getActivity(), OpenImgurApp.getInstance().getImageLoader(), objects, quality);
-                        mAnimationHeight = getResources().getDimension(R.dimen.quick_return_edit_text_height) +
-                                getResources().getDimension(R.dimen.quick_return_additional_padding);
-                        View header = ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), (int) mAnimationHeight);
-                        mAnimationHeight += ViewUtils.getHeightForTranslucentStyle(getActivity());
-                        mGridView.addHeaderView(header);
-                        mGridView.setAdapter(mAdapter);
-                    } else {
-                        mAdapter.addItems(objects);
-                        mAdapter.notifyDataSetChanged();
+                    if (mListener != null) {
+                        mListener.onLoadingComplete(PAGE);
                     }
 
+                    List<ImgurBaseObject> objects = (List<ImgurBaseObject>) msg.obj;
+                    configurePreviousSearches();
+                    setupAdapter(objects);
                     mIsLoading = false;
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+
                     if (mCurrentPage == 0) {
                         mGridView.post(new Runnable() {
                             @Override
@@ -362,6 +459,7 @@ public class RedditFragment extends Fragment {
                             }
                         });
                     }
+
                     break;
 
                 default:
@@ -381,15 +479,19 @@ public class RedditFragment extends Fragment {
                 @Override
                 public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                     // Hide the actionbar when scrolling down, show when scrolling up
-                    if (firstVisibleItem > mPreviousItem && mListener != null) {
-                        mListener.oHideActionBar(false);
+                    if (firstVisibleItem > mPreviousItem) {
+                        if (mListener != null) {
+                            mListener.oHideActionBar(false);
+                        }
 
                         if (mInputIsShowing) {
                             mInputIsShowing = false;
                             mQuickReturnView.animate().translationY(-mAnimationHeight).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
                         }
-                    } else if (firstVisibleItem < mPreviousItem && mListener != null) {
-                        mListener.oHideActionBar(true);
+                    } else if (firstVisibleItem < mPreviousItem) {
+                        if (mListener != null) {
+                            mListener.oHideActionBar(true);
+                        }
 
                         if (!mInputIsShowing) {
                             mInputIsShowing = true;
@@ -408,4 +510,19 @@ public class RedditFragment extends Fragment {
                 }
             }
     );
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(KEY_SORT, mSort.getSort());
+        outState.putString(KEY_QUALITY, mQuality);
+        outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
+        outState.putString(KEY_QUERY, mQuery);
+
+        if (mAdapter != null && !mAdapter.isEmpty()) {
+            outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllitems());
+            outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
+        }
+
+        super.onSaveInstanceState(outState);
+    }
 }

@@ -14,7 +14,7 @@
     <string name="sub_reddit">Sub Reddit</string>
     <string name="filter">Filter</string>
     <string name="comment_replies">View %d Replies</string>
-    <string name="pref_cache_title">Image Cache</string>
+    <string name="pref_cache_title">Cache</string>
     <string name="pref_cache_size">Maximum Cache Size</string>
     <string-array name="pref_cache_size_items">
         <item>128MB</item>
@@ -22,6 +22,8 @@
         <item>512MB</item>
         <item>1GB</item>
     </string-array>
+    <string name="pref_reddit_cache">Subreddit Searches</string>
+    <string name="pref_reddit_desc">Clear  subreddit search history</string>
     <string name="refresh">Refresh</string>
     <string name="pref_current_cache_size">Current Cache Size</string>
     <string name="clear_cache">Clear Cache</string>
@@ -75,7 +77,8 @@
     <string name="profile_rep_date">Reputation - Since %s</string>
     <string name="upload_photo">Upload Photo</string>
     <string name="link_upload_desc">Enter URL to Upload From Web</string>
-    <string name="upload_desc">Description (Optional)</string>
+    <string name="upload_desc">Description</string>
+    <string name="upload_title">Title</string>
     <string name="logout">Logout</string>
     <string name="logout_confirm">Are you sure you want to logout?</string>
     <string name="user_not_logged_in">You must be logged in to complete this action</string>
@@ -97,6 +100,7 @@
     <string name="previous_comments">Previous Comments</string>
     <string name="profile_no_favorites">%s has not favorited any galleries. Boo</string>
     <string name="profile_no_submissions">%s has not uploaded any images. Boo</string>
+    <string name="sort_by">Sort By</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">

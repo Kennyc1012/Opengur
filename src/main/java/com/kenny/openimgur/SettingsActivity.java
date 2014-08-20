@@ -1,22 +1,29 @@
 package com.kenny.openimgur;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
 
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
 import com.kenny.openimgur.util.FileUtil;
+import com.kenny.openimgur.util.SqlHelper;
 
 /**
  * Created by kcampagna on 6/30/14.
  */
-public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
+public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+    public static final String REDDIT_SEARCH_KEY = "subreddit";
 
     public static final String CACHE_SIZE_KEY = "cacheSize";
 
@@ -47,26 +54,17 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         addPreferencesFromResource(R.xml.settings);
         bindPreference(findPreference(CACHE_SIZE_KEY));
         bindPreference(findPreference(THUMBNAIL_QUALITY_KEY));
+        findPreference(REDDIT_SEARCH_KEY).setOnPreferenceClickListener(this);
+        findPreference(CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
+    }
 
-        findPreference(CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(final Preference preference) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
-                builder.setTitle(R.string.clear_cache).setMessage(R.string.clear_cache_message);
-                builder.setNegativeButton(R.string.cancel, null).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mApp.getImageLoader().clearDiskCache();
-                        long cacheSize = FileUtil.getDirectorySize(mApp.getCacheDir());
-                        preference.setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
-                    }
-                }).show();
-                return true;
-            }
-        });
-
-        getActionBar().setDisplayShowHomeEnabled(true);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        ActionBar ab = getActionBar();
+        ab.setDisplayShowHomeEnabled(true);
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setIcon(new ColorDrawable(Color.TRANSPARENT));
     }
 
     @Override
@@ -88,7 +86,6 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     private void bindPreference(Preference preference) {
         preference.setOnPreferenceChangeListener(this);
-
         onPreferenceChange(preference, mApp.getPreferences().getString(preference.getKey(), ""));
     }
 
@@ -104,9 +101,40 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             if (prefIndex >= 0) {
                 preference.setSummary(listPreference.getEntries()[prefIndex]);
             }
+
             return true;
         } else {
             // Only have list preferences so far
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onPreferenceClick(final Preference preference) {
+        if (preference.getKey().equals(CURRENT_CACHE_SIZE_KEY)) {
+            final AlertDialog dialog = new AlertDialog.Builder(SettingsActivity.this).create();
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+            dialog.setView(new PopupDialogViewBuilder(getApplicationContext()).setTitle(R.string.clear_cache)
+                    .setMessage(R.string.clear_cache_message).setNegativeButton(R.string.cancel, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialog.dismiss();
+                        }
+                    }).setPositiveButton(R.string.yes, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            mApp.getImageLoader().clearDiskCache();
+                            long cacheSize = FileUtil.getDirectorySize(mApp.getCacheDir());
+                            preference.setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
+                            dialog.dismiss();
+                        }
+                    }).build());
+            dialog.show();
+            return true;
+        } else if (preference.getKey().equals(REDDIT_SEARCH_KEY)) {
+            new SqlHelper(getApplicationContext()).deleteAllSubRedditSearches();
         }
 
         return false;

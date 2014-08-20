@@ -17,6 +17,7 @@ import android.view.animation.OvershootInterpolator;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.fragments.GalleryFragment;
+import com.kenny.openimgur.fragments.ProfileFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.ui.FloatingActionButton;
 import com.mirko.tbv.TabBarView;
@@ -48,10 +49,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setShouldDisplayHome(false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.setOffscreenPageLimit(0);
         mPager.setAdapter(new TabPageAdapter(getFragmentManager()));
         mTabBar = (TabBarView) View.inflate(getApplicationContext(), R.layout.tab_ab_layout, null);
         mTabBar.setViewPager(mPager);
@@ -89,21 +90,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public void onError(int errorCode) {
-        mUploadMenu.setVisibility(View.GONE);
-        uploadMenuShowing = false;
+    public void onError(int errorCode, int page) {
+        if (page == mPager.getCurrentItem()) {
+            mUploadMenu.setVisibility(View.GONE);
+            uploadMenuShowing = false;
+        }
     }
 
     @Override
-    public void onLoadingComplete() {
-        mUploadMenu.setVisibility(View.VISIBLE);
-        uploadMenuShowing = true;
+    public void onLoadingComplete(int page) {
+        if (page == mPager.getCurrentItem()) {
+            mUploadMenu.setVisibility(View.VISIBLE);
+            uploadMenuShowing = true;
+        }
     }
 
     @Override
-    public void onLoadingStarted() {
-        mUploadMenu.setVisibility(View.GONE);
-        uploadMenuShowing = false;
+    public void onLoadingStarted(int page) {
+        if (page == mPager.getCurrentItem()) {
+            mUploadMenu.setVisibility(View.GONE);
+            uploadMenuShowing = false;
+        }
     }
 
     @Override
@@ -196,7 +203,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     return RedditFragment.createInstance();
 
                 case 2:
-                    return RedditFragment.createInstance();
+                    return ProfileFragment.createInstance("DrButtersMD", true);
 
                 default:
                     throw new IndexOutOfBoundsException();
