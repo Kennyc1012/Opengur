@@ -95,8 +95,6 @@ public class RedditFragment extends Fragment {
 
     private TabActivityListener mListener;
 
-    private String[] mPreviousSearches = null;
-
     private SqlHelper mSql;
 
     private int mCurrentPage = 0;
@@ -274,10 +272,8 @@ public class RedditFragment extends Fragment {
         if (savedInstanceState == null) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             mQuality = pref.getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
-            mSort = GalleryFragment.GallerySort.getSortFromString(pref.getString("sort", null));
         } else {
             mIsRestoring = true;
-            mSort = GalleryFragment.GallerySort.getSortFromString(savedInstanceState.getString(KEY_SORT, GalleryFragment.GallerySort.TIME.getSort()));
             mQuality = savedInstanceState.getString(KEY_QUALITY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
             mQuery = savedInstanceState.getString(KEY_QUERY, null);
@@ -299,15 +295,18 @@ public class RedditFragment extends Fragment {
      * Configures the previous search adapter to the AutoCompleteTextView
      */
     private void configurePreviousSearches() {
-        mPreviousSearches = mSql.getSubReddits();
+        String[] searches = mSql.getSubReddits();
 
-        if (mPreviousSearches != null && mPreviousSearches.length > 0) {
+        if (searches != null && searches.length > 0) {
             if (mSearchAdapter == null) {
-                mSearchAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, mPreviousSearches);
+                mSearchAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, Arrays.asList(searches));
                 mSearchEditText.setAdapter(mSearchAdapter);
             } else {
-                mSearchAdapter.clear();
-                mSearchAdapter.addAll(mPreviousSearches);
+                if (!mSearchAdapter.isEmpty()) {
+                    mSearchAdapter.clear();
+                }
+
+                mSearchAdapter.addAll(searches);
                 mSearchAdapter.notifyDataSetChanged();
             }
         }
@@ -519,7 +518,7 @@ public class RedditFragment extends Fragment {
         outState.putString(KEY_QUERY, mQuery);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllitems());
+            outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllItems());
             outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
         }
 

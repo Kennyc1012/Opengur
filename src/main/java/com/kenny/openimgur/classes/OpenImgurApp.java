@@ -11,17 +11,12 @@ import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.util.Log;
 
-import com.kenny.openimgur.R;
 import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.SqlHelper;
-import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
-import com.nostra13.universalimageloader.cache.memory.impl.LargestLimitedMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.RequestBody;
 
@@ -41,9 +36,6 @@ public class OpenImgurApp extends Application {
     public static final long FILE_CACHE_LIMIT_256_MB = 268435456L;
 
     public static final long FILE_CACHE_LIMIT_128_MB = 134217728L;
-
-    // 8MB
-    private static final int MEMORY_CACHE_LIMIT = 8388608;
 
     private static OpenImgurApp instance;
 
@@ -68,47 +60,24 @@ public class OpenImgurApp extends Application {
 
     public ImageLoader getImageLoader() {
         if (mImageLoader == null || !mImageLoader.isInited()) {
-            initImageLoader();
+            String cacheLimit = mPref.getString(SettingsActivity.CACHE_SIZE_KEY, SettingsActivity.CACHE_SIZE_256_MB);
+            long cache;
+
+            if (SettingsActivity.CACHE_SIZE_128_MB.equals(cacheLimit)) {
+                cache = FILE_CACHE_LIMIT_128_MB;
+            } else if (SettingsActivity.CACHE_SIZE_256_MB.equals(cacheLimit)) {
+                cache = FILE_CACHE_LIMIT_256_MB;
+            } else if (SettingsActivity.CACHE_SIZE_512_MB.equals(cacheLimit)) {
+                cache = FILE_CACHE_LIMIT_512_MB;
+            } else {
+                cache = FILE_CACHE_LIMIT_1_GB;
+            }
+
+            ImageUtil.initImageLoader(getApplicationContext(),cache);
             mImageLoader = ImageLoader.getInstance();
         }
 
         return mImageLoader;
-    }
-
-    /**
-     * Initializes the ImageLoader
-     */
-    private void initImageLoader() {
-        Context context = getApplicationContext();
-        String cacheLimit = mPref.getString(SettingsActivity.CACHE_SIZE_KEY, SettingsActivity.CACHE_SIZE_256_MB);
-        long cache;
-
-        if (SettingsActivity.CACHE_SIZE_128_MB.equals(cacheLimit)) {
-            cache = FILE_CACHE_LIMIT_128_MB;
-        } else if (SettingsActivity.CACHE_SIZE_256_MB.equals(cacheLimit)) {
-            cache = FILE_CACHE_LIMIT_256_MB;
-        } else if (SettingsActivity.CACHE_SIZE_512_MB.equals(cacheLimit)) {
-            cache = FILE_CACHE_LIMIT_512_MB;
-        } else {
-            cache = FILE_CACHE_LIMIT_1_GB;
-        }
-
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .resetViewBeforeLoading(true)
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .showImageOnLoading(R.drawable.place_holder)
-                .build();
-
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                .threadPoolSize(5)
-                .denyCacheImageMultipleSizesInMemory()
-                .diskCache(new LruDiscCache(getCacheDir(), new HashCodeFileNameGenerator(), cache))
-                .defaultDisplayImageOptions(options)
-                .memoryCache(new LargestLimitedMemoryCache(MEMORY_CACHE_LIMIT))
-                .build();
-
-        ImageLoader.getInstance().init(config);
     }
 
     /**

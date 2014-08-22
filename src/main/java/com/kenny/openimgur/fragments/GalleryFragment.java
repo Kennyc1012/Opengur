@@ -537,7 +537,7 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllitems());
+            outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllItems());
             outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
         }
 

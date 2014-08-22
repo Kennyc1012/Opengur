@@ -1,5 +1,6 @@
 package com.kenny.openimgur.util;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,7 +10,14 @@ import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
+import com.kenny.openimgur.R;
+import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LargestLimitedMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
 import java.io.File;
@@ -21,6 +29,8 @@ import pl.droidsonroids.gif.GifDrawable;
  * Created by kcampagna on 7/1/14.
  */
 public class ImageUtil {
+    // 8MB
+    private static final int MEMORY_CACHE_LIMIT = 8388608;
 
     /**
      * Converts a bitmap to grayscale
@@ -107,5 +117,51 @@ public class ImageUtil {
         }
 
         return false;
+    }
+
+    /**
+     * Initializes the ImageLoader
+     */
+    public static void initImageLoader(Context context, long cache) {
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
+                .threadPoolSize(7)
+                .denyCacheImageMultipleSizesInMemory()
+                .diskCache(new LruDiscCache(context.getCacheDir(), new HashCodeFileNameGenerator(), cache))
+                .defaultDisplayImageOptions(getDefaultDisplayOptions().build())
+                .memoryCache(new LargestLimitedMemoryCache(MEMORY_CACHE_LIMIT))
+                .build();
+
+        ImageLoader.getInstance().init(config);
+    }
+
+    /**
+     * Returns the display options for the image loader when loading for the gallery
+     *
+     * @return
+     */
+    public static DisplayImageOptions.Builder getDisplayOptionsForGallery() {
+        return getDefaultDisplayOptions()
+                .displayer(new FadeInBitmapDisplayer(750, true, false, false));
+    }
+
+    /**
+     * Returns the display options for viewing an image in the view activity
+     *
+     * @return
+     */
+    public static DisplayImageOptions.Builder getDisplayOptionsForView() {
+        return getDefaultDisplayOptions().showImageOnLoading(R.drawable.place_holder);
+    }
+
+    /**
+     * Returns the default display options for the image loader
+     *
+     * @return
+     */
+    public static DisplayImageOptions.Builder getDefaultDisplayOptions() {
+        return new DisplayImageOptions.Builder()
+                .resetViewBeforeLoading(true)
+                .cacheInMemory(true)
+                .cacheOnDisk(true);
     }
 }

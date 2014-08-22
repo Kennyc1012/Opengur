@@ -675,7 +675,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
         outState.putParcelable(KEY_USERNAME, mSelectedUser);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllitems());
+            outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllItems());
             outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
         }
 

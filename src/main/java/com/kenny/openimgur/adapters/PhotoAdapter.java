@@ -13,7 +13,10 @@ import android.widget.ProgressBar;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.TextViewRoboto;
+import com.kenny.openimgur.util.ImageUtil;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
@@ -29,27 +32,20 @@ public class PhotoAdapter extends BaseAdapter {
 
     private final long PHOTO_SIZE_LIMIT = 1048576L;
 
-    public PhotoAdapter(Context context, List<ImgurPhoto> photos,
-                        ImageLoader loader, ImgurListener listener) {
+    private DisplayImageOptions mOptions;
+
+    public PhotoAdapter(Context context, List<ImgurPhoto> photos, ImgurListener listener) {
         mInflater = LayoutInflater.from(context);
         mPhotos = photos;
-        mImageLoader = loader;
+        mImageLoader = OpenImgurApp.getInstance(context).getImageLoader();
         mListener = listener;
+        mOptions = ImageUtil.getDisplayOptionsForView().build();
     }
 
     public void clear() {
         if (mPhotos != null) {
             mPhotos.clear();
         }
-    }
-
-    /**
-     * Returns all photos in the adapter
-     *
-     * @return
-     */
-    public List<ImgurPhoto> getItems() {
-        return mPhotos;
     }
 
     @Override
@@ -146,8 +142,7 @@ public class PhotoAdapter extends BaseAdapter {
         }
 
         mImageLoader.cancelDisplayTask(holder.image);
-        mImageLoader.displayImage(url, holder.image);
-
+        mImageLoader.displayImage(url, holder.image, mOptions);
         return convertView;
     }
 

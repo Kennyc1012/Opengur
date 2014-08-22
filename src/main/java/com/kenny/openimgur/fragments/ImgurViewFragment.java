@@ -90,8 +90,7 @@ public class ImgurViewFragment extends Fragment {
         if (mImgurObject instanceof ImgurPhoto) {
             List<ImgurPhoto> photo = new ArrayList<ImgurPhoto>(1);
             photo.add(((ImgurPhoto) mImgurObject));
-            mPhotoAdapter = new PhotoAdapter(getActivity(), photo, ((OpenImgurApp) getActivity().getApplication()).getImageLoader(),
-                    mImgurListener);
+            mPhotoAdapter = new PhotoAdapter(getActivity(), photo, mImgurListener);
             createHeader();
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -100,8 +99,7 @@ public class ImgurViewFragment extends Fragment {
             ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
             api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
         } else {
-            mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(),
-                    ((OpenImgurApp) getActivity().getApplication()).getImageLoader(), mImgurListener);
+            mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurListener);
             createHeader();
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -228,12 +226,11 @@ public class ImgurViewFragment extends Fragment {
             prog.setVisibility(View.VISIBLE);
             play.setVisibility(View.GONE);
             final ImgurPhoto photo = mPhotoAdapter.getItem(position);
-            ImageLoader imageLoader = OpenImgurApp.getInstance().getImageLoader();
-            File file = DiskCacheUtils.findInCache(photo.getLink(), imageLoader.getDiskCache());
+            File file = DiskCacheUtils.findInCache(photo.getLink(), loader.getDiskCache());
 
             // Need to do a check since we might be loading a thumbnail and not the actual gif here
             if (!FileUtil.isFileValid(file)) {
-                imageLoader.loadImage(photo.getLink(), new ImageLoadingListener() {
+                loader.loadImage(photo.getLink(), new ImageLoadingListener() {
                     @Override
                     public void onLoadingStarted(String s, View view) {
 
@@ -300,8 +297,7 @@ public class ImgurViewFragment extends Fragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
-                    mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(),
-                            ((OpenImgurApp) getActivity().getApplication()).getImageLoader(), mImgurListener);
+                    mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurListener);
 
                     createHeader();
                     mListView.setAdapter(mPhotoAdapter);

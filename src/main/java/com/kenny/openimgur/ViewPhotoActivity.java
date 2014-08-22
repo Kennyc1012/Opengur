@@ -73,7 +73,7 @@ public class ViewPhotoActivity extends BaseActivity {
         mUrl = intent.getStringExtra(KEY_URL);
         mImageView = (ImageView) findViewById(R.id.image);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        app.getImageLoader().displayImage(photo != null ? photo.getLink() : mUrl, mImageView, new ImageLoadingListener() {
+        app.getImageLoader().displayImage(photo != null ? photo.getLink() : mUrl, mImageView, ImageUtil.getDisplayOptionsForView().build(), new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String s, View view) {
             }
