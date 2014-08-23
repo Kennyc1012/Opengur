@@ -57,6 +57,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -122,11 +123,10 @@ public class ProfileFragment extends Fragment implements ImgurListener {
         args.putBoolean(KEY_FROM_MAIN, isFromMain);
 
         if (!TextUtils.isEmpty(userName)) {
-
             args.putString(KEY_USERNAME, userName);
-            fragment.setArguments(args);
         }
 
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -154,7 +154,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_profile, container, false);
+        return inflater.inflate(R.layout.profile_fragment, container, false);
     }
 
     @Override
@@ -219,6 +219,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
         } else {
             mQuality = savedInstanceState.getString(KEY_QUALITY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
+            mFromMain = savedInstanceState.getBoolean(KEY_FROM_MAIN, false);
 
             if (savedInstanceState.containsKey(KEY_ITEMS) && savedInstanceState.containsKey(KEY_USERNAME)) {
                 mSelectedUser = savedInstanceState.getParcelable(KEY_USERNAME);
@@ -249,13 +250,6 @@ public class ProfileFragment extends Fragment implements ImgurListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                if (!mFromMain) {
-                    getActivity().finish();
-                }
-
-                return true;
-
             case R.id.favorites:
             case R.id.submissions:
                 mCurrentPage = 0;
@@ -285,6 +279,13 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                             public void onClick(View view) {
                                 OpenImgurApp.getInstance(getActivity()).onLogout();
                                 getActivity().invalidateOptionsMenu();
+
+                                if (mAdapter != null) {
+                                    mAdapter.clear();
+                                    mAdapter.notifyDataSetChanged();
+                                }
+
+                                mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
                                 dialog.dismiss();
                             }
                         }).build());
@@ -304,21 +305,17 @@ public class ProfileFragment extends Fragment implements ImgurListener {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         if (mSelectedUser == null) {
-            menu.removeItem(R.id.favorites);
-            menu.removeItem(R.id.submissions);
-            menu.removeItem(R.id.logout);
-            menu.removeItem(R.id.refresh);
+            menu.findItem(R.id.favorites).setVisible(false);
+            menu.findItem(R.id.submissions).setVisible(false);
+            menu.findItem(R.id.logout).setVisible(false);
+            menu.findItem(R.id.refresh).setVisible(false);
         } else {
-
-            if (!mSelectedUser.isSelf()) {
-                //  menu.removeItem(R.id.logout);
-            }
-
+            menu.findItem(R.id.logout).setVisible(mSelectedUser.isSelf());
+            menu.findItem(R.id.favorites).setVisible(mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS);
+            menu.findItem(R.id.submissions).setVisible(mCurrentEndpoint == Endpoints.ACCOUNT_GALLERY_FAVORITES);
             if (mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS) {
-                menu.removeItem(R.id.submissions);
                 menu.findItem(R.id.favorites).setShowAsAction(mFromMain ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
             } else {
-                menu.removeItem(R.id.favorites);
                 menu.findItem(R.id.submissions).setShowAsAction(mFromMain ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
             }
         }
@@ -494,9 +491,9 @@ public class ProfileFragment extends Fragment implements ImgurListener {
         try {
             int status = event.json.getInt(ApiClient.KEY_STATUS);
 
-            if (status == ApiClient.STATUS_OK) {
-                switch (event.eventType) {
-                    case PROFILE_DETAILS:
+            switch (event.eventType) {
+                case PROFILE_DETAILS:
+                    if (status == ApiClient.STATUS_OK) {
                         if (mSelectedUser == null) {
                             mSelectedUser = new ImgurUser(event.json);
                         } else {
@@ -505,10 +502,14 @@ public class ProfileFragment extends Fragment implements ImgurListener {
 
                         OpenImgurApp.getInstance(getActivity()).getSql().insertProfile(mSelectedUser);
                         getGalleryData();
-                        break;
+                    } else {
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
+                    }
+                    break;
 
-                    case ACCOUNT_GALLERY_FAVORITES:
-                    case ACCOUNT_SUBMISSIONS:
+                case ACCOUNT_GALLERY_FAVORITES:
+                case ACCOUNT_SUBMISSIONS:
+                    if (status == ApiClient.STATUS_OK) {
                         List<ImgurBaseObject> objects = new ArrayList<ImgurBaseObject>();
                         JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
 
@@ -525,16 +526,30 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                         }
 
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, objects);
-                        break;
-                }
+                    } else {
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
+                    }
+                    break;
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
         }
     }
 
     public void onEventMainThread(ThrowableFailureEvent event) {
-        // TODO Errors
+        Throwable e = event.getThrowable();
+
+        if (e instanceof IOException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
+        } else if (e instanceof JSONException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
+        } else {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
+        }
+
+        event.getThrowable().printStackTrace();
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {
@@ -588,7 +603,21 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                     break;
 
                 case ImgurHandler.MESSAGE_ACTION_FAILED:
+                    if (mAdapter == null || mAdapter.isEmpty()) {
+                        if (mListener != null) {
+                            mListener.onError((Integer) msg.obj, PAGE);
+                        }
 
+                        if (!mDidAddProfileToErrorView && mSelectedUser != null) {
+                            mDidAddProfileToErrorView = true;
+                            LinearLayout container = (LinearLayout) mMultiView.getErrorView().findViewById(R.id.container);
+                            container.addView(ViewUtils.getProfileView(mSelectedUser, getActivity(), mMultiView, ProfileFragment.this), 0);
+                            container.addView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0), 0);
+                        }
+
+                        mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
+                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    }
                     break;
 
                 default:
@@ -673,6 +702,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
         outState.putString(KEY_ENDPOINT, mCurrentEndpoint.getUrl());
         outState.putParcelable(KEY_USERNAME, mSelectedUser);
+        outState.putBoolean(KEY_FROM_MAIN, mFromMain);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
             outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllItems());

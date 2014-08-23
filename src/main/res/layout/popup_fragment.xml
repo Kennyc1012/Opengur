@@ -12,11 +12,7 @@
 
         <com.kenny.openimgur.ui.TextViewRoboto
             android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_content_margin"
-            android:textSize="20sp"
-            android:textColor="#000000"
+            style="@style/dialog_title"
             app:robotoFont="bold" />
 
         <com.kenny.openimgur.ui.TextViewRoboto
@@ -25,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dialog_content_margin"
             android:layout_marginRight="@dimen/dialog_content_margin"
-            android:textSize="14sp"
+            android:textSize="18sp"
             android:textColor="#000000"
             app:robotoFont="regular" />
 

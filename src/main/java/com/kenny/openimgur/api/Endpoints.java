@@ -51,6 +51,9 @@ public enum Endpoints {
     // Album/Image id
     COMMENT("https://api.imgur.com/3/gallery/%s/comment"),
 
+    // albumid or imageid / comment parent
+    COMMENT_REPLY("https://api.imgur.com/3/gallery/%s/comment/%s"),
+
     // Subreddit,sort,page
     SUBREDDIT("https://api.imgur.com/3/gallery/r/%s/%s/%d");
 

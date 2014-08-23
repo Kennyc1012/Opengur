@@ -30,7 +30,8 @@
             style="@android:style/Widget.ActionButton"
             android:src="@drawable/ic_action_cancel"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:alpha="0" />
 
         <AutoCompleteTextView
             android:id="@+id/search"

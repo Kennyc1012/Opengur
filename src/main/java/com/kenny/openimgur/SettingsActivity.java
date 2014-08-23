@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebView;
 
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
@@ -56,6 +58,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         bindPreference(findPreference(THUMBNAIL_QUALITY_KEY));
         findPreference(REDDIT_SEARCH_KEY).setOnPreferenceClickListener(this);
         findPreference(CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
+        findPreference("licenses").setOnPreferenceClickListener(this);
     }
 
     @Override
@@ -82,6 +85,12 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         super.onResume();
         long cacheSize = FileUtil.getDirectorySize(mApp.getImageLoader().getDiskCache().getDirectory());
         findPreference(CURRENT_CACHE_SIZE_KEY).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
+        try {
+            String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            findPreference("version").setSummary(version);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void bindPreference(Preference preference) {
@@ -135,6 +144,16 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             return true;
         } else if (preference.getKey().equals(REDDIT_SEARCH_KEY)) {
             new SqlHelper(getApplicationContext()).deleteAllSubRedditSearches();
+            return true;
+        } else if (preference.getKey().equals("licenses")) {
+            AlertDialog dialog = new AlertDialog.Builder(SettingsActivity.this)
+                    .setNegativeButton(R.string.dismiss, null).create();
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            WebView webView = new WebView(this);
+            webView.loadUrl("file:///android_asset/licenses.html");
+            dialog.setView(webView);
+            dialog.show();
+            return true;
         }
 
         return false;

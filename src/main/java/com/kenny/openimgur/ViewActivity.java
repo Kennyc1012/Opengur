@@ -2,14 +2,12 @@ package com.kenny.openimgur;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
@@ -18,14 +16,13 @@ import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.view.ViewPager;
-import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -42,6 +39,7 @@ import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.fragments.CommentPopupFragment;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -78,6 +76,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
     private ListView mCommentList;
 
     private ImageButton mPanelButton;
+
+    private ImageButton mUpVoteBtn;
+
+    private ImageButton mDownVoteBtn;
 
     private CommentAdapter mCommentAdapter;
 
@@ -116,13 +118,48 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         setContentView(R.layout.activity_view);
         mMultiView = (MultiStateView) findViewById(R.id.multiView);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+        mSlidingPane = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         mCommentListHeader = View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
         mCommentList = (ListView) mMultiView.findViewById(R.id.commentList);
-        mPanelButton = (ImageButton) findViewById(R.id.panelUpBtn);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setOffscreenPageLimit(1);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
-        mSlidingPane = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mCurrentPosition = position;
+                loadComments();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        mCommentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                onListItemClick(position - mCommentList.getHeaderViewsCount());
+            }
+        });
+
+        mUpVoteBtn = (ImageButton) findViewById(R.id.upVoteBtn);
+        mUpVoteBtn.setOnClickListener(this);
+        mDownVoteBtn = (ImageButton) findViewById(R.id.downVoteBtn);
+        mDownVoteBtn.setOnClickListener(this);
+        findViewById(R.id.commentBtn).setOnClickListener(this);
+        if (mSlidingPane != null) initSlidingView();
+        handleIntent(getIntent());
+    }
+
+    private void initSlidingView() {
+        mPanelButton = (ImageButton) findViewById(R.id.panelUpBtn);
+        mPanelButton.setOnClickListener(this);
         mSlidingPane.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View view, float v) {
@@ -153,36 +190,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
             public void onPanelHidden(View view) {
             }
         });
-
-        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                mCurrentPosition = position;
-                loadComments();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-        mCommentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                onListItemClick(position - mCommentList.getHeaderViewsCount());
-            }
-        });
-
-        mPanelButton.setOnClickListener(this);
-        findViewById(R.id.upVoteBtn).setOnClickListener(this);
-        findViewById(R.id.downVoteBtn).setOnClickListener(this);
-        findViewById(R.id.commentBtn).setOnClickListener(this);
-        handleIntent(getIntent());
     }
 
     private void handleIntent(Intent intent) {
@@ -236,11 +243,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
         @Override
         public int getCount() {
-            if (objects != null) {
-                return objects.length;
-            }
-
-            return 0;
+            return objects != null ? objects.length : 0;
         }
     }
 
@@ -277,6 +280,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
                 mCommentAdapter.addComments(comment.getReplies());
                 mCommentAdapter.notifyDataSetChanged();
+                mCommentList.setSelection(0);
                 ObjectAnimator.ofFloat(mCommentList, "translationX", mCommentList.getWidth(), 0).setDuration(250).start();
             }
         }).start();
@@ -312,7 +316,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void onBackPressed() {
-        if (mSlidingPane.isPanelExpanded()) {
+        if (mSlidingPane != null && mSlidingPane.isPanelExpanded()) {
             if (mCommentAdapter != null && !mCommentAdapter.isEmpty() &&
                     mCommentArray != null && mCommentArray.size() > 0) {
                 previousComments(mCommentAdapter.getItem(0));
@@ -320,6 +324,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                 mSlidingPane.collapsePanel();
             }
 
+            return;
+        } else if (mSlidingPane == null && mCommentAdapter != null && !mCommentAdapter.isEmpty() &&
+                mCommentArray != null && mCommentArray.size() > 0) {
+            previousComments(mCommentAdapter.getItem(0));
             return;
         }
 
@@ -368,7 +376,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         mImgurObjects = null;
         mSlidingPane = null;
         mCommentArray.clear();
+        mCommentArray = null;
         mPreviousCommentPositionArray.clear();
+        mPreviousCommentPositionArray = null;
         mHandler.removeCallbacksAndMessages(null);
 
         if (mCommentAdapter != null) {
@@ -392,9 +402,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                 break;
 
             case R.id.upVoteBtn:
+            case R.id.downVoteBtn:
                 if (user != null) {
-                    String upVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(),
-                            mImgurObjects[mCurrentPosition].getId(), ImgurBaseObject.VOTE_UP);
+                    String vote = view.getId() == R.id.upVoteBtn ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
+                    String upVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(), mImgurObjects[mCurrentPosition].getId(), vote);
 
                     if (mApiClient == null) {
                         mApiClient = new ApiClient(upVoteUrl, ApiClient.HttpRequest.GET);
@@ -403,27 +414,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                         mApiClient.setRequestType(ApiClient.HttpRequest.GET);
                     }
 
-                    mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, null, null);
-
-                } else {
-                    Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
-                }
-
-                break;
-
-            case R.id.downVoteBtn:
-                if (user != null) {
-                    String downVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(),
-                            mImgurObjects[mCurrentPosition].getId(), ImgurBaseObject.VOTE_DOWN);
-
-                    if (mApiClient == null) {
-                        mApiClient = new ApiClient(downVoteUrl, ApiClient.HttpRequest.GET);
-                    } else {
-                        mApiClient.setUrl(downVoteUrl);
-                        mApiClient.setRequestType(ApiClient.HttpRequest.GET);
-                    }
-
-                    mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, null, null);
+                    mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, vote, null);
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
                 }
@@ -432,36 +423,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
             case R.id.commentBtn:
                 if (user != null && user.isAccessTokenValid()) {
-                    final EditText editText = new EditText(getApplicationContext());
-                    editText.setHint(R.string.comment_hint);
-                    editText.setMaxLines(4);
-                    editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(140)});
-                    editText.setTextColor(Color.BLACK);
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ViewActivity.this);
-                    builder.setTitle(R.string.comment).setNegativeButton(R.string.cancel, null);
-                    builder.setPositiveButton(R.string.post, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            String comment = editText.getText().toString();
-
-                            if (!TextUtils.isEmpty(comment)) {
-                                String url = String.format(Endpoints.COMMENT.getUrl(), mImgurObjects[mCurrentPosition].getId());
-                                mApiClient.setUrl(url);
-                                mApiClient.setRequestType(ApiClient.HttpRequest.POST);
-                                RequestBody body = new FormEncodingBuilder().add("comment", comment).build();
-                                mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, body);
-                            } else {
-                                // TODO error
-                            }
-                        }
-                    });
-
-                    builder.setView(editText).show();
+                    Fragment fragment = CommentPopupFragment.createInstance(mImgurObjects[mCurrentPosition].getId(), null);
+                    getFragmentManager().beginTransaction().add(fragment, "comment").commit();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
                 }
-
                 break;
         }
     }
@@ -486,15 +452,17 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                             }
 
                             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, comments);
-                        } else if (event.httpRequest == ApiClient.HttpRequest.DELETE) {
-
                         } else if (event.httpRequest == ApiClient.HttpRequest.POST) {
-
+                            // TODO notify user
                         }
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
                     }
 
+                    break;
+
+                case GALLERY_VOTE:
+                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, event.id);
                     break;
 
                 case GALLERY_ITEM_INFO:
@@ -517,7 +485,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                         }
                         mImgurObjects = new ImgurBaseObject[]{(ImgurBaseObject) imgurObject};
 
-                        runOnUiThread(new Runnable() {
+                        mHandler.post(new Runnable() {
                             @Override
                             public void run() {
                                 mViewPager.setAdapter(new BrowsingAdapter(getFragmentManager(), mImgurObjects));
@@ -531,9 +499,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                     break;
             }
         } catch (JSONException e) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_JSON_EXCEPTION);
+            e.printStackTrace();
         }
-
     }
 
     /**
@@ -543,28 +510,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
      */
     public void onEventMainThread(ThrowableFailureEvent event) {
         Throwable e = event.getThrowable();
-        e.printStackTrace();
 
-        if (e instanceof JSONException) {
-            onCommentsError(ApiClient.STATUS_JSON_EXCEPTION);
-        } else if (e instanceof IOException) {
-            onCommentsError(ApiClient.STATUS_IO_EXCEPTION);
+        if (e instanceof IOException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_IO_EXCEPTION);
+        } else if (e instanceof JSONException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_JSON_EXCEPTION);
+        } else {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_INTERNAL_ERROR);
         }
-    }
 
-    /**
-     * Displays the appropriate error message based on the status code for the  comment list
-     *
-     * @param errorCode
-     */
-    private void onCommentsError(final int errorCode) {
-        switch (errorCode) {
-            case ApiClient.STATUS_EMPTY_RESPONSE:
-                mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-                break;
-
-            //TODO the rest of the errors
-        }
+        event.getThrowable().printStackTrace();
     }
 
     private ImgurListener mImgurListener = new ImgurListener() {
@@ -619,10 +574,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-
             case R.id.favorite:
                 if (user != null) {
                     final ImgurBaseObject imgurObj = mImgurObjects[mCurrentPosition];
@@ -670,11 +621,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (mImgurObjects != null) {
             if (TextUtils.isEmpty(mImgurObjects[mCurrentPosition].getAccount())) {
-                menu.removeItem(R.id.profile);
+                menu.findItem(R.id.profile).setVisible(false);
             }
 
             if (TextUtils.isEmpty(mImgurObjects[mCurrentPosition].getRedditLink())) {
-                menu.removeItem(R.id.reddit);
+                menu.findItem(R.id.reddit).setVisible(false);
             }
         }
         return super.onPrepareOptionsMenu(menu);
@@ -702,39 +653,55 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
-                    List<ImgurComment> comments = (List<ImgurComment>) msg.obj;
+                    Object object = msg.obj;
 
-                    if (!comments.isEmpty()) {
-                        if (mCommentAdapter == null) {
-                            mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, mImgurListener);
-                            // Add and remove the header view for pre 4.4 header support
-                            mCommentList.addHeaderView(mCommentListHeader);
-                            mCommentList.removeHeaderView(mCommentListHeader);
-                            mCommentList.setAdapter(mCommentAdapter);
-                        } else {
-                            mCommentArray.clear();
-                            mPreviousCommentPositionArray.clear();
-                            mCommentList.removeHeaderView(mCommentListHeader);
-                            mCommentAdapter.addComments(comments);
-                            mCommentAdapter.notifyDataSetChanged();
-                        }
+                    if (object instanceof List) {
+                        List<ImgurComment> comments = (List<ImgurComment>) msg.obj;
 
-                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-
-                        mMultiView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mCommentList.setSelection(0);
+                        if (!comments.isEmpty()) {
+                            if (mCommentAdapter == null) {
+                                mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, mImgurListener);
+                                // Add and remove the header view for pre 4.4 header support
+                                mCommentList.addHeaderView(mCommentListHeader);
+                                mCommentList.removeHeaderView(mCommentListHeader);
+                                mCommentList.setAdapter(mCommentAdapter);
+                            } else {
+                                mCommentArray.clear();
+                                mPreviousCommentPositionArray.clear();
+                                mCommentList.removeHeaderView(mCommentListHeader);
+                                mCommentAdapter.addComments(comments);
+                                mCommentAdapter.notifyDataSetChanged();
                             }
-                        });
-                    } else {
-                        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+
+                            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+
+                            mMultiView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mCommentList.setSelection(0);
+                                }
+                            });
+                        } else {
+                            mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+                        }
+                    } else if (object instanceof String) {
+                        String vote = (String) msg.obj;
+                        View animateView = ImgurBaseObject.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
+                        AnimatorSet set = new AnimatorSet();
+                        set.playTogether(
+                                ObjectAnimator.ofFloat(animateView, "scaleY", 1.0f, 1.5f, 1.0f),
+                                ObjectAnimator.ofFloat(animateView, "scaleX", 1.0f, 1.5f, 1.0f)
+                        );
+
+                        set.setDuration(1000L).setInterpolator(new OvershootInterpolator());
+                        set.start();
                     }
 
                     break;
 
                 case MESSAGE_ACTION_FAILED:
-                    onCommentsError((Integer) msg.obj);
+                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCodeStringResource((Integer) msg.obj));
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
             }
 
@@ -810,7 +777,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
                 case R.id.reply:
                     if (user != null) {
-
+                        Fragment fragment = CommentPopupFragment.createInstance(mImgurObjects[mCurrentPosition].getId(), mSelectedComment.getId());
+                        getFragmentManager().beginTransaction().add(fragment, "comment").commit();
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
                     }

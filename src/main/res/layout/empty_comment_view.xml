@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<com.kenny.openimgur.ui.TextViewRoboto xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:robotoFont="regular"
-    android:text="@string/empty_comment_message"
-    android:layout_gravity="center" />
+    android:layout_gravity="center">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/no_comments"
+        android:adjustViewBounds="true"
+        android:layout_gravity="center_horizontal" />
+
+    <com.kenny.openimgur.ui.TextViewRoboto
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:robotoFont="regular"
+        android:textSize="16sp"
+        android:text="@string/empty_comment_message"
+        android:gravity="center" />
+
+</LinearLayout>

@@ -25,4 +25,16 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/developer">
+
+        <Preference
+            android:key="version"
+            android:title="@string/version" />
+
+        <Preference
+            android:key="licenses"
+            android:title="@string/open_src_licenses" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

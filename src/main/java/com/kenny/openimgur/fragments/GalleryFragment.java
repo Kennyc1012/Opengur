@@ -34,7 +34,6 @@ import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.FilterDialogFragment;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -42,6 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -165,8 +165,6 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
 
     private HeaderGridView mGridView;
 
-    private TextViewRoboto mErrorMessage;
-
     private GalleryAdapter mAdapter;
 
     private TabActivityListener mListener;
@@ -230,7 +228,6 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
     @Override
     public void onDestroyView() {
         mMultiView = null;
-        mErrorMessage = null;
         mGridView = null;
         mHandler.removeCallbacksAndMessages(null);
 
@@ -256,7 +253,6 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
         super.onViewCreated(view, savedInstanceState);
         mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
-        mErrorMessage = (TextViewRoboto) mMultiView.findViewById(R.id.errorMessage);
         mGridView.setOnScrollListener(mScrollListener);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -416,9 +412,14 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
      * @param event
      */
     public void onEventMainThread(ThrowableFailureEvent event) {
-        if (mAdapter == null || mAdapter.isEmpty()) {
-            mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-            mErrorMessage.setText(R.string.error_generic);
+        Throwable e = event.getThrowable();
+
+        if (e instanceof IOException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
+        } else if (e instanceof JSONException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
+        } else {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
 
         event.getThrowable().printStackTrace();
@@ -505,12 +506,11 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
 
                 case MESSAGE_ACTION_FAILED:
                     if (mAdapter == null || mAdapter.isEmpty()) {
-                        mErrorMessage.setText((Integer) msg.obj);
-
                         if (mListener != null) {
                             mListener.onError((Integer) msg.obj, PAGE);
                         }
 
+                        mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
                         mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     }
 

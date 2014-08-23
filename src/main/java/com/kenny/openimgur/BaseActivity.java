@@ -151,6 +151,7 @@ public class BaseActivity extends Activity {
                 finish();
                 return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 }

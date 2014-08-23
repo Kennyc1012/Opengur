@@ -6,14 +6,6 @@
     android:background="@color/accent_color_blue_700">
 
     <ImageButton
-        android:id="@+id/panelUpBtn"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:src="@drawable/ic_arrow_up"
-        style="@android:style/Widget.ActionButton" />
-
-    <ImageButton
         android:id="@+id/upVoteBtn"
         android:layout_width="0dp"
         android:layout_height="match_parent"

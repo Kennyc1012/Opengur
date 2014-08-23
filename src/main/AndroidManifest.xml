@@ -62,7 +62,7 @@
 
         <activity
             android:name=".ViewPhotoActivity"
-            android:theme="@style/Style_Not_Translucent" />
+            android:theme="@style/Style_Fully_Translucent" />
 
         <activity
             android:name=".SettingsActivity"

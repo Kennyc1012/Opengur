@@ -45,6 +45,7 @@ public class ProfileActivity extends BaseActivity {
             }
 
             getFragmentManager().beginTransaction().add(R.id.content, ProfileFragment.createInstance(username, false)).commit();
+            getActionBar().setTitle(R.string.profile);
         }
     }
 }

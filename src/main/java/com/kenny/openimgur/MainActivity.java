@@ -53,6 +53,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mPager = (ViewPager) findViewById(R.id.pager);
+        mPager.setOffscreenPageLimit(2);
         mPager.setAdapter(new TabPageAdapter(getFragmentManager()));
         mTabBar = (TabBarView) View.inflate(getApplicationContext(), R.layout.tab_ab_layout, null);
         mTabBar.setViewPager(mPager);
@@ -203,7 +204,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     return RedditFragment.createInstance();
 
                 case 2:
-                    return ProfileFragment.createInstance("DrButtersMD", true);
+                    return ProfileFragment.createInstance(null, true);
 
                 default:
                     throw new IndexOutOfBoundsException();

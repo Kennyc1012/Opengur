@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <dimen name="activity_horizontal_margin">96dp</dimen>
-    <dimen name="comment_panel_width">350dp</dimen>
+    <dimen name="comment_panel_width">400dp</dimen>
+    <dimen name="activity_horizontal_margin">144dp</dimen>
     <dimen name="view_activity_margin">16dp</dimen>
-
 </resources>

@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
@@ -46,6 +47,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -82,6 +84,8 @@ public class RedditFragment extends Fragment {
     private MultiStateView mMultiView;
 
     private HeaderGridView mGridView;
+
+    private ImageButton mClearButton;
 
     private RedditHandler mHandler = new RedditHandler();
 
@@ -145,7 +149,6 @@ public class RedditFragment extends Fragment {
     public void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
-
         if (mAdapter == null || mAdapter.isEmpty()) {
             mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
         }
@@ -162,12 +165,15 @@ public class RedditFragment extends Fragment {
         mSearchEditText = null;
         mMultiView = null;
         mGridView = null;
+        mClearButton = null;
+        mQuickReturnView = null;
         mHandler.removeCallbacksAndMessages(null);
 
         if (mAdapter != null) {
             mAdapter.clear();
             mAdapter = null;
         }
+
         super.onDestroy();
     }
 
@@ -238,6 +244,12 @@ public class RedditFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                if (charSequence.length() > 0 && mClearButton.getAlpha() == 0.0f) {
+                    mClearButton.animate().alpha(1.0f).setDuration(300L);
+                } else if (charSequence.length() <= 0 && mClearButton.getAlpha() == 1.0f) {
+                    mClearButton.animate().alpha(0.0f).setDuration(300L);
+                }
+
                 if (!mIsRestoring) {
                     mHandler.removeMessages(RedditHandler.MESSAGE_AUTO_SEARCH);
                     if (!TextUtils.isEmpty(charSequence) && charSequence.length() >= MIN_SEARCH_CHAR) {
@@ -246,7 +258,6 @@ public class RedditFragment extends Fragment {
                 } else {
                     mIsRestoring = false;
                 }
-
             }
 
             @Override
@@ -259,7 +270,8 @@ public class RedditFragment extends Fragment {
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mQuickReturnView.getLayoutParams();
         float extraSpace = ViewUtils.getHeightForTranslucentStyle(getActivity()) + getResources().getDimension(R.dimen.quick_return_additional_padding);
         lp.setMargins(lp.leftMargin, (int) extraSpace, lp.rightMargin, lp.bottomMargin);
-        view.findViewById(R.id.clear).setOnClickListener(new View.OnClickListener() {
+        mClearButton = (ImageButton) view.findViewById(R.id.clear);
+        mClearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mSearchEditText.setText(null);
@@ -402,6 +414,15 @@ public class RedditFragment extends Fragment {
      * @param event
      */
     public void onEventMainThread(ThrowableFailureEvent event) {
+        Throwable e = event.getThrowable();
+
+        if (e instanceof IOException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
+        } else if (e instanceof JSONException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
+        } else {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
+        }
 
         event.getThrowable().printStackTrace();
     }
@@ -431,7 +452,7 @@ public class RedditFragment extends Fragment {
                     break;
 
                 case MESSAGE_EMPTY_RESULT:
-                    // Only show the empty view when the listen is truely empty
+                    // Only show the empty view when the list is truly empty
                     if (mAdapter == null || mAdapter.isEmpty()) {
                         mMultiView.setEmptyText(R.id.empty, getString(R.string.reddit_empty, mQuery));
                         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
@@ -461,7 +482,20 @@ public class RedditFragment extends Fragment {
 
                     break;
 
+                case MESSAGE_ACTION_FAILED:
+                    if (mAdapter == null || mAdapter.isEmpty()) {
+                        if (mListener != null) {
+                            mListener.onError((Integer) msg.obj, PAGE);
+                        }
+
+                        mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
+                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    }
+
+                    break;
+
                 default:
+                    super.handleMessage(msg);
                     break;
             }
 

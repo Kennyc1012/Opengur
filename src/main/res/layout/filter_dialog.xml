@@ -11,12 +11,8 @@
         android:layout_height="wrap_content">
 
         <com.kenny.openimgur.ui.TextViewRoboto
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_content_margin"
-            android:text="@string/filter"
-            android:textSize="25sp"
-            app:robotoFont="bold" />
+            style="@style/dialog_title"
+            android:text="@string/filter" />
 
         <com.kenny.openimgur.ui.TextViewRoboto
             android:layout_width="match_parent"

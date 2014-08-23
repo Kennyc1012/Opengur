@@ -1,15 +1,11 @@
 package com.kenny.openimgur;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -99,20 +95,6 @@ public class ViewPhotoActivity extends BaseActivity {
                     }
                 }
 
-                // Setup a listener to hide the UI if the photo is tapped (only for api 19 and higher)
-                if (app.SDK_VERSION >= Build.VERSION_CODES.KITKAT) {
-
-                    photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
-                        @Override
-                        public void onPhotoTap(View view, float x, float y) {
-                            if ((mDecorView.getSystemUiVisibility()
-                                    & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0) {
-                                hideSystemUI();
-                            }
-                        }
-                    });
-                }
-
                 photoView.update();
             }
 
@@ -130,22 +112,10 @@ public class ViewPhotoActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        mHideHandler.removeMessages(0);
         mImageView = null;
         mProgressBar = null;
         mDecorView = null;
         super.onDestroy();
-    }
-
-    @TargetApi(19)
-    private void hideSystemUI() {
-        mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
     @Override
@@ -172,25 +142,5 @@ public class ViewPhotoActivity extends BaseActivity {
         }
 
         return super.onPrepareOptionsMenu(menu);
-    }
-
-    private final Handler mHideHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            hideSystemUI();
-        }
-    };
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (app.SDK_VERSION >= Build.VERSION_CODES.KITKAT) {
-            if (hasFocus) {
-                mHideHandler.removeMessages(0);
-                mHideHandler.sendEmptyMessageDelayed(0, HIDE_DELAY);
-            } else {
-                mHideHandler.removeMessages(0);
-            }
-        }
     }
 }

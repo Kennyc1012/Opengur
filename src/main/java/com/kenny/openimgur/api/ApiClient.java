@@ -130,7 +130,7 @@ public class ApiClient {
      * @throws JSONException
      */
     private JSONObject makeRequest(Request request) throws IOException, JSONException {
-        JSONObject json = null;
+        JSONObject json;
         Log.v(TAG, "Making request to " + mUrl);
         Response response = mClient.newCall(request).execute();
 
@@ -181,7 +181,7 @@ public class ApiClient {
                 AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
                     @Override
                     public void run() throws Exception {
-                        EventBus.getDefault().post(new ImgurBusEvent(post(postParams), type, HttpRequest.GET, id));
+                        EventBus.getDefault().post(new ImgurBusEvent(post(postParams), type, HttpRequest.POST, id));
                     }
                 });
 
@@ -280,6 +280,8 @@ public class ApiClient {
                 return R.string.error_800;
 
             case ApiClient.STATUS_IO_EXCEPTION:
+                return R.string.error_600;
+
             case ApiClient.STATUS_JSON_EXCEPTION:
             case ApiClient.STATUS_NOT_FOUND:
             case ApiClient.STATUS_INTERNAL_ERROR:

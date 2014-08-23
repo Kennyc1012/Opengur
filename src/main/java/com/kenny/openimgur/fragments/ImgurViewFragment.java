@@ -298,7 +298,6 @@ public class ImgurViewFragment extends Fragment {
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
                     mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurListener);
-
                     createHeader();
                     mListView.setAdapter(mPhotoAdapter);
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);

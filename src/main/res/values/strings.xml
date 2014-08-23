@@ -48,6 +48,7 @@
     <string name="error_429">The rate limit for Open Imgur has been hit. There is nothing I can do about this. Check back
     later.</string>
     <string name="error_503">Imgur is currently over capacity. Boo&#8230;</string>
+    <string name="error_600">Unable to connect to Imgur. Check your connection and try again.</string>
     <string name="error_800">The Api sent an empty response causing a JSON exception. I don\'t expect you
     to know what this means, but it happened.</string>
     <string name="photo">Photo</string>
@@ -83,7 +84,7 @@
     <string name="logout_confirm">Are you sure you want to logout?</string>
     <string name="user_not_logged_in">You must be logged in to complete this action</string>
     <string name="invalid_url">The url does not appear to be an image</string>
-    <string name="comment_hint">Enter Comment</string>
+    <string name="comment_hint">Enter Comment (Max 140)</string>
     <string name="comment">Comment</string>
     <string name="post">Post</string>
     <string name="up_vote">Up Vote</string>
@@ -101,6 +102,9 @@
     <string name="profile_no_favorites">%s has not favorited any galleries. Boo</string>
     <string name="profile_no_submissions">%s has not uploaded any images. Boo</string>
     <string name="sort_by">Sort By</string>
+    <string name="developer">Developer</string>
+    <string name="version">Version</string>
+    <string name="open_src_licenses">Open Source Licenses</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">
