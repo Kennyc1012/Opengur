@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    app:panelHeight="@dimen/slide_up_panel_height"
+    app:panelHeight="?android:attr/actionBarSize"
     app:shadowHeight="4dp"
     app:dragView="@+id/topContainer">
 
@@ -16,47 +16,25 @@
 
     <!-- SLIDING LAYOUT -->
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#eeeeee"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <include
             android:id="@+id/topContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/slide_up_panel_height"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/panelUpBtn"
-                style="@android:style/Widget.ActionButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_up"
-                android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true" />
-
-            <com.devspark.robototextview.widget.RobotoTextView
-                android:id="@+id/pointText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:typeface="roboto_condensed_light"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="8dp"
-                android:textSize="@dimen/point_text_size"
-                android:layout_centerVertical="true"/>
-
-        </RelativeLayout>
+            layout="@layout/sliding_tab_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize" />
 
         <com.kenny.openimgur.ui.MultiStateView
             android:id="@+id/multiView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/topContainer"
             app:contentView="@layout/comment_list"
             app:loadingView="@layout/loading_view"
-            app:emptyView="@layout/empty_comment_view" />
+            app:emptyView="@layout/empty_comment_view"
+            app:errorView="@layout/error_view" />
 
-    </RelativeLayout>
+    </LinearLayout>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

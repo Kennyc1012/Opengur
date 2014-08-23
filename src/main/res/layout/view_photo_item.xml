@@ -4,23 +4,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:background="@drawable/card_bg">
 
-    <com.devspark.robototextview.widget.RobotoTextView
+    <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/image"
         android:textColor="#000000"
-        android:paddingTop="8dp"
-        app:typeface="roboto_condensed_bold"
+        android:padding="8dp"
+        app:robotoFont="bold"
         android:autoLink="web"
         android:linksClickable="true" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/image"
@@ -35,8 +34,7 @@
             android:layout_height="@dimen/play_button_radius"
             android:background="@drawable/black_circle"
             android:src="@drawable/ic_action_play"
-            android:layout_centerInParent="true"
-            android:paddingRight="4dp" />
+            android:layout_centerInParent="true" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -49,14 +47,13 @@
     </RelativeLayout>
 
 
-    <com.devspark.robototextview.widget.RobotoTextView
+    <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/image"
+        android:padding="8dp"
         android:textColor="#000000"
-        android:paddingTop="8dp"
-        app:typeface="roboto_condensed_regular"
+        app:robotoFont="regular"
         android:autoLink="web"
         android:linksClickable="true" />
 

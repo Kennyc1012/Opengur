@@ -1,21 +1,31 @@
 package com.kenny.openimgur;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.webkit.WebView;
 
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
 import com.kenny.openimgur.util.FileUtil;
+import com.kenny.openimgur.util.SqlHelper;
 
 /**
  * Created by kcampagna on 6/30/14.
  */
-public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
+public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+    public static final String REDDIT_SEARCH_KEY = "subreddit";
 
     public static final String CACHE_SIZE_KEY = "cacheSize";
 
@@ -23,48 +33,41 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     public static final String THUMBNAIL_QUALITY_KEY = "thumbnailQuality";
 
-    public static final int CACHE_SIZE_128_MB = 0;
+    public static final String CACHE_SIZE_128_MB = "128";
 
-    public static final int CACHE_SIZE_256_MB = 1;
+    public static final String CACHE_SIZE_256_MB = "256";
 
-    public static final int CACHE_SIZE_512_MB = 2;
+    public static final String CACHE_SIZE_512_MB = "512";
 
-    public static final int CACHE_SIZE_1_GB = 3;
+    public static final String CACHE_SIZE_1_GB = "1024";
 
-    public static final int THUMBNAIL_QUALITY_LOW = 0;
+    public static final String THUMBNAIL_QUALITY_LOW = "low";
 
-    public static final int THUMBNAIL_QUALITY_MEDIUM = 1;
+    public static final String THUMBNAIL_QUALITY_MEDIUM = "medium";
 
-    public static final int THUMBNAIL_QUALITY_HIGH = 2;
+    public static final String THUMBNAIL_QUALITY_HIGH = "high";
 
     private OpenImgurApp mApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mApp = ((OpenImgurApp) getApplication());
         addPreferencesFromResource(R.xml.settings);
-        findPreference(CACHE_SIZE_KEY).setOnPreferenceChangeListener(this);
-        findPreference(THUMBNAIL_QUALITY_KEY).setOnPreferenceChangeListener(this);
+        bindPreference(findPreference(CACHE_SIZE_KEY));
+        bindPreference(findPreference(THUMBNAIL_QUALITY_KEY));
+        findPreference(REDDIT_SEARCH_KEY).setOnPreferenceClickListener(this);
+        findPreference(CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
+        findPreference("licenses").setOnPreferenceClickListener(this);
+    }
 
-        findPreference(CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(final Preference preference) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
-                builder.setTitle(R.string.clear_cache).setMessage(R.string.clear_cache_message);
-                builder.setNegativeButton(R.string.cancel, null).setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mApp.getImageLoader().clearDiskCache();
-                        long cacheSize = FileUtil.getDirectorySize(mApp.getCacheDir());
-                        preference.setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
-                    }
-                }).show();
-                return true;
-            }
-        });
-
-        getActionBar().setDisplayShowHomeEnabled(true);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        ActionBar ab = getActionBar();
+        ab.setDisplayShowHomeEnabled(true);
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setIcon(new ColorDrawable(Color.TRANSPARENT));
     }
 
     @Override
@@ -80,18 +83,19 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     @Override
     protected void onResume() {
         super.onResume();
-        mApp = ((OpenImgurApp) getApplication());
         long cacheSize = FileUtil.getDirectorySize(mApp.getImageLoader().getDiskCache().getDirectory());
         findPreference(CURRENT_CACHE_SIZE_KEY).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
+        try {
+            String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            findPreference("version").setSummary(version);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
-        int cacheLimit = Integer.parseInt(mApp.getPreferences().getString(CACHE_SIZE_KEY, String.valueOf(CACHE_SIZE_256_MB)));
-        String[] cacheLimits = getResources().getStringArray(R.array.pref_cache_size_items);
-        findPreference(CACHE_SIZE_KEY).setSummary(cacheLimits[cacheLimit]);
-
-        int quality = Integer.parseInt(mApp.getPreferences().getString(THUMBNAIL_QUALITY_KEY, String.valueOf(THUMBNAIL_QUALITY_LOW)));
-        String[] qualities = getResources().getStringArray(R.array.pref_thumbnail_quality);
-        findPreference(THUMBNAIL_QUALITY_KEY).setSummary(qualities[quality]);
-
+    private void bindPreference(Preference preference) {
+        preference.setOnPreferenceChangeListener(this);
+        onPreferenceChange(preference, mApp.getPreferences().getString(preference.getKey(), ""));
     }
 
     public static Intent createIntent(Context context) {
@@ -100,17 +104,55 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object o) {
-        String key = preference.getKey();
+        if (preference instanceof ListPreference) {
+            ListPreference listPreference = (ListPreference) preference;
+            int prefIndex = listPreference.findIndexOfValue(o.toString());
+            if (prefIndex >= 0) {
+                preference.setSummary(listPreference.getEntries()[prefIndex]);
+            }
 
-        if (key.equals(CACHE_SIZE_KEY)) {
-            int cacheLimit = Integer.parseInt(o.toString());
-            String[] cacheLimits = getResources().getStringArray(R.array.pref_cache_size_items);
-            preference.setSummary(cacheLimits[cacheLimit]);
             return true;
-        } else if (key.equals(THUMBNAIL_QUALITY_KEY)) {
-            int quality = Integer.parseInt(o.toString());
-            String[] qualities = getResources().getStringArray(R.array.pref_thumbnail_quality);
-            preference.setSummary(qualities[quality]);
+        } else {
+            // Only have list preferences so far
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onPreferenceClick(final Preference preference) {
+        if (preference.getKey().equals(CURRENT_CACHE_SIZE_KEY)) {
+            final AlertDialog dialog = new AlertDialog.Builder(SettingsActivity.this).create();
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+            dialog.setView(new PopupDialogViewBuilder(getApplicationContext()).setTitle(R.string.clear_cache)
+                    .setMessage(R.string.clear_cache_message).setNegativeButton(R.string.cancel, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialog.dismiss();
+                        }
+                    }).setPositiveButton(R.string.yes, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            mApp.getImageLoader().clearDiskCache();
+                            long cacheSize = FileUtil.getDirectorySize(mApp.getCacheDir());
+                            preference.setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
+                            dialog.dismiss();
+                        }
+                    }).build());
+            dialog.show();
+            return true;
+        } else if (preference.getKey().equals(REDDIT_SEARCH_KEY)) {
+            new SqlHelper(getApplicationContext()).deleteAllSubRedditSearches();
+            return true;
+        } else if (preference.getKey().equals("licenses")) {
+            AlertDialog dialog = new AlertDialog.Builder(SettingsActivity.this)
+                    .setNegativeButton(R.string.dismiss, null).create();
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            WebView webView = new WebView(this);
+            webView.loadUrl("file:///android_asset/licenses.html");
+            dialog.setView(webView);
+            dialog.show();
             return true;
         }
 

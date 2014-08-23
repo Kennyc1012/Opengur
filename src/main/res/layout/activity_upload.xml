@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="?android:attr/actionBarSize">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/previewImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/photo_placeholder" />
+
+
+        <com.kenny.openimgur.ui.FloatingActionButton
+            android:id="@+id/uploadBtn"
+            android:layout_width="@dimen/fab_button_radius"
+            android:layout_height="@dimen/fab_button_radius"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/upload_image_button_top"
+            android:layout_marginRight="@dimen/fab_button_radius"
+            android:layout_marginEnd="@dimen/fab_button_radius"
+            app:drawable="@drawable/ic_action_upload"
+            app:shadowColor="@android:color/black"
+            app:color="@color/accent_color_blue_200" />
+
+        <EditText
+            android:id="@+id/url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:inputType="textUri"
+            android:hint="@string/link_upload_desc"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin" />
+
+        <EditText
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:inputType="textCapSentences|textMultiLine"
+            android:hint="@string/upload_title"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin" />
+
+        <EditText
+            android:id="@+id/desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:inputType="textCapSentences|textMultiLine"
+            android:hint="@string/upload_desc"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin" />
+
+    </LinearLayout>
+
+</ScrollView>

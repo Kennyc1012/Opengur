@@ -28,11 +28,15 @@ public class ImgurComment extends ImgurBaseObject {
 
     private static final String KEY_POINTS = "points";
 
+    private static final String KEY_VOTE = "vote";
+
     private String mAuthor;
 
     private String mAuthorId;
 
     private String mComment;
+
+    private String mVote;
 
     private boolean mIsDeleted;
 
@@ -49,19 +53,19 @@ public class ImgurComment extends ImgurBaseObject {
 
     private void parseJson(JSONObject json) {
         try {
-            if (json.has(KEY_AUTHOR)) {
+            if (json.has(KEY_AUTHOR) && !json.get(KEY_AUTHOR).equals(null)) {
                 mAuthor = json.getString(KEY_AUTHOR);
             }
 
-            if (json.has(KEY_AUTHOR_ID)) {
+            if (json.has(KEY_AUTHOR_ID) && !json.get(KEY_AUTHOR_ID).equals(null)) {
                 mAuthorId = json.getString(KEY_AUTHOR_ID);
             }
 
-            if (json.has(KEY_DELETED)) {
+            if (json.has(KEY_DELETED) && !json.get(KEY_DELETED).equals(null)) {
                 mIsDeleted = json.getBoolean(KEY_DELETED);
             }
 
-            if (json.has(KEY_CHILDREN)) {
+            if (json.has(KEY_CHILDREN) && !json.get(KEY_CHILDREN).equals(null)) {
                 JSONArray arr = json.getJSONArray(KEY_CHILDREN);
                 mChildrenComments = new ArrayList<ImgurComment>(arr.length());
                 for (int i = 0; i < arr.length(); i++) {
@@ -70,16 +74,20 @@ public class ImgurComment extends ImgurBaseObject {
                 }
             }
 
-            if (json.has(KEY_PARENT_ID)) {
+            if (json.has(KEY_PARENT_ID) && !json.get(KEY_PARENT_ID).equals(null)) {
                 mParentId = json.getLong(KEY_PARENT_ID);
             }
 
-            if (json.has(KEY_COMMENT)) {
+            if (json.has(KEY_COMMENT) && !json.get(KEY_COMMENT).equals(null)) {
                 mComment = json.getString(KEY_COMMENT);
             }
 
-            if (json.has(KEY_POINTS)) {
+            if (json.has(KEY_POINTS) && !json.get(KEY_POINTS).equals(null)) {
                 mPoints = json.getLong(KEY_POINTS);
+            }
+
+            if (json.has(KEY_VOTE) && !json.get(KEY_VOTE).equals(null)) {
+                mVote = json.getString(KEY_VOTE);
             }
 
         } catch (JSONException ex) {
@@ -92,6 +100,7 @@ public class ImgurComment extends ImgurBaseObject {
         mAuthor = in.readString();
         mAuthorId = in.readString();
         mComment = in.readString();
+        mVote = in.readString();
         mIsDeleted = in.readInt() == 1;
         mChildrenComments = new ArrayList<ImgurComment>();
         in.readList(mChildrenComments, null);
@@ -104,6 +113,7 @@ public class ImgurComment extends ImgurBaseObject {
         out.writeString(mAuthor);
         out.writeString(mAuthorId);
         out.writeString(mComment);
+        out.writeString(mVote);
         out.writeInt(mIsDeleted ? 1 : 0);
         out.writeTypedList(mChildrenComments);
         out.writeLong(mParentId);
@@ -162,5 +172,9 @@ public class ImgurComment extends ImgurBaseObject {
 
     public long getParentId() {
         return mParentId;
+    }
+
+    public String getVote() {
+        return mVote;
     }
 }

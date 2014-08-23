@@ -8,15 +8,32 @@
             android:entries="@array/pref_cache_size_items"
             android:entryValues="@array/pref_cache_size_keys" />
 
-        <Preference
-            android:key="currentCacheSize"
-            android:title="@string/pref_current_cache_size" />
-
         <ListPreference
             android:key="thumbnailQuality"
             android:title="@string/thumbnail_quality"
             android:entries="@array/pref_thumbnail_quality"
             android:entryValues="@array/pref_thumbnail_quality_keys" />
+
+        <Preference
+            android:key="currentCacheSize"
+            android:title="@string/pref_current_cache_size" />
+
+        <Preference
+            android:key="subreddit"
+            android:title="@string/pref_reddit_cache"
+            android:summary="@string/pref_reddit_desc" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/developer">
+
+        <Preference
+            android:key="version"
+            android:title="@string/version" />
+
+        <Preference
+            android:key="licenses"
+            android:title="@string/open_src_licenses" />
 
     </PreferenceCategory>
 

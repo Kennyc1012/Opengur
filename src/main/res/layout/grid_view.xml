@@ -4,8 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:stretchMode="columnWidth"
-    android:horizontalSpacing="2dp"
-    android:verticalSpacing="2dp"
+    android:horizontalSpacing="@dimen/grid_padding"
+    android:verticalSpacing="@dimen/grid_padding"
     android:numColumns="@integer/gallery_num_columns"
     android:drawSelectorOnTop="true"
-    android:smoothScrollbar="true" />
+    android:scrollingCache="false"
+    android:animationCache="false" />

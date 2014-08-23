@@ -1,21 +1,34 @@
 package com.kenny.openimgur.util;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.kenny.openimgur.classes.ImgurPhoto;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by kcampagna on 6/22/14.
  */
 public class FileUtil {
+    private static final String TAG = "FileUtil";
+
+    private static final String FOLDER_NAME = "OpenImgur";
 
     /**
      * Saves a photo to the given file. If the file currently exists, it will be deleted
@@ -34,12 +47,30 @@ public class FileUtil {
         }
 
         InputStream in = null;
+
+        try {
+            in = new URL(photo.getLink()).openStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return writeInputStreamToFile(in, file);
+    }
+
+    /**
+     * Writes an input stream to a file. The input stream will be closed.
+     *
+     * @param in
+     * @param file
+     * @return
+     */
+    public static boolean writeInputStreamToFile(@NonNull InputStream in, @NonNull File file) {
         BufferedOutputStream buffer = null;
         boolean didFinish = false;
 
         try {
             buffer = new BufferedOutputStream(new FileOutputStream(file));
-            in = new URL(photo.getLink()).openStream();
             byte byt[] = new byte[1024];
             int i;
 
@@ -49,13 +80,13 @@ public class FileUtil {
 
             didFinish = true;
         } catch (IOException e) {
+            Log.w(TAG, "Error saving photo");
             e.printStackTrace();
             didFinish = false;
         } finally {
             try {
-                if (in != null) {
-                    in.close();
-                }
+                in.close();
+
                 if (buffer != null) {
                     buffer.flush();
                     buffer.close();
@@ -64,6 +95,7 @@ public class FileUtil {
                 e.printStackTrace();
             }
         }
+
         return didFinish;
     }
 
@@ -99,5 +131,91 @@ public class FileUtil {
         }
 
         return size;
+    }
+
+    /**
+     * Creates a new file
+     *
+     * @param extension The extension of the file
+     * @return
+     */
+    public static File createFile(String extension) {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File dir = new File(Environment.getExternalStorageDirectory(), FOLDER_NAME);
+        dir.mkdirs();
+        File file = new File(dir.getAbsolutePath(), timeStamp + extension);
+
+        try {
+            if (file.createNewFile()) {
+                return file;
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Error creating file");
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
+
+    /**
+     * Takes a Uri and saves it to a file
+     *
+     * @param uri
+     * @param resolver
+     * @return
+     */
+    public static File createFile(Uri uri, ContentResolver resolver) {
+        InputStream in;
+        String type = resolver.getType(uri);
+        String extension;
+
+        if (ImgurPhoto.IMAGE_TYPE_GIF.equals(type)) {
+            extension = ".gif";
+        } else if (ImgurPhoto.IMAGE_TYPE_PNG.equals(type)) {
+            extension = ".png";
+        } else {
+            extension = ".jpg";
+        }
+
+        try {
+            in = resolver.openInputStream(uri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        File tempFile = createFile(extension);
+
+        if (tempFile != null && writeInputStreamToFile(in, tempFile)) {
+            return tempFile;
+        } else if (tempFile != null) {
+            // If writeInputStreamToFile fails, delete the excess file
+            tempFile.delete();
+        }
+
+        return null;
+    }
+
+    /**
+     * Tells the Media Scanner that a new file is present
+     *
+     * @param file
+     * @param context
+     */
+    public static void scanFile(Uri file, Context context) {
+        Intent scan = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        scan.setData(file);
+        context.sendBroadcast(scan);
+    }
+
+    /**
+     * Returns if the given file is not null and exists in the file system
+     *
+     * @param file
+     * @return
+     */
+    public static boolean isFileValid(@Nullable File file) {
+        return file != null && file.exists();
     }
 }

@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -26,7 +27,7 @@ public class DownloaderService extends IntentService {
 
     public static final String TAG = DownloaderService.class.getSimpleName();
 
-    public static final String KEY_IMAGE = "image";
+    private static final String KEY_IMAGE = "image";
 
     public DownloaderService() {
         super(TAG);
@@ -39,8 +40,8 @@ public class DownloaderService extends IntentService {
                 ImgurPhoto photo = intent.getParcelableExtra(KEY_IMAGE);
                 File file = new File(Environment.getExternalStorageDirectory(), FOLDER_NAME);
                 file.mkdirs();
+                String photoFileName;
 
-                String photoFileName = null;
                 if (photo.getType().equals(ImgurPhoto.IMAGE_TYPE_JPEG)) {
                     photoFileName = photo.getId() + ".jpeg";
                 } else if (photo.getType().equals(ImgurPhoto.IMAGE_TYPE_GIF)) {
@@ -51,7 +52,6 @@ public class DownloaderService extends IntentService {
 
                 File photoFile = new File(file.getAbsolutePath(), photoFileName);
                 Log.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
-
                 int notificationId = photo.getLink().hashCode();
                 Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -63,10 +63,9 @@ public class DownloaderService extends IntentService {
                 if (FileUtil.savePhoto(photo, photoFile)) {
                     Log.v(TAG, "Image download completed");
                     Uri fileUri = Uri.fromFile(photoFile);
+
                     // Let the system know we have a new file
-                    Intent scan = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                    scan.setData(fileUri);
-                    sendBroadcast(scan);
+                    FileUtil.scanFile(fileUri, getApplicationContext());
 
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType(photo.getType());
@@ -76,10 +75,10 @@ public class DownloaderService extends IntentService {
 
                     Intent viewIntent = new Intent(Intent.ACTION_VIEW);
                     viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    viewIntent.setDataAndType(fileUri,photo.getType());
+                    viewIntent.setDataAndType(fileUri, photo.getType());
                     PendingIntent viewP = PendingIntent.getActivity(getApplicationContext(), 1, viewIntent, PendingIntent.FLAG_ONE_SHOT);
 
-                    Bitmap bm = ImageUtil.toGrayscale(ImageUtil.decodeSampledBitmapFromResource(photoFile, 256, 256));
+                    Bitmap bm = ImageUtil.toGrayScale(ImageUtil.decodeSampledBitmapFromResource(photoFile, 256, 256));
                     if (bm != null) {
                         NotificationCompat.BigPictureStyle bigPicStyle = new NotificationCompat.BigPictureStyle();
                         bigPicStyle.setBigContentTitle(getString(R.string.download_complete));
@@ -104,5 +103,9 @@ public class DownloaderService extends IntentService {
             e.printStackTrace();
         }
 
+    }
+
+    public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {
+        return new Intent(context, DownloaderService.class).putExtra(DownloaderService.KEY_IMAGE, photo);
     }
 }

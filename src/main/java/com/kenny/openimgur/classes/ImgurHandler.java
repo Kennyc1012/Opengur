@@ -19,4 +19,8 @@ public class ImgurHandler extends Handler {
     public void sendMessage(int what, Object obj) {
         sendMessage(obtainMessage(what, obj));
     }
+
+    public void sendMessageDelayed(int what, Object object, long delay) {
+        sendMessageDelayed(obtainMessage(what, object), delay);
+    }
 }

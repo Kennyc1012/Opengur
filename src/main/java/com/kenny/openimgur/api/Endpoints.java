@@ -14,16 +14,50 @@ public enum Endpoints {
     // albumid
     ALBUM("https://api.imgur.com/3/gallery/%s/images"),
 
+    // Album or Image id
+    GALLERY_ITEM_DETAILS("https://api.imgur.com/3/gallery/%s"),
+
     //cover id
     ALBUM_COVER("https://i.imgur.com/%s.jpg"),
 
     // albumid or imageid
     COMMENTS("https://api.imgur.com/3/gallery/%s/comments"),
 
-    // Client-ID
-    LOGIN("https://api.imgur.com/oauth2/authorize?client_id=%s&response_type=token");
+    LOGIN("https://api.imgur.com/oauth2/authorize?client_id=" + ApiClient.CLIENT_ID + "&response_type=token"),
 
-    private String mUrl;
+    REFRESH_TOKEN("https://api.imgur.com/oauth2/token"),
+
+    // Username
+    PROFILE("https://api.imgur.com/3/account/%s"),
+
+    // Username
+    ACCOUNT_GALLERY_FAVORITES("https://api.imgur.com/3/account/%s/gallery_favorites"),
+
+    // Username/Page
+    ACCOUNT_SUBMISSIONS("https://api.imgur.com/3/account/%s/submissions/%d"),
+
+    // comment id/vote
+    COMMENT_VOTE("https://api.imgur.com/3/comment/%s/vote/%s"),
+
+    // id,vote
+    GALLERY_VOTE("https://api.imgur.com/3/gallery/%s/vote/%s"),
+
+    // Image id
+    FAVORITE_IMAGE("https://api.imgur.com/3/image/%s/favorite"),
+
+    // Album id
+    FAVORITE_ALBUM("https://api.imgur.com/3/album/%s/favorite"),
+
+    // Album/Image id
+    COMMENT("https://api.imgur.com/3/gallery/%s/comment"),
+
+    // albumid or imageid / comment parent
+    COMMENT_REPLY("https://api.imgur.com/3/gallery/%s/comment/%s"),
+
+    // Subreddit,sort,page
+    SUBREDDIT("https://api.imgur.com/3/gallery/r/%s/%s/%d");
+
+    private final String mUrl;
 
     Endpoints(String endpoint) {
         mUrl = endpoint;

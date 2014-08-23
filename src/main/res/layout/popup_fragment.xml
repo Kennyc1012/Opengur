@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.kenny.openimgur.ui.TextViewRoboto
+            android:id="@+id/title"
+            style="@style/dialog_title"
+            app:robotoFont="bold" />
+
+        <com.kenny.openimgur.ui.TextViewRoboto
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dialog_content_margin"
+            android:layout_marginRight="@dimen/dialog_content_margin"
+            android:textSize="18sp"
+            android:textColor="#000000"
+            app:robotoFont="regular" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dialog_content_margin"
+            android:layout_marginLeft="@dimen/dialog_button_margin"
+            android:layout_marginRight="@dimen/dialog_button_margin"
+            android:layout_marginBottom="@dimen/dialog_button_margin"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/negative"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:textColor="#000000"
+                android:text="@string/cancel"
+                style="@style/Action_Button" />
+
+            <Button
+                android:id="@+id/positive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:textColor="@color/dialog_accept"
+                android:text="@string/accept"
+                style="@style/Action_Button" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

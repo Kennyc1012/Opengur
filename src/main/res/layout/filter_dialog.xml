@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.kenny.openimgur.ui.TextViewRoboto
+            style="@style/dialog_title"
+            android:text="@string/filter" />
+
+        <com.kenny.openimgur.ui.TextViewRoboto
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dialog_content_margin"
+            android:layout_marginRight="@dimen/dialog_content_margin"
+            android:text="@string/section"
+            android:textSize="18sp"
+            app:robotoFont="regular" />
+
+        <RadioGroup
+            android:id="@+id/sectionRG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dialog_content_margin"
+            android:layout_marginRight="@dimen/dialog_content_margin"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/viral"
+                android:text="@string/viral"
+                style="@style/Radio_Button" />
+
+            <RadioButton
+                android:id="@+id/top"
+                android:text="@string/top_score"
+                style="@style/Radio_Button" />
+
+            <RadioButton
+                android:id="@+id/user"
+                android:text="@string/user_sub"
+                style="@style/Radio_Button" />
+
+        </RadioGroup>
+
+        <com.kenny.openimgur.ui.TextViewRoboto
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dialog_content_margin"
+            android:layout_marginLeft="@dimen/dialog_content_margin"
+            android:layout_marginRight="@dimen/dialog_content_margin"
+            android:text="@string/sort_by"
+            android:textSize="18sp"
+            app:robotoFont="regular" />
+
+        <RadioGroup
+            android:id="@+id/filterRG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dialog_content_margin"
+            android:layout_marginRight="@dimen/dialog_content_margin"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/popular"
+                android:text="@string/filter_popular"
+                style="@style/Radio_Button" />
+
+            <RadioButton
+                android:id="@+id/time"
+                android:text="@string/filter_time"
+                style="@style/Radio_Button" />
+
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dialog_content_margin"
+            android:layout_marginLeft="@dimen/dialog_button_margin"
+            android:layout_marginRight="@dimen/dialog_button_margin"
+            android:layout_marginBottom="@dimen/dialog_button_margin"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:textColor="#000000"
+                android:text="@string/cancel"
+                style="@style/Action_Button" />
+
+            <Button
+                android:id="@+id/accept"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:textColor="@color/dialog_accept"
+                android:text="@string/accept"
+                style="@style/Action_Button" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

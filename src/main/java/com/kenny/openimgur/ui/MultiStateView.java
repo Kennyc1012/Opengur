@@ -87,6 +87,8 @@ public class MultiStateView extends FrameLayout {
 
             a.recycle();
         }
+
+        setViewState(mViewState);
     }
 
     /**
@@ -224,6 +226,78 @@ public class MultiStateView extends FrameLayout {
     }
 
     /**
+     * Sets the text for the Error View
+     *
+     * @param textViewId   TextView id in the ErrorView
+     * @param errorMessage String resource of the error message
+     */
+    public void setErrorText(@IdRes int textViewId, @StringRes int errorMessage) {
+        if (mErrorView == null) {
+            throw new IllegalStateException("Error view is null");
+        }
+
+        TextView errorTextView = (TextView) mErrorView.findViewById(textViewId);
+        if (errorTextView != null) {
+            errorTextView.setText(errorMessage);
+        }
+    }
+
+    /**
+     * Sets the text for the Error View
+     *
+     * @param textViewId   TextView id in the ErrorView
+     * @param errorMessage String  of the error message
+     */
+    public void setErrorText(@IdRes int textViewId, String errorMessage) {
+        if (mErrorView == null) {
+            throw new IllegalStateException("Error view is null");
+        }
+
+        TextView errorTextView = (TextView) mErrorView.findViewById(textViewId);
+        if (errorTextView != null) {
+            errorTextView.setText(errorMessage);
+        }
+    }
+
+    /**
+     * Sets the text for the Empty View
+     *
+     * @param textViewId   TextView id in the Empty View
+     * @param errorMessage The error message
+     */
+    public void setEmptyText(@IdRes int textViewId, @StringRes int errorMessage) {
+        if (mEmptyView == null) {
+            throw new IllegalStateException("Empty view is null");
+        }
+
+        TextView emptyTextView = (TextView) mEmptyView.findViewById(textViewId);
+        if (emptyTextView != null) {
+            emptyTextView.setText(errorMessage);
+        }
+    }
+
+    /**
+     * Sets the text for the empty view
+     *
+     * @param textViewId   TextView id in the Empty View
+     * @param errorMessage The error message
+     */
+    public void setEmptyText(@IdRes int textViewId, String errorMessage) {
+        if (mEmptyView == null) {
+            throw new IllegalStateException("Empty view is null");
+        }
+
+        TextView emptyTextView = (TextView) mEmptyView.findViewById(textViewId);
+        if (emptyTextView != null) {
+            emptyTextView.setText(errorMessage);
+        }
+    }
+
+    public View getErrorView() {
+        return mErrorView;
+    }
+
+    /**
      * Gets the current view state
      *
      * @return
@@ -274,7 +348,7 @@ public class MultiStateView extends FrameLayout {
 
                 mLoadingView.setVisibility(View.VISIBLE);
                 if (mContentView != null) {
-                    mContentView.setVisibility(View.INVISIBLE);
+                    mContentView.setVisibility(View.GONE);
                 }
 
                 if (mErrorView != null) {
@@ -302,7 +376,7 @@ public class MultiStateView extends FrameLayout {
                 }
 
                 if (mContentView != null) {
-                    mContentView.setVisibility(View.INVISIBLE);
+                    mContentView.setVisibility(View.GONE);
                 }
 
                 break;
@@ -318,7 +392,7 @@ public class MultiStateView extends FrameLayout {
                 }
 
                 if (mContentView != null) {
-                    mContentView.setVisibility(View.INVISIBLE);
+                    mContentView.setVisibility(View.GONE);
                 }
 
                 if (mEmptyView != null) {

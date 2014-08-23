@@ -2,23 +2,32 @@
 <resources>
 
     <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="navigation_drawer_width">240dp</dimen>
     <dimen name="nav_item_text_size">25sp</dimen>
     <dimen name="nav_item_padding">12dp</dimen>
-    <integer name="gallery_num_columns">3</integer>
     <dimen name="gallery_column_height">160dp</dimen>
-    <dimen name="gallery_item_text_size">18sp</dimen>
+    <dimen name="gallery_item_text_size">16sp</dimen>
     <dimen name="rounded_rectangle_radius">24dp</dimen>
     <dimen name="rounded_rectangle_height">48dp</dimen>
     <dimen name="rounded_rectangle_text_size">20sp</dimen>
-    <dimen name="slide_up_panel_height">68dp</dimen>
     <dimen name="slide_up_panel_text_size">22sp</dimen>
-    <dimen name="grid_buffer">128dp</dimen>
-    <dimen name="ab_height">?android:attr/actionBarSize</dimen>
     <dimen name="play_button_radius">55dp</dimen>
-    <dimen name="upload_button_radius">64dp</dimen>
+    <dimen name="fab_button_radius">72dp</dimen>
+    <dimen name="fab_button_radius_smaller">64dp</dimen>
+    <dimen name="upload_image_button_top">-36dp</dimen>
     <dimen name="upload_button_margin">48dp</dimen>
     <dimen name="point_text_size">18sp</dimen>
+    <dimen name="profile_username_textsize">24sp</dimen>
+    <dimen name="notoriety_text_size">22sp</dimen>
+    <dimen name="profile_rep_text_size">18sp</dimen>
+    <dimen name="profile_bio_text_size">16sp</dimen>
+    <dimen name="vote_circle_text_size">13sp</dimen>
+    <dimen name="quick_return_edit_text_height">48dp</dimen>
+    <dimen name="quick_return_filter_height">80dp</dimen>
+    <dimen name="quick_return_additional_padding">8dp</dimen>
+    <dimen name="dialog_content_margin">24dp</dimen>
+    <dimen name="dialog_button_margin">16dp</dimen>
+    <dimen name="grid_padding">4dp</dimen>
+    <dimen name="view_activity_margin">16dp</dimen>
 
 </resources>
