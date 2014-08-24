@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -17,6 +18,7 @@ import android.view.Window;
 import android.webkit.WebView;
 
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.SqlHelper;
@@ -134,10 +136,8 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                     }).setPositiveButton(R.string.yes, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            mApp.getImageLoader().clearDiskCache();
-                            long cacheSize = FileUtil.getDirectorySize(mApp.getCacheDir());
-                            preference.setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
                             dialog.dismiss();
+                            new DeleteCacheTask().execute();
                         }
                     }).build());
             dialog.show();
@@ -157,5 +157,32 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         }
 
         return false;
+    }
+
+    private class DeleteCacheTask extends AsyncTask<Void, Void, Long> {
+        LoadingDialogFragment fragment;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            fragment = LoadingDialogFragment.createInstance(R.string.one_moment);
+            getFragmentManager().beginTransaction().add(fragment, "loading").commit();
+        }
+
+        @Override
+        protected Long doInBackground(Void... voids) {
+            mApp.getImageLoader().clearDiskCache();
+            return FileUtil.getDirectorySize(mApp.getCacheDir());
+        }
+
+        @Override
+        protected void onPostExecute(Long cacheSize) {
+            findPreference(CURRENT_CACHE_SIZE_KEY).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
+
+            if (fragment != null && fragment.isAdded()) {
+                fragment.dismissAllowingStateLoss();
+                fragment = null;
+            }
+        }
     }
 }

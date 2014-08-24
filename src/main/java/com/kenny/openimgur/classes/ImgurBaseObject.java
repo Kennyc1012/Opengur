@@ -41,6 +41,10 @@ public abstract class ImgurBaseObject implements Parcelable {
 
     private static final String KEY_REDDIT_LINK = "reddit_comments";
 
+    private static final String KEY_FAVORITE = "favorite";
+
+    private static final String KEY_VOTE = "vote";
+
     private int mUpVotes;
 
     private int mDownVotes;
@@ -63,10 +67,13 @@ public abstract class ImgurBaseObject implements Parcelable {
 
     private String mRedditLink;
 
+    private String mVote;
+
     private long mDate;
 
     private long mBandwidth;
 
+    private boolean mIsFavorited;
 
     protected ImgurBaseObject(JSONObject json) {
         parseJson(json);
@@ -131,6 +138,14 @@ public abstract class ImgurBaseObject implements Parcelable {
                 mRedditLink = json.getString(KEY_REDDIT_LINK);
             }
 
+            if (json.has(KEY_FAVORITE) && !json.get(KEY_FAVORITE).equals(null)) {
+                mIsFavorited = json.getBoolean(KEY_FAVORITE);
+            }
+
+            if (json.has(KEY_VOTE) && !json.get(KEY_VOTE).equals(null)) {
+                mVote = json.getString(KEY_VOTE);
+            }
+
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
@@ -188,6 +203,22 @@ public abstract class ImgurBaseObject implements Parcelable {
         return mRedditLink;
     }
 
+    public boolean isFavorited() {
+        return mIsFavorited;
+    }
+
+    public String getVote() {
+        return mVote;
+    }
+
+    public void setIsFavorite(boolean favorite) {
+        mIsFavorited = favorite;
+    }
+
+    public void setVote(String vote) {
+        mVote = vote;
+    }
+
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(mUpVotes);
         out.writeInt(mDownVotes);
@@ -200,7 +231,8 @@ public abstract class ImgurBaseObject implements Parcelable {
         out.writeString(mAccountId);
         out.writeString(mLink);
         out.writeString(mRedditLink);
-
+        out.writeString(mVote);
+        out.writeInt(mIsFavorited ? 1 : 0);
         out.writeLong(mDate);
         out.writeLong(mBandwidth);
     }
@@ -217,6 +249,8 @@ public abstract class ImgurBaseObject implements Parcelable {
         mAccountId = in.readString();
         mLink = in.readString();
         mRedditLink = in.readString();
+        mVote = in.readString();
+        mIsFavorited = in.readInt() == 1;
         mDate = in.readLong();
         mBandwidth = in.readLong();
     }

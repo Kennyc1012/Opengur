@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.RadioGroup;
 
 import com.kenny.openimgur.R;
@@ -36,9 +35,26 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        int dimen = getResources().getDimensionPixelSize(R.dimen.layout_test);
+
+        // Being greater than 0 will mean its a tablet so we need to manually stretch the width of the dialog
+        if (dimen > 0) {
+            // safety check
+            if (getDialog() == null)
+                return;
+
+            // Dialog Fragments are automatically set to wrap_content, so we need to force the width to fit our view
+            int dialogWidth = (int) (getResources().getDisplayMetrics().widthPixels * .8);
+            getDialog().getWindow().setLayout(dialogWidth, getDialog().getWindow().getAttributes().height);
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_Dialog);
     }
 
     @Override
@@ -52,7 +68,6 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         return inflater.inflate(R.layout.filter_dialog, container, false);
     }
 

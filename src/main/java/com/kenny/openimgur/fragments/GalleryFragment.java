@@ -279,6 +279,16 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
         handleBundle(savedInstanceState);
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser && mMultiView != null &&
+                mMultiView.getViewState() != MultiStateView.ViewState.ERROR && mListener != null) {
+            mListener.onLoadingComplete(PAGE);
+        }
+    }
+
     private void handleBundle(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());

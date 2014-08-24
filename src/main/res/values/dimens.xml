@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <dimen name="layout_test">0dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="navigation_drawer_width">240dp</dimen>
     <dimen name="nav_item_text_size">25sp</dimen>
@@ -29,5 +30,6 @@
     <dimen name="dialog_button_margin">16dp</dimen>
     <dimen name="grid_padding">4dp</dimen>
     <dimen name="view_activity_margin">16dp</dimen>
+    <dimen name="loading_circle_size">40dp</dimen>
 
 </resources>

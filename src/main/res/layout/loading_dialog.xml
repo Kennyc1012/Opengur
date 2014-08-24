@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <View
+            android:id="@+id/circleOne"
+            android:layout_width="@dimen/loading_circle_size"
+            android:layout_height="@dimen/loading_circle_size"
+            android:background="@drawable/loading_circle_blue"
+            android:alpha="0" />
+
+        <View
+            android:id="@+id/circleTwo"
+            android:layout_width="@dimen/loading_circle_size"
+            android:layout_height="@dimen/loading_circle_size"
+            android:background="@drawable/loading_circle_green"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:alpha="0" />
+
+        <View
+            android:id="@+id/circleThree"
+            android:layout_width="@dimen/loading_circle_size"
+            android:layout_height="@dimen/loading_circle_size"
+            android:background="@drawable/loading_circle_red"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:alpha="0" />
+    </LinearLayout>
+
+    <com.kenny.openimgur.ui.TextViewRoboto
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        app:robotoFont="thin"
+        android:textSize="18sp" />
+
+</LinearLayout>

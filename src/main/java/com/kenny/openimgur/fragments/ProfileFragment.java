@@ -187,6 +187,16 @@ public class ProfileFragment extends Fragment implements ImgurListener {
         handleBundle(savedInstanceState, getArguments());
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser && mMultiView != null &&
+                mFromMain && mMultiView.getViewState() == MultiStateView.ViewState.EMPTY && mListener != null) {
+            mListener.onLoadingStarted(PAGE);
+        }
+    }
+
     /**
      * Handles the arguments past to the fragment
      *
@@ -285,6 +295,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                                     mAdapter.notifyDataSetChanged();
                                 }
 
+                                configWebView();
                                 mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
                                 dialog.dismiss();
                             }
@@ -424,7 +435,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                         mWebView.clearCache(true);
                         mWebView.clearFormData();
                     } else {
-                        // TODO Error
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, R.string.error_generic);
                     }
 
                 } else {

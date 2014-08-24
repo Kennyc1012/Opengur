@@ -16,6 +16,7 @@ public class ImgurBusEvent {
         PROFILE_DETAILS,
         ACCOUNT_GALLERY_FAVORITES,
         ACCOUNT_SUBMISSIONS,
+        COMMENT_POSTING,
         COMMENT_VOTE,
         GALLERY_VOTE,
         FAVORITE,

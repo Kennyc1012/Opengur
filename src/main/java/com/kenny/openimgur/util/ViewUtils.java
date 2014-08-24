@@ -20,7 +20,6 @@ import com.kenny.openimgur.ui.TextViewRoboto;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * Created by kcampagna on 7/27/14.
@@ -82,7 +81,7 @@ public class ViewUtils {
             header = LayoutInflater.from(context).inflate(R.layout.profile_header, null);
         }
 
-        String date = new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(new Date(user.getCreated()));
+        String date = new SimpleDateFormat("MMM yyyy").format(new Date(user.getCreated()));
         String reputationText = user.getReputation() + " " + context.getString(R.string.profile_rep_date, date);
         TextViewRoboto notoriety = (TextViewRoboto) header.findViewById(R.id.notoriety);
         notoriety.setText(user.getNotoriety().getStringId());

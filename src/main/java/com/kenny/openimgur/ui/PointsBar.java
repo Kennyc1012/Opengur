@@ -32,7 +32,6 @@ public class PointsBar extends View {
     }
 
     private void init() {
-
         mUpPaint.setColor(getResources().getColor(android.R.color.holo_green_light));
         mUpPaint.setStrokeWidth(4);
         mUpPaint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -58,17 +57,9 @@ public class PointsBar extends View {
         invalidate();
     }
 
-    public float getTotalPoints() {
-        return mTotalPoints;
-    }
-
     public void setTotalPoints(float total) {
         mTotalPoints = total;
         invalidate();
-    }
-
-    public float getUpVotes() {
-        return mUpVotes;
     }
 
     public void setUpVotes(float upVotes) {

@@ -1,10 +1,8 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
@@ -130,17 +128,9 @@ public class CommentAdapter extends BaseAdapter {
             holder.replies.setText(convertView.getContext().getString(R.string.comment_replies, comment.getReplyCount()));
         }
 
-        if (!TextUtils.isEmpty(comment.getVote())) {
-            if (comment.getVote().equals(ImgurComment.VOTE_DOWN)) {
-                convertView.setBackgroundResource(R.drawable.downvote_border);
-            } else {
-                convertView.setBackgroundResource(R.drawable.upvote_border);
-            }
-        } else {
-            convertView.setBackgroundColor(Color.TRANSPARENT);
-        }
-
-        convertView.setBackgroundColor(position == mSelectedIndex ? convertView.getResources().getColor(R.color.comment_bg_selected) : convertView.getResources().getColor(R.color.comment_bg_default));
+        convertView.setBackgroundColor(position == mSelectedIndex ?
+                convertView.getResources().getColor(R.color.comment_bg_selected) :
+                convertView.getResources().getColor(R.color.comment_bg_default));
 
         return convertView;
     }

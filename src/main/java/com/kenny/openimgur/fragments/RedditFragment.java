@@ -8,9 +8,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -211,8 +209,6 @@ public class RedditFragment extends Fragment {
         mSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-
-                mHandler.removeMessages(RedditHandler.MESSAGE_AUTO_SEARCH);
                 String text = textView.getText().toString();
 
                 if (!TextUtils.isEmpty(text)) {
@@ -236,36 +232,6 @@ public class RedditFragment extends Fragment {
             }
         });
 
-        mSearchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                if (charSequence.length() > 0 && mClearButton.getAlpha() == 0.0f) {
-                    mClearButton.animate().alpha(1.0f).setDuration(300L);
-                } else if (charSequence.length() <= 0 && mClearButton.getAlpha() == 1.0f) {
-                    mClearButton.animate().alpha(0.0f).setDuration(300L);
-                }
-
-                if (!mIsRestoring) {
-                    mHandler.removeMessages(RedditHandler.MESSAGE_AUTO_SEARCH);
-                    if (!TextUtils.isEmpty(charSequence) && charSequence.length() >= MIN_SEARCH_CHAR) {
-                        mHandler.sendMessageDelayed(RedditHandler.MESSAGE_AUTO_SEARCH, charSequence.toString(), SEARCH_DELAY);
-                    }
-                } else {
-                    mIsRestoring = false;
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
         mQuickReturnView = view.findViewById(R.id.quickReturnView);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mQuickReturnView.getLayoutParams();
         float extraSpace = ViewUtils.getHeightForTranslucentStyle(getActivity()) + getResources().getDimension(R.dimen.quick_return_additional_padding);
@@ -278,6 +244,16 @@ public class RedditFragment extends Fragment {
             }
         });
         handleBundle(savedInstanceState);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser && mMultiView != null &&
+                mMultiView.getViewState() != MultiStateView.ViewState.ERROR && mListener != null) {
+            mListener.onLoadingComplete(PAGE);
+        }
     }
 
     private void handleBundle(Bundle savedInstanceState) {
@@ -428,28 +404,11 @@ public class RedditFragment extends Fragment {
     }
 
     private class RedditHandler extends ImgurHandler {
-        public static final int MESSAGE_AUTO_SEARCH = 2;
-
-        public static final int MESSAGE_EMPTY_RESULT = 3;
+        public static final int MESSAGE_EMPTY_RESULT = 2;
 
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MESSAGE_AUTO_SEARCH:
-                    if (mAdapter != null) {
-                        mAdapter.clear();
-                        mAdapter.notifyDataSetChanged();
-                    }
-
-                    if (mListener != null) {
-                        mListener.onLoadingStarted(PAGE);
-                    }
-
-                    mQuery = (String) msg.obj;
-                    mCurrentPage = 0;
-                    search();
-                    mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-                    break;
 
                 case MESSAGE_EMPTY_RESULT:
                     // Only show the empty view when the list is truly empty

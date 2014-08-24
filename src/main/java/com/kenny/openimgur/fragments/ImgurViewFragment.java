@@ -191,7 +191,7 @@ public class ImgurViewFragment extends Fragment {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                handleError(ApiClient.STATUS_JSON_EXCEPTION);
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_JSON_EXCEPTION);
             }
         }
     }
@@ -203,13 +203,16 @@ public class ImgurViewFragment extends Fragment {
      */
     public void onEventMainThread(ThrowableFailureEvent event) {
         Throwable e = event.getThrowable();
-        e.printStackTrace();
 
-        if (e instanceof JSONException) {
-            handleError(ApiClient.STATUS_JSON_EXCEPTION);
-        } else if (e instanceof IOException) {
-            handleError(ApiClient.STATUS_IO_EXCEPTION);
+        if (e instanceof IOException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
+        } else if (e instanceof JSONException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
+        } else {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
+
+        event.getThrowable().printStackTrace();
     }
 
     private ImgurListener mImgurListener = new ImgurListener() {
@@ -282,15 +285,6 @@ public class ImgurViewFragment extends Fragment {
         }
     };
 
-    /**
-     * Handles any errors from the Api
-     *
-     * @param errorCode
-     */
-    private void handleError(int errorCode) {
-        // TODO handle errors
-    }
-
     private ImgurHandler mHandler = new ImgurHandler() {
 
         @Override
@@ -304,7 +298,8 @@ public class ImgurViewFragment extends Fragment {
                     break;
 
                 case MESSAGE_ACTION_FAILED:
-                    handleError((Integer) msg.obj);
+                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCodeStringResource((Integer) msg.obj));
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
             }
 

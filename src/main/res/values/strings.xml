@@ -7,7 +7,6 @@
     <string name="action_settings">Settings</string>
     <string name="show_comments">Show Comments</string>
     <string name="hide_comments">Hide Comments</string>
-    <!-- TODO REMOVE -->
     <string name="top_score">Top Scoring</string>
     <string name="viral">Most Viral</string>
     <string name="user_sub">User Submitted</string>
@@ -105,6 +104,11 @@
     <string name="developer">Developer</string>
     <string name="version">Version</string>
     <string name="open_src_licenses">Open Source Licenses</string>
+    <string name="posting_comment">Posting Comment&#8230;</string>
+    <string name="comment_post_successful">Comment Posted</string>
+    <string name="comment_post_unsuccessful">Unable to post comment. Please try again</string>
+    <string name="vote_cast">Vote Cast</string>
+    <string name="one_moment">One Moment&#8230;</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">

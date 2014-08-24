@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
@@ -21,6 +22,8 @@ import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.ui.TextViewRoboto;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.RequestBody;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by kcampagna on 8/22/14.
@@ -58,6 +61,29 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
         return fragment;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        int dimen = getResources().getDimensionPixelSize(R.dimen.layout_test);
+
+        // Being greater than 0 will mean its a tablet so we need to manually stretch the width of the dialog
+        if (dimen > 0) {
+            // safety check
+            if (getDialog() == null)
+                return;
+
+            // Dialog Fragments are automatically set to wrap_content, so we need to force the width to fit our view
+            int dialogWidth = (int) (getResources().getDisplayMetrics().widthPixels * .8);
+            getDialog().getWindow().setLayout(dialogWidth, getDialog().getWindow().getAttributes().height);
+        }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_Dialog);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -76,10 +102,12 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
 
         if (args == null || !args.containsKey(KEY_GALLERY_ID)) {
             dismissAllowingStateLoss();
-            // TODO Error
+            Toast.makeText(getActivity(), R.string.error_generic, Toast.LENGTH_SHORT).show();
             return;
         }
 
+        mGalleryId = args.getString(KEY_GALLERY_ID);
+        mParentId = args.getString(KEY_PARENT_ID, null);
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -96,8 +124,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
                 // NOOP
             }
         });
-        mGalleryId = args.getString(KEY_GALLERY_ID);
-        mParentId = args.getString(KEY_PARENT_ID, null);
+
     }
 
     @Override
@@ -111,13 +138,17 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
                 String comment = mEditText.getText().toString();
 
                 if (!TextUtils.isEmpty(comment)) {
+                    // This event posting will trigger the Loading Dialog to be shown in the ViewActivity
+                    EventBus.getDefault().post(new ImgurBusEvent(null, ImgurBusEvent.EventType.COMMENT_POSTING, null, null));
                     String url = TextUtils.isEmpty(mParentId) ? String.format(Endpoints.COMMENT.getUrl(), mGalleryId) :
                             String.format(Endpoints.COMMENT_REPLY.getUrl(), mGalleryId, mParentId);
                     ApiClient client = new ApiClient(url, ApiClient.HttpRequest.POST);
                     RequestBody body = new FormEncodingBuilder().add("comment", comment).build();
                     client.doWork(ImgurBusEvent.EventType.COMMENTS, null, body);
+                    dismissAllowingStateLoss();
                 } else {
-                    ObjectAnimator.ofFloat(mEditText, "translationX",0, 25, -25, 25, -25,15, -15, 6, -6, 0).setDuration(750L).start();
+                    // Shake the edit text to show that they have not enetered any text
+                    ObjectAnimator.ofFloat(mEditText, "translationX", 0, 25, -25, 25, -25, 15, -15, 6, -6, 0).setDuration(750L).start();
                 }
                 break;
         }

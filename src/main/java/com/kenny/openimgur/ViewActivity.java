@@ -41,6 +41,7 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.fragments.CommentPopupFragment;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
+import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -105,6 +106,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
     private View mCommentListHeader;
 
+    private ImgurViewHandler mHandler = new ImgurViewHandler();
+
+    private LoadingDialogFragment mDialog;
+
     public static Intent createIntent(Context context, ImgurBaseObject[] objects, int position) {
         Intent intent = new Intent(context, ViewActivity.class);
         intent.putExtra(KEY_POSITION, position);
@@ -133,6 +138,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
             public void onPageSelected(int position) {
                 mCurrentPosition = position;
                 loadComments();
+                getActionBar().setTitle(mImgurObjects[position].getTitle());
             }
 
             @Override
@@ -196,7 +202,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             mGalleryId = intent.getData().getPathSegments().get(1);
         } else if (!intent.hasExtra(KEY_OBJECTS) || !intent.hasExtra(KEY_POSITION)) {
-            // TODO Error
+            Toast.makeText(getApplicationContext(), R.string.error_generic, Toast.LENGTH_SHORT).show();
             finish();
             return;
         } else {
@@ -349,6 +355,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
             // If we start on the 0 page, the onPageSelected event won't fire
             if (mCurrentPosition == 0) {
                 loadComments();
+                getActionBar().setTitle(mImgurObjects[0].getTitle());
             } else {
                 mViewPager.setCurrentItem(mCurrentPosition);
             }
@@ -386,6 +393,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
             mCommentAdapter = null;
         }
 
+        if (mDialog != null && mDialog.isAdded()) {
+            mDialog.dismissAllowingStateLoss();
+        }
+
+        mDialog = null;
         super.onDestroy();
     }
 
@@ -438,9 +450,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
      * @param event
      */
     public void onEventAsync(@NonNull ImgurBusEvent event) {
+        // If the event is COMMENT_POSTING, it will not contain a json object or HTTPRequest type
+        if (ImgurBusEvent.EventType.COMMENT_POSTING.equals(event.eventType)) {
+            mHandler.sendEmptyMessage(ImgurViewHandler.MESSAGE_COMMENT_POSTING);
+            return;
+        }
+
         try {
             int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
-
             switch (event.eventType) {
                 case COMMENTS:
                     if (statusCode == ApiClient.STATUS_OK) {
@@ -453,16 +470,38 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
                             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, comments);
                         } else if (event.httpRequest == ApiClient.HttpRequest.POST) {
-                            // TODO notify user
+                            JSONObject json = event.json.getJSONObject(ApiClient.KEY_DATA);
+                            // A successful comment post will return its id
+                            mHandler.sendMessage(ImgurViewHandler.MESSAGE_COMMENT_POSTED, json.has("id"));
                         }
                     } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
+                        int message = event.httpRequest == ApiClient.HttpRequest.GET ?
+                                ImgurViewHandler.MESSAGE_ACTION_FAILED : ImgurViewHandler.MESSAGE_COMMENT_POSTED;
+                        mHandler.sendMessage(message, statusCode);
+                    }
+
+                    break;
+
+                case COMMENT_VOTE:
+                    if (statusCode == ApiClient.STATUS_OK) {
+                        boolean success = event.json.getBoolean(ApiClient.KEY_SUCCESS);
+                        mHandler.sendMessage(ImgurViewHandler.MESSAGE_COMMENT_VOTED, success);
+                    } else {
+                        mHandler.sendMessage(ImgurViewHandler.MESSAGE_COMMENT_VOTED, statusCode);
                     }
 
                     break;
 
                 case GALLERY_VOTE:
-                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, event.id);
+                    if (statusCode == ApiClient.STATUS_OK) {
+                        if (event.json.getBoolean(ApiClient.KEY_SUCCESS)) {
+                            mHandler.sendMessage(ImgurViewHandler.MESSAGE_GALLERY_VOTE_COMPLETE, event.id);
+                        } else {
+                            mHandler.sendMessage(ImgurViewHandler.MESSAGE_GALLERY_VOTE_COMPLETE, R.string.error_generic);
+                        }
+                    } else {
+                        mHandler.sendMessage(ImgurViewHandler.MESSAGE_GALLERY_VOTE_COMPLETE, ApiClient.getErrorCodeStringResource(statusCode));
+                    }
                     break;
 
                 case GALLERY_ITEM_INFO:
@@ -496,6 +535,15 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
                     }
+                    break;
+
+                case FAVORITE:
+                    ImgurBaseObject obj = mImgurObjects[mCurrentPosition];
+                    if (obj.getId().equals(event.id)) {
+                        obj.setIsFavorite(!obj.isFavorited());
+                        invalidateOptionsMenu();
+                    }
+
                     break;
             }
         } catch (JSONException e) {
@@ -550,7 +598,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                     }
                 }
             } else {
-                onListItemClick(mCommentList.getPositionForView(view));
+                onListItemClick(mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount());
             }
         }
 
@@ -620,13 +668,19 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (mImgurObjects != null) {
-            if (TextUtils.isEmpty(mImgurObjects[mCurrentPosition].getAccount())) {
+            ImgurBaseObject imgurObject = mImgurObjects[mCurrentPosition];
+
+            if (TextUtils.isEmpty(imgurObject.getAccount())) {
                 menu.findItem(R.id.profile).setVisible(false);
             }
 
-            if (TextUtils.isEmpty(mImgurObjects[mCurrentPosition].getRedditLink())) {
+            if (TextUtils.isEmpty(imgurObject.getRedditLink())) {
                 menu.findItem(R.id.reddit).setVisible(false);
             }
+
+            menu.findItem(R.id.favorite).setIcon(imgurObject.isFavorited() ?
+                    R.drawable.ic_action_unfavorite : R.drawable.ic_action_favorite);
+
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -648,43 +702,20 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    private ImgurHandler mHandler = new ImgurHandler() {
+    private class ImgurViewHandler extends ImgurHandler {
+        public static final int MESSAGE_GALLERY_VOTE_COMPLETE = 2;
+
+        public static final int MESSAGE_COMMENT_POSTING = 3;
+
+        public static final int MESSAGE_COMMENT_POSTED = 4;
+
+        public static final int MESSAGE_COMMENT_VOTED = 5;
+
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MESSAGE_ACTION_COMPLETE:
-                    Object object = msg.obj;
-
-                    if (object instanceof List) {
-                        List<ImgurComment> comments = (List<ImgurComment>) msg.obj;
-
-                        if (!comments.isEmpty()) {
-                            if (mCommentAdapter == null) {
-                                mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, mImgurListener);
-                                // Add and remove the header view for pre 4.4 header support
-                                mCommentList.addHeaderView(mCommentListHeader);
-                                mCommentList.removeHeaderView(mCommentListHeader);
-                                mCommentList.setAdapter(mCommentAdapter);
-                            } else {
-                                mCommentArray.clear();
-                                mPreviousCommentPositionArray.clear();
-                                mCommentList.removeHeaderView(mCommentListHeader);
-                                mCommentAdapter.addComments(comments);
-                                mCommentAdapter.notifyDataSetChanged();
-                            }
-
-                            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-
-                            mMultiView.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mCommentList.setSelection(0);
-                                }
-                            });
-                        } else {
-                            mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-                        }
-                    } else if (object instanceof String) {
+                case MESSAGE_GALLERY_VOTE_COMPLETE:
+                    if (msg.obj instanceof String) {
                         String vote = (String) msg.obj;
                         View animateView = ImgurBaseObject.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
                         AnimatorSet set = new AnimatorSet();
@@ -695,19 +726,91 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
                         set.setDuration(1000L).setInterpolator(new OvershootInterpolator());
                         set.start();
+                    } else {
+                        Toast.makeText(getApplicationContext(), (Integer) msg.obj, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+
+                case MESSAGE_COMMENT_POSTING:
+                    // We want to popup a "Loading" dialog while the comment is being posted
+                    if (mDialog != null && mDialog.isAdded()) {
+                        mDialog.dismissAllowingStateLoss();
+                        mDialog = null;
                     }
 
+                    mDialog = LoadingDialogFragment.createInstance(R.string.posting_comment);
+                    getFragmentManager().beginTransaction().add(mDialog, "loading").commit();
+                    break;
+
+                case MESSAGE_ACTION_COMPLETE:
+                    List<ImgurComment> comments = (List<ImgurComment>) msg.obj;
+
+                    if (!comments.isEmpty()) {
+                        if (mCommentAdapter == null) {
+                            mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, mImgurListener);
+                            // Add and remove the header view for pre 4.4 header support
+                            mCommentList.addHeaderView(mCommentListHeader);
+                            mCommentList.removeHeaderView(mCommentListHeader);
+                            mCommentList.setAdapter(mCommentAdapter);
+                        } else {
+                            mCommentArray.clear();
+                            mPreviousCommentPositionArray.clear();
+                            mCommentList.removeHeaderView(mCommentListHeader);
+                            mCommentAdapter.addComments(comments);
+                            mCommentAdapter.notifyDataSetChanged();
+                        }
+
+                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+
+                        mMultiView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mCommentList.setSelection(0);
+                            }
+                        });
+                    } else {
+                        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+                    }
                     break;
 
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCodeStringResource((Integer) msg.obj));
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
-            }
 
-            super.handleMessage(msg);
+                case MESSAGE_COMMENT_POSTED:
+                    if (mDialog != null && mDialog.isAdded()) {
+                        mDialog.dismissAllowingStateLoss();
+                        mDialog = null;
+                    }
+
+                    if (msg.obj instanceof Boolean) {
+                        int messageResId = (Boolean) msg.obj ? R.string.comment_post_successful : R.string.comment_post_unsuccessful;
+                        Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                        // Manually refresh the comments when we successfully post a comment
+                        loadComments();
+                    } else {
+                        Toast.makeText(getApplicationContext(), ApiClient.getErrorCodeStringResource((Integer) msg.obj), Toast.LENGTH_SHORT).show();
+                    }
+
+                    break;
+
+                case MESSAGE_COMMENT_VOTED:
+                    if (msg.obj instanceof Boolean) {
+                        Toast.makeText(getApplicationContext(), (Boolean) msg.obj ?
+                                R.string.vote_cast : R.string.error_generic, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), (Integer) msg.obj, Toast.LENGTH_SHORT).show();
+                    }
+
+                    break;
+
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
         }
-    };
+    }
 
     private static class ZoomOutPageTransformer implements ViewPager.PageTransformer {
         private static final float MIN_SCALE = 0.5f;
@@ -762,7 +865,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                         RequestBody body = new FormEncodingBuilder().add("id", mSelectedComment.getId()).build();
                         mApiClient.setUrl(url);
                         mApiClient.setRequestType(ApiClient.HttpRequest.POST);
-                        mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, body);
+                        mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
                     }
@@ -783,6 +886,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                         Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
                     }
 
+                    mode.finish();
                     return true;
             }
 

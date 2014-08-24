@@ -58,7 +58,7 @@ public class ViewPhotoActivity extends BaseActivity {
         Intent intent = getIntent();
 
         if (intent == null || (!intent.hasExtra(KEY_IMAGE) && !intent.hasExtra(KEY_URL))) {
-            //TODO Error message
+            Toast.makeText(getApplicationContext(), R.string.error_generic, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
