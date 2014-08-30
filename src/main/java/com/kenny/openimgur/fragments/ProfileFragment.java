@@ -31,7 +31,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.SettingsActivity;
@@ -50,6 +49,7 @@ import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -162,7 +162,36 @@ public class ProfileFragment extends Fragment implements ImgurListener {
         super.onViewCreated(view, savedInstanceState);
         mMultiView = (MultiStateView) view.findViewById(R.id.multiView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
-        mGridView.setOnScrollListener(mScrollListner);
+        mGridView.setOnScrollListener(new PauseOnScrollListener(OpenImgurApp.getInstance(getActivity()).getImageLoader(), false, true,
+                new AbsListView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                    }
+
+                    @Override
+                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                        if (firstVisibleItem > mPreviousItem) {
+                            if (mListener != null) {
+                                mListener.oHideActionBar(false);
+                            }
+                        } else if (firstVisibleItem < mPreviousItem) {
+                            if (mListener != null) {
+                                mListener.oHideActionBar(true);
+                            }
+                        }
+
+                        mPreviousItem = firstVisibleItem;
+
+                        // Load more items when hey get to the end of the list
+                        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading && mHasMore) {
+                            mIsLoading = true;
+                            mCurrentPage++;
+                            getGalleryData();
+                        }
+                    }
+                }
+        ));
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -349,6 +378,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
     public void onDestroyView() {
         mWebView = null;
         mMultiView = null;
+        mGridView = null;
         mHandler.removeCallbacksAndMessages(null);
 
         if (mAdapter != null) {
@@ -646,6 +676,11 @@ public class ProfileFragment extends Fragment implements ImgurListener {
     }
 
     @Override
+    public void onPhotoLongTapListener(ImageView image) {
+        // NOOP
+    }
+
+    @Override
     public void onPlayTap(ProgressBar prog, ImageView image, ImageButton play) {
         // NOOP
     }
@@ -665,7 +700,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                 if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivity(browserIntent);
                 } else {
-                    Toast.makeText(getActivity(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
+                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
                 }
             }
         }
@@ -675,37 +710,6 @@ public class ProfileFragment extends Fragment implements ImgurListener {
     public void onViewRepliesTap(View view) {
         // NOOP
     }
-
-    private PauseOnScrollListener mScrollListner = new PauseOnScrollListener(OpenImgurApp.getInstance().getImageLoader(), false, true,
-            new AbsListView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-                }
-
-                @Override
-                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                    if (firstVisibleItem > mPreviousItem) {
-                        if (mListener != null) {
-                            mListener.oHideActionBar(false);
-                        }
-                    } else if (firstVisibleItem < mPreviousItem) {
-                        if (mListener != null) {
-                            mListener.oHideActionBar(true);
-                        }
-                    }
-
-                    mPreviousItem = firstVisibleItem;
-
-                    // Load more items when hey get to the end of the list
-                    if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading && mHasMore) {
-                        mIsLoading = true;
-                        mCurrentPage++;
-                        getGalleryData();
-                    }
-                }
-            }
-    );
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

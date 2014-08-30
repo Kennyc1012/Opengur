@@ -106,11 +106,6 @@ public class ViewPhotoActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
     protected void onDestroy() {
         mImageView = null;
         mProgressBar = null;

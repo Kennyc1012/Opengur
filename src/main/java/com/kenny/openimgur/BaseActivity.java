@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.ui.SnackBar;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 /**
@@ -40,7 +41,7 @@ public class BaseActivity extends Activity {
         ab.setTitle(null);
         ab.setIcon(new ColorDrawable(Color.TRANSPARENT));
         mIsLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
-        app = OpenImgurApp.getInstance();
+        app = OpenImgurApp.getInstance(getApplicationContext());
         user = app.getUser();
 
         if (mShouldTint) {
@@ -78,6 +79,7 @@ public class BaseActivity extends Activity {
     protected void onPause() {
         Log.v(TAG, "onPause");
         super.onPause();
+        SnackBar.cancelSnackBars(this);
     }
 
     @Override

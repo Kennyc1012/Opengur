@@ -56,10 +56,6 @@ public class PopupImageDialogFragment extends DialogFragment {
         return fragment;
     }
 
-    public PopupImageDialogFragment() {
-
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -115,6 +111,8 @@ public class PopupImageDialogFragment extends DialogFragment {
     @Override
     public void onDestroyView() {
         mHandler.removeCallbacksAndMessages(null);
+        mMultiView = null;
+        mImage = null;
         super.onDestroyView();
     }
 
@@ -187,7 +185,7 @@ public class PopupImageDialogFragment extends DialogFragment {
 
                 case MESSAGE_ACTION_FAILED:
                     Toast.makeText(getActivity(), (String) msg.obj, Toast.LENGTH_SHORT).show();
-                    dismissAllowingStateLoss();
+                    dismiss();
                     break;
             }
 

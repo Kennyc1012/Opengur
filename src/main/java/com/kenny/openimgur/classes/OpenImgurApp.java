@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -56,6 +57,14 @@ public class OpenImgurApp extends Application {
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build());
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build());
     }
 
     public ImageLoader getImageLoader() {
@@ -73,7 +82,7 @@ public class OpenImgurApp extends Application {
                 cache = FILE_CACHE_LIMIT_1_GB;
             }
 
-            ImageUtil.initImageLoader(getApplicationContext(),cache);
+            ImageUtil.initImageLoader(getApplicationContext(), cache);
             mImageLoader = ImageLoader.getInstance();
         }
 

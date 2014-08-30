@@ -9,6 +9,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -90,6 +91,63 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
          */
         public static GallerySection getSectionFromString(String section) {
             return HOT.getSection().equals(section) ? HOT : USER;
+        }
+
+        /**
+         * Returns the position in the enum array of the given section
+         *
+         * @param section
+         * @return
+         */
+        public static int getPositionFromSeection(GallerySection section) {
+            GallerySection[] sections = GallerySection.values();
+
+            for (int i = 0; i < sections.length; i++) {
+                if (section.equals(sections[i])) {
+                    return i;
+                }
+            }
+
+            return 0;
+        }
+
+        /**
+         * Returns the GallerySection in the enum array from the given position
+         *
+         * @param position
+         * @return
+         */
+        public static GallerySection getSectionFromPosition(int position) {
+            GallerySection[] sections = GallerySection.values();
+
+            for (int i = 0; i < sections.length; i++) {
+                if (sections[i] == sections[position]) {
+                    return sections[i];
+                }
+            }
+
+            return GallerySection.HOT;
+        }
+
+        /**
+         * Returns the String Resource for the section
+         *
+         * @return
+         */
+        @StringRes
+        public int getResourceId() {
+            switch (this) {
+                case HOT:
+                    return R.string.viral;
+
+                case TOP:
+                    return R.string.top_score;
+
+                case USER:
+                    return R.string.user_sub;
+            }
+
+            return R.string.viral;
         }
     }
 
@@ -253,7 +311,32 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
         super.onViewCreated(view, savedInstanceState);
         mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
-        mGridView.setOnScrollListener(mScrollListener);
+        mGridView.setOnScrollListener(new PauseOnScrollListener(OpenImgurApp.getInstance(getActivity()).getImageLoader(), false, true,
+                new AbsListView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                    }
+
+                    @Override
+                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                        // Hide the actionbar when scrolling down, show when scrolling up
+                        if (firstVisibleItem > mPreviousItem && mListener != null) {
+                            mListener.oHideActionBar(false);
+                        } else if (firstVisibleItem < mPreviousItem && mListener != null) {
+                            mListener.oHideActionBar(true);
+                        }
+
+                        mPreviousItem = firstVisibleItem;
+
+                        // Load more items when hey get to the end of the list
+                        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading) {
+                            mIsLoading = true;
+                            mCurrentPage++;
+                            getGallery();
+                        }
+                    }
+                }));
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -449,34 +532,6 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         getGallery();
     }
-
-    private PauseOnScrollListener mScrollListener = new PauseOnScrollListener(OpenImgurApp.getInstance().getImageLoader(), false, true,
-            new AbsListView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-                }
-
-                @Override
-                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                    // Hide the actionbar when scrolling down, show when scrolling up
-                    if (firstVisibleItem > mPreviousItem && mListener != null) {
-                        mListener.oHideActionBar(false);
-                    } else if (firstVisibleItem < mPreviousItem && mListener != null) {
-                        mListener.oHideActionBar(true);
-                    }
-
-                    mPreviousItem = firstVisibleItem;
-
-                    // Load more items when hey get to the end of the list
-                    if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading) {
-                        mIsLoading = true;
-                        mCurrentPage++;
-                        getGallery();
-                    }
-                }
-            }
-    );
 
     private ImgurHandler mHandler = new ImgurHandler() {
 

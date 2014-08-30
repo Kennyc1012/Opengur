@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.fragments.GalleryFragment;
@@ -19,11 +20,13 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
 
     private static final String KEY_SORT = "sort";
 
-    private RadioGroup mSectionRG;
-
     private RadioGroup mSortRG;
 
     private FilterListener mListener;
+
+    private SeekBar mSeekBar;
+
+    private TypeWriterTextView mSectionLabel;
 
     public static FilterDialogFragment createInstance(GalleryFragment.GallerySort sort, GalleryFragment.GallerySection section) {
         Bundle args = new Bundle();
@@ -37,18 +40,13 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
     @Override
     public void onStart() {
         super.onStart();
-        int dimen = getResources().getDimensionPixelSize(R.dimen.layout_test);
+        if (getDialog() == null)
+            return;
 
-        // Being greater than 0 will mean its a tablet so we need to manually stretch the width of the dialog
-        if (dimen > 0) {
-            // safety check
-            if (getDialog() == null)
-                return;
+        // Dialog Fragments are automatically set to wrap_content, so we need to force the width to fit our view
+        int dialogWidth = (int) (getResources().getDisplayMetrics().widthPixels * .85);
+        getDialog().getWindow().setLayout(dialogWidth, getDialog().getWindow().getAttributes().height);
 
-            // Dialog Fragments are automatically set to wrap_content, so we need to force the width to fit our view
-            int dialogWidth = (int) (getResources().getDisplayMetrics().widthPixels * .8);
-            getDialog().getWindow().setLayout(dialogWidth, getDialog().getWindow().getAttributes().height);
-        }
     }
 
     @Override
@@ -58,11 +56,12 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
     }
 
     @Override
-    public void onDestroy() {
-        mSectionRG = null;
+    public void onDestroyView() {
         mSortRG = null;
         mListener = null;
-        super.onDestroy();
+        mSeekBar = null;
+        mSectionLabel = null;
+        super.onDestroyView();
     }
 
     @Nullable
@@ -74,8 +73,9 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mSectionRG = (RadioGroup) view.findViewById(R.id.sectionRG);
         mSortRG = (RadioGroup) view.findViewById(R.id.filterRG);
+        mSeekBar = (SeekBar) view.findViewById(R.id.seekBar);
+        mSectionLabel = (TypeWriterTextView) view.findViewById(R.id.section);
         GalleryFragment.GallerySection section = GalleryFragment.GallerySection.HOT;
         GalleryFragment.GallerySort sort = GalleryFragment.GallerySort.VIRAL;
 
@@ -86,19 +86,8 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
             sort = GalleryFragment.GallerySort.getSortFromString(bundle.getString(KEY_SORT, GalleryFragment.GallerySort.VIRAL.getSort()));
         }
 
-        switch (section) {
-            case HOT:
-                mSectionRG.check(R.id.viral);
-                break;
-
-            case TOP:
-                mSectionRG.check(R.id.top);
-                break;
-
-            case USER:
-                mSectionRG.check(R.id.user);
-                break;
-        }
+        mSeekBar.setProgress(GalleryFragment.GallerySection.getPositionFromSeection(section));
+        mSectionLabel.setText(section.getResourceId());
 
         switch (sort) {
             case TIME:
@@ -109,8 +98,26 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
                 mSortRG.check(R.id.popular);
                 break;
         }
+
         view.findViewById(R.id.cancel).setOnClickListener(this);
         view.findViewById(R.id.accept).setOnClickListener(this);
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int position, boolean b) {
+                mSectionLabel.animateText(GalleryFragment.GallerySection.getSectionFromPosition(position).getResourceId());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
     }
 
@@ -118,7 +125,7 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.cancel:
-                dismissAllowingStateLoss();
+                dismiss();
                 break;
 
             case R.id.accept:
@@ -136,24 +143,14 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
                             break;
                     }
 
-                    switch (mSectionRG.getCheckedRadioButtonId()) {
-                        case R.id.user:
-                            section = GalleryFragment.GallerySection.USER;
-                            break;
+                    section = GalleryFragment.GallerySection.getSectionFromPosition(mSeekBar.getProgress());
 
-                        case R.id.top:
-                            section = GalleryFragment.GallerySection.TOP;
-                            break;
-
-                        case R.id.viral:
-                            section = GalleryFragment.GallerySection.HOT;
-                            break;
+                    if (mListener != null) {
+                        mListener.onFilterChange(section, sort);
                     }
-
-                    mListener.onFilterChange(section, sort);
                 }
 
-                dismissAllowingStateLoss();
+                dismiss();
                 break;
         }
     }

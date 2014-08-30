@@ -8,7 +8,9 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -180,7 +182,47 @@ public class RedditFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
-        mGridView.setOnScrollListener(mScrollListener);
+        mGridView.setOnScrollListener(new PauseOnScrollListener(OpenImgurApp.getInstance(getActivity()).getImageLoader(), false, true,
+                new AbsListView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                    }
+
+                    @Override
+                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                        // Hide the actionbar when scrolling down, show when scrolling up
+                        if (firstVisibleItem > mPreviousItem) {
+                            if (mListener != null) {
+                                mListener.oHideActionBar(false);
+                            }
+
+                            if (mInputIsShowing) {
+                                mInputIsShowing = false;
+                                mQuickReturnView.animate().translationY(-mAnimationHeight).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+                            }
+                        } else if (firstVisibleItem < mPreviousItem) {
+                            if (mListener != null) {
+                                mListener.oHideActionBar(true);
+                            }
+
+                            if (!mInputIsShowing) {
+                                mInputIsShowing = true;
+                                mQuickReturnView.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+                            }
+                        }
+
+                        mPreviousItem = firstVisibleItem;
+
+                        // Load more items when hey get to the end of the list
+                        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading && mHasMore) {
+                            mIsLoading = true;
+                            mCurrentPage++;
+                            search();
+                        }
+                    }
+                }
+        ));
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -229,6 +271,27 @@ public class RedditFragment extends Fragment {
                 }
 
                 return false;
+            }
+        });
+
+        mSearchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                // NOOP
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                if (charSequence.length() <= 0 && mClearButton.getAlpha() == 1.0f) {
+                    mClearButton.animate().alpha(0.0f).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+                } else if (charSequence.length() > 0 && mClearButton.getAlpha() == 0.0f) {
+                    mClearButton.animate().alpha(1.0f).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // NOOP
             }
         });
 
@@ -283,11 +346,11 @@ public class RedditFragment extends Fragment {
      * Configures the previous search adapter to the AutoCompleteTextView
      */
     private void configurePreviousSearches() {
-        String[] searches = mSql.getSubReddits();
+        List<String> searches = mSql.getSubReddits();
 
-        if (searches != null && searches.length > 0) {
+        if (searches != null && searches.size() > 0) {
             if (mSearchAdapter == null) {
-                mSearchAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, Arrays.asList(searches));
+                mSearchAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, searches);
                 mSearchEditText.setAdapter(mSearchAdapter);
             } else {
                 if (!mSearchAdapter.isEmpty()) {
@@ -460,48 +523,6 @@ public class RedditFragment extends Fragment {
 
         }
     }
-
-    private PauseOnScrollListener mScrollListener = new PauseOnScrollListener(OpenImgurApp.getInstance().getImageLoader(), false, true,
-            new AbsListView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-                }
-
-                @Override
-                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                    // Hide the actionbar when scrolling down, show when scrolling up
-                    if (firstVisibleItem > mPreviousItem) {
-                        if (mListener != null) {
-                            mListener.oHideActionBar(false);
-                        }
-
-                        if (mInputIsShowing) {
-                            mInputIsShowing = false;
-                            mQuickReturnView.animate().translationY(-mAnimationHeight).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
-                        }
-                    } else if (firstVisibleItem < mPreviousItem) {
-                        if (mListener != null) {
-                            mListener.oHideActionBar(true);
-                        }
-
-                        if (!mInputIsShowing) {
-                            mInputIsShowing = true;
-                            mQuickReturnView.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
-                        }
-                    }
-
-                    mPreviousItem = firstVisibleItem;
-
-                    // Load more items when hey get to the end of the list
-                    if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading && mHasMore) {
-                        mIsLoading = true;
-                        mCurrentPage++;
-                        search();
-                    }
-                }
-            }
-    );
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

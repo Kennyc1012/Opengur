@@ -80,6 +80,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         switch (item.getItemId()) {
             case R.id.settings:
                 startActivity(SettingsActivity.createIntent(getApplicationContext()));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -146,6 +147,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             // Add extra distance to the hiding of the button if on KitKat due to the translucent nav bar
             float hideDistance = OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.KITKAT ? mUploadButton.getHeight() * 2 : mUploadButton.getHeight();
             mUploadMenu.animate().setInterpolator(new DecelerateInterpolator()).translationY(hideDistance).setDuration(350).start();
+            // Close the menu if it is open
+            if (uploadMenuOpen) animateUploadMenu();
         } else if (shouldShow && !uploadMenuShowing) {
             uploadMenuShowing = true;
             mUploadMenu.animate().setInterpolator(new DecelerateInterpolator()).translationY(0).setDuration(350).start();

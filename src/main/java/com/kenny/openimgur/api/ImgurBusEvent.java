@@ -20,7 +20,8 @@ public class ImgurBusEvent {
         COMMENT_VOTE,
         GALLERY_VOTE,
         FAVORITE,
-        GALLERY_ITEM_INFO;
+        GALLERY_ITEM_INFO,
+        UPLOAD;
     }
 
     public JSONObject json;

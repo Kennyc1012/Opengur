@@ -15,12 +15,14 @@
     <string name="comment_replies">View %d Replies</string>
     <string name="pref_cache_title">Cache</string>
     <string name="pref_cache_size">Maximum Cache Size</string>
+
     <string-array name="pref_cache_size_items">
         <item>128MB</item>
         <item>256MB</item>
         <item>512MB</item>
         <item>1GB</item>
     </string-array>
+
     <string name="pref_reddit_cache">Subreddit Searches</string>
     <string name="pref_reddit_desc">Clear  subreddit search history</string>
     <string name="refresh">Refresh</string>
@@ -46,18 +48,20 @@
     <string name="error_403">You do not have permission to complete this action.</string>
     <string name="error_429">The rate limit for Open Imgur has been hit. There is nothing I can do about this. Check back
     later.</string>
-    <string name="error_503">Imgur is currently over capacity. Boo&#8230;</string>
+    <string name="error_503">Imgur is currently over capacity. Boo…</string>
     <string name="error_600">Unable to connect to Imgur. Check your connection and try again.</string>
     <string name="error_800">The Api sent an empty response causing a JSON exception. I don\'t expect you
     to know what this means, but it happened.</string>
     <string name="photo">Photo</string>
     <string name="dismiss">Dismiss</string>
     <string name="thumbnail_quality">Thumbnail Quality</string>
+
     <string-array name="pref_thumbnail_quality">
         <item>Low (Uses less data)</item>
         <item>Medium</item>
         <item>High (Uses more data)</item>
     </string-array>
+
     <string name="empty_comment_message">No comments have been posted yet.</string>
     <string name="cant_launch_intent">Your device in unable to handle this link</string>
     <string name="loading_image_error">Unable to load image.</string>
@@ -75,6 +79,7 @@
     <string name="notoriety_idolized">Idolized</string>
     <string name="notoriety_trusted">Trusted</string>
     <string name="profile_rep_date">Reputation - Since %s</string>
+    <string name="upload">Upload</string>
     <string name="upload_photo">Upload Photo</string>
     <string name="link_upload_desc">Enter URL to Upload From Web</string>
     <string name="upload_desc">Description</string>
@@ -104,11 +109,18 @@
     <string name="developer">Developer</string>
     <string name="version">Version</string>
     <string name="open_src_licenses">Open Source Licenses</string>
-    <string name="posting_comment">Posting Comment&#8230;</string>
+    <string name="posting_comment">Posting Comment…</string>
     <string name="comment_post_successful">Comment Posted</string>
     <string name="comment_post_unsuccessful">Unable to post comment. Please try again</string>
     <string name="vote_cast">Vote Cast</string>
-    <string name="one_moment">One Moment&#8230;</string>
+    <string name="one_moment">One Moment…</string>
+    <string name="uploading">Uploading, One Moment…</string>
+    <string name="decoding_image">Decoding Image, One Moment…</string>
+    <string name="add_to_gallery">Add To Gallery</string>
+    <string name="gallery_no_user">You must be logged in to upload to the gallery.</string>
+    <string name="not_logged_in">Not Logged In</string>
+    <string name="not_logged_in_msg">Are you sure you want to upload this image without being logged in?</string>
+    <string name="copy_link">Copy Link</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">
@@ -117,11 +129,9 @@
         <item>512</item>
         <item>1024</item>
     </string-array>
-
     <string-array name="pref_thumbnail_quality_keys">
         <item>low</item>
         <item>medium</item>
         <item>high</item>
     </string-array>
-
 </resources>

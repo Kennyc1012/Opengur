@@ -7,7 +7,9 @@ import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.media.ExifInterface;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
@@ -21,6 +23,7 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import pl.droidsonroids.gif.GifDrawable;
@@ -29,6 +32,8 @@ import pl.droidsonroids.gif.GifDrawable;
  * Created by kcampagna on 7/1/14.
  */
 public class ImageUtil {
+    private static final String TAG = "ImageUtil";
+
     // 8MB
     private static final int MEMORY_CACHE_LIMIT = 8388608;
 
@@ -82,7 +87,6 @@ public class ImageUtil {
     }
 
     public static Bitmap decodeSampledBitmapFromResource(File file, int reqWidth, int reqHeight) {
-
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -112,8 +116,10 @@ public class ImageUtil {
                 imageView.setImageDrawable(new GifDrawable(file));
                 return true;
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Unable to play gif", e);
             }
+        } else {
+            Log.w(TAG, "Gif file is invalid");
         }
 
         return false;
@@ -163,5 +169,49 @@ public class ImageUtil {
                 .resetViewBeforeLoading(true)
                 .cacheInMemory(true)
                 .cacheOnDisk(true);
+    }
+
+    /**
+     * Saves a bitmap to a local file
+     *
+     * @param bitmap The bitmap to save
+     * @param file   The file to save the bitmap to
+     * @return If successful
+     */
+    public static boolean saveBitmapToFile(Bitmap bitmap, File file) {
+        if (!FileUtil.isFileValid(file)) {
+            Log.w(TAG, "Invalid file, can not save bitmap");
+            return false;
+        }
+
+        try {
+            FileOutputStream fileStream = new FileOutputStream(file);
+            // Compress the file slightly
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fileStream);
+            FileUtil.closeStream(fileStream);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to save bitmap to file", e);
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns the images rotation from it's EXIF data
+     *
+     * @param file Image file
+     * @return EXIF rotation, Undefined if no orientation was obtained
+     */
+    public static int getImageRotation(File file) {
+        try {
+            ExifInterface exif = new ExifInterface(file.getAbsolutePath());
+            return exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to get EXIF data from file", e);
+        }
+
+        return ExifInterface.ORIENTATION_UNDEFINED;
     }
 }

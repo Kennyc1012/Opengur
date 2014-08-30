@@ -27,7 +27,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -44,6 +43,7 @@ import com.kenny.openimgur.fragments.ImgurViewFragment;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.ui.SnackBar;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -202,7 +202,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             mGalleryId = intent.getData().getPathSegments().get(1);
         } else if (!intent.hasExtra(KEY_OBJECTS) || !intent.hasExtra(KEY_POSITION)) {
-            Toast.makeText(getApplicationContext(), R.string.error_generic, Toast.LENGTH_SHORT).show();
+            SnackBar.show(this, R.string.error_generic);
             finish();
             return;
         } else {
@@ -377,15 +377,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     protected void onDestroy() {
-        mPanelButton = null;
-        mApiClient = null;
-        mCommentList = null;
-        mImgurObjects = null;
-        mSlidingPane = null;
-        mCommentArray.clear();
-        mCommentArray = null;
-        mPreviousCommentPositionArray.clear();
-        mPreviousCommentPositionArray = null;
         mHandler.removeCallbacksAndMessages(null);
 
         if (mCommentAdapter != null) {
@@ -393,8 +384,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
             mCommentAdapter = null;
         }
 
-        if (mDialog != null && mDialog.isAdded()) {
-            mDialog.dismissAllowingStateLoss();
+        if (mDialog != null) {
+            mDialog.dismiss();
         }
 
         mDialog = null;
@@ -428,7 +419,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
                     mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, vote, null);
                 } else {
-                    Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
+                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
 
                 break;
@@ -438,7 +429,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                     Fragment fragment = CommentPopupFragment.createInstance(mImgurObjects[mCurrentPosition].getId(), null);
                     getFragmentManager().beginTransaction().add(fragment, "comment").commit();
                 } else {
-                    Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
+                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
                 break;
         }
@@ -576,6 +567,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         }
 
         @Override
+        public void onPhotoLongTapListener(ImageView image) {
+        }
+
+        @Override
         public void onPlayTap(ProgressBar prog, ImageView image, ImageButton play) {
         }
 
@@ -594,7 +589,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                     if (browserIntent.resolveActivity(getPackageManager()) != null) {
                         startActivity(browserIntent);
                     } else {
-                        Toast.makeText(getApplicationContext(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
+                        SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
                     }
                 }
             } else {
@@ -638,7 +633,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                     mApiClient.setRequestType(ApiClient.HttpRequest.POST);
                     mApiClient.doWork(ImgurBusEvent.EventType.FAVORITE, imgurObj.getId(), body);
                 } else {
-                    Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
+                    SnackBar.show(this, R.string.user_not_logged_in);
                 }
                 return true;
 
@@ -656,7 +651,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                 if (browserIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(browserIntent);
                 } else {
-                    Toast.makeText(getApplicationContext(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
+                    SnackBar.show(this, R.string.cant_launch_intent);
                 }
 
                 return true;
@@ -727,14 +722,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                         set.setDuration(1000L).setInterpolator(new OvershootInterpolator());
                         set.start();
                     } else {
-                        Toast.makeText(getApplicationContext(), (Integer) msg.obj, Toast.LENGTH_SHORT).show();
+                        SnackBar.show(ViewActivity.this, (Integer) msg.obj);
                     }
                     break;
 
                 case MESSAGE_COMMENT_POSTING:
                     // We want to popup a "Loading" dialog while the comment is being posted
-                    if (mDialog != null && mDialog.isAdded()) {
-                        mDialog.dismissAllowingStateLoss();
+                    if (mDialog != null) {
+                        mDialog.dismiss();
                         mDialog = null;
                     }
 
@@ -779,28 +774,28 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                     break;
 
                 case MESSAGE_COMMENT_POSTED:
-                    if (mDialog != null && mDialog.isAdded()) {
-                        mDialog.dismissAllowingStateLoss();
+                    if (mDialog != null) {
+                        mDialog.dismiss();
                         mDialog = null;
                     }
 
                     if (msg.obj instanceof Boolean) {
                         int messageResId = (Boolean) msg.obj ? R.string.comment_post_successful : R.string.comment_post_unsuccessful;
-                        Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+                        SnackBar.show(ViewActivity.this, messageResId);
                         // Manually refresh the comments when we successfully post a comment
                         loadComments();
                     } else {
-                        Toast.makeText(getApplicationContext(), ApiClient.getErrorCodeStringResource((Integer) msg.obj), Toast.LENGTH_SHORT).show();
+                        SnackBar.show(ViewActivity.this, (Integer) msg.obj);
                     }
 
                     break;
 
                 case MESSAGE_COMMENT_VOTED:
                     if (msg.obj instanceof Boolean) {
-                        Toast.makeText(getApplicationContext(), (Boolean) msg.obj ?
-                                R.string.vote_cast : R.string.error_generic, Toast.LENGTH_SHORT).show();
+                        SnackBar.show(ViewActivity.this, (Boolean) msg.obj ?
+                                R.string.vote_cast : R.string.error_generic);
                     } else {
-                        Toast.makeText(getApplicationContext(), (Integer) msg.obj, Toast.LENGTH_SHORT).show();
+                        SnackBar.show(ViewActivity.this, (Integer) msg.obj);
                     }
 
                     break;
@@ -867,7 +862,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                         mApiClient.setRequestType(ApiClient.HttpRequest.POST);
                         mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
                     } else {
-                        Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
+                        SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                     }
 
                     mode.finish();
@@ -883,7 +878,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
                         Fragment fragment = CommentPopupFragment.createInstance(mImgurObjects[mCurrentPosition].getId(), mSelectedComment.getId());
                         getFragmentManager().beginTransaction().add(fragment, "comment").commit();
                     } else {
-                        Toast.makeText(getApplicationContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
+                        SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                     }
 
                     mode.finish();

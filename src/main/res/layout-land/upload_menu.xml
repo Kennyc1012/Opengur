@@ -10,7 +10,7 @@
         android:id="@+id/cameraUpload"
         android:layout_width="@dimen/fab_button_radius_smaller"
         android:layout_height="@dimen/fab_button_radius_smaller"
-        android:layout_gravity="center_vertical|right"
+        android:layout_gravity="center_vertical|end"
         app:drawable="@drawable/ic_action_camera"
         app:shadowColor="@android:color/black"
         app:color="@color/accent_color_blue_200" />
@@ -19,7 +19,7 @@
         android:id="@+id/galleryUpload"
         android:layout_width="@dimen/fab_button_radius_smaller"
         android:layout_height="@dimen/fab_button_radius_smaller"
-        android:layout_gravity="center_vertical|right"
+        android:layout_gravity="center_vertical|end"
         app:drawable="@drawable/ic_action_picture"
         app:shadowColor="@android:color/black"
         app:color="@color/accent_color_blue_200" />
@@ -28,7 +28,7 @@
         android:id="@+id/linkUpload"
         android:layout_width="@dimen/fab_button_radius_smaller"
         android:layout_height="@dimen/fab_button_radius_smaller"
-        android:layout_gravity="center_vertical|right"
+        android:layout_gravity="center_vertical|end"
         app:drawable="@drawable/ic_action_web"
         app:shadowColor="@android:color/black"
         app:color="@color/accent_color_blue_200" />
@@ -37,7 +37,7 @@
         android:id="@+id/uploadButton"
         android:layout_width="@dimen/fab_button_radius"
         android:layout_height="@dimen/fab_button_radius"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         app:drawable="@drawable/ic_action_add"
         app:shadowColor="@android:color/black"
         app:color="@color/accent_color_blue_200" />

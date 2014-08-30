@@ -20,6 +20,8 @@ public class TextViewRoboto extends TextView {
 
     public static final int ROBOTO_THIN = 3;
 
+    public static final int ROBOTO_MEDIUM = 4;
+
     public TextViewRoboto(Context context) {
         super(context);
         init(null);
@@ -56,6 +58,10 @@ public class TextViewRoboto extends TextView {
 
                     case ROBOTO_THIN:
                         setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Roboto-Thin.ttf"));
+                        break;
+
+                    case ROBOTO_MEDIUM:
+                        setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Roboto-Medium.ttf"));
                         break;
                 }
             } catch (Exception ex) {

@@ -22,6 +22,12 @@ import com.kenny.openimgur.ui.TextViewRoboto;
 public class LoadingDialogFragment extends DialogFragment {
     private static final String KEY_MESSAGE = "message";
 
+    private View c1, c2, c3;
+
+    private TextViewRoboto message;
+
+    private AnimatorSet set;
+
     public static LoadingDialogFragment createInstance(@StringRes int message) {
         LoadingDialogFragment fragment = new LoadingDialogFragment();
         Bundle args = new Bundle();
@@ -37,15 +43,26 @@ public class LoadingDialogFragment extends DialogFragment {
     }
 
     @Override
+    public void onDestroyView() {
+        c1 = null;
+        c2 = null;
+        c3 = null;
+        message = null;
+        set.cancel();
+        set = null;
+        super.onDestroyView();
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        View c1 = view.findViewById(R.id.circleOne);
-        View c2 = view.findViewById(R.id.circleTwo);
-        View c3 = view.findViewById(R.id.circleThree);
-        TextViewRoboto message = (TextViewRoboto) view.findViewById(R.id.message);
+        c1 = view.findViewById(R.id.circleOne);
+        c2 = view.findViewById(R.id.circleTwo);
+        c3 = view.findViewById(R.id.circleThree);
+        message = (TextViewRoboto) view.findViewById(R.id.message);
         message.setText(getArguments().getInt(KEY_MESSAGE));
-        final AnimatorSet set = new AnimatorSet();
+        set = new AnimatorSet();
         set.playSequentially(
                 buildAnimation(c1),
                 buildAnimation(c2),
@@ -56,7 +73,9 @@ public class LoadingDialogFragment extends DialogFragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                set.start();
+                if (set != null) {
+                    set.start();
+                }
             }
         });
 

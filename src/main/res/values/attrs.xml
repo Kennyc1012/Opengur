@@ -17,20 +17,13 @@
         <attr name="shadowColor" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="FlatButton">
-        <attr name="shadowEnabled" format="boolean" />
-        <attr name="buttonColor" format="color" />
-        <attr name="buttonShadowColor" format="color" />
-        <attr name="buttonShadowHeight" format="dimension" />
-        <attr name="cornerRadius" format="dimension" />
-    </declare-styleable>
-
     <declare-styleable name="TextViewRoboto">
         <attr name="robotoFont" format="enum">
             <enum name="light" value="0" />
             <enum name="regular" value="1" />
             <enum name="bold" value="2" />
             <enum name="thin" value="3" />
+            <enum name="medium" value="4" />
         </attr>
     </declare-styleable>
 

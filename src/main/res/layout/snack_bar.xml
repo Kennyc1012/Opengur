@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    style="@style/Snack_Bar">
+
+    <com.kenny.openimgur.ui.TextViewRoboto
+        android:id="@+id/message"
+        style="@style/Snack_Bar_Title"
+        app:robotoFont="regular" />
+
+</RelativeLayout>

@@ -38,7 +38,7 @@ public class DownloaderService extends IntentService {
         try {
             if (intent.hasExtra(KEY_IMAGE)) {
                 ImgurPhoto photo = intent.getParcelableExtra(KEY_IMAGE);
-                File file = new File(Environment.getExternalStorageDirectory(), FOLDER_NAME);
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), FOLDER_NAME);
                 file.mkdirs();
                 String photoFileName;
 

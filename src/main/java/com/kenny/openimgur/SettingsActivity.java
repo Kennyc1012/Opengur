@@ -2,6 +2,8 @@ package com.kenny.openimgur;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -160,13 +162,11 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     }
 
     private class DeleteCacheTask extends AsyncTask<Void, Void, Long> {
-        LoadingDialogFragment fragment;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            fragment = LoadingDialogFragment.createInstance(R.string.one_moment);
-            getFragmentManager().beginTransaction().add(fragment, "loading").commit();
+            getFragmentManager().beginTransaction().add(LoadingDialogFragment.createInstance(R.string.one_moment), "loading").commit();
         }
 
         @Override
@@ -178,10 +178,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         @Override
         protected void onPostExecute(Long cacheSize) {
             findPreference(CURRENT_CACHE_SIZE_KEY).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
+            Fragment fragment = getFragmentManager().findFragmentByTag("loading");
 
-            if (fragment != null && fragment.isAdded()) {
-                fragment.dismissAllowingStateLoss();
-                fragment = null;
+            if (fragment != null) {
+                ((DialogFragment) fragment).dismiss();
             }
         }
     }

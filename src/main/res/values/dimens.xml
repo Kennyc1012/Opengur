@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="layout_test">0dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="navigation_drawer_width">240dp</dimen>
     <dimen name="nav_item_text_size">25sp</dimen>
@@ -15,8 +14,6 @@
     <dimen name="play_button_radius">55dp</dimen>
     <dimen name="fab_button_radius">72dp</dimen>
     <dimen name="fab_button_radius_smaller">64dp</dimen>
-    <dimen name="upload_image_button_top">-36dp</dimen>
-    <dimen name="upload_button_margin">48dp</dimen>
     <dimen name="point_text_size">18sp</dimen>
     <dimen name="profile_username_textsize">24sp</dimen>
     <dimen name="notoriety_text_size">22sp</dimen>
@@ -31,5 +28,11 @@
     <dimen name="grid_padding">4dp</dimen>
     <dimen name="view_activity_margin">16dp</dimen>
     <dimen name="loading_circle_size">40dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="snack_bar_height">48dp</dimen>
+    <dimen name="snack_bar_text_size">14sp</dimen>
+    <dimen name="snack_bar_left_right_padding">24dp</dimen>
+    <dimen name="snack_bar_top_padding">16dp</dimen>
+    <dimen name="snack_bar_bottom_padding">12dp</dimen>
 
 </resources>

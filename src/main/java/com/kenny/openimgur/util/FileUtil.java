@@ -13,6 +13,7 @@ import android.util.Log;
 import com.kenny.openimgur.classes.ImgurPhoto;
 
 import java.io.BufferedOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -27,6 +28,12 @@ import java.util.Date;
  */
 public class FileUtil {
     private static final String TAG = "FileUtil";
+
+    public static final String EXTENSION_JPEG = ".jpeg";
+
+    public static final String EXTENSION_PNG = ".png";
+
+    public static final String EXTENSION_GIF = ".gif";
 
     private static final String FOLDER_NAME = "OpenImgur";
 
@@ -78,22 +85,15 @@ public class FileUtil {
                 buffer.write(byt, 0, i);
             }
 
+            buffer.flush();
             didFinish = true;
         } catch (IOException e) {
             Log.w(TAG, "Error saving photo");
             e.printStackTrace();
             didFinish = false;
         } finally {
-            try {
-                in.close();
-
-                if (buffer != null) {
-                    buffer.flush();
-                    buffer.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            closeStream(in);
+            closeStream(buffer);
         }
 
         return didFinish;
@@ -150,8 +150,7 @@ public class FileUtil {
                 return file;
             }
         } catch (Exception e) {
-            Log.w(TAG, "Error creating file");
-            e.printStackTrace();
+            Log.e(TAG, "Error creating file",e);
         }
 
         return null;
@@ -171,11 +170,11 @@ public class FileUtil {
         String extension;
 
         if (ImgurPhoto.IMAGE_TYPE_GIF.equals(type)) {
-            extension = ".gif";
+            extension = EXTENSION_GIF;
         } else if (ImgurPhoto.IMAGE_TYPE_PNG.equals(type)) {
-            extension = ".png";
+            extension = EXTENSION_PNG;
         } else {
-            extension = ".jpg";
+            extension = EXTENSION_JPEG;
         }
 
         try {
@@ -217,5 +216,20 @@ public class FileUtil {
      */
     public static boolean isFileValid(@Nullable File file) {
         return file != null && file.exists();
+    }
+
+    /**
+     * Closes a stream of data
+     *
+     * @param closeable
+     */
+    public static void closeStream(@Nullable Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException ex) {
+                Log.e(TAG, "Unable to close stream", ex);
+            }
+        }
     }
 }

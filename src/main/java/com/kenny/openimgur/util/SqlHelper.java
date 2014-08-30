@@ -15,6 +15,9 @@ import com.kenny.openimgur.util.DBContracts.ProfileContract;
 import com.kenny.openimgur.util.DBContracts.RedditContract;
 import com.kenny.openimgur.util.DBContracts.UserContract;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by kcampagna on 7/25/14.
  */
@@ -134,6 +137,7 @@ public class SqlHelper extends SQLiteOpenHelper {
             cursor.close();
         }
 
+        cursor.close();
         db.close();
         return user;
     }
@@ -160,19 +164,17 @@ public class SqlHelper extends SQLiteOpenHelper {
      *
      * @return
      */
-    public String[] getSubReddits() {
+    public List<String> getSubReddits() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(RedditContract.SEARCH_SUBBRET_SQL, null);
-        String[] results = null;
+        List<String> results = null;
 
-        if (cursor != null && cursor.moveToFirst()) {
-            results = new String[cursor.getCount()];
-            int i = 0;
+        if (cursor != null) {
+            results = new ArrayList<String>(cursor.getCount());
 
-            do {
-                results[i] = cursor.getString(RedditContract.COLUMN_INDEX_SUBREDDIT);
-                i++;
-            } while (cursor.moveToNext());
+            while (cursor.moveToNext()) {
+                results.add(cursor.getString(RedditContract.COLUMN_INDEX_SUBREDDIT));
+            }
 
             cursor.close();
         }

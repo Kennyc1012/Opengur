@@ -104,6 +104,16 @@ public class PhotoAdapter extends BaseAdapter {
                 }
             });
 
+            holder.image.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if (mListener != null) {
+                        mListener.onPhotoLongTapListener((ImageView) view);
+                    }
+                    return true;
+                }
+            });
+
             convertView.setTag(holder);
         } else {
             holder = (PhotoViewHolder) convertView.getTag();

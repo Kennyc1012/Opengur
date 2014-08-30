@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Snack_Bar" parent="Snack_Bar">
+        <item name="android:background">@color/snack_back_bg</item>
+        <item name="android:layout_height">@dimen/snack_bar_height</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingLeft">@dimen/snack_bar_left_right_padding</item>
+        <item name="android:paddingRight">@dimen/snack_bar_left_right_padding</item>
+        <item name="android:paddingTop">@dimen/snack_bar_top_padding</item>
+        <item name="android:paddingBottom">@dimen/snack_bar_bottom_padding</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:maxWidth">568dp</item>
+        <item name="android:minWidth">288dp</item>
+    </style>
+
+</resources>

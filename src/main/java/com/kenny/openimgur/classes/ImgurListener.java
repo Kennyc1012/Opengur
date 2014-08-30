@@ -19,4 +19,6 @@ public interface ImgurListener {
     void onLinkTap(View view, @Nullable String url);
 
     void onViewRepliesTap(View view);
+
+    void onPhotoLongTapListener(ImageView image);
 }

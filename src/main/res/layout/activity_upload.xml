@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,7 +9,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <ImageView
@@ -19,20 +17,8 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
+            android:layout_gravity="center_horizontal"
             android:src="@drawable/photo_placeholder" />
-
-
-        <com.kenny.openimgur.ui.FloatingActionButton
-            android:id="@+id/uploadBtn"
-            android:layout_width="@dimen/fab_button_radius"
-            android:layout_height="@dimen/fab_button_radius"
-            android:layout_gravity="end"
-            android:layout_marginTop="@dimen/upload_image_button_top"
-            android:layout_marginRight="@dimen/fab_button_radius"
-            android:layout_marginEnd="@dimen/fab_button_radius"
-            app:drawable="@drawable/ic_action_upload"
-            app:shadowColor="@android:color/black"
-            app:color="@color/accent_color_blue_200" />
 
         <EditText
             android:id="@+id/url"
@@ -63,6 +49,15 @@
             android:hint="@string/upload_desc"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin" />
+
+        <CheckBox
+            android:id="@+id/galleryUpload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:text="@string/add_to_gallery" />
 
     </LinearLayout>
 

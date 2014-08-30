@@ -13,12 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.ui.TextViewRoboto;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -64,18 +64,20 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
     @Override
     public void onStart() {
         super.onStart();
-        int dimen = getResources().getDimensionPixelSize(R.dimen.layout_test);
+        if (getDialog() == null)
+            return;
 
-        // Being greater than 0 will mean its a tablet so we need to manually stretch the width of the dialog
-        if (dimen > 0) {
-            // safety check
-            if (getDialog() == null)
-                return;
+        // Dialog Fragments are automatically set to wrap_content, so we need to force the width to fit our view
+        int dialogWidth = (int) (getResources().getDisplayMetrics().widthPixels * .8);
+        getDialog().getWindow().setLayout(dialogWidth, getDialog().getWindow().getAttributes().height);
 
-            // Dialog Fragments are automatically set to wrap_content, so we need to force the width to fit our view
-            int dialogWidth = (int) (getResources().getDisplayMetrics().widthPixels * .8);
-            getDialog().getWindow().setLayout(dialogWidth, getDialog().getWindow().getAttributes().height);
-        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        mEditText = null;
+        mRemaining = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -102,7 +104,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
 
         if (args == null || !args.containsKey(KEY_GALLERY_ID)) {
             dismissAllowingStateLoss();
-            Toast.makeText(getActivity(), R.string.error_generic, Toast.LENGTH_SHORT).show();
+            SnackBar.show(getActivity(), R.string.error_generic);
             return;
         }
 
