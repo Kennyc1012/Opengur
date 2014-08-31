@@ -322,9 +322,9 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
                     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                         // Hide the actionbar when scrolling down, show when scrolling up
                         if (firstVisibleItem > mPreviousItem && mListener != null) {
-                            mListener.oHideActionBar(false);
+                            mListener.onHideActionBar(false);
                         } else if (firstVisibleItem < mPreviousItem && mListener != null) {
-                            mListener.oHideActionBar(true);
+                            mListener.onHideActionBar(true);
                         }
 
                         mPreviousItem = firstVisibleItem;
@@ -602,7 +602,9 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllItems());
+            ImgurBaseObject[] objects = new ImgurBaseObject[mAdapter.getCount()];
+            System.arraycopy(mAdapter.getAllItems(), 0, objects, 0, objects.length);
+            outState.putParcelableArray(KEY_ITEMS, objects);
             outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
         }
 

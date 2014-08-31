@@ -86,7 +86,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public void oHideActionBar(boolean shouldShow) {
+    public void onHideActionBar(boolean shouldShow) {
         setActionBarVisibility(shouldShow);
         animateUploadMenuButton(shouldShow);
     }

@@ -62,6 +62,11 @@ public class CommentAdapter extends BaseAdapter {
         }
     }
 
+    public void destroy() {
+        clear();
+        mListener = null;
+    }
+
     public void addComments(List<ImgurComment> comments) {
         if (mCurrentComments == null) {
             mCurrentComments = new ArrayList<ImgurComment>();

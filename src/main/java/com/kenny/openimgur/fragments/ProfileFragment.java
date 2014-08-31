@@ -173,11 +173,11 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                         if (firstVisibleItem > mPreviousItem) {
                             if (mListener != null) {
-                                mListener.oHideActionBar(false);
+                                mListener.onHideActionBar(false);
                             }
                         } else if (firstVisibleItem < mPreviousItem) {
                             if (mListener != null) {
-                                mListener.oHideActionBar(true);
+                                mListener.onHideActionBar(true);
                             }
                         }
 
@@ -510,7 +510,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
      * Gets either the users favorites or submissions passed on the current selection
      */
     private void getGalleryData() {
-        String url = null;
+        String url;
         if (mCurrentEndpoint == Endpoints.ACCOUNT_GALLERY_FAVORITES) {
             url = String.format(mCurrentEndpoint.getUrl(), mSelectedUser.getUsername());
         } else {
@@ -700,7 +700,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                 if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivity(browserIntent);
                 } else {
-                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                    SnackBar.show(getActivity(), R.string.cant_launch_intent, true);
                 }
             }
         }

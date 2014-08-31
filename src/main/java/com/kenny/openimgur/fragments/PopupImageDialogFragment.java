@@ -142,7 +142,7 @@ public class PopupImageDialogFragment extends DialogFragment {
      * @param isAnimated
      */
     public void displayImage(String url, final boolean isAnimated) {
-        OpenImgurApp.getInstance().getImageLoader().displayImage(url, mImage, new ImageLoadingListener() {
+        OpenImgurApp.getInstance(getActivity()).getImageLoader().displayImage(url, mImage, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String s, View view) {
 
@@ -158,7 +158,7 @@ public class PopupImageDialogFragment extends DialogFragment {
             public void onLoadingComplete(String s, View view, Bitmap bitmap) {
                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                 if (isAnimated) {
-                    if (!ImageUtil.loadAndDisplayGif((ImageView) view, s, OpenImgurApp.getInstance().getImageLoader())) {
+                    if (!ImageUtil.loadAndDisplayGif((ImageView) view, s, OpenImgurApp.getInstance(getActivity()).getImageLoader())) {
                         Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
                         dismissAllowingStateLoss();
                     }

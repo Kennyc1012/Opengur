@@ -10,6 +10,8 @@ import android.text.style.URLSpan;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Class that handles clicking of links in a text View
  */
@@ -17,14 +19,14 @@ public class CustomLinkMovement extends LinkMovementMethod {
 
     private static CustomLinkMovement mInstance;
 
-    private ImgurListener mListener;
+    private WeakReference<ImgurListener> mListener;
 
     public static MovementMethod getInstance(ImgurListener listener) {
         if (mInstance == null) {
             mInstance = new CustomLinkMovement();
         }
 
-        mInstance.mListener = listener;
+        mInstance.mListener = new WeakReference<ImgurListener>(listener);
         return mInstance;
     }
 
@@ -40,14 +42,14 @@ public class CustomLinkMovement extends LinkMovementMethod {
             final ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
             if (link.length != 0 && link[0] instanceof URLSpan) {
                 if (mListener != null) {
-                    mListener.onLinkTap(widget, ((URLSpan) link[0]).getURL());
+                    mListener.get().onLinkTap(widget, ((URLSpan) link[0]).getURL());
                 }
 
                 return true;
             }
 
             if (mListener != null) {
-                mListener.onLinkTap(widget, null);
+                mListener.get().onLinkTap(widget, null);
             }
         }
 

@@ -62,6 +62,8 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 public class ImgurViewFragment extends Fragment {
     private static final String KEY_IMGUR_OBJECT = "imgurobject";
 
+    private static final String KEY_ITEMS = "items";
+
     private MultiStateView mMultiView;
 
     private ListView mListView;
@@ -92,19 +94,27 @@ public class ImgurViewFragment extends Fragment {
         mImgurObject = getArguments().getParcelable(KEY_IMGUR_OBJECT);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
 
-        if (mImgurObject instanceof ImgurPhoto) {
-            List<ImgurPhoto> photo = new ArrayList<ImgurPhoto>(1);
-            photo.add(((ImgurPhoto) mImgurObject));
-            mPhotoAdapter = new PhotoAdapter(getActivity(), photo, mImgurListener);
-            createHeader();
-            mListView.setAdapter(mPhotoAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-        } else if (((ImgurAlbum) mImgurObject).getAlbumPhotos() == null || ((ImgurAlbum) mImgurObject).getAlbumPhotos().isEmpty()) {
-            String url = String.format(Endpoints.ALBUM.getUrl(), mImgurObject.getId());
-            ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
-            api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
+        if (savedInstanceState == null) {
+            if (mImgurObject instanceof ImgurPhoto) {
+                List<ImgurPhoto> photo = new ArrayList<ImgurPhoto>(1);
+                photo.add(((ImgurPhoto) mImgurObject));
+                mPhotoAdapter = new PhotoAdapter(getActivity(), photo, mImgurListener);
+                createHeader();
+                mListView.setAdapter(mPhotoAdapter);
+                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            } else if (((ImgurAlbum) mImgurObject).getAlbumPhotos() == null || ((ImgurAlbum) mImgurObject).getAlbumPhotos().isEmpty()) {
+                String url = String.format(Endpoints.ALBUM.getUrl(), mImgurObject.getId());
+                ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
+                api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
+            } else {
+                mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurListener);
+                createHeader();
+                mListView.setAdapter(mPhotoAdapter);
+                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            }
         } else {
-            mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurListener);
+            List<ImgurPhoto> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
+            mPhotoAdapter = new PhotoAdapter(getActivity(), photos, mImgurListener);
             createHeader();
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -154,7 +164,7 @@ public class ImgurViewFragment extends Fragment {
     @Override
     public void onDestroyView() {
         if (mPhotoAdapter != null) {
-            mPhotoAdapter.clear();
+            mPhotoAdapter.destroy();
             mPhotoAdapter = null;
         }
 
@@ -245,7 +255,7 @@ public class ImgurViewFragment extends Fragment {
 
         @Override
         public void onPlayTap(final ProgressBar prog, final ImageView image, final ImageButton play) {
-            final ImageLoader loader = OpenImgurApp.getInstance().getImageLoader();
+            ImageLoader loader = OpenImgurApp.getInstance(getActivity()).getImageLoader();
             int position = mListView.getPositionForView(image) - mListView.getHeaderViewsCount();
             prog.setVisibility(View.VISIBLE);
             play.setVisibility(View.GONE);
@@ -269,7 +279,7 @@ public class ImgurViewFragment extends Fragment {
 
                     @Override
                     public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                        if (!ImageUtil.loadAndDisplayGif(image, s, OpenImgurApp.getInstance().getImageLoader())) {
+                        if (!ImageUtil.loadAndDisplayGif(image, s, OpenImgurApp.getInstance(getActivity()).getImageLoader())) {
                             SnackBar.show(getActivity(), R.string.loading_image_error);
                             prog.setVisibility(View.GONE);
                             play.setVisibility(View.VISIBLE);
@@ -286,7 +296,7 @@ public class ImgurViewFragment extends Fragment {
                     }
                 });
             } else {
-                if (!ImageUtil.loadAndDisplayGif(image, photo.getLink(), OpenImgurApp.getInstance().getImageLoader())) {
+                if (!ImageUtil.loadAndDisplayGif(image, photo.getLink(), OpenImgurApp.getInstance(getActivity()).getImageLoader())) {
                     SnackBar.show(getActivity(), R.string.loading_image_error);
                     prog.setVisibility(View.GONE);
                     play.setVisibility(View.VISIBLE);
@@ -327,4 +337,13 @@ public class ImgurViewFragment extends Fragment {
             super.handleMessage(msg);
         }
     };
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
+            ArrayList<ImgurPhoto> copy = new ArrayList<ImgurPhoto>(mPhotoAdapter.getPhotos());
+            outState.putParcelableArrayList(KEY_ITEMS, copy);
+        }
+    }
 }

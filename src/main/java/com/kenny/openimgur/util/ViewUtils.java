@@ -1,6 +1,7 @@
 package com.kenny.openimgur.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -99,5 +100,20 @@ public class ViewUtils {
         }
 
         return header;
+    }
+
+    /**
+     * Returns the height of the navigation bar
+     *
+     * @param context
+     * @return
+     */
+    public static int getNavigationBarHeight(Context context) {
+        Resources resources = context.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return resources.getDimensionPixelSize(resourceId);
+        }
+        return 0;
     }
 }

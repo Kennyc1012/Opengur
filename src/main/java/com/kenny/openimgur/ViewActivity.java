@@ -62,7 +62,8 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 7/12/14.
  */
-public class ViewActivity extends BaseActivity implements View.OnClickListener {
+public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener {
+    private static final String KEY_COMMENT = "comments";
 
     private static final String KEY_POSITION = "position";
 
@@ -110,6 +111,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
     private LoadingDialogFragment mDialog;
 
+    private boolean mIsResuming = false;
+
     public static Intent createIntent(Context context, ImgurBaseObject[] objects, int position) {
         Intent intent = new Intent(context, ViewActivity.class);
         intent.putExtra(KEY_POSITION, position);
@@ -136,9 +139,13 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onPageSelected(int position) {
-                mCurrentPosition = position;
-                loadComments();
-                getActionBar().setTitle(mImgurObjects[position].getTitle());
+                if (!mIsResuming) {
+                    mCurrentPosition = position;
+                    loadComments();
+                    getActionBar().setTitle(mImgurObjects[position].getTitle());
+                }
+
+                mIsResuming = false;
             }
 
             @Override
@@ -343,24 +350,38 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
-        // Check if the activity was opened externally by a link click
-        if (!TextUtils.isEmpty(mGalleryId)) {
-            mApiClient = new ApiClient(String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mGalleryId), ApiClient.HttpRequest.GET);
-            mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, null, null);
-            mGalleryId = null;
-        } else {
-            mViewPager.setAdapter(new BrowsingAdapter(getFragmentManager(), mImgurObjects));
-
-            // If we start on the 0 page, the onPageSelected event won't fire
-            if (mCurrentPosition == 0) {
-                loadComments();
-                getActionBar().setTitle(mImgurObjects[0].getTitle());
+        if (savedInstanceState == null) {
+            // Check if the activity was opened externally by a link click
+            if (!TextUtils.isEmpty(mGalleryId)) {
+                mApiClient = new ApiClient(String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mGalleryId), ApiClient.HttpRequest.GET);
+                mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, null, null);
+                mGalleryId = null;
             } else {
-                mViewPager.setCurrentItem(mCurrentPosition);
-            }
-        }
+                mViewPager.setAdapter(new BrowsingAdapter(getFragmentManager(), mImgurObjects));
 
+                // If we start on the 0 page, the onPageSelected event won't fire
+                if (mCurrentPosition == 0) {
+                    loadComments();
+                    getActionBar().setTitle(mImgurObjects[0].getTitle());
+                } else {
+                    mViewPager.setCurrentItem(mCurrentPosition);
+                }
+            }
+        } else {
+            mIsResuming = true;
+            int position = savedInstanceState.getInt(KEY_POSITION, 0);
+            mViewPager.setAdapter(new BrowsingAdapter(getFragmentManager(), mImgurObjects));
+            mViewPager.setCurrentItem(position);
+            List<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_COMMENT);
+
+            if (comments != null) {
+                mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, this);
+                mCommentList.setAdapter(mCommentAdapter);
+            }
+
+            getActionBar().setTitle(mImgurObjects[position].getTitle());
+            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        }
     }
 
     @Override
@@ -380,7 +401,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         mHandler.removeCallbacksAndMessages(null);
 
         if (mCommentAdapter != null) {
-            mCommentAdapter.clear();
+            mCommentAdapter.destroy();
             mCommentAdapter = null;
         }
 
@@ -561,52 +582,50 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         event.getThrowable().printStackTrace();
     }
 
-    private ImgurListener mImgurListener = new ImgurListener() {
-        @Override
-        public void onPhotoTap(ImageView parent) {
-        }
+    @Override
+    public void onPhotoTap(ImageView parent) {
+    }
 
-        @Override
-        public void onPhotoLongTapListener(ImageView image) {
-        }
+    @Override
+    public void onPhotoLongTapListener(ImageView image) {
+    }
 
-        @Override
-        public void onPlayTap(ProgressBar prog, ImageView image, ImageButton play) {
-        }
+    @Override
+    public void onPlayTap(ProgressBar prog, ImageView image, ImageButton play) {
+    }
 
-        @Override
-        public void onLinkTap(View view, String url) {
-            if (!TextUtils.isEmpty(url)) {
-                if (url.matches(REGEX_IMAGE_URL)) {
-                    PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
-                            .show(getFragmentManager(), "popup");
-                } else if (url.matches(REGEX_IMGUR_IMAGE)) {
-                    String[] split = url.split("\\/");
-                    PopupImageDialogFragment.getInstance(split[split.length - 1], false, false)
-                            .show(getFragmentManager(), "popup");
-                } else {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    if (browserIntent.resolveActivity(getPackageManager()) != null) {
-                        startActivity(browserIntent);
-                    } else {
-                        SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
-                    }
-                }
+    @Override
+    public void onLinkTap(View view, String url) {
+        if (!TextUtils.isEmpty(url)) {
+            if (url.matches(REGEX_IMAGE_URL)) {
+                PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
+                        .show(getFragmentManager(), "popup");
+            } else if (url.matches(REGEX_IMGUR_IMAGE)) {
+                String[] split = url.split("\\/");
+                PopupImageDialogFragment.getInstance(split[split.length - 1], false, false)
+                        .show(getFragmentManager(), "popup");
             } else {
-                onListItemClick(mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount());
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                if (browserIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(browserIntent);
+                } else {
+                    SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
+                }
             }
+        } else {
+            onListItemClick(mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount());
         }
+    }
 
-        @Override
-        public void onViewRepliesTap(View view) {
-            int position = mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount();
-            ImgurComment comment = mCommentAdapter.getItem(position);
+    @Override
+    public void onViewRepliesTap(View view) {
+        int position = mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount();
+        ImgurComment comment = mCommentAdapter.getItem(position);
 
-            if (comment.getReplyCount() > 0) {
-                nextComments(comment);
-            }
+        if (comment.getReplyCount() > 0) {
+            nextComments(comment);
         }
-    };
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -680,6 +699,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
         return super.onPrepareOptionsMenu(menu);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
+            outState.putParcelableArrayList(KEY_COMMENT, new ArrayList<ImgurComment>(mCommentAdapter.getItems()));
+        }
+
+        outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
+    }
+
     private void onListItemClick(int position) {
         if (position >= 0) {
             boolean shouldClose = mCommentAdapter.setSelectedIndex(position);
@@ -742,7 +771,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener {
 
                     if (!comments.isEmpty()) {
                         if (mCommentAdapter == null) {
-                            mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, mImgurListener);
+                            mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, ViewActivity.this);
                             // Add and remove the header view for pre 4.4 header support
                             mCommentList.addHeaderView(mCommentListHeader);
                             mCommentList.removeHeaderView(mCommentListHeader);

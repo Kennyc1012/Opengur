@@ -5,6 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.Context;
+import android.os.Build;
 import android.support.annotation.StringRes;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +14,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.util.ViewUtils;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -21,6 +25,23 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class SnackBar {
     private static final String TAG = "SnackBar";
+
+    /**
+     * Shows a Snack Bar
+     *
+     * @param activity              The activity to show the Snack Bar in
+     * @param message               The Sting Resource of the message to show
+     * @param adjustForTransparency If the SnackBar should account for a Transparent Theme
+     */
+    public static void show(Activity activity, @StringRes int message, boolean adjustForTransparency) {
+        SnackBarItem sbi = new SnackBarItem(message, adjustForTransparency);
+        SnackBarManager mngr = SnackBarManager.getInstance();
+        mngr.addSnackBar(activity, sbi);
+
+        if (!mngr.isShowingSnackBar()) {
+            SnackBarManager.getInstance().showSnackbars(activity);
+        }
+    }
 
     /**
      * Shows a Snack Bar
@@ -148,10 +169,15 @@ public class SnackBar {
 
         public AnimatorSet animator;
 
-        private float mSnackBackHeight;
+        public boolean adjustForTransparency = false;
 
         SnackBarItem(int message) {
             this.message = message;
+        }
+
+        SnackBarItem(int message, boolean adjustForTransparency) {
+            this.message = message;
+            this.adjustForTransparency = adjustForTransparency && OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.KITKAT;
         }
 
         /**
@@ -163,16 +189,23 @@ public class SnackBar {
         public void show(final Activity activity, final SnackBarListener listener) {
             FrameLayout parent = (FrameLayout) activity.findViewById(android.R.id.content);
             view = activity.getLayoutInflater().inflate(R.layout.snack_bar, parent, false);
+            Context context = view.getContext();
             ((TextViewRoboto) view.findViewById(R.id.message)).setText(message);
-            mSnackBackHeight = view.getContext().getResources().getDimension(R.dimen.snack_bar_height);
+            float snackBarHeight = context.getResources().getDimension(R.dimen.snack_bar_height);
+            float animationEnd = context.getResources().getDimension(R.dimen.snack_bar_animation_height);
+
+            if (adjustForTransparency) {
+                animationEnd += ViewUtils.getNavigationBarHeight(context);
+            }
+
             animator = new AnimatorSet();
             animator.setInterpolator(new DecelerateInterpolator());
             parent.addView(view);
 
             animator.playSequentially(
-                    ObjectAnimator.ofFloat(view, "translationY", mSnackBackHeight, 0).setDuration(500L),
-                    ObjectAnimator.ofFloat(view, "translationY", 0, 0).setDuration(2000L),
-                    ObjectAnimator.ofFloat(view, "translationY", 0, mSnackBackHeight).setDuration(500L)
+                    ObjectAnimator.ofFloat(view, "translationY", snackBarHeight, -animationEnd).setDuration(500L),
+                    ObjectAnimator.ofFloat(view, "alpha", 1.0f, 1.0f).setDuration(2000L),
+                    ObjectAnimator.ofFloat(view, "translationY", -animationEnd, snackBarHeight).setDuration(500L)
             );
 
             animator.addListener(new AnimatorListenerAdapter() {

@@ -73,10 +73,6 @@ public class RedditFragment extends Fragment {
 
     private static final int PAGE = 1;
 
-    private static final long SEARCH_DELAY = 1000L;
-
-    private static final int MIN_SEARCH_CHAR = 4;
-
     private AutoCompleteTextView mSearchEditText;
 
     private View mQuickReturnView;
@@ -116,8 +112,6 @@ public class RedditFragment extends Fragment {
     private int mPreviousItem;
 
     private String mQuality;
-
-    private ArrayAdapter<String> mSearchAdapter;
 
     public static RedditFragment createInstance() {
         return new RedditFragment();
@@ -194,7 +188,7 @@ public class RedditFragment extends Fragment {
                         // Hide the actionbar when scrolling down, show when scrolling up
                         if (firstVisibleItem > mPreviousItem) {
                             if (mListener != null) {
-                                mListener.oHideActionBar(false);
+                                mListener.onHideActionBar(false);
                             }
 
                             if (mInputIsShowing) {
@@ -203,7 +197,7 @@ public class RedditFragment extends Fragment {
                             }
                         } else if (firstVisibleItem < mPreviousItem) {
                             if (mListener != null) {
-                                mListener.oHideActionBar(true);
+                                mListener.onHideActionBar(true);
                             }
 
                             if (!mInputIsShowing) {
@@ -349,17 +343,7 @@ public class RedditFragment extends Fragment {
         List<String> searches = mSql.getSubReddits();
 
         if (searches != null && searches.size() > 0) {
-            if (mSearchAdapter == null) {
-                mSearchAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, searches);
-                mSearchEditText.setAdapter(mSearchAdapter);
-            } else {
-                if (!mSearchAdapter.isEmpty()) {
-                    mSearchAdapter.clear();
-                }
-
-                mSearchAdapter.addAll(searches);
-                mSearchAdapter.notifyDataSetChanged();
-            }
+            mSearchEditText.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, searches));
         }
     }
 

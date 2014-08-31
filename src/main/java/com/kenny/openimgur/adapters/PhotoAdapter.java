@@ -48,6 +48,15 @@ public class PhotoAdapter extends BaseAdapter {
         }
     }
 
+    public void destroy() {
+        clear();
+        mListener = null;
+    }
+
+    public List<ImgurPhoto> getPhotos() {
+        return mPhotos;
+    }
+
     @Override
     public int getCount() {
         if (mPhotos != null) {
