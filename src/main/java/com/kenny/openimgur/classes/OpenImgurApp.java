@@ -197,17 +197,9 @@ public class OpenImgurApp extends Application {
                         .add("grant_type", "refresh_token").build();
 
                 ApiClient client = new ApiClient(Endpoints.REFRESH_TOKEN.getUrl(), ApiClient.HttpRequest.POST);
-                JSONObject json = client.doWork(body);
-                int status = json.getInt(ApiClient.KEY_STATUS);
-
-                if (status == ApiClient.STATUS_OK) {
-                    return onReceivedRefreshToken(json);
-                }
-
-                return false;
-
+                return onReceivedRefreshToken(client.doWork(body));
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error parsing user tokens", e);
                 return false;
             }
         }

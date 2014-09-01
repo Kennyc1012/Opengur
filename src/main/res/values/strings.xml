@@ -45,7 +45,7 @@
     <string name="error_occurred">An error has occurred</string>
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
     <string name="error_401">This requires you to be logged in. Please login and try again.</string>
-    <string name="error_403">You do not have permission to complete this action.</string>
+    <string name="error_403">You do not have permission to complete this action. You might need to login again.</string>
     <string name="error_429">The rate limit for Open Imgur has been hit. There is nothing I can do about this. Check back
     later.</string>
     <string name="error_503">Imgur is currently over capacity. Boo…</string>
@@ -121,6 +121,13 @@
     <string name="not_logged_in">Not Logged In</string>
     <string name="not_logged_in_msg">Are you sure you want to upload this image without being logged in?</string>
     <string name="copy_link">Copy Link</string>
+    <string name="open_source">Open Source</string>
+    <string name="view_source">View Source Code</string>
+    <string name="upload_camera_error">An error occurred while capturing your photo. Please try again</string>
+    <string name="upload_gallery_error">An error occurred while opening the selected image. Please try again</string>
+    <string name="upload_decode_error">An error occurred while decoding image. Please try again</string>
+    <string name="upload_success">Upload successful. Image can be viewed at %s</string>
+    <string name="upload_complete">Upload Complete</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">

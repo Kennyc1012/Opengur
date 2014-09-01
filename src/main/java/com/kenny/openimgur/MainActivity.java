@@ -82,6 +82,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 startActivity(SettingsActivity.createIntent(getApplicationContext()));
                 return true;
         }
+        
         return super.onOptionsItemSelected(item);
     }
 

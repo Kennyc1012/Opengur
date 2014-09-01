@@ -149,10 +149,17 @@ public class ApiClient {
                 json = new JSONObject(serverResponse);
             }
         } else {
-            Log.w(TAG, "Request Failed with status code " + response.code());
+            int statusCode = response.code();
+            Log.w(TAG, "Request Failed with status code " + statusCode);
             json = new JSONObject();
             json.put(KEY_SUCCESS, false);
-            json.put(KEY_STATUS, response.code());
+            json.put(KEY_STATUS, statusCode);
+            response.body().close();
+
+            if (statusCode == ApiClient.STATUS_FORBIDDEN && OpenImgurApp.getInstance().getUser() != null) {
+                // User tokens are no longer valid, invalidate their profile
+                OpenImgurApp.getInstance().onLogout();
+            }
         }
 
         return json;

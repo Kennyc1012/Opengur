@@ -35,6 +35,11 @@
             android:key="licenses"
             android:title="@string/open_src_licenses" />
 
+        <Preference
+            android:key="openSource"
+            android:title="@string/open_source"
+            android:summary="@string/view_source" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

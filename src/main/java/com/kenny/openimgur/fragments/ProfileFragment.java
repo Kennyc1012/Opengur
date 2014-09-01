@@ -224,6 +224,17 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                 mFromMain && mMultiView.getViewState() == MultiStateView.ViewState.EMPTY && mListener != null) {
             mListener.onLoadingStarted(PAGE);
         }
+
+        // User access got revoked somehow, go back to login view
+        if (mFromMain && isVisibleToUser && OpenImgurApp.getInstance(getActivity()).getUser() == null
+                && mMultiView != null && mMultiView.getViewState() != MultiStateView.ViewState.EMPTY) {
+            if (mAdapter != null) {
+                mAdapter.clear();
+                mAdapter.notifyDataSetChanged();
+            }
+
+            configWebView();
+        }
     }
 
     /**

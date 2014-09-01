@@ -2,6 +2,8 @@ package com.kenny.openimgur;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -155,5 +157,28 @@ public class BaseActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Shows a Dialog Fragment
+     *
+     * @param fragment The Dialog Fragment to Display
+     * @param title    The title for the Dialog Fragment
+     */
+    public void showDialogFragment(DialogFragment fragment, String title) {
+        getFragmentManager().beginTransaction().add(fragment, title).commit();
+    }
+
+    /**
+     * Dismisses the dialog fragment with the given title
+     *
+     * @param title
+     */
+    public void dismissDialogFragment(String title) {
+        Fragment fragment = getFragmentManager().findFragmentByTag(title);
+
+        if (fragment != null && fragment instanceof DialogFragment) {
+            ((DialogFragment) fragment).dismiss();
+        }
     }
 }

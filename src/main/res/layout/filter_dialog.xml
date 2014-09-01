@@ -9,15 +9,6 @@
         style="@style/dialog_title"
         android:text="@string/filter" />
 
-    <com.kenny.openimgur.ui.TextViewRoboto
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dialog_content_margin"
-        android:layout_marginRight="@dimen/dialog_content_margin"
-        android:text="@string/section"
-        android:textSize="18sp"
-        app:robotoFont="regular" />
-
     <com.kenny.openimgur.ui.TypeWriterTextView
         android:id="@+id/section"
         android:layout_width="match_parent"

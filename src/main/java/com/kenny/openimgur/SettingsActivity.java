@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -22,6 +23,7 @@ import android.webkit.WebView;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
+import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.SqlHelper;
 
@@ -63,6 +65,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         findPreference(REDDIT_SEARCH_KEY).setOnPreferenceClickListener(this);
         findPreference(CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
         findPreference("licenses").setOnPreferenceClickListener(this);
+        findPreference("openSource").setOnPreferenceClickListener(this);
     }
 
     @Override
@@ -156,6 +159,13 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             dialog.setView(webView);
             dialog.show();
             return true;
+        } else if (preference.getKey().equals("openSource")) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Kennyc1012/OpenImgur"));
+            if (browserIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(browserIntent);
+            } else {
+                SnackBar.show(SettingsActivity.this, R.string.cant_launch_intent);
+            }
         }
 
         return false;

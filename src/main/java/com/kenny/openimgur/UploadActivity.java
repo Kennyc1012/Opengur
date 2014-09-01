@@ -3,10 +3,13 @@ package com.kenny.openimgur;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -18,6 +21,7 @@ import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +36,7 @@ import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurHandler;
+import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
 import com.kenny.openimgur.ui.SnackBar;
@@ -40,6 +45,9 @@ import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.Headers;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
 
 import org.json.JSONException;
@@ -55,6 +63,14 @@ import pl.droidsonroids.gif.GifDrawable;
  * Created by kcampagna on 8/2/14.
  */
 public class UploadActivity extends BaseActivity {
+    private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
+
+    private static final MediaType MEDIA_TYPE_JPEG = MediaType.parse("image/jpeg");
+
+    private static final MediaType MEDIA_TYPE_GIF = MediaType.parse("image/gif");
+
+    private static final String KEY_FILE_PATH = "filePath";
+
     public static final String KEY_UPLOAD_TYPE = "upload_type";
 
     public static final int UPLOAD_TYPE_CAMERA = 0;
@@ -70,6 +86,10 @@ public class UploadActivity extends BaseActivity {
     private static final long TEXT_DELAY = 1000L;
 
     private static final int MSG_SEARCH_URL = 11;
+
+    private static final String DFRAGMENT_DECODING = "decoding";
+
+    private static final String DFRAGMENT_UPLOADING = "uploading";
 
     private File mTempFile = null;
 
@@ -87,7 +107,7 @@ public class UploadActivity extends BaseActivity {
 
     private boolean mIsValidLink = false;
 
-    private LoadingDialogFragment mLoadingDialog;
+    private boolean mDidRotateImage = false;
 
     public static Intent createIntent(Context context, int uploadType) {
         return new Intent(context, UploadActivity.class).putExtra(KEY_UPLOAD_TYPE, uploadType);
@@ -103,17 +123,47 @@ public class UploadActivity extends BaseActivity {
         mDesc = (EditText) findViewById(R.id.desc);
         mLink = (EditText) findViewById(R.id.url);
         mGalleryCB = (CheckBox) findViewById(R.id.galleryUpload);
-        int uploadType = UPLOAD_TYPE_LINK;
-        if (getIntent().getExtras() != null) {
-            uploadType = getIntent().getExtras().getInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
-        }
-
-        if (uploadType != UPLOAD_TYPE_LINK) {
-            int requestCode = uploadType == UPLOAD_TYPE_GALLERY ? REQUEST_CODE_GALLERY : REQUEST_CODE_CAMERA;
-            startActivityForResult(createPhotoIntent(uploadType), requestCode);
-        }
-
+        handleBundle(savedInstanceState);
         init();
+    }
+
+    /**
+     * Handles the Bundle arguments if they exists
+     *
+     * @param savedInstanceState
+     */
+    private void handleBundle(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            int uploadType = UPLOAD_TYPE_LINK;
+            if (getIntent().getExtras() != null) {
+                uploadType = getIntent().getExtras().getInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
+            }
+
+            if (uploadType != UPLOAD_TYPE_LINK) {
+                int requestCode = uploadType == UPLOAD_TYPE_GALLERY ? REQUEST_CODE_GALLERY : REQUEST_CODE_CAMERA;
+                startActivityForResult(createPhotoIntent(uploadType), requestCode);
+            }
+        } else {
+            int uploadType = savedInstanceState.getInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
+
+            switch (uploadType) {
+                case UPLOAD_TYPE_CAMERA:
+                    mCameraFile = new File(savedInstanceState.getString(KEY_FILE_PATH));
+                    new LoadImageTask().execute(mCameraFile);
+                    mLink.setVisibility(View.GONE);
+                    break;
+
+                case UPLOAD_TYPE_GALLERY:
+                    mTempFile = new File(savedInstanceState.getString(KEY_FILE_PATH));
+                    new LoadImageTask().execute(mTempFile);
+                    mLink.setVisibility(View.GONE);
+                    break;
+
+                case UPLOAD_TYPE_LINK:
+                    // TODO?
+                    break;
+            }
+        }
     }
 
     @Override
@@ -136,15 +186,25 @@ public class UploadActivity extends BaseActivity {
                                 public void onClick(View view) {
                                     dialog.dismiss();
                                 }
-                            }).setPositiveButton(R.string.yes, new View.OnClickListener() {
+                            })
+                            .setPositiveButton(R.string.yes, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    upload(mTitle.getText().toString(), mDesc.getText().toString(), false);
+                                    dialog.dismiss();
+                                    if (mIsValidLink) {
+                                        upload(mTitle.getText().toString(), mDesc.getText().toString(), mLink.getText().toString(), false);
+                                    } else {
+                                        upload(mTitle.getText().toString(), mDesc.getText().toString(), mTempFile != null ?
+                                                mTempFile : mCameraFile, false);
+                                    }
                                 }
                             }).build());
+
+                    dialog.show();
                 } else {
                     String title = mTitle.getText().toString();
                     String desc = mDesc.getText().toString();
+                    String link = mLink.getText().toString();
 
                     if (mGalleryCB.isChecked() && TextUtils.isEmpty(title)) {
                         // Shake the edit text to show that they have not enetered any text
@@ -152,7 +212,12 @@ public class UploadActivity extends BaseActivity {
                         return false;
                     }
 
-                    upload(title, desc, mGalleryCB.isChecked());
+                    if (mIsValidLink) {
+                        upload(title, desc, link, mGalleryCB.isChecked());
+                    } else {
+                        upload(title, desc, mTempFile != null ?
+                                mTempFile : mCameraFile, false);
+                    }
                 }
 
                 return true;
@@ -180,11 +245,13 @@ public class UploadActivity extends BaseActivity {
             switch (event.eventType) {
                 case UPLOAD:
                     if (status == ApiClient.STATUS_OK) {
+                        ImgurPhoto photo = new ImgurPhoto(event.json.getJSONObject(ApiClient.KEY_DATA));
+
                         // If our id is true, that means we need to upload the resulting id to the gallery
                         if (event.id.equals(String.valueOf(true))) {
 
                         } else {
-
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photo);
                         }
 
                     } else {
@@ -215,33 +282,78 @@ public class UploadActivity extends BaseActivity {
     }
 
     /**
-     * Uploads the image/url to Imgur
+     * Uploads the url to Imgur
      *
      * @param title           Optional title for image. Required if uploading to gallery
      * @param description     Option description for image
+     * @param url             Picture Url
      * @param uploadToGallery If the image should be uploaded to the gallery
      */
-    private void upload(@Nullable String title, @Nullable String description, boolean uploadToGallery) {
-        mLoadingDialog = LoadingDialogFragment.createInstance(R.string.uploading);
-        getFragmentManager().beginTransaction().add(mLoadingDialog, "uploading");
+    private void upload(@Nullable String title, @Nullable String description, @NonNull String url, boolean uploadToGallery) {
+        showDialogFragment(LoadingDialogFragment.createInstance(R.string.uploading), DFRAGMENT_UPLOADING);
         ApiClient client = new ApiClient(Endpoints.UPLOAD.getUrl(), ApiClient.HttpRequest.POST);
 
-        // Link upload
-        if (mIsValidLink) {
-            FormEncodingBuilder builder = new FormEncodingBuilder()
-                    .add("image", mLink.getText().toString())
-                    .add("type", "URL");
+        FormEncodingBuilder builder = new FormEncodingBuilder()
+                .add("image", url)
+                .add("type", "URL");
+
+        if (!TextUtils.isEmpty(title)) {
+            builder.add("title", title);
+        }
+
+        if (!TextUtils.isEmpty(description)) {
+            builder.add("description", description);
+        }
+
+        RequestBody body = builder.build();
+        client.doWork(ImgurBusEvent.EventType.UPLOAD, String.valueOf(uploadToGallery), body);
+
+    }
+
+    /**
+     * Uploads the file to Imgur
+     *
+     * @param title           Optional title for image. Required if uploading to gallery
+     * @param description     Option description for image
+     * @param file            File to upload
+     * @param uploadToGallery If the image should be uploaded to the gallery
+     */
+    private void upload(@Nullable String title, @Nullable String description, @NonNull File file, boolean uploadToGallery) {
+        showDialogFragment(LoadingDialogFragment.createInstance(R.string.uploading), DFRAGMENT_UPLOADING);
+
+        // Make sure the image isn't a gif. They can't be rotated
+        if (mDidRotateImage && mPreviewImage.getDrawable() instanceof BitmapDrawable) {
+            new RotateImageTask(file, uploadToGallery, title, description).execute(((BitmapDrawable) mPreviewImage.getDrawable()).getBitmap());
+        } else {
+            ApiClient client = new ApiClient(Endpoints.UPLOAD.getUrl(), ApiClient.HttpRequest.POST);
+            MediaType type;
+
+            if (file.getAbsolutePath().endsWith("png")) {
+                type = MEDIA_TYPE_PNG;
+            } else if (file.getAbsolutePath().endsWith("gif")) {
+                type = MEDIA_TYPE_GIF;
+            } else {
+                type = MEDIA_TYPE_JPEG;
+            }
+
+            MultipartBuilder builder = new MultipartBuilder().type(MultipartBuilder.FORM)
+                    .addPart(Headers.of("Content-Disposition", "form-data; name=\"image\""),
+                            RequestBody.create(type, file));
+
+            builder.addPart(Headers.of("Content-Disposition", "form-data; name=\"type\""),
+                    RequestBody.create(null, "file"));
 
             if (!TextUtils.isEmpty(title)) {
-                builder.add("title", title);
+                builder.addPart(Headers.of("Content-Disposition", "form-data; name=\"title\""),
+                        RequestBody.create(null, title));
             }
 
             if (!TextUtils.isEmpty(description)) {
-                builder.add("description", description);
+                builder.addPart(Headers.of("Content-Disposition", "form-data; name=\"description\""),
+                        RequestBody.create(null, description));
             }
 
-            RequestBody body = builder.build();
-            client.doWork(ImgurBusEvent.EventType.UPLOAD, String.valueOf(uploadToGallery), body);
+            client.doWork(ImgurBusEvent.EventType.UPLOAD, String.valueOf(uploadToGallery), builder.build());
         }
     }
 
@@ -296,18 +408,18 @@ public class UploadActivity extends BaseActivity {
                 case REQUEST_CODE_CAMERA:
                     if (FileUtil.isFileValid(mCameraFile)) {
                         task = new LoadImageTask();
-                        task.displayLoadingFragment();
+                        showDialogFragment(LoadingDialogFragment.createInstance(R.string.decoding_image), DFRAGMENT_DECODING);
                         FileUtil.scanFile(Uri.fromFile(mCameraFile), getApplicationContext());
                         task.execute(mCameraFile);
                     } else {
-                        // TODO Error
+                        SnackBar.show(this, R.string.upload_camera_error);
                     }
 
                     break;
 
                 case REQUEST_CODE_GALLERY:
                     task = new LoadImageTask();
-                    task.displayLoadingFragment();
+                    showDialogFragment(LoadingDialogFragment.createInstance(R.string.decoding_image), DFRAGMENT_DECODING);
                     mTempFile = FileUtil.createFile(data.getData(), getContentResolver());
 
                     if (FileUtil.isFileValid(mTempFile)) {
@@ -324,7 +436,8 @@ public class UploadActivity extends BaseActivity {
                         }
 
                     } else {
-                        task.dismissDialog();
+                        SnackBar.show(this, R.string.upload_gallery_error);
+                        dismissDialogFragment(DFRAGMENT_DECODING);
                     }
 
                     break;
@@ -337,17 +450,27 @@ public class UploadActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         // Delete the temporary file if one exists
-        if (FileUtil.isFileValid(mTempFile)) {
+        if (FileUtil.isFileValid(mTempFile) && isFinishing()) {
             mTempFile.delete();
         }
 
-        mPreviewImage = null;
-        mTitle = null;
-        mDesc = null;
-        mLink = null;
-        mGalleryCB = null;
         mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (FileUtil.isFileValid(mTempFile)) {
+            outState.putString(KEY_FILE_PATH, mTempFile.getAbsolutePath());
+            outState.putInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_GALLERY);
+        } else if (FileUtil.isFileValid(mCameraFile)) {
+            outState.putString(KEY_FILE_PATH, mCameraFile.getAbsolutePath());
+            outState.putInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_CAMERA);
+        } else {
+            outState.putInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
+        }
     }
 
     /**
@@ -426,9 +549,35 @@ public class UploadActivity extends BaseActivity {
                     break;
 
                 case MESSAGE_ACTION_COMPLETE:
+                    dismissDialogFragment(DFRAGMENT_UPLOADING);
+                    final ImgurPhoto photo = (ImgurPhoto) msg.obj;
+                    String message = getString(R.string.upload_success, photo.getLink());
+
+                    final AlertDialog dialog = new AlertDialog.Builder(UploadActivity.this).create();
+                    dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+                    dialog.setView(new PopupDialogViewBuilder(getApplicationContext()).setTitle(R.string.upload_complete)
+                            .setMessage(message).setNegativeButton(R.string.dismiss, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            }).setPositiveButton(R.string.copy_link, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    dialog.dismiss();
+                                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", photo.getLink()));
+                                    finish();
+
+                                }
+                            }).build());
+                    dialog.show();
                     break;
 
                 case MESSAGE_ACTION_FAILED:
+                    dismissDialogFragment(DFRAGMENT_UPLOADING);
                     SnackBar.show(UploadActivity.this, (Integer) msg.obj);
                     break;
             }
@@ -439,9 +588,6 @@ public class UploadActivity extends BaseActivity {
      * Decodes the selected image in the background for displaying
      */
     private class LoadImageTask extends AsyncTask<File, Void, Bitmap> {
-        LoadingDialogFragment fragment;
-
-        private String rotatedFilePath;
 
         @Override
         protected Bitmap doInBackground(File... files) {
@@ -453,8 +599,52 @@ public class UploadActivity extends BaseActivity {
                     return null;
                 }
 
-                rotatedFilePath = checkExifData(file);
-                return ImageUtil.decodeSampledBitmapFromResource(!TextUtils.isEmpty(rotatedFilePath) ? new File(rotatedFilePath) : file, 1024, 1024);
+                int orientation = ImageUtil.getImageRotation(file);
+                DisplayMetrics metrics = getResources().getDisplayMetrics();
+                int width = metrics.widthPixels > 1024 ? 1024 : metrics.widthPixels;
+                int height = metrics.heightPixels > 1024 ? 1024 : metrics.heightPixels;
+                Bitmap bitmap = ImageUtil.decodeSampledBitmapFromResource(file, width, height);
+
+                // If the orientation is normal or not defined, return the original bitmap
+                if (orientation == ExifInterface.ORIENTATION_NORMAL || orientation == ExifInterface.ORIENTATION_UNDEFINED) {
+                    return bitmap;
+                }
+
+                Matrix matrix = new Matrix();
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                        matrix.setScale(-1, 1);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        matrix.setRotate(180);
+                        break;
+                    case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                        matrix.setRotate(180);
+                        matrix.postScale(-1, 1);
+                        break;
+                    case ExifInterface.ORIENTATION_TRANSPOSE:
+                        matrix.setRotate(90);
+                        matrix.postScale(-1, 1);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        matrix.setRotate(90);
+                        break;
+                    case ExifInterface.ORIENTATION_TRANSVERSE:
+                        matrix.setRotate(-90);
+                        matrix.postScale(-1, 1);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        matrix.setRotate(-90);
+                        break;
+                    default:
+                        return bitmap;
+                }
+
+                mDidRotateImage = true;
+                Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                bitmap.recycle();
+                return rotatedBitmap;
+
             } catch (Exception e) {
                 Log.e(TAG, "Error decoding Image", e);
             }
@@ -462,104 +652,70 @@ public class UploadActivity extends BaseActivity {
             return null;
         }
 
-        /**
-         * Cheks the EXIF data of the file and rotates and saves it accordingly.
-         *
-         * @param file File to check
-         * @return The new path of the rotated file. Null if no rotation is needed
-         */
-        private String checkExifData(File file) {
-            int rotation = ImageUtil.getImageRotation(file);
-            File rotationFile;
-            String newPath = null;
-
-            if (rotation != ExifInterface.ORIENTATION_NORMAL && rotation != ExifInterface.ORIENTATION_UNDEFINED) {
-                Log.v(TAG, "EXIF Rotation detected, rotating image");
-                // Down Sample the images to not take up a lot of memory
-                Bitmap bitmap = ImageUtil.decodeSampledBitmapFromResource(file, 1024, 1024);
-                Matrix matrix = new Matrix();
-
-                switch (rotation) {
-                    case ExifInterface.ORIENTATION_ROTATE_90:
-                        matrix.postRotate(90);
-                        break;
-
-                    case ExifInterface.ORIENTATION_ROTATE_180:
-                        matrix.postRotate(180);
-                        break;
-
-                    case ExifInterface.ORIENTATION_ROTATE_270:
-                        matrix.postRotate(-90);
-                        break;
-                }
-
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                rotationFile = FileUtil.createFile(FileUtil.EXTENSION_JPEG);
-                if (!ImageUtil.saveBitmapToFile(bitmap, rotationFile)) {
-                    // Delete the rotation file if it fails to save and null it out
-                    if (FileUtil.isFileValid(rotationFile)) {
-                        rotationFile.delete();
-                    }
-                } else {
-                    newPath = rotationFile.getAbsolutePath();
-                }
-
-                bitmap.recycle();
-            }
-
-            return newPath;
-        }
-
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             if (bitmap != null) {
                 mPreviewImage.setImageBitmap(bitmap);
                 mLink.setVisibility(View.GONE);
-
-                if (!TextUtils.isEmpty(rotatedFilePath)) {
-                    // Set whichever file is currently in use to the newly rotated image
-                    if (FileUtil.isFileValid(mCameraFile)) {
-                        mCameraFile.delete();
-                        mCameraFile = new File(rotatedFilePath);
-                    } else if (FileUtil.isFileValid(mTempFile)) {
-                        mTempFile.delete();
-                        mTempFile = new File(rotatedFilePath);
-                    }
-                }
             } else {
-                // Delete any of the files if an error occurred
-                if (FileUtil.isFileValid(mCameraFile)) {
-                    mCameraFile.delete();
-                }
-
+                SnackBar.show(UploadActivity.this, R.string.upload_decode_error);
                 if (FileUtil.isFileValid(mTempFile)) {
                     mTempFile.delete();
-                }
-
-                if (!TextUtils.isEmpty(rotatedFilePath)) {
-                    File f = new File(rotatedFilePath);
-
-                    if (FileUtil.isFileValid(f)) {
-                        f.delete();
-                    }
                 }
             }
 
             invalidateOptionsMenu();
-            dismissDialog();
+            dismissDialogFragment(DFRAGMENT_DECODING);
+        }
+    }
+
+    /**
+     * Class that saves the rotated bitmap then uploads it
+     */
+    private class RotateImageTask extends AsyncTask<Bitmap, Void, Boolean> {
+        private boolean mShouldUploadToGallery = false;
+
+        private File mOriginalFile;
+
+        private File mNewFile;
+
+        private String mTitle;
+
+        private String mDesc;
+
+        public RotateImageTask(File originalFile, boolean uploadToGallery, String title, String desc) {
+            mShouldUploadToGallery = uploadToGallery;
+            mOriginalFile = originalFile;
+            mTitle = title;
+            mDesc = desc;
         }
 
-        public void displayLoadingFragment() {
-            fragment = LoadingDialogFragment.createInstance(R.string.decoding_image);
-            getFragmentManager().beginTransaction().add(fragment, "decoding").commit();
-        }
-
-        public void dismissDialog() {
-            if (fragment != null) {
-                fragment.dismiss();
-                fragment = null;
+        @Override
+        protected Boolean doInBackground(Bitmap... bitmap) {
+            boolean successful = false;
+            try {
+                mNewFile = FileUtil.createFile(FileUtil.EXTENSION_JPEG);
+                successful = ImageUtil.saveBitmapToFile(bitmap[0], mNewFile);
+            } catch (Exception e) {
+                Log.e(TAG, "Error saving rotated image", e);
             }
 
+            mDidRotateImage = false;
+            return successful;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            File file;
+            if (result && FileUtil.isFileValid(mNewFile)) {
+                Log.v(TAG, "Rotated image saved successfully");
+                file = mNewFile;
+            } else {
+                Log.w(TAG, "Rotated image unable to be saved, defaulting to original");
+                file = mOriginalFile;
+            }
+
+            upload(mTitle, mDesc, file, mShouldUploadToGallery);
         }
     }
 }

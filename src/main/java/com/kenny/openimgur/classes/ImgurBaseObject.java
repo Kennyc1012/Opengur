@@ -45,6 +45,8 @@ public abstract class ImgurBaseObject implements Parcelable {
 
     private static final String KEY_VOTE = "vote";
 
+    private static final String KEY_DELETE_HASH = "deletehash";
+
     private int mUpVotes;
 
     private int mDownVotes;
@@ -68,6 +70,8 @@ public abstract class ImgurBaseObject implements Parcelable {
     private String mRedditLink;
 
     private String mVote;
+
+    private String mDeleteHash;
 
     private long mDate;
 
@@ -146,6 +150,10 @@ public abstract class ImgurBaseObject implements Parcelable {
                 mVote = json.getString(KEY_VOTE);
             }
 
+            if (json.has(KEY_DELETE_HASH) && !json.get(KEY_DELETE_HASH).equals(null)) {
+                mDeleteHash = json.getString(KEY_DELETE_HASH);
+            }
+
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
@@ -211,6 +219,10 @@ public abstract class ImgurBaseObject implements Parcelable {
         return mVote;
     }
 
+    public String getDeleteHash() {
+        return mDeleteHash;
+    }
+
     public void setIsFavorite(boolean favorite) {
         mIsFavorited = favorite;
     }
@@ -232,6 +244,7 @@ public abstract class ImgurBaseObject implements Parcelable {
         out.writeString(mLink);
         out.writeString(mRedditLink);
         out.writeString(mVote);
+        out.writeString(mDeleteHash);
         out.writeInt(mIsFavorited ? 1 : 0);
         out.writeLong(mDate);
         out.writeLong(mBandwidth);
@@ -250,6 +263,7 @@ public abstract class ImgurBaseObject implements Parcelable {
         mLink = in.readString();
         mRedditLink = in.readString();
         mVote = in.readString();
+        mDeleteHash = in.readString();
         mIsFavorited = in.readInt() == 1;
         mDate = in.readLong();
         mBandwidth = in.readLong();

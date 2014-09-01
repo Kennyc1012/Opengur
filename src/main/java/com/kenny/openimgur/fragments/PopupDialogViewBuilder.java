@@ -41,6 +41,11 @@ public class PopupDialogViewBuilder {
         return this;
     }
 
+    public PopupDialogViewBuilder setMessage(String message) {
+        mMessage.setText(message);
+        return this;
+    }
+
     public PopupDialogViewBuilder setNegativeButton(@StringRes int text, View.OnClickListener onClickListener) {
         mNegativeBtn.setText(text);
         mNegativeBtn.setOnClickListener(onClickListener);
