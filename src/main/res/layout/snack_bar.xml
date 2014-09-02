@@ -8,6 +8,6 @@
     <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/message"
         style="@style/Snack_Bar_Title"
-        app:robotoFont="regular" />
+        app:robotoFont="regular"/>
 
 </RelativeLayout>

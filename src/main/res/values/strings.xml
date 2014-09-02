@@ -112,7 +112,7 @@
     <string name="posting_comment">Posting Comment…</string>
     <string name="comment_post_successful">Comment Posted</string>
     <string name="comment_post_unsuccessful">Unable to post comment. Please try again</string>
-    <string name="vote_cast">Vote Cast</string>
+    <string name="vote_cast">Vote Casted</string>
     <string name="one_moment">One Moment…</string>
     <string name="uploading">Uploading, One Moment…</string>
     <string name="decoding_image">Decoding Image, One Moment…</string>

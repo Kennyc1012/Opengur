@@ -111,6 +111,14 @@ public class ApiClient {
         return makeRequest(request);
     }
 
+    /**
+     * Executes a POST HTTP Request
+     *
+     * @param body
+     * @return
+     * @throws IOException
+     * @throws JSONException
+     */
     private JSONObject post(@NonNull RequestBody body) throws IOException, JSONException {
         Request request = new Request.Builder()
                 .addHeader(AUTHORIZATION_HEADER, getAuthorizationHeader())

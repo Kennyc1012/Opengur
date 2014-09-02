@@ -57,7 +57,10 @@ public enum Endpoints {
     // Subreddit,sort,page
     SUBREDDIT("https://api.imgur.com/3/gallery/r/%s/%s/%d"),
 
-    UPLOAD("https://api.imgur.com/3/upload");
+    UPLOAD("https://api.imgur.com/3/upload"),
+
+    // Image id
+    GALLERY_UPLOAD("https://api.imgur.com/3/gallery/%s");
 
     private final String mUrl;
 

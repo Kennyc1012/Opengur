@@ -21,7 +21,8 @@ public class ImgurBusEvent {
         GALLERY_VOTE,
         FAVORITE,
         GALLERY_ITEM_INFO,
-        UPLOAD;
+        UPLOAD,
+        GALLERY_SUBMISSION;
     }
 
     public JSONObject json;
