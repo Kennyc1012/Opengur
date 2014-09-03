@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -50,6 +51,22 @@ public class SnackBar {
      * @param message  The Sting Resource of the message to show
      */
     public static void show(Activity activity, @StringRes int message) {
+        SnackBarItem sbi = new SnackBarItem(message);
+        SnackBarManager mngr = SnackBarManager.getInstance();
+        mngr.addSnackBar(activity, sbi);
+
+        if (!mngr.isShowingSnackBar()) {
+            SnackBarManager.getInstance().showSnackbars(activity);
+        }
+    }
+
+    /**
+     * Shows a Snack Bar
+     *
+     * @param activity The activity to show the Snack Bar in
+     * @param message  The  message to show
+     */
+    public static void show(Activity activity, String message) {
         SnackBarItem sbi = new SnackBarItem(message);
         SnackBarManager mngr = SnackBarManager.getInstance();
         mngr.addSnackBar(activity, sbi);
@@ -165,14 +182,20 @@ public class SnackBar {
     private static class SnackBarItem {
         public View view;
 
-        public int message;
+        public int message = -1;
 
         public AnimatorSet animator;
 
         public boolean adjustForTransparency = false;
 
+        public String messageString;
+
         SnackBarItem(int message) {
             this.message = message;
+        }
+
+        SnackBarItem(String message) {
+            messageString = message;
         }
 
         SnackBarItem(int message, boolean adjustForTransparency) {
@@ -190,7 +213,13 @@ public class SnackBar {
             FrameLayout parent = (FrameLayout) activity.findViewById(android.R.id.content);
             view = activity.getLayoutInflater().inflate(R.layout.snack_bar, parent, false);
             Context context = view.getContext();
-            ((TextViewRoboto) view.findViewById(R.id.message)).setText(message);
+
+            if (TextUtils.isEmpty(messageString)) {
+                ((TextViewRoboto) view.findViewById(R.id.message)).setText(message);
+            } else {
+                ((TextViewRoboto) view.findViewById(R.id.message)).setText(messageString);
+            }
+
             float snackBarHeight = context.getResources().getDimension(R.dimen.snack_bar_height);
             float animationEnd = context.getResources().getDimension(R.dimen.snack_bar_animation_height);
 

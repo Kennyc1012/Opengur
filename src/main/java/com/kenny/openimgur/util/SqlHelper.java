@@ -37,6 +37,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(UserContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(ProfileContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(RedditContract.CREATE_TABLE_SQL);
+        sqLiteDatabase.close();
     }
 
     @Override
@@ -66,7 +67,6 @@ public class SqlHelper extends SQLiteOpenHelper {
 
         db.insert(UserContract.TABLE_NAME, null, values);
         db.close();
-        db = null;
     }
 
     /**
@@ -132,9 +132,9 @@ public class SqlHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(String.format(ProfileContract.SEARCH_USER_SQL, username), null);
 
-        if (cursor != null && cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             user = new ImgurUser(cursor, false);
-            cursor.close();
+
         }
 
         cursor.close();

@@ -68,7 +68,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
             return;
 
         // Dialog Fragments are automatically set to wrap_content, so we need to force the width to fit our view
-        int dialogWidth = (int) (getResources().getDisplayMetrics().widthPixels * .8);
+        int dialogWidth = (int) (getResources().getDisplayMetrics().widthPixels * .85);
         getDialog().getWindow().setLayout(dialogWidth, getDialog().getWindow().getAttributes().height);
 
     }

@@ -62,6 +62,9 @@ public class CommentAdapter extends BaseAdapter {
         }
     }
 
+    /**
+     * Removes all items from list and ImgurListener is removed
+     */
     public void destroy() {
         clear();
         mListener = null;
@@ -190,6 +193,11 @@ public class CommentAdapter extends BaseAdapter {
                         now,
                         DateUtils.MINUTE_IN_MILLIS,
                         DateUtils.FORMAT_ABBREV_RELATIVE);
+    }
+
+    public void setImgurListener(ImgurListener listener) {
+        mListener = listener;
+        notifyDataSetChanged();
     }
 
     private static class CommentViewHolder {

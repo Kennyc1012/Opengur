@@ -40,8 +40,19 @@ public class BaseActivity extends Activity {
         Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         ActionBar ab = getActionBar();
-        ab.setTitle(null);
-        ab.setIcon(new ColorDrawable(Color.TRANSPARENT));
+
+        if (ab != null) {
+            ab.setTitle(null);
+            ab.setIcon(new ColorDrawable(Color.TRANSPARENT));
+
+            if (mShouldShowHome) {
+                ab.setDisplayHomeAsUpEnabled(true);
+                ab.setDisplayShowHomeEnabled(true);
+            }
+        } else {
+            Log.w(TAG, "Action bar is null. Unable to set defaults");
+        }
+
         mIsLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
         app = OpenImgurApp.getInstance(getApplicationContext());
         user = app.getUser();
@@ -53,10 +64,7 @@ public class BaseActivity extends Activity {
             tintManager.setTintColor(getResources().getColor(R.color.status_bar_tint));
         }
 
-        if (mShouldShowHome) {
-            ab.setDisplayHomeAsUpEnabled(true);
-            ab.setDisplayShowHomeEnabled(true);
-        }
+
     }
 
     @Override
@@ -120,8 +128,14 @@ public class BaseActivity extends Activity {
      * @param view
      */
     public void setActionBarView(View view) {
-        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getActionBar().setCustomView(view);
+        ActionBar ab = getActionBar();
+
+        if (ab != null) {
+            getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+            getActionBar().setCustomView(view);
+        } else {
+            Log.w(TAG, "Action bar is null. Can not set custom view");
+        }
     }
 
     /**
@@ -172,7 +186,7 @@ public class BaseActivity extends Activity {
     /**
      * Dismisses the dialog fragment with the given title
      *
-     * @param title
+     * @param title The title of the Dialog Fragment
      */
     public void dismissDialogFragment(String title) {
         Fragment fragment = getFragmentManager().findFragmentByTag(title);

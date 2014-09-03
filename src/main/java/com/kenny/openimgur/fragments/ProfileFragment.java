@@ -39,6 +39,7 @@ import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
@@ -246,7 +247,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
         mFromMain = args.getBoolean(KEY_FROM_MAIN, false);
         OpenImgurApp app = OpenImgurApp.getInstance(getActivity());
 
-        if (args != null && args.containsKey(KEY_USERNAME)) {
+        if (args.containsKey(KEY_USERNAME)) {
             Log.v(TAG, "User present in Bundle extras");
             String username = args.getString(KEY_USERNAME);
             mSelectedUser = app.getSql().getUser(username);
@@ -278,7 +279,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
                 mAdapter = new GalleryAdapter(getActivity(), new ArrayList<ImgurBaseObject>(Arrays.asList(items)), mQuality);
                 mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
-                mGridView.addHeaderView(ViewUtils.getProfileView(mSelectedUser, getActivity(), mMultiView, this));
+                mGridView.addHeaderView(ViewUtils.getProfileView(mSelectedUser, getActivity(), mMultiView, ProfileFragment.this));
                 mGridView.setAdapter(mAdapter);
                 mGridView.setSelection(currentPosition);
 
@@ -377,12 +378,17 @@ public class ProfileFragment extends Fragment implements ImgurListener {
     public void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+
+        if (mDidAddProfileToErrorView || mAdapter != null) {
+            CustomLinkMovement.getInstance().addListener(ProfileFragment.this);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
+        CustomLinkMovement.getInstance().removeListener(ProfileFragment.this);
     }
 
     @Override
@@ -601,7 +607,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
 
-        event.getThrowable().printStackTrace();
+        e.printStackTrace();
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {

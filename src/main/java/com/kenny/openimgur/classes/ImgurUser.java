@@ -318,20 +318,20 @@ public class ImgurUser implements Parcelable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null) {
+    public boolean equals(Object object) {
+        if (object == null) {
             return false;
         }
 
-        if (!(o instanceof ImgurUser)) {
+        if (!(object instanceof ImgurUser)) {
             return false;
         }
 
-        if (o == this) {
+        if (object == this) {
             return true;
         }
 
-        ImgurUser user = (ImgurUser) o;
+        ImgurUser user = (ImgurUser) object;
         return user.mId == this.getId() || user.getUsername().equals(this.getUsername());
     }
 

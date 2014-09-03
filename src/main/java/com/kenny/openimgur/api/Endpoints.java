@@ -20,8 +20,8 @@ public enum Endpoints {
     //cover id
     ALBUM_COVER("https://i.imgur.com/%s.jpg"),
 
-    // albumid or imageid
-    COMMENTS("https://api.imgur.com/3/gallery/%s/comments"),
+    // albumid or imageid, sort
+    COMMENTS("https://api.imgur.com/3/gallery/%s/comments/%s"),
 
     LOGIN("https://api.imgur.com/oauth2/authorize?client_id=" + ApiClient.CLIENT_ID + "&response_type=token"),
 

@@ -48,6 +48,9 @@ public class PhotoAdapter extends BaseAdapter {
         }
     }
 
+    /**
+     * Removes all items from list and ImgurListener is removed
+     */
     public void destroy() {
         clear();
         mListener = null;
@@ -165,6 +168,15 @@ public class PhotoAdapter extends BaseAdapter {
         return convertView;
     }
 
+    public boolean isListenerSet() {
+        return mListener != null;
+    }
+
+    public void setImgurListener(ImgurListener listener) {
+        mListener = listener;
+        notifyDataSetChanged();
+    }
+
     private static class PhotoViewHolder {
         ImageView image;
 
@@ -174,5 +186,4 @@ public class PhotoAdapter extends BaseAdapter {
 
         TextViewRoboto desc, title;
     }
-
 }

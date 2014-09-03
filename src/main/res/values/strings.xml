@@ -103,8 +103,8 @@
     <string name="accept">Accept</string>
     <string name="gallery">Gallery</string>
     <string name="previous_comments">Previous Comments</string>
-    <string name="profile_no_favorites">%s has not favorited any galleries. Boo</string>
-    <string name="profile_no_submissions">%s has not uploaded any images. Boo</string>
+    <string name="profile_no_favorites">%s has no favorite galleries. Boo</string>
+    <string name="profile_no_submissions">%s has not shared any images with Imgur. Boo</string>
     <string name="sort_by">Sort By</string>
     <string name="developer">Developer</string>
     <string name="version">Version</string>
@@ -128,6 +128,9 @@
     <string name="upload_decode_error">An error occurred while decoding image. Please try again</string>
     <string name="upload_success">Upload successful. Image can be viewed at %s</string>
     <string name="upload_complete">Upload Complete</string>
+    <string name="view_licenses">View Open Source Licenses</string>
+    <string name="reddit_search_cleared">Sub Reddit History Cleared</string>
+    <string name="sort_comments">Sort Comments</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">

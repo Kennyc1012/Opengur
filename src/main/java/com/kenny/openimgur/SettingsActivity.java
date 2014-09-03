@@ -27,6 +27,8 @@ import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.SqlHelper;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by kcampagna on 6/30/14.
  */
@@ -88,6 +90,12 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     }
 
     @Override
+    protected void onDestroy() {
+        SnackBar.cancelSnackBars(this);
+        super.onDestroy();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         long cacheSize = FileUtil.getDirectorySize(mApp.getImageLoader().getDiskCache().getDirectory());
@@ -142,19 +150,20 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                         @Override
                         public void onClick(View view) {
                             dialog.dismiss();
-                            new DeleteCacheTask().execute();
+                            new DeleteCacheTask(SettingsActivity.this).execute();
                         }
                     }).build());
             dialog.show();
             return true;
         } else if (preference.getKey().equals(REDDIT_SEARCH_KEY)) {
             new SqlHelper(getApplicationContext()).deleteAllSubRedditSearches();
+            SnackBar.show(SettingsActivity.this, R.string.reddit_search_cleared);
             return true;
         } else if (preference.getKey().equals("licenses")) {
             AlertDialog dialog = new AlertDialog.Builder(SettingsActivity.this)
                     .setNegativeButton(R.string.dismiss, null).create();
             dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            WebView webView = new WebView(this);
+            WebView webView = new WebView(getApplicationContext());
             webView.loadUrl("file:///android_asset/licenses.html");
             dialog.setView(webView);
             dialog.show();
@@ -171,27 +180,39 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         return false;
     }
 
-    private class DeleteCacheTask extends AsyncTask<Void, Void, Long> {
+    private static class DeleteCacheTask extends AsyncTask<Void, Void, Long> {
+        private WeakReference<SettingsActivity> mActivity;
+
+        public DeleteCacheTask(SettingsActivity activity) {
+            mActivity = new WeakReference<SettingsActivity>(activity);
+        }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            getFragmentManager().beginTransaction().add(LoadingDialogFragment.createInstance(R.string.one_moment), "loading").commit();
+            mActivity.get().getFragmentManager().beginTransaction().add(LoadingDialogFragment.createInstance(R.string.one_moment), "loading").commit();
         }
 
         @Override
         protected Long doInBackground(Void... voids) {
-            mApp.getImageLoader().clearDiskCache();
-            return FileUtil.getDirectorySize(mApp.getCacheDir());
+            SettingsActivity activity = mActivity.get();
+            activity.mApp.getImageLoader().clearDiskCache();
+            return FileUtil.getDirectorySize(activity.mApp.getCacheDir());
         }
 
         @Override
         protected void onPostExecute(Long cacheSize) {
-            findPreference(CURRENT_CACHE_SIZE_KEY).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
-            Fragment fragment = getFragmentManager().findFragmentByTag("loading");
+            SettingsActivity activity = mActivity.get();
 
-            if (fragment != null) {
-                ((DialogFragment) fragment).dismiss();
+            if (activity != null) {
+                activity.findPreference(CURRENT_CACHE_SIZE_KEY).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
+                Fragment fragment = activity.getFragmentManager().findFragmentByTag("loading");
+
+                if (fragment != null) {
+                    ((DialogFragment) fragment).dismiss();
+                }
+
+                mActivity.clear();
             }
         }
     }

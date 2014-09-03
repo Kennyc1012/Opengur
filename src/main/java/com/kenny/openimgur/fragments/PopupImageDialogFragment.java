@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +23,17 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.json.JSONException;
 
+import java.io.IOException;
+
 import de.greenrobot.event.EventBus;
+import de.greenrobot.event.util.ThrowableFailureEvent;
 
 /**
  * Created by kcampagna on 7/19/14.
@@ -131,8 +136,28 @@ public class PopupImageDialogFragment extends DialogFragment {
                 mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(R.string.loading_image_error));
             }
         } catch (JSONException e) {
+            Log.e("PopupImageDialogFramgent", "Unable to parse json result", e);
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(R.string.error_generic));
         }
+    }
+
+    /**
+     * Event Method that is fired if EventBus throws an error
+     *
+     * @param event
+     */
+    public void onEventMainThread(ThrowableFailureEvent event) {
+        Throwable e = event.getThrowable();
+
+        if (e instanceof IOException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION)));
+        } else if (e instanceof JSONException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION)));
+        } else {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(R.string.loading_image_error));
+        }
+
+        e.printStackTrace();
     }
 
     /**
@@ -184,12 +209,14 @@ public class PopupImageDialogFragment extends DialogFragment {
                     break;
 
                 case MESSAGE_ACTION_FAILED:
-                    Toast.makeText(getActivity(), (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    SnackBar.show(getActivity(), (String) msg.obj);
                     dismiss();
                     break;
-            }
 
-            super.handleMessage(msg);
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
         }
     };
 }

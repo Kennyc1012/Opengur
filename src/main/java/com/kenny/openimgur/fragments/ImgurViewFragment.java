@@ -27,6 +27,7 @@ import com.kenny.openimgur.adapters.PhotoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
@@ -178,12 +179,18 @@ public class ImgurViewFragment extends Fragment {
     public void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+
+        if (mPhotoAdapter != null && !mPhotoAdapter.isListenerSet()) {
+            CustomLinkMovement.getInstance().addListener(mImgurListener);
+            mPhotoAdapter.setImgurListener(mImgurListener);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
+        CustomLinkMovement.getInstance().removeListener(mImgurListener);
     }
 
     public void onEventAsync(@NonNull ImgurBusEvent event) {

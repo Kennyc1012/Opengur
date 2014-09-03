@@ -84,8 +84,6 @@ public class UploadActivity extends BaseActivity {
 
     private static final long TEXT_DELAY = 1000L;
 
-    private static final int MSG_SEARCH_URL = 11;
-
     private static final String DFRAGMENT_DECODING = "decoding";
 
     private static final String DFRAGMENT_UPLOADING = "uploading";
@@ -125,7 +123,6 @@ public class UploadActivity extends BaseActivity {
         mLink = (EditText) findViewById(R.id.url);
         mGalleryCB = (CheckBox) findViewById(R.id.galleryUpload);
         handleBundle(savedInstanceState);
-        init();
     }
 
     /**
@@ -134,8 +131,8 @@ public class UploadActivity extends BaseActivity {
      * @param savedInstanceState
      */
     private void handleBundle(Bundle savedInstanceState) {
+        int uploadType = UPLOAD_TYPE_LINK;
         if (savedInstanceState == null) {
-            int uploadType = UPLOAD_TYPE_LINK;
             if (getIntent().getExtras() != null) {
                 uploadType = getIntent().getExtras().getInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
             }
@@ -145,7 +142,7 @@ public class UploadActivity extends BaseActivity {
                 startActivityForResult(createPhotoIntent(uploadType), requestCode);
             }
         } else {
-            int uploadType = savedInstanceState.getInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
+            uploadType = savedInstanceState.getInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
             mIsUploading = savedInstanceState.getBoolean(KEY_IS_UPLOADING, false);
 
             switch (uploadType) {
@@ -170,6 +167,8 @@ public class UploadActivity extends BaseActivity {
                 showDialogFragment(LoadingDialogFragment.createInstance(R.string.uploading), DFRAGMENT_UPLOADING);
             }
         }
+
+        init(uploadType == UPLOAD_TYPE_LINK);
     }
 
     @Override
@@ -275,7 +274,12 @@ public class UploadActivity extends BaseActivity {
                 case GALLERY_SUBMISSION:
                     if (status == ApiClient.STATUS_OK) {
                         boolean result = event.json.getBoolean(ApiClient.KEY_DATA);
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, event.id);
+
+                        if (result) {
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, event.id);
+                        } else {
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, R.string.error_generic);
+                        }
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
                     }
@@ -387,29 +391,38 @@ public class UploadActivity extends BaseActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
-    private void init() {
-        mLink.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+    /**
+     * Initializes the views for the view
+     *
+     * @param isLink If the upload is a link
+     */
+    private void init(boolean isLink) {
+        // Don't need to add the listener if the upload type is not a link
+        if (isLink) {
+            mLink.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                // Only when these files are null will we listen for the text change
-                mIsValidLink = false;
-                invalidateOptionsMenu();
-                if (mTempFile == null && mCameraFile == null && !TextUtils.isEmpty(charSequence)) {
-                    mHandler.removeMessages(MSG_SEARCH_URL);
-                    mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SEARCH_URL, charSequence.toString()), TEXT_DELAY);
                 }
-            }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                    // Only when these files are null will we listen for the text change
+                    mIsValidLink = false;
+                    invalidateOptionsMenu();
+                    if (mTempFile == null && mCameraFile == null && !TextUtils.isEmpty(charSequence)) {
+                        mHandler.removeMessages(ImgurHandler.MESSAGE_SEARCH_URL);
+                        mHandler.sendMessageDelayed(mHandler.obtainMessage(ImgurHandler.MESSAGE_SEARCH_URL, charSequence.toString()), TEXT_DELAY);
+                    }
+                }
 
-            }
-        });
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
+        }
+
         mGalleryCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton button, boolean checked) {
@@ -533,7 +546,7 @@ public class UploadActivity extends BaseActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MSG_SEARCH_URL:
+                case MESSAGE_SEARCH_URL:
                     app.getImageLoader().loadImage((String) msg.obj, new ImageLoadingListener() {
                         @Override
                         public void onLoadingStarted(String s, View view) {
@@ -626,8 +639,8 @@ public class UploadActivity extends BaseActivity {
 
         private boolean rotatedImage = false;
 
-        public LoadImageTask(Activity activty) {
-            mActivity = new WeakReference<UploadActivity>((UploadActivity) activty);
+        public LoadImageTask(UploadActivity activty) {
+            mActivity = new WeakReference<UploadActivity>(activty);
             mMetrics = activty.getResources().getDisplayMetrics();
         }
 
@@ -711,6 +724,7 @@ public class UploadActivity extends BaseActivity {
                 activity.mDidRotateImage = rotatedImage;
                 activity.invalidateOptionsMenu();
                 activity.dismissDialogFragment(DFRAGMENT_DECODING);
+                mActivity.clear();
             }
         }
     }
@@ -768,6 +782,7 @@ public class UploadActivity extends BaseActivity {
                 }
 
                 activity.upload(mTitle, mDesc, file, mShouldUploadToGallery);
+                mActivity.clear();
             }
         }
     }

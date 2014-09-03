@@ -515,11 +515,16 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
 
-        event.getThrowable().printStackTrace();
+        e.printStackTrace();
     }
 
     @Override
     public void onFilterChange(GallerySection section, GallerySort sort) {
+        if (section == mSection && sort == sort) {
+            // Don't fetch data if they haven't changed anything
+            return;
+        }
+
         if (mAdapter != null) {
             mAdapter.clear();
             mAdapter.notifyDataSetChanged();

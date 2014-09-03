@@ -83,8 +83,6 @@ public class RedditFragment extends Fragment {
 
     private ImageButton mClearButton;
 
-    private RedditHandler mHandler = new RedditHandler();
-
     private String mQuery;
 
     private GalleryAdapter mAdapter;
@@ -391,31 +389,26 @@ public class RedditFragment extends Fragment {
         if (event.eventType == ImgurBusEvent.EventType.GALLERY && event.id.equals(mQuery)) {
             try {
                 int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
-                List<ImgurBaseObject> objects = null;
-
                 if (statusCode == ApiClient.STATUS_OK) {
                     JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
                     mHasMore = arr.length() > 0;
 
-                    if (arr.length() <= 0) {
-                        mHandler.sendEmptyMessage(RedditHandler.MESSAGE_EMPTY_RESULT);
+                    if (!mHasMore) {
+                        mHandler.sendEmptyMessage(ImgurHandler.MESSAGE_EMPTY_RESULT);
                         return;
                     }
 
-                    objects = new ArrayList<ImgurBaseObject>();
+                    List<ImgurBaseObject> objects = new ArrayList<ImgurBaseObject>();
                     // Only enter into the database if we received results
                     mSql.insertSubReddit(mQuery);
-
 
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject item = arr.getJSONObject(i);
 
                         if (item.has("is_album") && item.getBoolean("is_album")) {
-                            ImgurAlbum a = new ImgurAlbum(item);
-                            objects.add(a);
+                            objects.add(new ImgurAlbum(item));
                         } else {
-                            ImgurPhoto p = new ImgurPhoto(item);
-                            objects.add(p);
+                            objects.add(new ImgurPhoto(item));
                         }
                     }
 
@@ -447,12 +440,10 @@ public class RedditFragment extends Fragment {
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
 
-        event.getThrowable().printStackTrace();
+        e.printStackTrace();
     }
 
-    private class RedditHandler extends ImgurHandler {
-        public static final int MESSAGE_EMPTY_RESULT = 2;
-
+    private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -506,7 +497,7 @@ public class RedditFragment extends Fragment {
             }
 
         }
-    }
+    };
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

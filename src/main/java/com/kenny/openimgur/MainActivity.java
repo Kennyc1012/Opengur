@@ -4,6 +4,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -54,7 +55,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         setContentView(R.layout.main);
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setOffscreenPageLimit(2);
-        mPager.setAdapter(new TabPageAdapter(getFragmentManager()));
+        mPager.setAdapter(new TabPageAdapter(getFragmentManager(), getApplicationContext()));
         mTabBar = (TabBarView) View.inflate(getApplicationContext(), R.layout.tab_ab_layout, null);
         mTabBar.setViewPager(mPager);
         mUploadMenu = findViewById(R.id.uploadMenu);
@@ -82,7 +83,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 startActivity(SettingsActivity.createIntent(getApplicationContext()));
                 return true;
         }
-        
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -190,12 +191,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    private class TabPageAdapter extends FragmentStatePagerAdapter implements TabBarView.IconTabProvider {
-
+    private static class TabPageAdapter extends FragmentStatePagerAdapter implements TabBarView.IconTabProvider {
         private final int[] mTabIcons = {R.drawable.ic_action_gallery, R.drawable.ic_action_reddit, R.drawable.ic_action_user};
 
-        public TabPageAdapter(FragmentManager fm) {
+        private Context mContext;
+
+        public TabPageAdapter(FragmentManager fm, Context context) {
             super(fm);
+            mContext = context;
         }
 
         @Override
@@ -228,15 +231,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
+
             switch (position) {
                 case 0:
-                    return getString(R.string.gallery).toUpperCase(l);
+                    return mContext.getString(R.string.gallery).toUpperCase(l);
                 case 1:
-                    return getString(R.string.sub_reddit).toUpperCase(l);
+                    return mContext.getString(R.string.sub_reddit).toUpperCase(l);
                 case 2:
-                    return getString(R.string.profile);
+                    return mContext.getString(R.string.profile);
                 default:
-                    throw new IndexOutOfBoundsException();
+                    throw new IndexOutOfBoundsException("TabPagerAdapter Index our of bounds. How did that happen?");
             }
         }
     }
