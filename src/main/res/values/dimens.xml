@@ -36,5 +36,7 @@
     <dimen name="snack_bar_top_padding">16dp</dimen>
     <dimen name="snack_bar_bottom_padding">12dp</dimen>
     <dimen name="snack_bar_animation_height">0dp</dimen>
+    <dimen name="upload_button_margin_right">0dp</dimen>
+    <dimen name="upload_button_margin_bottom">16dp</dimen>
 
 </resources>

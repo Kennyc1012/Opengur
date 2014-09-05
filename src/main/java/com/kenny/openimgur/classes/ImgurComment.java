@@ -130,10 +130,7 @@ public class ImgurComment extends ImgurBaseObject {
      * @return
      */
     public int getReplyCount() {
-        if (mChildrenComments != null) {
-            return mChildrenComments.size();
-        }
-        return 0;
+        return mChildrenComments != null ? mChildrenComments.size() : 0;
     }
 
     public List<ImgurComment> getReplies() {

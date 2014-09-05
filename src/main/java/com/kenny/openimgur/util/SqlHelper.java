@@ -37,7 +37,6 @@ public class SqlHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(UserContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(ProfileContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(RedditContract.CREATE_TABLE_SQL);
-        sqLiteDatabase.close();
     }
 
     @Override

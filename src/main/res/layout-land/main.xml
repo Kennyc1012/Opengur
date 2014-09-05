@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="@dimen/fab_button_radius"
-        android:layout_marginBottom="@dimen/upload_button_margin" />
+        android:layout_marginRight="@dimen/upload_button_margin_right"
+        android:layout_marginBottom="@dimen/upload_button_margin_bottom" />
 
 </RelativeLayout>

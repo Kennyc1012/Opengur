@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -103,8 +102,6 @@ public class UploadActivity extends BaseActivity {
     private CheckBox mGalleryCB;
 
     private boolean mIsValidLink = false;
-
-    private boolean mDidRotateImage = false;
 
     private boolean mIsUploading = false;
 
@@ -346,42 +343,37 @@ public class UploadActivity extends BaseActivity {
      */
     private void upload(@Nullable String title, @Nullable String description, @NonNull File file, boolean uploadToGallery) {
         showDialogFragment(LoadingDialogFragment.createInstance(R.string.uploading), DFRAGMENT_UPLOADING);
+        ApiClient client = new ApiClient(Endpoints.UPLOAD.getUrl(), ApiClient.HttpRequest.POST);
+        MediaType type;
 
-        // Make sure the image isn't a gif. They can't be rotated
-        if (mDidRotateImage && mPreviewImage.getDrawable() instanceof BitmapDrawable) {
-            new RotateImageTask(this, file, uploadToGallery).execute(((BitmapDrawable) mPreviewImage.getDrawable()).getBitmap());
+        if (file.getAbsolutePath().endsWith("png")) {
+            type = MediaType.parse("image/png");
+        } else if (file.getAbsolutePath().endsWith("gif")) {
+            type = MediaType.parse("image/gif");
         } else {
-            ApiClient client = new ApiClient(Endpoints.UPLOAD.getUrl(), ApiClient.HttpRequest.POST);
-            MediaType type;
-
-            if (file.getAbsolutePath().endsWith("png")) {
-                type = MediaType.parse("image/png");
-            } else if (file.getAbsolutePath().endsWith("gif")) {
-                type = MediaType.parse("image/gif");
-            } else {
-                type = MediaType.parse("image/jpeg");
-            }
-
-            MultipartBuilder builder = new MultipartBuilder().type(MultipartBuilder.FORM)
-                    .addPart(Headers.of("Content-Disposition", "form-data; name=\"image\""),
-                            RequestBody.create(type, file));
-
-            builder.addPart(Headers.of("Content-Disposition", "form-data; name=\"type\""),
-                    RequestBody.create(null, "file"));
-
-            if (!TextUtils.isEmpty(title)) {
-                builder.addPart(Headers.of("Content-Disposition", "form-data; name=\"title\""),
-                        RequestBody.create(null, title));
-            }
-
-            if (!TextUtils.isEmpty(description)) {
-                builder.addPart(Headers.of("Content-Disposition", "form-data; name=\"description\""),
-                        RequestBody.create(null, description));
-            }
-
-            client.doWork(ImgurBusEvent.EventType.UPLOAD, String.valueOf(uploadToGallery), builder.build());
-            mIsUploading = true;
+            type = MediaType.parse("image/jpeg");
         }
+
+        MultipartBuilder builder = new MultipartBuilder().type(MultipartBuilder.FORM)
+                .addPart(Headers.of("Content-Disposition", "form-data; name=\"image\""),
+                        RequestBody.create(type, file));
+
+        builder.addPart(Headers.of("Content-Disposition", "form-data; name=\"type\""),
+                RequestBody.create(null, "file"));
+
+        if (!TextUtils.isEmpty(title)) {
+            builder.addPart(Headers.of("Content-Disposition", "form-data; name=\"title\""),
+                    RequestBody.create(null, title));
+        }
+
+        if (!TextUtils.isEmpty(description)) {
+            builder.addPart(Headers.of("Content-Disposition", "form-data; name=\"description\""),
+                    RequestBody.create(null, description));
+        }
+
+        client.doWork(ImgurBusEvent.EventType.UPLOAD, String.valueOf(uploadToGallery), builder.build());
+        mIsUploading = true;
+
     }
 
     @Override
@@ -637,8 +629,6 @@ public class UploadActivity extends BaseActivity {
 
         private DisplayMetrics mMetrics;
 
-        private boolean rotatedImage = false;
-
         public LoadImageTask(UploadActivity activty) {
             mActivity = new WeakReference<UploadActivity>(activty);
             mMetrics = activty.getResources().getDisplayMetrics();
@@ -694,7 +684,6 @@ public class UploadActivity extends BaseActivity {
                         return bitmap;
                 }
 
-                rotatedImage = true;
                 Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 bitmap.recycle();
                 return rotatedBitmap;
@@ -721,67 +710,8 @@ public class UploadActivity extends BaseActivity {
                     }
                 }
 
-                activity.mDidRotateImage = rotatedImage;
                 activity.invalidateOptionsMenu();
                 activity.dismissDialogFragment(DFRAGMENT_DECODING);
-                mActivity.clear();
-            }
-        }
-    }
-
-    /**
-     * Class that saves the rotated bitmap then uploads it
-     */
-    private static class RotateImageTask extends AsyncTask<Bitmap, Void, Boolean> {
-        private WeakReference<UploadActivity> mActivity;
-
-        private boolean mShouldUploadToGallery = false;
-
-        private File mOriginalFile;
-
-        private File mNewFile;
-
-        private String mTitle;
-
-        private String mDesc;
-
-        public RotateImageTask(UploadActivity activity, File originalFile, boolean uploadToGallery) {
-            mActivity = new WeakReference<UploadActivity>(activity);
-            mShouldUploadToGallery = uploadToGallery;
-            mOriginalFile = originalFile;
-            mTitle = activity.mTitle.getText().toString();
-            mDesc = activity.mDesc.getText().toString();
-        }
-
-        @Override
-        protected Boolean doInBackground(Bitmap... bitmap) {
-            boolean successful = false;
-            try {
-                mNewFile = FileUtil.createFile(FileUtil.EXTENSION_JPEG);
-                successful = ImageUtil.saveBitmapToFile(bitmap[0], mNewFile);
-            } catch (Exception e) {
-                Log.e("RotateImageTask", "Error saving rotated image", e);
-            }
-
-            return successful;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            UploadActivity activity = mActivity.get();
-
-            if (activity != null) {
-                activity.mDidRotateImage = false;
-                File file;
-                if (result && FileUtil.isFileValid(mNewFile)) {
-                    Log.v("RotateImageTask", "Rotated image saved successfully");
-                    file = mNewFile;
-                } else {
-                    Log.w("RotateImageTask", "Rotated image unable to be saved, defaulting to original");
-                    file = mOriginalFile;
-                }
-
-                activity.upload(mTitle, mDesc, file, mShouldUploadToGallery);
                 mActivity.clear();
             }
         }

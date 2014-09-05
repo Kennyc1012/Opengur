@@ -10,6 +10,7 @@
         android:layout_width="@dimen/fab_button_radius_smaller"
         android:layout_height="@dimen/fab_button_radius_smaller"
         android:layout_gravity="center_horizontal|bottom"
+        android:visibility="gone"
         app:drawable="@drawable/ic_action_camera"
         app:shadowColor="@android:color/black"
         app:color="@color/accent_color_blue_200" />
@@ -19,6 +20,7 @@
         android:layout_width="@dimen/fab_button_radius_smaller"
         android:layout_height="@dimen/fab_button_radius_smaller"
         android:layout_gravity="center_horizontal|bottom"
+        android:visibility="gone"
         app:drawable="@drawable/ic_action_picture"
         app:shadowColor="@android:color/black"
         app:color="@color/accent_color_blue_200" />
@@ -28,6 +30,7 @@
         android:layout_width="@dimen/fab_button_radius_smaller"
         android:layout_height="@dimen/fab_button_radius_smaller"
         android:layout_gravity="center_horizontal|bottom"
+        android:visibility="gone"
         app:drawable="@drawable/ic_action_web"
         app:shadowColor="@android:color/black"
         app:color="@color/accent_color_blue_200" />

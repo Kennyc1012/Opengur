@@ -1,5 +1,7 @@
 package com.kenny.openimgur;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
@@ -21,6 +23,7 @@ import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.ProfileFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.ui.FloatingActionButton;
+import com.kenny.openimgur.util.ViewUtils;
 import com.mirko.tbv.TabBarView;
 
 import java.util.Locale;
@@ -48,6 +51,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private boolean uploadMenuShowing = false;
 
+    private int mNavBarHeight = -1;
+
+    private float mUploadButtonHeight;
+
+    private float mUploadMenuButtonHeight;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setShouldDisplayHome(false);
@@ -68,6 +77,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mCameraUpload.setOnClickListener(this);
         mGalleryUpload.setOnClickListener(this);
         setActionBarView(mTabBar);
+        mUploadButtonHeight = getResources().getDimension(R.dimen.fab_button_radius);
+        mUploadMenuButtonHeight = getResources().getDimension(R.dimen.fab_button_radius_smaller);
     }
 
     @Override
@@ -126,14 +137,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             case R.id.cameraUpload:
                 startActivity(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_CAMERA));
+                animateUploadMenu();
                 break;
 
             case R.id.galleryUpload:
                 startActivity(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_GALLERY));
+                animateUploadMenu();
                 break;
 
             case R.id.linkUpload:
                 startActivity(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_LINK));
+                animateUploadMenu();
                 break;
         }
     }
@@ -145,9 +159,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     private void animateUploadMenuButton(boolean shouldShow) {
         if (!shouldShow && uploadMenuShowing) {
+            float hideDistance;
             uploadMenuShowing = false;
             // Add extra distance to the hiding of the button if on KitKat due to the translucent nav bar
-            float hideDistance = OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.KITKAT ? mUploadButton.getHeight() * 2 : mUploadButton.getHeight();
+            if (OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.KITKAT) {
+                if (mNavBarHeight == -1) mNavBarHeight = ViewUtils.getNavigationBarHeight(getApplicationContext());
+                hideDistance = mNavBarHeight + mUploadButtonHeight + (mUploadButtonHeight / 2);
+            } else {
+                hideDistance = mUploadButtonHeight;
+            }
+
             mUploadMenu.animate().setInterpolator(new DecelerateInterpolator()).translationY(hideDistance).setDuration(350).start();
             // Close the menu if it is open
             if (uploadMenuOpen) animateUploadMenu();
@@ -161,8 +182,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      * Animates the opening/closing of the Upload button
      */
     private void animateUploadMenu() {
-        int uploadButtonHeight = mUploadButton.getHeight();
-        int menuButtonHeight = mCameraUpload.getHeight();
         AnimatorSet set = new AnimatorSet().setDuration(500L);
         String translation = isLandscape() ? "translationX" : "translationY";
 
@@ -170,10 +189,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             uploadMenuOpen = true;
 
             set.playTogether(
-                    ObjectAnimator.ofFloat(mCameraUpload, translation, 0, (uploadButtonHeight + 25) * -1),
-                    ObjectAnimator.ofFloat(mLinkUpload, translation, 0, ((2 * menuButtonHeight) + uploadButtonHeight + 75) * -1),
-                    ObjectAnimator.ofFloat(mGalleryUpload, translation, (menuButtonHeight + uploadButtonHeight + 50) * -1)
+                    ObjectAnimator.ofFloat(mCameraUpload, translation, 0, (mUploadButtonHeight + 25) * -1),
+                    ObjectAnimator.ofFloat(mLinkUpload, translation, 0, ((2 * mUploadMenuButtonHeight) + mUploadButtonHeight + 75) * -1),
+                    ObjectAnimator.ofFloat(mGalleryUpload, translation, (mUploadMenuButtonHeight + mUploadButtonHeight + 50) * -1),
+                    ObjectAnimator.ofFloat(mCameraUpload, "alpha", 0.0f, 1.0f),
+                    ObjectAnimator.ofFloat(mGalleryUpload, "alpha", 0.0f, 1.0f),
+                    ObjectAnimator.ofFloat(mLinkUpload, "alpha", 0.0f, 1.0f)
             );
+
+            set.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    mCameraUpload.setVisibility(View.VISIBLE);
+                    mGalleryUpload.setVisibility(View.VISIBLE);
+                    mLinkUpload.setVisibility(View.VISIBLE);
+                    animation.removeAllListeners();
+                }
+            });
 
             set.setInterpolator(new OvershootInterpolator());
             set.start();
@@ -183,8 +216,31 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             set.playTogether(
                     ObjectAnimator.ofFloat(mCameraUpload, translation, 0),
                     ObjectAnimator.ofFloat(mLinkUpload, translation, 0),
-                    ObjectAnimator.ofFloat(mGalleryUpload, translation, 0)
+                    ObjectAnimator.ofFloat(mGalleryUpload, translation, 0),
+                    ObjectAnimator.ofFloat(mCameraUpload, "alpha", 1.0f, 0.0f),
+                    ObjectAnimator.ofFloat(mGalleryUpload, "alpha", 1.0f, 0.0f),
+                    ObjectAnimator.ofFloat(mLinkUpload, "alpha", 1.0f, 0.0f)
             );
+
+            set.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    super.onAnimationCancel(animation);
+                    mCameraUpload.setVisibility(View.GONE);
+                    mGalleryUpload.setVisibility(View.GONE);
+                    mLinkUpload.setVisibility(View.GONE);
+                    animation.removeAllListeners();
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    mCameraUpload.setVisibility(View.GONE);
+                    mGalleryUpload.setVisibility(View.GONE);
+                    mLinkUpload.setVisibility(View.GONE);
+                    animation.removeAllListeners();
+                }
+            });
 
             set.setInterpolator(new DecelerateInterpolator());
             set.start();

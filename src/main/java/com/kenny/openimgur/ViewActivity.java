@@ -140,6 +140,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         mSlidingPane = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         mCommentListHeader = View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
         mCommentList = (ListView) mMultiView.findViewById(R.id.commentList);
+        // Header needs to be added before adapter is set for pre 4.4 devices
+        mCommentList.addHeaderView(mCommentListHeader);
+        mCommentList.removeHeaderView(mCommentListHeader);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setOffscreenPageLimit(1);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
