@@ -1,7 +1,6 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.FilterDialogFragment;
 import com.kenny.openimgur.ui.HeaderGridView;
@@ -53,7 +51,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class GalleryFragment extends Fragment implements FilterDialogFragment.FilterListener {
+public class GalleryFragment extends BaseFragment implements FilterDialogFragment.FilterListener {
     private static final String KEY_SECTION = "section";
 
     private static final String KEY_SORT = "sort";
@@ -311,7 +309,7 @@ public class GalleryFragment extends Fragment implements FilterDialogFragment.Fi
         super.onViewCreated(view, savedInstanceState);
         mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
-        mGridView.setOnScrollListener(new PauseOnScrollListener(OpenImgurApp.getInstance(getActivity()).getImageLoader(), false, true,
+        mGridView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true,
                 new AbsListView.OnScrollListener() {
                     @Override
                     public void onScrollStateChanged(AbsListView view, int scrollState) {

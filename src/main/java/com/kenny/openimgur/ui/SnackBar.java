@@ -9,13 +9,13 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -110,7 +110,7 @@ public class SnackBar {
             ConcurrentLinkedQueue<SnackBarItem> list = mQueue.get(activity);
 
             if (list != null) {
-                Log.v(TAG, "Canceling " + list.size() + " SnackBars");
+                LogUtil.v(TAG, "Canceling " + list.size() + " SnackBars");
                 for (SnackBarItem items : list) {
                     items.cancel();
                 }
@@ -159,11 +159,11 @@ public class SnackBar {
                 list.remove(snackBar);
 
                 if (list.peek() == null) {
-                    Log.v(TAG, "No more Snack Bars to be display for the activity");
+                    LogUtil.v(TAG, "No more Snack Bars to be display for the activity");
                     mQueue.remove(activity);
                     mIsShowingSnackBar = false;
                 } else {
-                    Log.v(TAG, "Remaining Snack Bars to be shown " + list.size());
+                    LogUtil.v(TAG, "Remaining Snack Bars to be shown " + list.size());
                     mIsShowingSnackBar = true;
                     list.peek().show(activity, this);
                 }

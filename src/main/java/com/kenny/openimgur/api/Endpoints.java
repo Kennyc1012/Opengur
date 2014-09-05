@@ -55,7 +55,7 @@ public enum Endpoints {
     COMMENT_REPLY("https://api.imgur.com/3/gallery/%s/comment/%s"),
 
     // Subreddit,sort,page
-    SUBREDDIT("https://api.imgur.com/3/gallery/r/%s/%s/%d"),
+    SUBREDDIT("https://api.imgur.com/3/gallery/r/%s/%s/all/%d"),
 
     UPLOAD("https://api.imgur.com/3/upload"),
 

@@ -1,7 +1,6 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -33,7 +32,6 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.SnackBar;
@@ -60,7 +58,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 7/12/14.
  */
-public class ImgurViewFragment extends Fragment {
+public class ImgurViewFragment extends BaseFragment {
     private static final String KEY_IMGUR_OBJECT = "imgurobject";
 
     private static final String KEY_ITEMS = "items";
@@ -121,7 +119,7 @@ public class ImgurViewFragment extends Fragment {
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
         }
 
-        mListView.setOnScrollListener(new PauseOnScrollListener(OpenImgurApp.getInstance(getActivity()).getImageLoader(), false, true,
+        mListView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true,
                 new AbsListView.OnScrollListener() {
                     @Override
                     public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -182,7 +180,6 @@ public class ImgurViewFragment extends Fragment {
 
         if (mPhotoAdapter != null && !mPhotoAdapter.isListenerSet()) {
             CustomLinkMovement.getInstance().addListener(mImgurListener);
-            mPhotoAdapter.setImgurListener(mImgurListener);
         }
     }
 
@@ -262,7 +259,7 @@ public class ImgurViewFragment extends Fragment {
 
         @Override
         public void onPlayTap(final ProgressBar prog, final ImageView image, final ImageButton play) {
-            ImageLoader loader = OpenImgurApp.getInstance(getActivity()).getImageLoader();
+            ImageLoader loader = app.getImageLoader();
             int position = mListView.getPositionForView(image) - mListView.getHeaderViewsCount();
             prog.setVisibility(View.VISIBLE);
             play.setVisibility(View.GONE);
@@ -286,7 +283,7 @@ public class ImgurViewFragment extends Fragment {
 
                     @Override
                     public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                        if (!ImageUtil.loadAndDisplayGif(image, s, OpenImgurApp.getInstance(getActivity()).getImageLoader())) {
+                        if (!ImageUtil.loadAndDisplayGif(image, s, app.getImageLoader())) {
                             SnackBar.show(getActivity(), R.string.loading_image_error);
                             prog.setVisibility(View.GONE);
                             play.setVisibility(View.VISIBLE);
@@ -303,7 +300,7 @@ public class ImgurViewFragment extends Fragment {
                     }
                 });
             } else {
-                if (!ImageUtil.loadAndDisplayGif(image, photo.getLink(), OpenImgurApp.getInstance(getActivity()).getImageLoader())) {
+                if (!ImageUtil.loadAndDisplayGif(image, photo.getLink(), app.getImageLoader())) {
                     SnackBar.show(getActivity(), R.string.loading_image_error);
                     prog.setVisibility(View.GONE);
                     play.setVisibility(View.VISIBLE);

@@ -172,11 +172,6 @@ public class PhotoAdapter extends BaseAdapter {
         return mListener != null;
     }
 
-    public void setImgurListener(ImgurListener listener) {
-        mListener = listener;
-        notifyDataSetChanged();
-    }
-
     private static class PhotoViewHolder {
         ImageView image;
 

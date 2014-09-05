@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,7 @@ import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
@@ -136,7 +136,7 @@ public class PopupImageDialogFragment extends DialogFragment {
                 mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(R.string.loading_image_error));
             }
         } catch (JSONException e) {
-            Log.e("PopupImageDialogFramgent", "Unable to parse json result", e);
+            LogUtil.e("PopupImageDialogFramgent", "Unable to parse json result", e);
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(R.string.error_generic));
         }
     }

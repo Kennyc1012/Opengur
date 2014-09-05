@@ -16,6 +16,8 @@ public class PointsBar extends View {
 
     private Paint mUpPaint = new Paint();
 
+    private int mWidth;
+
     public PointsBar(Context context) {
         super(context);
         init();
@@ -42,7 +44,7 @@ public class PointsBar extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawRect(0, 0, getWidth() * (mUpVotes / mTotalPoints), getHeight(), mUpPaint);
+        canvas.drawRect(0, 0, mWidth * (mUpVotes / mTotalPoints), getHeight(), mUpPaint);
     }
 
     @Override
@@ -54,6 +56,7 @@ public class PointsBar extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+        mWidth = w;
         invalidate();
     }
 

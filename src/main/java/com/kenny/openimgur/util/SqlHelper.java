@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.util.DBContracts.ProfileContract;
@@ -50,7 +49,7 @@ public class SqlHelper extends SQLiteOpenHelper {
      * @param user
      */
     public void insertUser(@NonNull ImgurUser user) {
-        Log.v(TAG, "Inserting user " + user.toString());
+        LogUtil.v(TAG, "Inserting user " + user.toString());
         // Wipe any users before we add the new one in
         SQLiteDatabase db = getWritableDatabase();
         db.delete(DBContracts.UserContract.TABLE_NAME, null, null);
@@ -80,10 +79,10 @@ public class SqlHelper extends SQLiteOpenHelper {
         ImgurUser user = null;
 
         if (cursor.moveToFirst()) {
-            Log.v(TAG, "User present");
+            LogUtil.v(TAG, "User present");
             user = new ImgurUser(cursor, true);
         } else {
-            Log.v(TAG, "No user present");
+            LogUtil.v(TAG, "No user present");
         }
 
         cursor.close();

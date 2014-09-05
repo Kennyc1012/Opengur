@@ -10,12 +10,12 @@ import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -143,11 +143,11 @@ public class OpenImgurApp extends Application {
      */
     public boolean checkRefreshToken() {
         if (mUser != null && !mUser.isAccessTokenValid()) {
-            Log.v(TAG, "Token expired or is expiring soon, requesting new token");
+            LogUtil.v(TAG, "Token expired or is expiring soon, requesting new token");
             new RefreshTokenTask().execute(mUser);
             return true;
         } else {
-            Log.v(TAG, "User is null or token is still valid, no need to request a new token");
+            LogUtil.v(TAG, "User is null or token is still valid, no need to request a new token");
         }
 
         return false;
@@ -169,11 +169,11 @@ public class OpenImgurApp extends Application {
             }
 
             mSql.updateUserTokens(accessToken, refreshToken, System.currentTimeMillis() + (expiresIn * DateUtils.SECOND_IN_MILLIS));
-            Log.v(TAG, "New refresh token received");
+            LogUtil.v(TAG, "New refresh token received");
             return true;
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.w(TAG, "Error parsing refresh token result");
+            LogUtil.w(TAG, "Error parsing refresh token result", e);
             return false;
         }
 
@@ -199,7 +199,7 @@ public class OpenImgurApp extends Application {
                 ApiClient client = new ApiClient(Endpoints.REFRESH_TOKEN.getUrl(), ApiClient.HttpRequest.POST);
                 return onReceivedRefreshToken(client.doWork(body));
             } catch (Exception e) {
-                Log.e(TAG, "Error parsing user tokens", e);
+                LogUtil.e(TAG, "Error parsing user tokens", e);
                 return false;
             }
         }

@@ -1,7 +1,7 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Message;
@@ -13,6 +13,9 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -24,6 +27,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.kenny.openimgur.BaseActivity;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.ViewActivity;
@@ -35,11 +39,9 @@ import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -58,10 +60,56 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class RedditFragment extends Fragment {
-    private static final String KEY_QUERY = "query";
+public class RedditFragment extends BaseFragment {
+    private enum RedditSort {
+        TIME("time"),
+        TOP("top");
 
-    private static final String KEY_SORT = "sort";
+        private final String mSort;
+
+        RedditSort(String sort) {
+            mSort = sort;
+        }
+
+        public String getSort() {
+            return mSort;
+        }
+
+        public static RedditSort getSortFromPosition(int position) {
+            return RedditSort.values()[position];
+        }
+
+        public static String[] getItemsForArray(Context context) {
+            RedditSort[] items = RedditSort.values();
+            String[] values = new String[items.length];
+
+            for (int i = 0; i < items.length; i++) {
+                switch (items[i]) {
+                    case TIME:
+                        values[i] = context.getString(R.string.sort_time);
+                        break;
+
+                    case TOP:
+                        values[i] = context.getString(R.string.sort_top);
+                        break;
+                }
+            }
+
+            return values;
+        }
+
+        public static RedditSort getSortFromString(String item) {
+            for (RedditSort s : RedditSort.values()) {
+                if (s.getSort().equals(item)) {
+                    return s;
+                }
+            }
+
+            return TIME;
+        }
+    }
+
+    private static final String KEY_QUERY = "query";
 
     private static final String KEY_CURRENT_POSITION = "position";
 
@@ -70,6 +118,8 @@ public class RedditFragment extends Fragment {
     private static final String KEY_QUALITY = "quality";
 
     private static final String KEY_CURRENT_PAGE = "page";
+
+    private static final String KEY_SORT = "redditSort";
 
     private static final int PAGE = 1;
 
@@ -89,11 +139,7 @@ public class RedditFragment extends Fragment {
 
     private ApiClient mApiClient;
 
-    private GalleryFragment.GallerySort mSort = GalleryFragment.GallerySort.TIME;
-
     private TabActivityListener mListener;
-
-    private SqlHelper mSql;
 
     private int mCurrentPage = 0;
 
@@ -111,14 +157,40 @@ public class RedditFragment extends Fragment {
 
     private String mQuality;
 
+    private RedditSort mSort;
+
+    private PopupItemChooserDialog.ChooserListener mSortListener = new PopupItemChooserDialog.ChooserListener() {
+        @Override
+        public void onItemSelected(int position, String item) {
+            RedditSort sort = RedditSort.getSortFromPosition(position);
+
+            if (sort != mSort) {
+                mSort = sort;
+
+                // Don't bother making an Api call if the there is nothing being searched for the list is empty
+                if (mAdapter != null && !mAdapter.isEmpty() && !TextUtils.isEmpty(mQuery)) {
+                    mAdapter.clear();
+                    mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                    mCurrentPage = 0;
+                    search();
+                }
+            }
+        }
+    };
+
     public static RedditFragment createInstance() {
         return new RedditFragment();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mSql = OpenImgurApp.getInstance(getActivity()).getSql();
         return inflater.inflate(R.layout.fragment_reddit, container, false);
     }
 
@@ -166,6 +238,7 @@ public class RedditFragment extends Fragment {
             mAdapter = null;
         }
 
+        app.getPreferences().edit().putString(KEY_SORT, mSort.getSort()).apply();
         super.onDestroy();
     }
 
@@ -174,7 +247,7 @@ public class RedditFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
-        mGridView.setOnScrollListener(new PauseOnScrollListener(OpenImgurApp.getInstance(getActivity()).getImageLoader(), false, true,
+        mGridView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true,
                 new AbsListView.OnScrollListener() {
                     @Override
                     public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -208,7 +281,6 @@ public class RedditFragment extends Fragment {
 
                         // Load more items when hey get to the end of the list
                         if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading && mHasMore) {
-                            mIsLoading = true;
                             mCurrentPage++;
                             search();
                         }
@@ -245,7 +317,7 @@ public class RedditFragment extends Fragment {
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 String text = textView.getText().toString();
 
-                if (!TextUtils.isEmpty(text)) {
+                if (!mIsLoading && !TextUtils.isEmpty(text)) {
                     if (mAdapter != null) {
                         mAdapter.clear();
                         mAdapter.notifyDataSetChanged();
@@ -311,15 +383,36 @@ public class RedditFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.reddit, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sort:
+                PopupItemChooserDialog fragment = PopupItemChooserDialog.createInstance(RedditSort.getItemsForArray(getActivity()));
+                fragment.setChooserListener(mSortListener);
+                ((BaseActivity) getActivity()).showDialogFragment(fragment, "sort");
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void handleBundle(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             mQuality = pref.getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
+            mSort = RedditSort.getSortFromString(app.getPreferences().getString(KEY_SORT, RedditSort.TIME.getSort()));
         } else {
             mIsRestoring = true;
             mQuality = savedInstanceState.getString(KEY_QUALITY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
             mQuery = savedInstanceState.getString(KEY_QUERY, null);
+            mSort = RedditSort.getSortFromString(savedInstanceState.getString(KEY_SORT, RedditSort.TIME.getSort()));
 
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ImgurBaseObject[] items = (ImgurBaseObject[]) savedInstanceState.getParcelableArray(KEY_ITEMS);
@@ -338,9 +431,9 @@ public class RedditFragment extends Fragment {
      * Configures the previous search adapter to the AutoCompleteTextView
      */
     private void configurePreviousSearches() {
-        List<String> searches = mSql.getSubReddits();
+        List<String> searches = app.getSql().getSubReddits();
 
-        if (searches != null && searches.size() > 0) {
+        if (searches != null && searches.size() > 0 && mCurrentPage > 0) {
             mSearchEditText.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, searches));
         }
     }
@@ -355,6 +448,7 @@ public class RedditFragment extends Fragment {
             mApiClient.setUrl(getUrl());
         }
 
+        mIsLoading = true;
         mApiClient.doWork(ImgurBusEvent.EventType.GALLERY, mQuery, null);
     }
 
@@ -362,6 +456,7 @@ public class RedditFragment extends Fragment {
      * Returns the url for the Api request
      */
     private String getUrl() {
+        // Strip out any white space before sending the query, all sub reddits don't have spaces
         return String.format(Endpoints.SUBREDDIT.getUrl(), mQuery.replaceAll("\\s", ""), mSort.getSort(), mCurrentPage);
     }
 
@@ -386,7 +481,7 @@ public class RedditFragment extends Fragment {
      * @param event
      */
     public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == ImgurBusEvent.EventType.GALLERY && event.id.equals(mQuery)) {
+        if (event.eventType == ImgurBusEvent.EventType.GALLERY && mQuery.equals(event.id)) {
             try {
                 int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
                 if (statusCode == ApiClient.STATUS_OK) {
@@ -399,8 +494,8 @@ public class RedditFragment extends Fragment {
                     }
 
                     List<ImgurBaseObject> objects = new ArrayList<ImgurBaseObject>();
-                    // Only enter into the database if we received results
-                    mSql.insertSubReddit(mQuery);
+                    // Only enter into the database if we received results and on the first page (new search)
+                    if (mCurrentPage == 0) app.getSql().insertSubReddit(mQuery);
 
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject item = arr.getJSONObject(i);
@@ -418,7 +513,6 @@ public class RedditFragment extends Fragment {
                 }
 
             } catch (JSONException e) {
-                e.printStackTrace();
                 mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
             }
         }
@@ -455,6 +549,7 @@ public class RedditFragment extends Fragment {
                         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
                     }
 
+                    mIsLoading = false;
                     break;
 
                 case MESSAGE_ACTION_COMPLETE:
@@ -465,7 +560,6 @@ public class RedditFragment extends Fragment {
                     List<ImgurBaseObject> objects = (List<ImgurBaseObject>) msg.obj;
                     configurePreviousSearches();
                     setupAdapter(objects);
-                    mIsLoading = false;
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
 
                     if (mCurrentPage == 0) {
@@ -477,6 +571,7 @@ public class RedditFragment extends Fragment {
                         });
                     }
 
+                    mIsLoading = false;
                     break;
 
                 case MESSAGE_ACTION_FAILED:
@@ -489,6 +584,7 @@ public class RedditFragment extends Fragment {
                         mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     }
 
+                    mIsLoading = false;
                     break;
 
                 default:

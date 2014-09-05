@@ -9,7 +9,6 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
@@ -116,10 +115,10 @@ public class ImageUtil {
                 imageView.setImageDrawable(new GifDrawable(file));
                 return true;
             } catch (IOException e) {
-                Log.e(TAG, "Unable to play gif", e);
+                LogUtil.e(TAG, "Unable to play gif", e);
             }
         } else {
-            Log.w(TAG, "Gif file is invalid");
+            LogUtil.w(TAG, "Gif file is invalid");
         }
 
         return false;
@@ -180,7 +179,7 @@ public class ImageUtil {
      */
     public static boolean saveBitmapToFile(Bitmap bitmap, File file) {
         if (!FileUtil.isFileValid(file)) {
-            Log.w(TAG, "Invalid file, can not save bitmap");
+            LogUtil.w(TAG, "Invalid file, can not save bitmap");
             return false;
         }
 
@@ -191,7 +190,7 @@ public class ImageUtil {
             FileUtil.closeStream(fileStream);
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Unable to save bitmap to file", e);
+            LogUtil.e(TAG, "Unable to save bitmap to file", e);
         }
 
         return false;
@@ -209,7 +208,7 @@ public class ImageUtil {
             return exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
 
         } catch (Exception e) {
-            Log.e(TAG, "Unable to get EXIF data from file", e);
+            LogUtil.e(TAG, "Unable to get EXIF data from file", e);
         }
 
         return ExifInterface.ORIENTATION_UNDEFINED;

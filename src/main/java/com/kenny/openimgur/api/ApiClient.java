@@ -5,11 +5,11 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.util.LogUtil;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -139,17 +139,17 @@ public class ApiClient {
      */
     private JSONObject makeRequest(Request request) throws IOException, JSONException {
         JSONObject json;
-        Log.v(TAG, "Making request to " + mUrl);
+        LogUtil.v(TAG, "Making request to " + mUrl);
         Response response = mClient.newCall(request).execute();
 
         if (response.isSuccessful()) {
-            Log.v(TAG, "Request Successful with status code " + response.code());
+            LogUtil.v(TAG, "Request Successful with status code " + response.code());
             String serverResponse = response.body().string();
             response.body().close();
 
             // Sometimes the Api response with an empty string when it is experiencing problems
             if (TextUtils.isEmpty(serverResponse)) {
-                Log.w(TAG, "Response body is empty");
+                LogUtil.w(TAG, "Response body is empty");
                 json = new JSONObject();
                 json.put(KEY_SUCCESS, false);
                 json.put(KEY_STATUS, STATUS_EMPTY_RESPONSE);
@@ -158,7 +158,7 @@ public class ApiClient {
             }
         } else {
             int statusCode = response.code();
-            Log.w(TAG, "Request Failed with status code " + statusCode);
+            LogUtil.w(TAG, "Request Failed with status code " + statusCode);
             json = new JSONObject();
             json.put(KEY_SUCCESS, false);
             json.put(KEY_STATUS, statusCode);
@@ -260,13 +260,13 @@ public class ApiClient {
 
         // Check if we have a token from a logged in user that is valid
         if (user != null && user.isAccessTokenValid()) {
-            Log.v(TAG, "Access Token present and valid");
+            LogUtil.v(TAG, "Access Token present and valid");
             return "Bearer " + user.getAccessToken();
         } else if (user != null) {
             OpenImgurApp.getInstance().checkRefreshToken();
         }
 
-        Log.v(TAG, "No access token present, using Client-ID");
+        LogUtil.v(TAG, "No access token present, using Client-ID");
         return "Client-ID " + CLIENT_ID;
     }
 

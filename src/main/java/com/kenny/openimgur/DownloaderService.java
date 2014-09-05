@@ -11,11 +11,11 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LogUtil;
 
 import java.io.File;
 
@@ -51,7 +51,7 @@ public class DownloaderService extends IntentService {
                 }
 
                 File photoFile = new File(file.getAbsolutePath(), photoFileName);
-                Log.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
+                LogUtil.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
                 int notificationId = photo.getLink().hashCode();
                 Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -61,7 +61,7 @@ public class DownloaderService extends IntentService {
                 manager.notify(notificationId, builder.build());
 
                 if (FileUtil.savePhoto(photo, photoFile)) {
-                    Log.v(TAG, "Image download completed");
+                    LogUtil.v(TAG, "Image download completed");
                     Uri fileUri = Uri.fromFile(photoFile);
 
                     // Let the system know we have a new file
@@ -92,15 +92,15 @@ public class DownloaderService extends IntentService {
                             .setContentTitle(getString(R.string.download_complete)).setContentText(getString(R.string.tap_to_view)).setLargeIcon(bm);
                     manager.notify(notificationId, builder.build());
                 } else {
-                    Log.w(TAG, "Image download failed");
+                    LogUtil.w(TAG, "Image download failed");
                     builder.setProgress(0, 0, false).setContentTitle(getString(R.string.error)).setContentText(getString(R.string.download_error));
                     manager.notify(notificationId, builder.build());
                 }
             } else {
-                Log.w(TAG, "No photo passed in Intent");
+                LogUtil.w(TAG, "No photo passed in Intent");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.e(TAG,"Exception while downloading image",e);
         }
 
     }

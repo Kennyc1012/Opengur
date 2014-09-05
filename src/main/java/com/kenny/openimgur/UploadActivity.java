@@ -23,7 +23,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +42,7 @@ import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
 import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -454,8 +454,10 @@ public class UploadActivity extends BaseActivity {
                                 // Not using dismissDialogFragment due to fast gif decoding before the fragment
                                 // gets added to the view
                                 fragment.dismiss();
+                                invalidateOptionsMenu();
+                                mLink.setVisibility(View.GONE);
                             } catch (IOException ex) {
-                                Log.e(TAG, "Unable to play gif, falling back to still image", ex);
+                                LogUtil.e(TAG, "Unable to play gif, falling back to still image", ex);
                                 // Load the image without playing it if the gif fails
                                 new LoadImageTask(this).execute(mTempFile);
                             }
@@ -640,7 +642,7 @@ public class UploadActivity extends BaseActivity {
                 File file = files[0];
 
                 if (!FileUtil.isFileValid(file)) {
-                    Log.w("LoadImageTask", "Invalid file trying to be decoded");
+                    LogUtil.w("LoadImageTask", "Invalid file trying to be decoded");
                     return null;
                 }
 
@@ -651,6 +653,7 @@ public class UploadActivity extends BaseActivity {
 
                 // If the orientation is normal or not defined, return the original bitmap
                 if (orientation == ExifInterface.ORIENTATION_NORMAL || orientation == ExifInterface.ORIENTATION_UNDEFINED) {
+                    LogUtil.v("LoadImageTask", "Image does not need to be rotated, returning bitmap");
                     return bitmap;
                 }
 
@@ -684,12 +687,13 @@ public class UploadActivity extends BaseActivity {
                         return bitmap;
                 }
 
+                LogUtil.v("LoadImageTask", "Image will be rotated");
                 Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 bitmap.recycle();
                 return rotatedBitmap;
 
             } catch (Exception e) {
-                Log.e("LoadImageTask", "Error decoding Image", e);
+                LogUtil.e("LoadImageTask", "Error decoding Image", e);
             }
 
             return null;

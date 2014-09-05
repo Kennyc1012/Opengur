@@ -8,13 +8,13 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.SnackBar;
+import com.kenny.openimgur.util.LogUtil;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 /**
@@ -37,7 +37,7 @@ public class BaseActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.v(TAG, "onCreate");
+        LogUtil.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         ActionBar ab = getActionBar();
 
@@ -50,7 +50,7 @@ public class BaseActivity extends Activity {
                 ab.setDisplayShowHomeEnabled(true);
             }
         } else {
-            Log.w(TAG, "Action bar is null. Unable to set defaults");
+            LogUtil.w(TAG, "Action bar is null. Unable to set defaults");
         }
 
         mIsLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
@@ -69,38 +69,38 @@ public class BaseActivity extends Activity {
 
     @Override
     protected void onStart() {
-        Log.v(TAG, "onStart");
+        LogUtil.v(TAG, "onStart");
         super.onStart();
     }
 
     @Override
     protected void onRestart() {
-        Log.v(TAG, "onRestart");
+        LogUtil.v(TAG, "onRestart");
         super.onRestart();
     }
 
     @Override
     protected void onResume() {
-        Log.v(TAG, "onResume");
+        LogUtil.v(TAG, "onResume");
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        Log.v(TAG, "onPause");
+        LogUtil.v(TAG, "onPause");
         super.onPause();
         SnackBar.cancelSnackBars(this);
     }
 
     @Override
     protected void onStop() {
-        Log.v(TAG, "onStop");
+        LogUtil.v(TAG, "onStop");
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
-        Log.v(TAG, "onDestroy");
+        LogUtil.v(TAG, "onDestroy");
         super.onDestroy();
     }
 
@@ -134,7 +134,7 @@ public class BaseActivity extends Activity {
             getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             getActionBar().setCustomView(view);
         } else {
-            Log.w(TAG, "Action bar is null. Can not set custom view");
+            LogUtil.w(TAG, "Action bar is null. Can not set custom view");
         }
     }
 

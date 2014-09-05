@@ -8,7 +8,6 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.kenny.openimgur.classes.ImgurPhoto;
 
@@ -88,7 +87,7 @@ public class FileUtil {
             buffer.flush();
             didFinish = true;
         } catch (IOException e) {
-            Log.w(TAG, "Error saving photo");
+            LogUtil.e(TAG, "Error saving photo",e);
             e.printStackTrace();
             didFinish = false;
         } finally {
@@ -150,7 +149,7 @@ public class FileUtil {
                 return file;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error creating file",e);
+            LogUtil.e(TAG, "Error creating file",e);
         }
 
         return null;
@@ -228,7 +227,7 @@ public class FileUtil {
             try {
                 closeable.close();
             } catch (IOException ex) {
-                Log.e(TAG, "Unable to close stream", ex);
+                LogUtil.e(TAG, "Unable to close stream", ex);
             }
         }
     }

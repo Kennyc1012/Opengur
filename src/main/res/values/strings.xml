@@ -131,6 +131,10 @@
     <string name="view_licenses">View Open Source Licenses</string>
     <string name="reddit_search_cleared">Sub Reddit History Cleared</string>
     <string name="sort_comments">Sort Comments</string>
+    <string name="sort_new">New</string>
+    <string name="sort_best">Best</string>
+    <string name="sort_top">Top</string>
+    <string name="sort_time">Time</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys">

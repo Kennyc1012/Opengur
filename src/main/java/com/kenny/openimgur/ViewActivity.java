@@ -43,8 +43,10 @@ import com.kenny.openimgur.fragments.CommentPopupFragment;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
+import com.kenny.openimgur.fragments.PopupItemChooserDialog;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.SnackBar;
+import com.kenny.openimgur.util.LogUtil;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -65,12 +67,59 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 7/12/14.
  */
-public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener {
-    private static final String COMMENT_SORT_BEST = "best";
+public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener, PopupItemChooserDialog.ChooserListener {
+    private enum CommentSort {
+        BEST("best"),
+        NEW("new"),
+        TOP("top");
 
-    private static final String COMMENT_SORT_NEW = "new";
+        private final String mSort;
 
-    private static final String COMMENT_SORT_TOP = "top";
+        CommentSort(String sort) {
+            mSort = sort;
+        }
+
+        public String getSort() {
+            return mSort;
+        }
+
+        public static CommentSort getSortFromPosition(int position) {
+            return CommentSort.values()[position];
+        }
+
+        public static String[] getItemsForArray(Context context) {
+            CommentSort[] items = CommentSort.values();
+            String[] values = new String[items.length];
+
+            for (int i = 0; i < items.length; i++) {
+                switch (items[i]) {
+                    case BEST:
+                        values[i] = context.getString(R.string.sort_best);
+                        break;
+
+                    case TOP:
+                        values[i] = context.getString(R.string.sort_top);
+                        break;
+
+                    case NEW:
+                        values[i] = context.getString(R.string.sort_new);
+                        break;
+                }
+            }
+
+            return values;
+        }
+
+        public static CommentSort getSortFromString(String item) {
+            for (CommentSort s : CommentSort.values()) {
+                if (s.getSort().equals(item)) {
+                    return s;
+                }
+            }
+
+            return NEW;
+        }
+    }
 
     private static final String DIALOG_LOADING = "loading";
 
@@ -79,6 +128,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private static final String KEY_POSITION = "position";
 
     private static final String KEY_OBJECTS = "objects";
+
+    private static final String KEY_SORT = "commentSort";
 
     private ViewPager mViewPager;
 
@@ -122,7 +173,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private BrowsingAdapter mPagerAdapter;
 
-    private String mCommentSort = COMMENT_SORT_BEST;
+    private CommentSort mCommentSort;
 
     public static Intent createIntent(Context context, ImgurBaseObject[] objects, int position) {
         Intent intent = new Intent(context, ViewActivity.class);
@@ -221,6 +272,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            LogUtil.v(TAG, "Received Gallery via ACTION_VIEW");
             mGalleryId = intent.getData().getPathSegments().get(1);
         } else if (!intent.hasExtra(KEY_OBJECTS) || !intent.hasExtra(KEY_POSITION)) {
             SnackBar.show(this, R.string.error_generic);
@@ -237,7 +289,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private void loadComments() {
         ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
-        String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId(), mCommentSort);
+        String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId(), mCommentSort.getSort());
 
         if (mApiClient == null) {
             mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
@@ -252,46 +304,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-        handleComments();
+        mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, null);
         invalidateOptionsMenu();
-    }
-
-    private static class BrowsingAdapter extends FragmentStatePagerAdapter {
-        private List<ImgurBaseObject> objects;
-
-        public BrowsingAdapter(FragmentManager fm, ImgurBaseObject[] objects) {
-            super(fm);
-            this.objects = new ArrayList<ImgurBaseObject>(Arrays.asList(objects));
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return ImgurViewFragment.createInstance(objects.get(position));
-        }
-
-        @Override
-        public int getCount() {
-            return objects != null ? objects.size() : 0;
-        }
-
-        public ImgurBaseObject getImgurItem(int position) {
-            return objects.get(position);
-        }
-
-        public void clear() {
-            if (objects != null) {
-                objects.clear();
-            }
-        }
-    }
-
-    /**
-     * Executes the Api call for Comments
-     */
-    private void handleComments() {
-        if (mApiClient != null) {
-            mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, null);
-        }
     }
 
     /**
@@ -299,7 +313,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
      *
      * @param comment
      */
-
     private void nextComments(final ImgurComment comment) {
         mSelectedComment = null;
         mCommentAdapter.setSelectedIndex(-1);
@@ -376,6 +389,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (savedInstanceState == null) {
+            mCommentSort = CommentSort.getSortFromString(app.getPreferences().getString(KEY_SORT, CommentSort.NEW.getSort()));
+
             // Check if the activity was opened externally by a link click
             if (!TextUtils.isEmpty(mGalleryId)) {
                 mApiClient = new ApiClient(String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mGalleryId), ApiClient.HttpRequest.GET);
@@ -393,6 +408,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
         } else {
+            mCommentSort = CommentSort.getSortFromString(savedInstanceState.getString(KEY_SORT, CommentSort.NEW.getSort()));
             mIsResuming = true;
             int position = savedInstanceState.getInt(KEY_POSITION, 0);
             mViewPager.setAdapter(mPagerAdapter);
@@ -416,7 +432,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
         if (mCommentAdapter != null) {
             CustomLinkMovement.getInstance().addListener(this);
-            mCommentAdapter.setImgurListener(this);
         }
     }
 
@@ -442,6 +457,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             mPagerAdapter = null;
         }
 
+        app.getPreferences().edit().putString(KEY_SORT, mCommentSort.getSort()).apply();
         super.onDestroy();
     }
 
@@ -571,7 +587,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                mViewPager.setAdapter(new BrowsingAdapter(getFragmentManager(), objects));
+                                mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
+                                mViewPager.setAdapter(mPagerAdapter);
                                 invalidateOptionsMenu();
                                 loadComments();
                             }
@@ -660,6 +677,20 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
+    public void onItemSelected(int position, String item) {
+        CommentSort sort = CommentSort.getSortFromPosition(position);
+
+        if (sort != mCommentSort) {
+            mCommentSort = sort;
+
+            // Don't bother making an Api call if the item has no comments
+            if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
+                loadComments();
+            }
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.view_activity, menu);
         return super.onCreateOptionsMenu(menu);
@@ -708,7 +739,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 return true;
 
             case R.id.sortComments:
-                // TODO Options to sort
+                showDialogFragment(PopupItemChooserDialog.createInstance(CommentSort.getItemsForArray(getApplicationContext())), "yes");
                 return true;
         }
 
@@ -742,6 +773,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             outState.putParcelableArrayList(KEY_COMMENT, new ArrayList<ImgurComment>(mCommentAdapter.getItems()));
         }
 
+        outState.putString(KEY_SORT, mCommentSort.getSort());
         outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
     }
 
@@ -769,6 +801,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             switch (msg.what) {
                 case MESSAGE_GALLERY_VOTE_COMPLETE:
                     if (msg.obj instanceof String) {
+                        // To show conformation of a vote on an image/gallery, we will animate whichever vote button was pressed
                         String vote = (String) msg.obj;
                         View animateView = ImgurBaseObject.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
                         AnimatorSet set = new AnimatorSet();
@@ -969,5 +1002,34 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             return false;
         }
 
+    }
+
+    private static class BrowsingAdapter extends FragmentStatePagerAdapter {
+        private List<ImgurBaseObject> objects;
+
+        public BrowsingAdapter(FragmentManager fm, ImgurBaseObject[] objects) {
+            super(fm);
+            this.objects = new ArrayList<ImgurBaseObject>(Arrays.asList(objects));
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return ImgurViewFragment.createInstance(objects.get(position));
+        }
+
+        @Override
+        public int getCount() {
+            return objects != null ? objects.size() : 0;
+        }
+
+        public ImgurBaseObject getImgurItem(int position) {
+            return objects.get(position);
+        }
+
+        public void clear() {
+            if (objects != null) {
+                objects.clear();
+            }
+        }
     }
 }

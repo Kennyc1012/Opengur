@@ -2,7 +2,6 @@ package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -13,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,11 +44,11 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.SnackBar;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -69,9 +67,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 8/18/14.
  */
-public class ProfileFragment extends Fragment implements ImgurListener {
-    private static final String TAG = ProfileFragment.class.getSimpleName();
-
+public class ProfileFragment extends BaseFragment implements ImgurListener {
     private static final String KEY_ENDPOINT = "endpoint";
 
     private static final String KEY_CURRENT_POSITION = "position";
@@ -163,7 +159,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
         super.onViewCreated(view, savedInstanceState);
         mMultiView = (MultiStateView) view.findViewById(R.id.multiView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
-        mGridView.setOnScrollListener(new PauseOnScrollListener(OpenImgurApp.getInstance(getActivity()).getImageLoader(), false, true,
+        mGridView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true,
                 new AbsListView.OnScrollListener() {
                     @Override
                     public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -224,10 +220,11 @@ public class ProfileFragment extends Fragment implements ImgurListener {
         if (isVisibleToUser && mMultiView != null &&
                 mFromMain && mMultiView.getViewState() == MultiStateView.ViewState.EMPTY && mListener != null) {
             mListener.onLoadingStarted(PAGE);
+            getActivity().getActionBar().show();
         }
 
         // User access got revoked somehow, go back to login view
-        if (mFromMain && isVisibleToUser && OpenImgurApp.getInstance(getActivity()).getUser() == null
+        if (mFromMain && isVisibleToUser && user == null
                 && mMultiView != null && mMultiView.getViewState() != MultiStateView.ViewState.EMPTY) {
             if (mAdapter != null) {
                 mAdapter.clear();
@@ -245,19 +242,18 @@ public class ProfileFragment extends Fragment implements ImgurListener {
      */
     private void handleArguments(Bundle args) {
         mFromMain = args.getBoolean(KEY_FROM_MAIN, false);
-        OpenImgurApp app = OpenImgurApp.getInstance(getActivity());
 
         if (args.containsKey(KEY_USERNAME)) {
-            Log.v(TAG, "User present in Bundle extras");
+            LogUtil.v(TAG, "User present in Bundle extras");
             String username = args.getString(KEY_USERNAME);
             mSelectedUser = app.getSql().getUser(username);
             configUser(username);
         } else if (app.getUser() != null) {
-            Log.v(TAG, "User already logged in");
+            LogUtil.v(TAG, "User already logged in");
             mSelectedUser = app.getUser();
             configUser(null);
         } else {
-            Log.v(TAG, "No user present. Showing Login screen");
+            LogUtil.v(TAG, "No user present. Showing Login screen");
             configWebView();
         }
     }
@@ -328,7 +324,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                         }).setPositiveButton(R.string.yes, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                OpenImgurApp.getInstance(getActivity()).onLogout();
+                                app.onLogout();
                                 getActivity().invalidateOptionsMenu();
 
                                 if (mAdapter != null) {
@@ -414,6 +410,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
             mListener.onLoadingStarted(PAGE);
         }
 
+        getActivity().getActionBar().show();
         mWebView = (WebView) mMultiView.findViewById(R.id.loginWebView);
         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
         // Add the empty space so the webview isnt cut off by the action bar
@@ -472,9 +469,10 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                     if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(accessToken) &&
                             !TextUtils.isEmpty(refreshToken) && accessTokenExpiration > 0) {
                         ImgurUser newUser = new ImgurUser(username, accessToken, refreshToken, accessTokenExpiration);
-                        OpenImgurApp.getInstance(getActivity()).setUser(newUser);
+                        app.setUser(newUser);
+                        user = newUser;
                         mSelectedUser = newUser;
-                        Log.v(TAG, "User " + newUser.getUsername() + " logged in");
+                        LogUtil.v(TAG, "User " + newUser.getUsername() + " logged in");
                         String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), newUser.getUsername());
                         mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
                         mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
@@ -487,7 +485,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
 
                 } else {
                     // Didn't get our tokens from the response, they probably denied accessed, just reshow the login page
-                    Log.w(TAG, "URL didn't contain a '#'. User denied access");
+                    LogUtil.w(TAG, "URL didn't contain a '#'. User denied access");
                     mWebView.loadUrl(Endpoints.LOGIN.getUrl());
                 }
 
@@ -505,7 +503,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         // Load the new user data if we haven't viewed the user within 24 hours
         if (mSelectedUser == null || System.currentTimeMillis() - mSelectedUser.getLastSeen() >= DateUtils.DAY_IN_MILLIS) {
-            Log.v(TAG, "Selected user is null or data is too old, fetching new data");
+            LogUtil.v(TAG, "Selected user is null or data is too old, fetching new data");
             String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), mSelectedUser == null ? username : mSelectedUser.getUsername());
 
             if (mApiClient == null) {
@@ -518,7 +516,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
             mIsLoading = true;
             mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
         } else {
-            Log.v(TAG, "Selected user present in database and has valid data, fetching gallery");
+            LogUtil.v(TAG, "Selected user present in database and has valid data, fetching gallery");
             getGalleryData();
         }
     }
@@ -558,7 +556,7 @@ public class ProfileFragment extends Fragment implements ImgurListener {
                             mSelectedUser.parseJsonForValues(event.json);
                         }
 
-                        OpenImgurApp.getInstance(getActivity()).getSql().insertProfile(mSelectedUser);
+                        app.getSql().insertProfile(mSelectedUser);
                         getGalleryData();
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
