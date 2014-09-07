@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurUser;
@@ -72,7 +71,7 @@ public class ApiClient {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private static final long DEFAULT_TIMEOUT = DateUtils.SECOND_IN_MILLIS * 15;
+    private static final long DEFAULT_TIMEOUT = 15;
 
     private String mUrl;
 
@@ -83,7 +82,7 @@ public class ApiClient {
     public ApiClient(String url, HttpRequest requestType) {
         mRequestType = requestType;
         mUrl = url;
-        mClient.setConnectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+        mClient.setConnectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
     }
 
     public void setRequestType(HttpRequest requestType) {

@@ -481,7 +481,7 @@ public class RedditFragment extends BaseFragment {
      * @param event
      */
     public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == ImgurBusEvent.EventType.GALLERY && mQuery.equals(event.id)) {
+        if (event.eventType == ImgurBusEvent.EventType.GALLERY && !TextUtils.isEmpty(mQuery) && mQuery.equals(event.id)) {
             try {
                 int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
                 if (statusCode == ApiClient.STATUS_OK) {

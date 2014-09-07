@@ -6,7 +6,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -64,7 +63,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         setContentView(R.layout.main);
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setOffscreenPageLimit(2);
-        mPager.setAdapter(new TabPageAdapter(getFragmentManager(), getApplicationContext()));
+        mPager.setAdapter(new TabPageAdapter(getFragmentManager(), getResources().getStringArray(R.array.pager_titles)));
         mTabBar = (TabBarView) View.inflate(getApplicationContext(), R.layout.tab_ab_layout, null);
         mTabBar.setViewPager(mPager);
         mUploadMenu = findViewById(R.id.uploadMenu);
@@ -250,11 +249,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private static class TabPageAdapter extends FragmentStatePagerAdapter implements TabBarView.IconTabProvider {
         private final int[] mTabIcons = {R.drawable.ic_action_gallery, R.drawable.ic_action_reddit, R.drawable.ic_action_user};
 
-        private Context mContext;
+        private String[] mTitles;
 
-        public TabPageAdapter(FragmentManager fm, Context context) {
+        public TabPageAdapter(FragmentManager fm, String[] titles) {
             super(fm);
-            mContext = context;
+            mTitles = titles;
+
         }
 
         @Override
@@ -286,18 +286,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-
-            switch (position) {
-                case 0:
-                    return mContext.getString(R.string.gallery).toUpperCase(l);
-                case 1:
-                    return mContext.getString(R.string.sub_reddit).toUpperCase(l);
-                case 2:
-                    return mContext.getString(R.string.profile);
-                default:
-                    throw new IndexOutOfBoundsException("TabPagerAdapter Index our of bounds. How did that happen?");
+            if (position >= mTitles.length) {
+                throw new IndexOutOfBoundsException("TabPagerAdapter Index out of bounds. How did that happen?");
             }
+
+            Locale l = Locale.getDefault();
+            return mTitles[position].toUpperCase(l);
         }
     }
 }

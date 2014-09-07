@@ -10,7 +10,6 @@
     <string name="top_score">Top Scoring</string>
     <string name="viral">Most Viral</string>
     <string name="user_sub">User Submitted</string>
-    <string name="sub_reddit">Sub Reddit</string>
     <string name="filter">Filter</string>
     <string name="comment_replies">View %d Replies</string>
     <string name="pref_cache_title">Cache</string>
@@ -21,6 +20,12 @@
         <item>256MB</item>
         <item>512MB</item>
         <item>1GB</item>
+    </string-array>
+
+    <string-array name="pager_titles">
+        <item>User Submitted</item>
+        <item>Sub Reddit</item>
+        <item>Profile</item>
     </string-array>
 
     <string name="pref_reddit_cache">Subreddit Searches</string>
