@@ -30,13 +30,15 @@ import org.json.JSONObject;
 public class OpenImgurApp extends Application {
     private static final String TAG = "OpenImgur";
 
-    public static final long FILE_CACHE_LIMIT_1_GB = 1073741824L;
+    private static final boolean USE_STRICT_MODE = true;
 
-    public static final long FILE_CACHE_LIMIT_512_MB = 536870912L;
+    private static final long FILE_CACHE_LIMIT_1_GB = 1073741824L;
 
-    public static final long FILE_CACHE_LIMIT_256_MB = 268435456L;
+    private static final long FILE_CACHE_LIMIT_512_MB = 536870912L;
 
-    public static final long FILE_CACHE_LIMIT_128_MB = 134217728L;
+    private static final long FILE_CACHE_LIMIT_256_MB = 268435456L;
+
+    private static final long FILE_CACHE_LIMIT_128_MB = 134217728L;
 
     private static OpenImgurApp instance;
 
@@ -57,14 +59,17 @@ public class OpenImgurApp extends Application {
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .build());
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .build());
+
+        if (USE_STRICT_MODE) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
+        }
     }
 
     public ImageLoader getImageLoader() {
@@ -158,16 +163,12 @@ public class OpenImgurApp extends Application {
      *
      * @param json
      */
-    private boolean onReceivedRefreshToken(JSONObject json) {
+    private synchronized boolean onReceivedRefreshToken(JSONObject json) {
         try {
             String accessToken = json.getString(ImgurUser.KEY_ACCESS_TOKEN);
             String refreshToken = json.getString(ImgurUser.KEY_REFRESH_TOKEN);
             long expiresIn = json.getLong(ImgurUser.KEY_EXPIRES_IN);
-
-            synchronized (mUser) {
-                mUser.setTokens(accessToken, refreshToken, expiresIn);
-            }
-
+            mUser.setTokens(accessToken, refreshToken, expiresIn);
             mSql.updateUserTokens(accessToken, refreshToken, System.currentTimeMillis() + (expiresIn * DateUtils.SECOND_IN_MILLIS));
             LogUtil.v(TAG, "New refresh token received");
             return true;

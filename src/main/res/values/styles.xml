@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Style_Fully_Translucent" parent="Style_Not_Translucent"></style>
+    <style name="Style_Fully_Translucent" parent="Style_Not_Translucent" />
 
     <style name="Settings_Style" parent="Style_Not_Translucent">
         <item name="android:windowActionBarOverlay">false</item>

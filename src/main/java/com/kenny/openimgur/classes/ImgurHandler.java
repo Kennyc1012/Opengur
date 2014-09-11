@@ -22,6 +22,8 @@ public class ImgurHandler extends Handler {
 
     public static final int MESSAGE_EMPTY_RESULT = 6;
 
+    public static final int MESSAGE_ITEM_DETAILS = 7;
+
     /**
      * Sends a message to the handler
      *

@@ -3,10 +3,7 @@
 
     <string name="app_name">Open Imgur</string>
     <string name="points">points</string>
-    <string name="loading">Loading…</string>
     <string name="action_settings">Settings</string>
-    <string name="show_comments">Show Comments</string>
-    <string name="hide_comments">Hide Comments</string>
     <string name="top_score">Top Scoring</string>
     <string name="viral">Most Viral</string>
     <string name="user_sub">User Submitted</string>
@@ -42,12 +39,10 @@
     <string name="download_complete">Download Complete</string>
     <string name="tap_to_view">Tap to view</string>
     <string name="share">Share</string>
-    <string name="download_error">An error occured while downloading</string>
+    <string name="download_error">An error occurred while downloading</string>
     <string name="error">Error</string>
-    <string name="filter_popup_title">Filter By</string>
     <string name="filter_popular">Popularity</string>
     <string name="filter_time">Newest</string>
-    <string name="error_occurred">An error has occurred</string>
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
     <string name="error_401">This requires you to be logged in. Please login and try again.</string>
     <string name="error_403">You do not have permission to complete this action. You might need to login again.</string>
@@ -57,7 +52,6 @@
     <string name="error_600">Unable to connect to Imgur. Check your connection and try again.</string>
     <string name="error_800">The Api sent an empty response causing a JSON exception. I don\'t expect you
     to know what this means, but it happened.</string>
-    <string name="photo">Photo</string>
     <string name="dismiss">Dismiss</string>
     <string name="thumbnail_quality">Thumbnail Quality</string>
 
@@ -85,7 +79,6 @@
     <string name="notoriety_trusted">Trusted</string>
     <string name="profile_rep_date">Reputation - Since %s</string>
     <string name="upload">Upload</string>
-    <string name="upload_photo">Upload Photo</string>
     <string name="link_upload_desc">Enter URL to Upload From Web</string>
     <string name="upload_desc">Description</string>
     <string name="upload_title">Title</string>
@@ -104,9 +97,7 @@
     <string name="subreddit_desc">Enter a subreddit above to view images</string>
     <string name="reddit_empty">Did not find any result for %s</string>
     <string name="view_reddit">View on Reddit</string>
-    <string name="section">Section</string>
     <string name="accept">Accept</string>
-    <string name="gallery">Gallery</string>
     <string name="previous_comments">Previous Comments</string>
     <string name="profile_no_favorites">%s has no favorite galleries. Boo</string>
     <string name="profile_no_submissions">%s has not shared any images with Imgur. Boo</string>
@@ -140,15 +131,20 @@
     <string name="sort_best">Best</string>
     <string name="sort_top">Top</string>
     <string name="sort_time">Time</string>
+    <string name="comments">Comments</string>
+    <string name="pref_comment_title">Load Comments</string>
+    <string name="pref_comments_on">Automatically Load Comments</string>
+    <string name="pref_comments_off">Don\'t Automatically Load Comments</string>
+    <string name="comments_off">Comments set not to load. Refresh to view comments</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
-    <string-array name="pref_cache_size_keys">
+    <string-array name="pref_cache_size_keys" translatable="false">
         <item>128</item>
         <item>256</item>
         <item>512</item>
         <item>1024</item>
     </string-array>
-    <string-array name="pref_thumbnail_quality_keys">
+    <string-array name="pref_thumbnail_quality_keys" translatable="false">
         <item>low</item>
         <item>medium</item>
         <item>high</item>

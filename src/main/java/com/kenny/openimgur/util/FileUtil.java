@@ -52,7 +52,7 @@ public class FileUtil {
             file.delete();
         }
 
-        InputStream in = null;
+        InputStream in;
 
         try {
             in = new URL(photo.getLink()).openStream();
@@ -87,7 +87,7 @@ public class FileUtil {
             buffer.flush();
             didFinish = true;
         } catch (IOException e) {
-            LogUtil.e(TAG, "Error saving photo",e);
+            LogUtil.e(TAG, "Error saving photo", e);
             e.printStackTrace();
             didFinish = false;
         } finally {
@@ -140,7 +140,7 @@ public class FileUtil {
      */
     public static File createFile(String extension) {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File dir = new File(Environment.getExternalStorageDirectory(), FOLDER_NAME);
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), FOLDER_NAME);
         dir.mkdirs();
         File file = new File(dir.getAbsolutePath(), timeStamp + extension);
 
@@ -149,7 +149,7 @@ public class FileUtil {
                 return file;
             }
         } catch (Exception e) {
-            LogUtil.e(TAG, "Error creating file",e);
+            LogUtil.e(TAG, "Error creating file", e);
         }
 
         return null;

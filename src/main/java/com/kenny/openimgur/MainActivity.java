@@ -32,13 +32,9 @@ import java.util.Locale;
  */
 public class MainActivity extends BaseActivity implements View.OnClickListener, TabActivityListener {
 
-    private TabBarView mTabBar;
-
     private ViewPager mPager;
 
     private View mUploadMenu;
-
-    private FloatingActionButton mUploadButton;
 
     private FloatingActionButton mCameraUpload;
 
@@ -64,18 +60,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setOffscreenPageLimit(2);
         mPager.setAdapter(new TabPageAdapter(getFragmentManager(), getResources().getStringArray(R.array.pager_titles)));
-        mTabBar = (TabBarView) View.inflate(getApplicationContext(), R.layout.tab_ab_layout, null);
-        mTabBar.setViewPager(mPager);
+        TabBarView tabBar = (TabBarView) View.inflate(getApplicationContext(), R.layout.tab_ab_layout, null);
+        tabBar.setViewPager(mPager);
         mUploadMenu = findViewById(R.id.uploadMenu);
-        mUploadButton = (FloatingActionButton) mUploadMenu.findViewById(R.id.uploadButton);
+        FloatingActionButton uploadButton = (FloatingActionButton) mUploadMenu.findViewById(R.id.uploadButton);
         mLinkUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.linkUpload);
         mCameraUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.cameraUpload);
         mGalleryUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.galleryUpload);
-        mUploadButton.setOnClickListener(this);
+        uploadButton.setOnClickListener(this);
         mLinkUpload.setOnClickListener(this);
         mCameraUpload.setOnClickListener(this);
         mGalleryUpload.setOnClickListener(this);
-        setActionBarView(mTabBar);
+        setActionBarView(tabBar);
         mUploadButtonHeight = getResources().getDimension(R.dimen.fab_button_radius);
         mUploadMenuButtonHeight = getResources().getDimension(R.dimen.fab_button_radius_smaller);
     }

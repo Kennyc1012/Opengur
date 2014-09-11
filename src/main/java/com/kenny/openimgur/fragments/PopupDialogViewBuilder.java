@@ -1,5 +1,6 @@
 package com.kenny.openimgur.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.StringRes;
 import android.view.View;
@@ -25,6 +26,14 @@ public class PopupDialogViewBuilder {
 
     public PopupDialogViewBuilder(Context context) {
         mView = View.inflate(context, R.layout.popup_fragment, null);
+        mTitle = (TextViewRoboto) mView.findViewById(R.id.title);
+        mMessage = (TextViewRoboto) mView.findViewById(R.id.message);
+        mNegativeBtn = (Button) mView.findViewById(R.id.negative);
+        mPositiveBtn = (Button) mView.findViewById(R.id.positive);
+    }
+
+    public PopupDialogViewBuilder(Activity activity) {
+        mView = View.inflate(activity, R.layout.popup_fragment, null);
         mTitle = (TextViewRoboto) mView.findViewById(R.id.title);
         mMessage = (TextViewRoboto) mView.findViewById(R.id.message);
         mNegativeBtn = (Button) mView.findViewById(R.id.negative);

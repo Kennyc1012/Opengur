@@ -26,14 +26,12 @@ public class CommentAdapter extends BaseAdapter {
         UPVOTE,
         DOWNVOTE,
         REPLY,
-        USER;
+        USER
     }
 
     private List<ImgurComment> mCurrentComments;
 
     private LayoutInflater mInflater;
-
-    private long mCurrentTime;
 
     private ImgurListener mListener;
 
@@ -42,7 +40,6 @@ public class CommentAdapter extends BaseAdapter {
     public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
         mCurrentComments = comments;
         mInflater = LayoutInflater.from(context);
-        mCurrentTime = System.currentTimeMillis();
         mListener = listener;
     }
 

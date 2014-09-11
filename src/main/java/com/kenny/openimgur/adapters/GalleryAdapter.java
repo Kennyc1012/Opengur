@@ -62,7 +62,7 @@ public class GalleryAdapter extends BaseAdapter {
             mObjects.clear();
         }
 
-        notifyDataSetChanged();
+        notifyDataSetInvalidated();
     }
 
     /**
@@ -109,18 +109,12 @@ public class GalleryAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        if (mObjects != null) {
-            return mObjects.size();
-        }
-        return 0;
+        return mObjects != null ? mObjects.size() : 0;
     }
 
     @Override
     public ImgurBaseObject getItem(int position) {
-        if (mObjects != null) {
-            return mObjects.get(position);
-        }
-        return null;
+        return mObjects != null ? mObjects.get(position) : null;
     }
 
     @Override
@@ -152,7 +146,7 @@ public class GalleryAdapter extends BaseAdapter {
             photoUrl = ((ImgurAlbum) obj).getCoverUrl(mThumbnailQuality);
         }
 
-        mImageLoader.cancelDisplayTask(holder.image);
+        mImageLoader.cancelDisplayTask(holder.imageViewAware);
         mImageLoader.displayImage(photoUrl, holder.imageViewAware, mOptions);
         holder.tv.setText(obj.getScore() + " " + holder.tv.getContext().getString(R.string.points));
         return convertView;

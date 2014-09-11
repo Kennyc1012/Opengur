@@ -60,7 +60,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class RedditFragment extends BaseFragment {
+public class RedditFragment extends BaseFragment implements AbsListView.OnScrollListener {
     private enum RedditSort {
         TIME("time"),
         TOP("top");
@@ -148,8 +148,6 @@ public class RedditFragment extends BaseFragment {
     private boolean mHasMore = true;
 
     private boolean mInputIsShowing = true;
-
-    private boolean mIsRestoring = false;
 
     private float mAnimationHeight;
 
@@ -247,46 +245,8 @@ public class RedditFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
-        mGridView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true,
-                new AbsListView.OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        mGridView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true, this));
 
-                    }
-
-                    @Override
-                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                        // Hide the actionbar when scrolling down, show when scrolling up
-                        if (firstVisibleItem > mPreviousItem) {
-                            if (mListener != null) {
-                                mListener.onHideActionBar(false);
-                            }
-
-                            if (mInputIsShowing) {
-                                mInputIsShowing = false;
-                                mQuickReturnView.animate().translationY(-mAnimationHeight).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
-                            }
-                        } else if (firstVisibleItem < mPreviousItem) {
-                            if (mListener != null) {
-                                mListener.onHideActionBar(true);
-                            }
-
-                            if (!mInputIsShowing) {
-                                mInputIsShowing = true;
-                                mQuickReturnView.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
-                            }
-                        }
-
-                        mPreviousItem = firstVisibleItem;
-
-                        // Load more items when hey get to the end of the list
-                        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading && mHasMore) {
-                            mCurrentPage++;
-                            search();
-                        }
-                    }
-                }
-        ));
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -374,6 +334,43 @@ public class RedditFragment extends BaseFragment {
     }
 
     @Override
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+        //NOOP
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        // Hide the actionbar when scrolling down, show when scrolling up
+        if (firstVisibleItem > mPreviousItem) {
+            if (mListener != null) {
+                mListener.onHideActionBar(false);
+            }
+
+            if (mInputIsShowing) {
+                mInputIsShowing = false;
+                mQuickReturnView.animate().translationY(-mAnimationHeight).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+            }
+        } else if (firstVisibleItem < mPreviousItem) {
+            if (mListener != null) {
+                mListener.onHideActionBar(true);
+            }
+
+            if (!mInputIsShowing) {
+                mInputIsShowing = true;
+                mQuickReturnView.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+            }
+        }
+
+        mPreviousItem = firstVisibleItem;
+
+        // Load more items when hey get to the end of the list
+        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading && mHasMore) {
+            mCurrentPage++;
+            search();
+        }
+    }
+
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
@@ -408,7 +405,6 @@ public class RedditFragment extends BaseFragment {
             mQuality = pref.getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
             mSort = RedditSort.getSortFromString(app.getPreferences().getString(KEY_SORT, RedditSort.TIME.getSort()));
         } else {
-            mIsRestoring = true;
             mQuality = savedInstanceState.getString(KEY_QUALITY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
             mQuery = savedInstanceState.getString(KEY_QUERY, null);
@@ -449,7 +445,7 @@ public class RedditFragment extends BaseFragment {
         }
 
         mIsLoading = true;
-        mApiClient.doWork(ImgurBusEvent.EventType.GALLERY, mQuery, null);
+        mApiClient.doWork(ImgurBusEvent.EventType.REDDIT_SEARCH, mQuery, null);
     }
 
     /**
@@ -471,7 +467,6 @@ public class RedditFragment extends BaseFragment {
             mGridView.setAdapter(mAdapter);
         } else {
             mAdapter.addItems(objects);
-            mAdapter.notifyDataSetChanged();
         }
     }
 
@@ -481,7 +476,7 @@ public class RedditFragment extends BaseFragment {
      * @param event
      */
     public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == ImgurBusEvent.EventType.GALLERY && !TextUtils.isEmpty(mQuery) && mQuery.equals(event.id)) {
+        if (event.eventType == ImgurBusEvent.EventType.REDDIT_SEARCH && mQuery.equals(event.id)) {
             try {
                 int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
                 if (statusCode == ApiClient.STATUS_OK) {

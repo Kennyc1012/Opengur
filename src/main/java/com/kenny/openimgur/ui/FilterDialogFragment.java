@@ -130,7 +130,7 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
 
             case R.id.accept:
                 if (mListener != null) {
-                    GalleryFragment.GallerySection section = GalleryFragment.GallerySection.HOT;
+                    GalleryFragment.GallerySection section;
                     GalleryFragment.GallerySort sort = GalleryFragment.GallerySort.VIRAL;
 
                     switch (mSortRG.getCheckedRadioButtonId()) {

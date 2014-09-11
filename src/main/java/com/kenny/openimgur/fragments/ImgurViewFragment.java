@@ -38,6 +38,7 @@ import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -89,35 +90,8 @@ public class ImgurViewFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
-        mListView = (ListView) view.findViewById(R.id.list);
-        mImgurObject = getArguments().getParcelable(KEY_IMGUR_OBJECT);
+        mListView = (ListView) mMultiView.findViewById(R.id.list);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-
-        if (savedInstanceState == null) {
-            if (mImgurObject instanceof ImgurPhoto) {
-                List<ImgurPhoto> photo = new ArrayList<ImgurPhoto>(1);
-                photo.add(((ImgurPhoto) mImgurObject));
-                mPhotoAdapter = new PhotoAdapter(getActivity(), photo, mImgurListener);
-                createHeader();
-                mListView.setAdapter(mPhotoAdapter);
-                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-            } else if (((ImgurAlbum) mImgurObject).getAlbumPhotos() == null || ((ImgurAlbum) mImgurObject).getAlbumPhotos().isEmpty()) {
-                String url = String.format(Endpoints.ALBUM.getUrl(), mImgurObject.getId());
-                ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
-                api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
-            } else {
-                mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurListener);
-                createHeader();
-                mListView.setAdapter(mPhotoAdapter);
-                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-            }
-        } else {
-            List<ImgurPhoto> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
-            mPhotoAdapter = new PhotoAdapter(getActivity(), photos, mImgurListener);
-            createHeader();
-            mListView.setAdapter(mPhotoAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-        }
 
         mListView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true,
                 new AbsListView.OnScrollListener() {
@@ -132,10 +106,59 @@ public class ImgurViewFragment extends BaseFragment {
                     }
                 }
         ));
+
+        handleArguments(getArguments(), savedInstanceState);
     }
 
     /**
-     * Creates the header for the photo/album
+     * Handles the arguments based to the fragment
+     *
+     * @param args               The Bundle arguments supplied when creating the fragment
+     * @param savedInstanceState The arguments that were saved for the fragment
+     */
+    private void handleArguments(Bundle args, Bundle savedInstanceState) {
+        // We have a savedInstanceState, use them over args
+        if (savedInstanceState != null) {
+            mImgurObject = savedInstanceState.getParcelable(KEY_IMGUR_OBJECT);
+            List<ImgurPhoto> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
+            mPhotoAdapter = new PhotoAdapter(getActivity(), photos, mImgurListener);
+            createHeader();
+            mListView.setAdapter(mPhotoAdapter);
+            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        } else {
+            setupFragmentWithObject((ImgurBaseObject) args.getParcelable(KEY_IMGUR_OBJECT));
+        }
+    }
+
+    /**
+     * Sets up the fragment with the given ImgurBaseObject
+     *
+     * @param object
+     */
+    private void setupFragmentWithObject(ImgurBaseObject object) {
+        mImgurObject = object;
+
+        if (mImgurObject instanceof ImgurPhoto) {
+            List<ImgurPhoto> photo = new ArrayList<ImgurPhoto>(1);
+            photo.add(((ImgurPhoto) mImgurObject));
+            mPhotoAdapter = new PhotoAdapter(getActivity(), photo, mImgurListener);
+            createHeader();
+            mListView.setAdapter(mPhotoAdapter);
+            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        } else if (((ImgurAlbum) mImgurObject).getAlbumPhotos() == null || ((ImgurAlbum) mImgurObject).getAlbumPhotos().isEmpty()) {
+            String url = String.format(Endpoints.ALBUM.getUrl(), mImgurObject.getId());
+            ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
+            api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
+        } else {
+            mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurListener);
+            createHeader();
+            mListView.setAdapter(mPhotoAdapter);
+            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        }
+    }
+
+    /**
+     * Creates the header for the photo/album. This MUST be called before settings the adapter for pre 4.4 devices
      */
     private void createHeader() {
         View headerView = View.inflate(getActivity(), R.layout.image_header, null);
@@ -178,7 +201,7 @@ public class ImgurViewFragment extends BaseFragment {
         super.onResume();
         EventBus.getDefault().register(this);
 
-        if (mPhotoAdapter != null && !mPhotoAdapter.isListenerSet()) {
+        if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
             CustomLinkMovement.getInstance().addListener(mImgurListener);
         }
     }
@@ -191,27 +214,31 @@ public class ImgurViewFragment extends BaseFragment {
     }
 
     public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == ImgurBusEvent.EventType.ALBUM_DETAILS &&
-                mImgurObject.getId().equals(event.id) && mPhotoAdapter == null) {
-            try {
-                int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
+        try {
+            switch (event.eventType) {
+                case ALBUM_DETAILS:
+                    if (mImgurObject.getId().equals(event.id) && mPhotoAdapter == null) {
+                        int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
 
-                if (statusCode == ApiClient.STATUS_OK) {
-                    JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
+                        if (statusCode == ApiClient.STATUS_OK) {
+                            JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
 
-                    for (int i = 0; i < arr.length(); i++) {
-                        ImgurPhoto photo = new ImgurPhoto(arr.getJSONObject(i));
-                        ((ImgurAlbum) mImgurObject).addPhotoToAlbum(photo);
+                            for (int i = 0; i < arr.length(); i++) {
+                                ImgurPhoto photo = new ImgurPhoto(arr.getJSONObject(i));
+                                ((ImgurAlbum) mImgurObject).addPhotoToAlbum(photo);
+                            }
+
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, mImgurObject);
+                        } else {
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
+                        }
+
                     }
-
-                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, statusCode);
-                } else {
-                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_JSON_EXCEPTION);
+                    break;
             }
+        } catch (Exception e) {
+            LogUtil.e(TAG, "Error while receiving event", e);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_INTERNAL_ERROR);
         }
     }
 
@@ -326,10 +353,7 @@ public class ImgurViewFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
-                    mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurListener);
-                    createHeader();
-                    mListView.setAdapter(mPhotoAdapter);
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    setupFragmentWithObject((ImgurBaseObject) msg.obj);
                     break;
 
                 case MESSAGE_ACTION_FAILED:
@@ -349,5 +373,7 @@ public class ImgurViewFragment extends BaseFragment {
             ArrayList<ImgurPhoto> copy = new ArrayList<ImgurPhoto>(mPhotoAdapter.getPhotos());
             outState.putParcelableArrayList(KEY_ITEMS, copy);
         }
+
+        outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);
     }
 }

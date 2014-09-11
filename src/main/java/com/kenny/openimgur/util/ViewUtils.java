@@ -69,8 +69,8 @@ public class ViewUtils {
      *
      * @param user      The user for whom we are displaying data for
      * @param context   App Context
-     * @param container The viewgroup to attach to
-     * @param listener  The Imgur listener to list for link click events
+     * @param container The optional ViewGroup to attach to
+     * @param listener  The Imgur listener to listen for link click events
      * @return
      */
     public static View getProfileView(@NonNull ImgurUser user, @NonNull Context context, @Nullable ViewGroup container, @NonNull ImgurListener listener) {

@@ -7,11 +7,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 public interface ImgurListener {
-    public static final String REGEX_IMAGE_URL = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://\\S+(.jpg|.jpeg|.gif|.png)$";
-
-    public static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+$";
-
     void onPhotoTap(ImageView parent);
 
     void onPlayTap(ProgressBar prog, ImageView image, ImageButton play);

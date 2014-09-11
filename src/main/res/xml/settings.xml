@@ -25,6 +25,17 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/comments">
+
+        <CheckBoxPreference
+            android:key="autoLoadComments"
+            android:summaryOn="@string/pref_comments_on"
+            android:summaryOff="@string/pref_comments_off"
+            android:title="@string/pref_comment_title"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/developer">
 
         <Preference

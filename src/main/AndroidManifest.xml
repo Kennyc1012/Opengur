@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.kenny.openimgur" >
+    package="com.kenny.openimgur">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,10 +12,10 @@
         android:name=".classes.OpenImgurApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" >
+        android:label="@string/app_name">
         <activity
             android:name=".MainActivity"
-            android:theme="@style/Style_Fully_Translucent" >
+            android:theme="@style/Style_Fully_Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,7 +25,8 @@
         <activity
             android:name=".ViewActivity"
             android:exported="true"
-            android:theme="@style/Style_Not_Translucent" >
+            android:theme="@style/Style_Not_Translucent"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -40,6 +41,10 @@
                     android:host="imgur.com"
                     android:path="/gallery/"
                     android:scheme="http" />
+                <data
+                    android:host="imgur.com"
+                    android:path="/gallery/"
+                    android:scheme="https" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -55,6 +60,10 @@
                     android:host="m.imgur.com"
                     android:pathPrefix="/gallery/"
                     android:scheme="http" />
+                <data
+                    android:host="m.imgur.com"
+                    android:pathPrefix="/gallery/"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
         <activity
@@ -66,7 +75,7 @@
             android:theme="@style/Settings_Style" />
         <activity
             android:name=".ProfileActivity"
-            android:theme="@style/Style_Fully_Translucent" >
+            android:theme="@style/Style_Fully_Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -81,6 +90,10 @@
                     android:host="imgur.com"
                     android:pathPrefix="/user/"
                     android:scheme="http" />
+                <data
+                    android:host="imgur.com"
+                    android:pathPrefix="/user/"
+                    android:scheme="https" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -96,6 +109,10 @@
                     android:host="m.imgur.com"
                     android:pathPrefix="/user/"
                     android:scheme="http" />
+                <data
+                    android:host="m.imgur.com"
+                    android:pathPrefix="/user/"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
         <activity

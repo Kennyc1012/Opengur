@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.os.Build;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
@@ -40,7 +39,7 @@ public class SnackBar {
         mngr.addSnackBar(activity, sbi);
 
         if (!mngr.isShowingSnackBar()) {
-            SnackBarManager.getInstance().showSnackbars(activity);
+            mngr.showSnackBars(activity);
         }
     }
 
@@ -56,7 +55,7 @@ public class SnackBar {
         mngr.addSnackBar(activity, sbi);
 
         if (!mngr.isShowingSnackBar()) {
-            SnackBarManager.getInstance().showSnackbars(activity);
+            mngr.showSnackBars(activity);
         }
     }
 
@@ -72,7 +71,7 @@ public class SnackBar {
         mngr.addSnackBar(activity, sbi);
 
         if (!mngr.isShowingSnackBar()) {
-            SnackBarManager.getInstance().showSnackbars(activity);
+            mngr.showSnackBars(activity);
         }
     }
 
@@ -142,7 +141,7 @@ public class SnackBar {
          *
          * @param activity
          */
-        public void showSnackbars(Activity activity) {
+        public void showSnackBars(Activity activity) {
             ConcurrentLinkedQueue<SnackBarItem> list = mQueue.get(activity);
 
             if (list != null) {
@@ -168,10 +167,6 @@ public class SnackBar {
                     list.peek().show(activity, this);
                 }
             }
-        }
-
-        public int getSnackBarQueueSize() {
-            return mQueue.size();
         }
 
         public boolean isShowingSnackBar() {
@@ -212,7 +207,6 @@ public class SnackBar {
         public void show(final Activity activity, final SnackBarListener listener) {
             FrameLayout parent = (FrameLayout) activity.findViewById(android.R.id.content);
             view = activity.getLayoutInflater().inflate(R.layout.snack_bar, parent, false);
-            Context context = view.getContext();
 
             if (TextUtils.isEmpty(messageString)) {
                 ((TextViewRoboto) view.findViewById(R.id.message)).setText(message);
@@ -220,11 +214,11 @@ public class SnackBar {
                 ((TextViewRoboto) view.findViewById(R.id.message)).setText(messageString);
             }
 
-            float snackBarHeight = context.getResources().getDimension(R.dimen.snack_bar_height);
-            float animationEnd = context.getResources().getDimension(R.dimen.snack_bar_animation_height);
+            float snackBarHeight = activity.getResources().getDimension(R.dimen.snack_bar_height);
+            float animationEnd = activity.getResources().getDimension(R.dimen.snack_bar_animation_height);
 
             if (adjustForTransparency) {
-                animationEnd += ViewUtils.getNavigationBarHeight(context);
+                animationEnd += ViewUtils.getNavigationBarHeight(activity);
             }
 
             animator = new AnimatorSet();

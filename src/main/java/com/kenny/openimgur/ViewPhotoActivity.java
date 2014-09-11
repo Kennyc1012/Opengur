@@ -29,17 +29,15 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 public class ViewPhotoActivity extends BaseActivity {
     private static final long HIDE_DELAY = DateUtils.SECOND_IN_MILLIS * 3;
 
-    public static final String KEY_URL = "url";
+    private static final String KEY_URL = "url";
 
-    public static final String KEY_IMAGE = "image";
+    private static final String KEY_IMAGE = "image";
 
     private ImageView mImageView;
 
     private ProgressBar mProgressBar;
 
     private ImgurPhoto photo;
-
-    private View mDecorView;
 
     private String mUrl;
 
@@ -64,7 +62,6 @@ public class ViewPhotoActivity extends BaseActivity {
         }
 
         setContentView(R.layout.activity_view_photo);
-        mDecorView = getWindow().getDecorView();
         photo = getIntent().getParcelableExtra(KEY_IMAGE);
         mUrl = intent.getStringExtra(KEY_URL);
         mImageView = (ImageView) findViewById(R.id.image);
@@ -109,7 +106,6 @@ public class ViewPhotoActivity extends BaseActivity {
     protected void onDestroy() {
         mImageView = null;
         mProgressBar = null;
-        mDecorView = null;
         super.onDestroy();
     }
 

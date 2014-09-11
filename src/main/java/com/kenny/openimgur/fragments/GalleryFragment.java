@@ -51,7 +51,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class GalleryFragment extends BaseFragment implements FilterDialogFragment.FilterListener {
+public class GalleryFragment extends BaseFragment implements FilterDialogFragment.FilterListener, AbsListView.OnScrollListener {
     private static final String KEY_SECTION = "section";
 
     private static final String KEY_SORT = "sort";
@@ -118,9 +118,9 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
         public static GallerySection getSectionFromPosition(int position) {
             GallerySection[] sections = GallerySection.values();
 
-            for (int i = 0; i < sections.length; i++) {
-                if (sections[i] == sections[position]) {
-                    return sections[i];
+            for (GallerySection section : sections) {
+                if (section == sections[position]) {
+                    return section;
                 }
             }
 
@@ -298,6 +298,30 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
         super.onDestroyView();
     }
 
+    @Override
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+        //NOOP
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        // Hide the actionbar when scrolling down, show when scrolling up
+        if (firstVisibleItem > mPreviousItem && mListener != null) {
+            mListener.onHideActionBar(false);
+        } else if (firstVisibleItem < mPreviousItem && mListener != null) {
+            mListener.onHideActionBar(true);
+        }
+
+        mPreviousItem = firstVisibleItem;
+
+        // Load more items when hey get to the end of the list
+        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading) {
+            mIsLoading = true;
+            mCurrentPage++;
+            getGallery();
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -309,32 +333,8 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
         super.onViewCreated(view, savedInstanceState);
         mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
         mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
-        mGridView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true,
-                new AbsListView.OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        mGridView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true, this));
 
-                    }
-
-                    @Override
-                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                        // Hide the actionbar when scrolling down, show when scrolling up
-                        if (firstVisibleItem > mPreviousItem && mListener != null) {
-                            mListener.onHideActionBar(false);
-                        } else if (firstVisibleItem < mPreviousItem && mListener != null) {
-                            mListener.onHideActionBar(true);
-                        }
-
-                        mPreviousItem = firstVisibleItem;
-
-                        // Load more items when hey get to the end of the list
-                        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading) {
-                            mIsLoading = true;
-                            mCurrentPage++;
-                            getGallery();
-                        }
-                    }
-                }));
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -414,7 +414,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
 
                 if (mAdapter != null) {
                     mAdapter.clear();
-                    mAdapter.notifyDataSetChanged();
                 }
 
                 if (mListener != null) {
@@ -467,7 +466,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
         if (event.eventType == ImgurBusEvent.EventType.GALLERY && mSection.getSection().equals(event.id)) {
             try {
                 int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
-                List<ImgurBaseObject> objects = null;
+                List<ImgurBaseObject> objects;
 
                 if (statusCode == ApiClient.STATUS_OK) {
                     JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
@@ -525,7 +524,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
 
         if (mAdapter != null) {
             mAdapter.clear();
-            mAdapter.notifyDataSetChanged();
         }
 
         mSection = section;
@@ -550,7 +548,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
                         mGridView.setAdapter(mAdapter);
                     } else {
                         mAdapter.addItems(gallery);
-                        mAdapter.notifyDataSetChanged();
                     }
 
                     if (mListener != null) {

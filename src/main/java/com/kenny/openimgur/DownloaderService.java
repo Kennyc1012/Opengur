@@ -25,7 +25,7 @@ import java.io.File;
 public class DownloaderService extends IntentService {
     private static final String FOLDER_NAME = "OpenImgur";
 
-    public static final String TAG = DownloaderService.class.getSimpleName();
+    private static final String TAG = DownloaderService.class.getSimpleName();
 
     private static final String KEY_IMAGE = "image";
 
@@ -42,18 +42,18 @@ public class DownloaderService extends IntentService {
                 file.mkdirs();
                 String photoFileName;
 
-                if (photo.getType().equals(ImgurPhoto.IMAGE_TYPE_JPEG)) {
-                    photoFileName = photo.getId() + ".jpeg";
-                } else if (photo.getType().equals(ImgurPhoto.IMAGE_TYPE_GIF)) {
-                    photoFileName = photo.getId() + ".gif";
+                if (ImgurPhoto.IMAGE_TYPE_JPEG.equals(photo.getType())) {
+                    photoFileName = photo.getId() + FileUtil.EXTENSION_JPEG;
+                } else if (ImgurPhoto.IMAGE_TYPE_GIF.equals(photo.getType())) {
+                    photoFileName = photo.getId() + FileUtil.EXTENSION_GIF;
                 } else {
-                    photoFileName = photo.getId() + ".png";
+                    photoFileName = photo.getId() + FileUtil.EXTENSION_PNG;
                 }
 
                 File photoFile = new File(file.getAbsolutePath(), photoFileName);
                 LogUtil.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
                 int notificationId = photo.getLink().hashCode();
-                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification);
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setContentTitle(getString(R.string.image_downloading))
                         .setContentText(getString(R.string.downloading_msg)).setAutoCancel(true).setProgress(0, 0, true).setLargeIcon(icon)
@@ -66,7 +66,6 @@ public class DownloaderService extends IntentService {
 
                     // Let the system know we have a new file
                     FileUtil.scanFile(fileUri, getApplicationContext());
-
                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                     shareIntent.setType(photo.getType());
                     shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -100,7 +99,7 @@ public class DownloaderService extends IntentService {
                 LogUtil.w(TAG, "No photo passed in Intent");
             }
         } catch (Exception e) {
-            LogUtil.e(TAG,"Exception while downloading image",e);
+            LogUtil.e(TAG, "Exception while downloading image", e);
         }
 
     }

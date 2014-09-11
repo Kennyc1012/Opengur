@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.util.LongSparseArray;
@@ -46,6 +47,7 @@ import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.fragments.PopupItemChooserDialog;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.SnackBar;
+import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -131,6 +133,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private static final String KEY_SORT = "commentSort";
 
+    private static final String KEY_LOAD_COMMENTS = "autoLoadComments";
+
     private ViewPager mViewPager;
 
     private SlidingUpPanelLayout mSlidingPane;
@@ -167,9 +171,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private View mCommentListHeader;
 
-    //private LoadingDialogFragment mDialog;
-
     private boolean mIsResuming = false;
+
+    private boolean mLoadComments;
 
     private BrowsingAdapter mPagerAdapter;
 
@@ -182,19 +186,24 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         return intent;
     }
 
+    public static Intent createIntent(Context context, String url) {
+        return new Intent(context, ViewActivity.class).setAction(Intent.ACTION_VIEW).setData(Uri.parse(url));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setShouldTint(false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
-        mMultiView = (MultiStateView) findViewById(R.id.multiView);
-        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mSlidingPane = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        mMultiView = (MultiStateView) mSlidingPane.findViewById(R.id.multiView);
+        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mCommentListHeader = View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
         mCommentList = (ListView) mMultiView.findViewById(R.id.commentList);
         // Header needs to be added before adapter is set for pre 4.4 devices
         mCommentList.addHeaderView(mCommentListHeader);
         mCommentList.removeHeaderView(mCommentListHeader);
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = (ViewPager) mSlidingPane.findViewById(R.id.pager);
         mViewPager.setOffscreenPageLimit(1);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -208,6 +217,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     mCurrentPosition = position;
                     loadComments();
                     getActionBar().setTitle(mPagerAdapter.getImgurItem(position).getTitle());
+                    invalidateOptionsMenu();
                 }
 
                 mIsResuming = false;
@@ -270,6 +280,17 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         });
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    /**
+     * Handles the Intent arguments
+     *
+     * @param intent Arguments
+     */
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             LogUtil.v(TAG, "Received Gallery via ACTION_VIEW");
@@ -277,7 +298,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         } else if (!intent.hasExtra(KEY_OBJECTS) || !intent.hasExtra(KEY_POSITION)) {
             SnackBar.show(this, R.string.error_generic);
             finish();
-            return;
         } else {
             mCurrentPosition = intent.getIntExtra(KEY_POSITION, 0);
             Parcelable[] passed = intent.getParcelableArrayExtra(KEY_OBJECTS);
@@ -288,24 +308,28 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void loadComments() {
-        ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
-        String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId(), mCommentSort.getSort());
+        if (mLoadComments) {
+            ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
+            String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId(), mCommentSort.getSort());
 
-        if (mApiClient == null) {
-            mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
-        } else {
-            mApiClient.setRequestType(ApiClient.HttpRequest.GET);
-            mApiClient.setUrl(url);
+            if (mApiClient == null) {
+                mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
+            } else {
+                mApiClient.setRequestType(ApiClient.HttpRequest.GET);
+                mApiClient.setUrl(url);
+            }
+
+            if (mCommentAdapter != null) {
+                mCommentAdapter.clear();
+                mCommentAdapter.notifyDataSetChanged();
+            }
+
+            mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+            mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, null);
+        } else if (mMultiView.getViewState() != MultiStateView.ViewState.ERROR) {
+            mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
+            mMultiView.setViewState(MultiStateView.ViewState.ERROR);
         }
-
-        if (mCommentAdapter != null) {
-            mCommentAdapter.clear();
-            mCommentAdapter.notifyDataSetChanged();
-        }
-
-        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-        mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, null);
-        invalidateOptionsMenu();
     }
 
     /**
@@ -390,6 +414,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         super.onPostCreate(savedInstanceState);
         if (savedInstanceState == null) {
             mCommentSort = CommentSort.getSortFromString(app.getPreferences().getString(KEY_SORT, CommentSort.NEW.getSort()));
+            mLoadComments = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(KEY_LOAD_COMMENTS, true);
 
             // Check if the activity was opened externally by a link click
             if (!TextUtils.isEmpty(mGalleryId)) {
@@ -409,6 +434,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
         } else {
             mCommentSort = CommentSort.getSortFromString(savedInstanceState.getString(KEY_SORT, CommentSort.NEW.getSort()));
+            mLoadComments = savedInstanceState.getBoolean(KEY_LOAD_COMMENTS, true);
             mIsResuming = true;
             int position = savedInstanceState.getInt(KEY_POSITION, 0);
             mViewPager.setAdapter(mPagerAdapter);
@@ -446,6 +472,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     protected void onDestroy() {
         mHandler.removeCallbacksAndMessages(null);
         dismissDialogFragment(DIALOG_LOADING);
+        mPreviousCommentPositionArray.clear();
+        mCommentArray.clear();
 
         if (mCommentAdapter != null) {
             mCommentAdapter.destroy();
@@ -582,17 +610,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         } else {
                             imgurObject = new ImgurPhoto(json);
                         }
-                        final ImgurBaseObject[] objects = new ImgurBaseObject[]{(ImgurBaseObject) imgurObject};
 
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
-                                mViewPager.setAdapter(mPagerAdapter);
-                                invalidateOptionsMenu();
-                                loadComments();
-                            }
-                        });
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ITEM_DETAILS, imgurObject);
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
                     }
@@ -646,20 +665,34 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onLinkTap(View view, String url) {
         if (!TextUtils.isEmpty(url)) {
-            if (url.matches(REGEX_IMAGE_URL)) {
-                PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
-                        .show(getFragmentManager(), "popup");
-            } else if (url.matches(REGEX_IMGUR_IMAGE)) {
-                String[] split = url.split("\\/");
-                PopupImageDialogFragment.getInstance(split[split.length - 1], false, false)
-                        .show(getFragmentManager(), "popup");
-            } else {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                if (browserIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(browserIntent);
-                } else {
-                    SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
-                }
+            LinkUtils.LinkMatch match = LinkUtils.findImgurLinkMatch(url);
+
+            switch (match) {
+                // TODO Fix leak
+                case GALLERY:
+                    //  startActivity(createIntent(app.getApplicationContext(), url));
+                    break;
+
+                case IMAGE_URL:
+                    PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
+                            .show(getFragmentManager(), "popup");
+                    break;
+
+                case IMAGE:
+                    String[] split = url.split("\\/");
+                    PopupImageDialogFragment.getInstance(split[split.length - 1], false, false)
+                            .show(getFragmentManager(), "popup");
+                    break;
+
+                case NONE:
+                default:
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    if (browserIntent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(browserIntent);
+                    } else {
+                        SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
+                    }
+                    break;
             }
         } else {
             onListItemClick(mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount());
@@ -720,7 +753,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 return true;
 
             case R.id.refresh:
+                // Set load comments to true, load comments, then set it back to its original value to persist its state
+                boolean loadComments = mLoadComments;
+                mLoadComments = true;
                 loadComments();
+                mLoadComments = loadComments;
                 return true;
 
             case R.id.profile:
@@ -763,6 +800,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     R.drawable.ic_action_unfavorite : R.drawable.ic_action_favorite);
 
         }
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -773,6 +811,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             outState.putParcelableArrayList(KEY_COMMENT, new ArrayList<ImgurComment>(mCommentAdapter.getItems()));
         }
 
+        outState.putBoolean(KEY_LOAD_COMMENTS, mLoadComments);
         outState.putString(KEY_SORT, mCommentSort.getSort());
         outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
     }
@@ -810,7 +849,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                                 ObjectAnimator.ofFloat(animateView, "scaleX", 1.0f, 1.5f, 1.0f)
                         );
 
-                        set.setDuration(1000L).setInterpolator(new OvershootInterpolator());
+                        set.setDuration(750L).setInterpolator(new OvershootInterpolator());
                         set.start();
                     } else {
                         SnackBar.show(ViewActivity.this, (Integer) msg.obj);
@@ -880,6 +919,15 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         SnackBar.show(ViewActivity.this, (Integer) msg.obj);
                     }
 
+                    break;
+
+                case MESSAGE_ITEM_DETAILS:
+                    final ImgurBaseObject[] objects = new ImgurBaseObject[]{(ImgurBaseObject) msg.obj};
+                    mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
+                    mViewPager.setAdapter(mPagerAdapter);
+                    getActionBar().setTitle(objects[0].getTitle());
+                    invalidateOptionsMenu();
+                    loadComments();
                     break;
 
                 default:

@@ -12,6 +12,8 @@ import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
+import com.nostra13.universalimageloader.cache.disc.DiskCache;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LargestLimitedMemoryCache;
@@ -104,7 +106,7 @@ public class ImageUtil {
      *
      * @param imageView   The ImageView where the gif will be displayed
      * @param url         The url of the image. This is the key for the cached image
-     * @param imageLoader The Imageloader where we will retreive the image from
+     * @param imageLoader The Imageloader where we will retrieve the image from
      * @return if successful
      */
     public static boolean loadAndDisplayGif(@NonNull ImageView imageView, @NonNull String url, @NonNull ImageLoader imageLoader) {
@@ -128,10 +130,18 @@ public class ImageUtil {
      * Initializes the ImageLoader
      */
     public static void initImageLoader(Context context, long cache) {
+        DiskCache diskCache;
+        try {
+            diskCache = new LruDiscCache(context.getCacheDir(), new HashCodeFileNameGenerator(), cache);
+        } catch (IOException e) {
+            LogUtil.e(TAG, "Unable to create LruDiscCache, falling back to Unlimited", e);
+            diskCache = new UnlimitedDiscCache(context.getCacheDir());
+        }
+
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
                 .threadPoolSize(7)
                 .denyCacheImageMultipleSizesInMemory()
-                .diskCache(new LruDiscCache(context.getCacheDir(), new HashCodeFileNameGenerator(), cache))
+                .diskCache(diskCache)
                 .defaultDisplayImageOptions(getDefaultDisplayOptions().build())
                 .memoryCache(new LargestLimitedMemoryCache(MEMORY_CACHE_LIMIT))
                 .build();
@@ -140,17 +150,20 @@ public class ImageUtil {
     }
 
     /**
-     * Returns the display options for the image loader when loading for the gallery
+     * Returns the display options for the image loader when loading for the gallery.
+     * Fades in the images when loaded from the network. Also uses Bitmap.Config.RGB_565 for less memory usage
      *
      * @return
      */
     public static DisplayImageOptions.Builder getDisplayOptionsForGallery() {
         return getDefaultDisplayOptions()
-                .displayer(new FadeInBitmapDisplayer(750, true, false, false));
+                .displayer(new FadeInBitmapDisplayer(750, true, false, false))
+                .bitmapConfig(Bitmap.Config.RGB_565);
     }
 
     /**
      * Returns the display options for viewing an image in the view activity
+     * Uses a placeholder whiling loading images
      *
      * @return
      */
@@ -160,6 +173,7 @@ public class ImageUtil {
 
     /**
      * Returns the default display options for the image loader
+     * Resets view before loading, caches in memory and on disk.
      *
      * @return
      */

@@ -30,7 +30,7 @@ public class PhotoAdapter extends BaseAdapter {
 
     private ImgurListener mListener;
 
-    private final long PHOTO_SIZE_LIMIT = 1048576L;
+    private static final long PHOTO_SIZE_LIMIT = 1048576L;
 
     private DisplayImageOptions mOptions;
 
@@ -132,7 +132,7 @@ public class PhotoAdapter extends BaseAdapter {
         }
 
         ImgurPhoto photo = getItem(position);
-        String url = null;
+        String url;
 
         // Load a downscaled image if any of the dimensions are greater than 1024 or they are large than 1mb
         if (photo.getWidth() > 1024 || photo.getHeight() > 1024 || photo.getSize() > PHOTO_SIZE_LIMIT) {
@@ -166,10 +166,6 @@ public class PhotoAdapter extends BaseAdapter {
         mImageLoader.cancelDisplayTask(holder.image);
         mImageLoader.displayImage(url, holder.image, mOptions);
         return convertView;
-    }
-
-    public boolean isListenerSet() {
-        return mListener != null;
     }
 
     private static class PhotoViewHolder {

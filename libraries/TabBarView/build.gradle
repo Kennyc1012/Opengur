@@ -20,6 +20,6 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:19.1.0'
+    compile 'com.android.support:support-v13:18.0.+'
     compile 'com.android.support:support-annotations:19.1.0'
 }

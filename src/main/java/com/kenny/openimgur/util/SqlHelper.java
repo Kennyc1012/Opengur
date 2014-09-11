@@ -205,7 +205,7 @@ public class SqlHelper extends SQLiteOpenHelper {
      */
     public int deleteAllSubRedditSearches() {
         SQLiteDatabase db = getWritableDatabase();
-        int deleted = 0;
+        int deleted;
         deleted = db.delete(RedditContract.TABLE_NAME, null, null);
         db.close();
         return deleted;

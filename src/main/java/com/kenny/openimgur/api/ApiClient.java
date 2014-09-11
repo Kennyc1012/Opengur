@@ -31,7 +31,7 @@ public class ApiClient {
     public enum HttpRequest {
         GET,
         POST,
-        DELETE;
+        DELETE
     }
 
     private static final String TAG = ApiClient.class.getSimpleName();

@@ -25,7 +25,7 @@ public class MultiStateView extends FrameLayout {
         CONTENT,
         LOADING,
         EMPTY,
-        ERROR;
+        ERROR
     }
 
     private LayoutInflater mInflater;

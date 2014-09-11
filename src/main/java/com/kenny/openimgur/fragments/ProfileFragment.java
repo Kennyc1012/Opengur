@@ -48,6 +48,7 @@ import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.SnackBar;
+import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
@@ -304,7 +305,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
                 if (mAdapter != null) {
                     mAdapter.clear();
-                    mAdapter.notifyDataSetChanged();
                 }
 
                 getActivity().invalidateOptionsMenu();
@@ -367,6 +367,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                 menu.findItem(R.id.submissions).setShowAsAction(mFromMain ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
             }
         }
+
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -628,7 +629,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                             mGridView.setAdapter(mAdapter);
                         } else {
                             mAdapter.addItems(objects);
-                            mAdapter.notifyDataSetChanged();
                         }
                     } else if (mAdapter == null || mAdapter.isEmpty()) {
                         if (!mDidAddProfileToErrorView) {
@@ -703,20 +703,33 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onLinkTap(View view, @Nullable String url) {
         if (!TextUtils.isEmpty(url)) {
-            if (url.matches(REGEX_IMAGE_URL)) {
-                PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
-                        .show(getFragmentManager(), "popup");
-            } else if (url.matches(REGEX_IMGUR_IMAGE)) {
-                String[] split = url.split("\\/");
-                PopupImageDialogFragment.getInstance(split[split.length - 1], false, false)
-                        .show(getFragmentManager(), "popup");
-            } else {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivity(browserIntent);
-                } else {
-                    SnackBar.show(getActivity(), R.string.cant_launch_intent, true);
-                }
+            LinkUtils.LinkMatch match = LinkUtils.findImgurLinkMatch(url);
+
+            switch (match) {
+                case GALLERY:
+                    startActivity(ViewActivity.createIntent(getActivity(), url));
+                    break;
+
+                case IMAGE_URL:
+                    PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
+                            .show(getFragmentManager(), "popup");
+                    break;
+
+                case IMAGE:
+                    String[] split = url.split("\\/");
+                    PopupImageDialogFragment.getInstance(split[split.length - 1], false, false)
+                            .show(getFragmentManager(), "popup");
+                    break;
+
+                case NONE:
+                default:
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                        startActivity(browserIntent);
+                    } else {
+                        SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                    }
+                    break;
             }
         }
     }

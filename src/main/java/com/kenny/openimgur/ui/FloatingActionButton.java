@@ -33,13 +33,7 @@ public class FloatingActionButton extends View {
 
     private Bitmap mBitmap;
 
-    private int mScreenHeight;
-
     private int mColor;
-
-    private float mCurrentY;
-
-    private boolean mHidden = false;
 
     public FloatingActionButton(Context context) {
         this(context, null);
@@ -75,7 +69,6 @@ public class FloatingActionButton extends View {
         Display display = mWindowManager.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        mScreenHeight = size.y;
     }
 
     public void setColor(int color) {
