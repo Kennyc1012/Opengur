@@ -167,9 +167,9 @@ public class OpenImgurApp extends Application {
         try {
             String accessToken = json.getString(ImgurUser.KEY_ACCESS_TOKEN);
             String refreshToken = json.getString(ImgurUser.KEY_REFRESH_TOKEN);
-            long expiresIn = json.getLong(ImgurUser.KEY_EXPIRES_IN);
-            mUser.setTokens(accessToken, refreshToken, expiresIn);
-            mSql.updateUserTokens(accessToken, refreshToken, System.currentTimeMillis() + (expiresIn * DateUtils.SECOND_IN_MILLIS));
+            long expiration = System.currentTimeMillis() + (json.getLong(ImgurUser.KEY_EXPIRES_IN) * DateUtils.SECOND_IN_MILLIS);
+            mUser.setTokens(accessToken, refreshToken, expiration);
+            mSql.updateUserTokens(accessToken, refreshToken, expiration);
             LogUtil.v(TAG, "New refresh token received");
             return true;
         } catch (JSONException e) {

@@ -80,8 +80,8 @@ public class ViewPhotoActivity extends BaseActivity {
             @Override
             public void onLoadingComplete(String s, View view, Bitmap bitmap) {
                 mProgressBar.setVisibility(View.GONE);
-                PhotoViewAttacher photoView = new PhotoViewAttacher(mImageView);
-                photoView.setMaximumScale(10f);
+                 PhotoViewAttacher photoView = new PhotoViewAttacher(mImageView);
+                 photoView.setMaximumScale(10f);
 
                 if ((photo != null && photo.isAnimated()) || (!TextUtils.isEmpty(mUrl) && mUrl.endsWith(".gif"))) {
                     // The file SHOULD be in our cache if the image has successfully loaded
@@ -92,13 +92,14 @@ public class ViewPhotoActivity extends BaseActivity {
                     }
                 }
 
-                photoView.update();
+                 photoView.update();
             }
 
             @Override
             public void onLoadingCancelled(String s, View view) {
             }
         });
+
         getActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 

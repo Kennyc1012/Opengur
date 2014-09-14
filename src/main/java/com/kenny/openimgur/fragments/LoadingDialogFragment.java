@@ -22,16 +22,19 @@ import com.kenny.openimgur.ui.TextViewRoboto;
 public class LoadingDialogFragment extends DialogFragment {
     private static final String KEY_MESSAGE = "message";
 
+    private static final String KEY_CANCELABLE = "cancelable";
+
     private View c1, c2, c3;
 
     private TextViewRoboto message;
 
     private AnimatorSet set;
 
-    public static LoadingDialogFragment createInstance(@StringRes int message) {
+    public static LoadingDialogFragment createInstance(@StringRes int message, boolean cancelable) {
         LoadingDialogFragment fragment = new LoadingDialogFragment();
         Bundle args = new Bundle();
         args.putInt(KEY_MESSAGE, message);
+        args.putBoolean(KEY_CANCELABLE, cancelable);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,6 +60,7 @@ public class LoadingDialogFragment extends DialogFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        setCancelable(getArguments().getBoolean(KEY_CANCELABLE, true));
         c1 = view.findViewById(R.id.circleOne);
         c2 = view.findViewById(R.id.circleTwo);
         c3 = view.findViewById(R.id.circleThree);

@@ -12,7 +12,7 @@
     <string name="pref_cache_title">Cache</string>
     <string name="pref_cache_size">Maximum Cache Size</string>
 
-    <string-array name="pref_cache_size_items">
+    <string-array name="pref_cache_size_items" translatable="false">
         <item>128MB</item>
         <item>256MB</item>
         <item>512MB</item>
@@ -21,7 +21,7 @@
 
     <string-array name="pager_titles">
         <item>User Submitted</item>
-        <item>Sub Reddit</item>
+        <item>Subreddit</item>
         <item>Profile</item>
     </string-array>
 
@@ -46,12 +46,11 @@
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
     <string name="error_401">This requires you to be logged in. Please login and try again.</string>
     <string name="error_403">You do not have permission to complete this action. You might need to login again.</string>
-    <string name="error_429">The rate limit for Open Imgur has been hit. There is nothing I can do about this. Check back
+    <string name="error_429">The rate limit for Open Imgur has been hit. There is nothing that can done about this. Check back
     later.</string>
     <string name="error_503">Imgur is currently over capacity. Boo…</string>
     <string name="error_600">Unable to connect to Imgur. Check your connection and try again.</string>
-    <string name="error_800">The Api sent an empty response causing a JSON exception. I don\'t expect you
-    to know what this means, but it happened.</string>
+    <string name="error_800">The Api sent an empty response causing a JSON exception.</string>
     <string name="dismiss">Dismiss</string>
     <string name="thumbnail_quality">Thumbnail Quality</string>
 
@@ -93,7 +92,7 @@
     <string name="down_vote">Down Vote</string>
     <string name="reply">Reply</string>
     <string name="view_user">View User Profile</string>
-    <string name="enter_sub_reddit">Enter Sub Reddit</string>
+    <string name="enter_sub_reddit">Enter Subreddit</string>
     <string name="subreddit_desc">Enter a subreddit above to view images</string>
     <string name="reddit_empty">Did not find any result for %s</string>
     <string name="view_reddit">View on Reddit</string>
@@ -125,7 +124,7 @@
     <string name="upload_success">Upload successful. Image can be viewed at %s</string>
     <string name="upload_complete">Upload Complete</string>
     <string name="view_licenses">View Open Source Licenses</string>
-    <string name="reddit_search_cleared">Sub Reddit History Cleared</string>
+    <string name="reddit_search_cleared">Subreddit History Cleared</string>
     <string name="sort_comments">Sort Comments</string>
     <string name="sort_new">New</string>
     <string name="sort_best">Best</string>

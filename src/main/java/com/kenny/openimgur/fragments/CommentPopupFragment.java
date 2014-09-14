@@ -21,7 +21,6 @@ import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.ui.TextViewRoboto;
 import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.RequestBody;
 
 import de.greenrobot.event.EventBus;
 
@@ -103,7 +102,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
         Bundle args = getArguments();
 
         if (args == null || !args.containsKey(KEY_GALLERY_ID)) {
-            dismissAllowingStateLoss();
+            dismiss();
             SnackBar.show(getActivity(), R.string.error_generic);
             return;
         }
@@ -133,7 +132,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.cancel:
-                dismissAllowingStateLoss();
+                dismiss();
                 break;
 
             case R.id.post:
@@ -145,9 +144,8 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
                     String url = TextUtils.isEmpty(mParentId) ? String.format(Endpoints.COMMENT.getUrl(), mGalleryId) :
                             String.format(Endpoints.COMMENT_REPLY.getUrl(), mGalleryId, mParentId);
                     ApiClient client = new ApiClient(url, ApiClient.HttpRequest.POST);
-                    RequestBody body = new FormEncodingBuilder().add("comment", comment).build();
-                    client.doWork(ImgurBusEvent.EventType.COMMENTS, null, body);
-                    dismissAllowingStateLoss();
+                    client.doWork(ImgurBusEvent.EventType.COMMENTS, null, new FormEncodingBuilder().add("comment", comment).build());
+                    dismiss();
                 } else {
                     // Shake the edit text to show that they have not enetered any text
                     ObjectAnimator.ofFloat(mEditText, "translationX", 0, 25, -25, 25, -25, 15, -15, 6, -6, 0).setDuration(750L).start();

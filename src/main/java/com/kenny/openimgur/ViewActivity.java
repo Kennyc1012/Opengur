@@ -196,14 +196,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
         mSlidingPane = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-        mMultiView = (MultiStateView) mSlidingPane.findViewById(R.id.multiView);
+        mMultiView = (MultiStateView) findViewById(R.id.multiView);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mCommentListHeader = View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
         mCommentList = (ListView) mMultiView.findViewById(R.id.commentList);
         // Header needs to be added before adapter is set for pre 4.4 devices
         mCommentList.addHeaderView(mCommentListHeader);
         mCommentList.removeHeaderView(mCommentListHeader);
-        mViewPager = (ViewPager) mSlidingPane.findViewById(R.id.pager);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setOffscreenPageLimit(1);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -278,12 +278,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             public void onPanelHidden(View view) {
             }
         });
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIntent(intent);
     }
 
     /**
@@ -447,7 +441,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             getActionBar().setTitle(mPagerAdapter.getImgurItem(position).getTitle());
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            if (mLoadComments) {
+                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            } else {
+                mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
+                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+            }
         }
     }
 
@@ -508,13 +507,13 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     String upVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(), mPagerAdapter.getImgurItem(mCurrentPosition).getId(), vote);
 
                     if (mApiClient == null) {
-                        mApiClient = new ApiClient(upVoteUrl, ApiClient.HttpRequest.GET);
+                        mApiClient = new ApiClient(upVoteUrl, ApiClient.HttpRequest.POST);
                     } else {
                         mApiClient.setUrl(upVoteUrl);
-                        mApiClient.setRequestType(ApiClient.HttpRequest.GET);
+                        mApiClient.setRequestType(ApiClient.HttpRequest.POST);
                     }
 
-                    mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, vote, null);
+                    mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, vote, new FormEncodingBuilder().add("vote", vote).build());
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
@@ -668,10 +667,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             LinkUtils.LinkMatch match = LinkUtils.findImgurLinkMatch(url);
 
             switch (match) {
-                // TODO Fix leak
-                case GALLERY:
+                // TODO
+                /*case GALLERY:
                     //  startActivity(createIntent(app.getApplicationContext(), url));
-                    break;
+                    break;*/
 
                 case IMAGE_URL:
                     PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
@@ -858,20 +857,24 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 case MESSAGE_COMMENT_POSTING:
                     // We want to popup a "Loading" dialog while the comment is being posted
-                    showDialogFragment(LoadingDialogFragment.createInstance(R.string.posting_comment), DIALOG_LOADING);
+                    showDialogFragment(LoadingDialogFragment.createInstance(R.string.posting_comment, false), DIALOG_LOADING);
                     break;
 
                 case MESSAGE_ACTION_COMPLETE:
                     List<ImgurComment> comments = (List<ImgurComment>) msg.obj;
 
                     if (!comments.isEmpty()) {
+                        ImgurBaseObject imgurObject = mPagerAdapter.getImgurItem(mCurrentPosition);
+
                         if (mCommentAdapter == null) {
                             mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, ViewActivity.this);
+                            mCommentAdapter.setOP(imgurObject.getAccount());
                             // Add and remove the header view for pre 4.4 header support
                             mCommentList.addHeaderView(mCommentListHeader);
                             mCommentList.removeHeaderView(mCommentListHeader);
                             mCommentList.setAdapter(mCommentAdapter);
                         } else {
+                            mCommentAdapter.setOP(imgurObject.getAccount());
                             mCommentArray.clear();
                             mPreviousCommentPositionArray.clear();
                             mCommentList.removeHeaderView(mCommentListHeader);

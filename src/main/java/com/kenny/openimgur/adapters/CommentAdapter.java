@@ -3,6 +3,7 @@ package com.kenny.openimgur.adapters;
 import android.content.Context;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
@@ -22,13 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommentAdapter extends BaseAdapter {
-    public enum ButtonType {
-        UPVOTE,
-        DOWNVOTE,
-        REPLY,
-        USER
-    }
-
     private List<ImgurComment> mCurrentComments;
 
     private LayoutInflater mInflater;
@@ -36,6 +30,8 @@ public class CommentAdapter extends BaseAdapter {
     private ImgurListener mListener;
 
     private int mSelectedIndex = -1;
+
+    private String mOP;
 
     public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
         mCurrentComments = comments;
@@ -163,7 +159,16 @@ public class CommentAdapter extends BaseAdapter {
      */
     private Spannable constructSpan(ImgurComment comment, Context context) {
         CharSequence date = getDateFormattedTime(comment.getDate() * 1000L, context);
-        StringBuilder sb = new StringBuilder(comment.getAuthor());
+        String author = comment.getAuthor();
+        StringBuilder sb = new StringBuilder(author);
+        boolean isOp = isOP(author);
+        int spanLength = author.length();
+
+        if (isOp) {
+            sb.append(" OP");
+            spanLength += 3;
+        }
+
         sb.append(" ").append(comment.getPoints()).append(" ").append(context.getString(R.string.points))
                 .append(" : ").append(date);
         Spannable span = new SpannableString(sb.toString());
@@ -173,7 +178,11 @@ public class CommentAdapter extends BaseAdapter {
             color = context.getResources().getColor(android.R.color.holo_red_light);
         }
 
-        span.setSpan(new ForegroundColorSpan(color), comment.getAuthor().length(), sb.length() - date.length() - 2,
+        if (isOp) {
+            span.setSpan(new ForegroundColorSpan(color), author.length() + 1, spanLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        span.setSpan(new ForegroundColorSpan(color), spanLength, sb.length() - date.length() - 2,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         return span;
@@ -192,9 +201,16 @@ public class CommentAdapter extends BaseAdapter {
                         DateUtils.FORMAT_ABBREV_RELATIVE);
     }
 
-    public void setImgurListener(ImgurListener listener) {
-        mListener = listener;
-        notifyDataSetChanged();
+    public void setOP(String op) {
+        mOP = op;
+    }
+
+    private boolean isOP(String user) {
+        if (!TextUtils.isEmpty(mOP)) {
+            return mOP.equals(user);
+        }
+
+        return false;
     }
 
     private static class CommentViewHolder {

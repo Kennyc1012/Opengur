@@ -161,7 +161,7 @@ public class UploadActivity extends BaseActivity {
             }
 
             if (mIsUploading) {
-                showDialogFragment(LoadingDialogFragment.createInstance(R.string.uploading), DFRAGMENT_UPLOADING);
+                showDialogFragment(LoadingDialogFragment.createInstance(R.string.uploading, false), DFRAGMENT_UPLOADING);
             }
         }
 
@@ -178,7 +178,7 @@ public class UploadActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.upload:
-                if (app.getUser() == null) {
+                if (user == null) {
                     final AlertDialog dialog = new AlertDialog.Builder(UploadActivity.this).create();
                     dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
@@ -261,11 +261,9 @@ public class UploadActivity extends BaseActivity {
                         } else {
                             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photo.getLink());
                         }
-
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
                     }
-
                     break;
 
                 case GALLERY_SUBMISSION:
@@ -280,7 +278,6 @@ public class UploadActivity extends BaseActivity {
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
                     }
-
                     break;
             }
 
@@ -313,7 +310,7 @@ public class UploadActivity extends BaseActivity {
      * @param uploadToGallery If the image should be uploaded to the gallery
      */
     private void upload(@Nullable String title, @Nullable String description, @NonNull String url, boolean uploadToGallery) {
-        showDialogFragment(LoadingDialogFragment.createInstance(R.string.uploading), DFRAGMENT_UPLOADING);
+        showDialogFragment(LoadingDialogFragment.createInstance(R.string.uploading, false), DFRAGMENT_UPLOADING);
         ApiClient client = new ApiClient(Endpoints.UPLOAD.getUrl(), ApiClient.HttpRequest.POST);
 
         FormEncodingBuilder builder = new FormEncodingBuilder()
@@ -342,7 +339,7 @@ public class UploadActivity extends BaseActivity {
      * @param uploadToGallery If the image should be uploaded to the gallery
      */
     private void upload(@Nullable String title, @Nullable String description, @NonNull File file, boolean uploadToGallery) {
-        showDialogFragment(LoadingDialogFragment.createInstance(R.string.uploading), DFRAGMENT_UPLOADING);
+        showDialogFragment(LoadingDialogFragment.createInstance(R.string.uploading, false), DFRAGMENT_UPLOADING);
         ApiClient client = new ApiClient(Endpoints.UPLOAD.getUrl(), ApiClient.HttpRequest.POST);
         MediaType type;
 
@@ -419,7 +416,7 @@ public class UploadActivity extends BaseActivity {
             @Override
             public void onCheckedChanged(CompoundButton button, boolean checked) {
                 // Don't allow uploads to gallery when they are not logged in
-                if (checked && app.getUser() == null) {
+                if (checked && user == null) {
                     SnackBar.show(UploadActivity.this, R.string.gallery_no_user);
                     button.setChecked(false);
                 }
@@ -433,7 +430,7 @@ public class UploadActivity extends BaseActivity {
             switch (requestCode) {
                 case REQUEST_CODE_CAMERA:
                     if (FileUtil.isFileValid(mCameraFile)) {
-                        showDialogFragment(LoadingDialogFragment.createInstance(R.string.decoding_image), DFRAGMENT_DECODING);
+                        showDialogFragment(LoadingDialogFragment.createInstance(R.string.decoding_image, true), DFRAGMENT_DECODING);
                         FileUtil.scanFile(Uri.fromFile(mCameraFile), getApplicationContext());
                         new LoadImageTask(this).execute(mCameraFile);
                     } else {
@@ -443,7 +440,7 @@ public class UploadActivity extends BaseActivity {
                     break;
 
                 case REQUEST_CODE_GALLERY:
-                    DialogFragment fragment = LoadingDialogFragment.createInstance(R.string.decoding_image);
+                    DialogFragment fragment = LoadingDialogFragment.createInstance(R.string.decoding_image, true);
                     showDialogFragment(fragment, DFRAGMENT_DECODING);
                     mTempFile = FileUtil.createFile(data.getData(), getContentResolver());
 
@@ -631,9 +628,9 @@ public class UploadActivity extends BaseActivity {
 
         private DisplayMetrics mMetrics;
 
-        public LoadImageTask(UploadActivity activty) {
-            mActivity = new WeakReference<UploadActivity>(activty);
-            mMetrics = activty.getResources().getDisplayMetrics();
+        public LoadImageTask(UploadActivity activity) {
+            mActivity = new WeakReference<UploadActivity>(activity);
+            mMetrics = activity.getResources().getDisplayMetrics();
         }
 
         @Override

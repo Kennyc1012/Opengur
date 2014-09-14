@@ -190,7 +190,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mActivity.get().getFragmentManager().beginTransaction().add(LoadingDialogFragment.createInstance(R.string.one_moment), "loading").commit();
+            mActivity.get().getFragmentManager().beginTransaction().add(LoadingDialogFragment.createInstance(R.string.one_moment, false), "loading").commit();
         }
 
         @Override

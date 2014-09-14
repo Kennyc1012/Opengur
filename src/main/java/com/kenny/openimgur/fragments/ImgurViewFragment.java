@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -42,7 +41,6 @@ import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
 import org.json.JSONArray;
@@ -92,21 +90,6 @@ public class ImgurViewFragment extends BaseFragment {
         mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
         mListView = (ListView) mMultiView.findViewById(R.id.list);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-
-        mListView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true,
-                new AbsListView.OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(AbsListView view, int scrollState) {
-                        // NOP
-                    }
-
-                    @Override
-                    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                        // NOOP
-                    }
-                }
-        ));
-
         handleArguments(getArguments(), savedInstanceState);
     }
 

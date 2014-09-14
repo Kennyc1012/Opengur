@@ -25,8 +25,7 @@
         <activity
             android:name=".ViewActivity"
             android:exported="true"
-            android:theme="@style/Style_Not_Translucent"
-            android:launchMode="singleTop">
+            android:theme="@style/Style_Not_Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -43,6 +42,10 @@
                     android:scheme="http" />
                 <data
                     android:host="imgur.com"
+                    android:path="/gallery/"
+                    android:scheme="https" />
+                <data
+                    android:host="www.imgur.com"
                     android:path="/gallery/"
                     android:scheme="https" />
             </intent-filter>
@@ -62,6 +65,10 @@
                     android:scheme="http" />
                 <data
                     android:host="m.imgur.com"
+                    android:pathPrefix="/gallery/"
+                    android:scheme="https" />
+                <data
+                    android:host="www.m.imgur.com"
                     android:pathPrefix="/gallery/"
                     android:scheme="https" />
             </intent-filter>
@@ -75,7 +82,8 @@
             android:theme="@style/Settings_Style" />
         <activity
             android:name=".ProfileActivity"
-            android:theme="@style/Style_Fully_Translucent">
+            android:theme="@style/Style_Fully_Translucent"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -92,6 +100,10 @@
                     android:scheme="http" />
                 <data
                     android:host="imgur.com"
+                    android:pathPrefix="/user/"
+                    android:scheme="https" />
+                <data
+                    android:host="www.imgur.com"
                     android:pathPrefix="/user/"
                     android:scheme="https" />
             </intent-filter>
@@ -111,6 +123,10 @@
                     android:scheme="http" />
                 <data
                     android:host="m.imgur.com"
+                    android:pathPrefix="/user/"
+                    android:scheme="https" />
+                <data
+                    android:host="www.m.imgur.com"
                     android:pathPrefix="/user/"
                     android:scheme="https" />
             </intent-filter>
