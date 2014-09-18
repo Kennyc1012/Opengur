@@ -57,7 +57,7 @@ public class FileUtil {
         try {
             in = new URL(photo.getLink()).openStream();
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.e(TAG, "Unable to open stream from url", e);
             return false;
         }
 
@@ -88,7 +88,6 @@ public class FileUtil {
             didFinish = true;
         } catch (IOException e) {
             LogUtil.e(TAG, "Error saving photo", e);
-            e.printStackTrace();
             didFinish = false;
         } finally {
             closeStream(in);
@@ -119,8 +118,8 @@ public class FileUtil {
      * @param directory
      * @return
      */
-    public static long getDirectorySize(@NonNull File directory) {
-        if (!directory.isDirectory()) {
+    public static long getDirectorySize(File directory) {
+        if (!isFileValid(directory) || !directory.isDirectory()) {
             return 0;
         }
 
@@ -179,7 +178,7 @@ public class FileUtil {
         try {
             in = resolver.openInputStream(uri);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            LogUtil.e(TAG, "Unable to open input stream", e);
             return null;
         }
 

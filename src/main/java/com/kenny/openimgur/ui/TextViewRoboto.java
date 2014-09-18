@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.util.LogUtil;
 
 /**
  * Created by kcampagna on 8/17/14.
@@ -65,7 +66,7 @@ public class TextViewRoboto extends TextView {
                         break;
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                LogUtil.e("TextViewRoboto", "Error Setting Roboto Typeface", ex);
             }
 
             a.recycle();

@@ -119,7 +119,6 @@ public class UploadActivity extends BaseActivity {
         mDesc = (EditText) findViewById(R.id.desc);
         mLink = (EditText) findViewById(R.id.url);
         mGalleryCB = (CheckBox) findViewById(R.id.galleryUpload);
-        handleBundle(savedInstanceState);
     }
 
     /**
@@ -166,6 +165,12 @@ public class UploadActivity extends BaseActivity {
         }
 
         init(uploadType == UPLOAD_TYPE_LINK);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        handleBundle(savedInstanceState);
     }
 
     @Override
@@ -282,7 +287,7 @@ public class UploadActivity extends BaseActivity {
             }
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            LogUtil.e(TAG, "Error Decoding JSON", e);
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
         }
     }
@@ -298,7 +303,7 @@ public class UploadActivity extends BaseActivity {
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
 
-        event.getThrowable().printStackTrace();
+        LogUtil.e(TAG, "Error received from Event Bus", e);
     }
 
     /**
@@ -487,8 +492,6 @@ public class UploadActivity extends BaseActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
         if (FileUtil.isFileValid(mTempFile)) {
             outState.putString(KEY_FILE_PATH, mTempFile.getAbsolutePath());
             outState.putInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_GALLERY);
@@ -500,6 +503,7 @@ public class UploadActivity extends BaseActivity {
         }
 
         outState.putBoolean(KEY_IS_UPLOADING, mIsUploading);
+        super.onSaveInstanceState(outState);
     }
 
     /**
@@ -644,7 +648,7 @@ public class UploadActivity extends BaseActivity {
                 }
 
                 int orientation = ImageUtil.getImageRotation(file);
-                int width = mMetrics.widthPixels > 1024 ? 1024 : mMetrics.widthPixels;
+                int width = mMetrics.widthPixels > 720 ? 720 : mMetrics.widthPixels;
                 int height = mMetrics.heightPixels > 1024 ? 1024 : mMetrics.heightPixels;
                 Bitmap bitmap = ImageUtil.decodeSampledBitmapFromResource(file, width, height);
 
@@ -653,6 +657,9 @@ public class UploadActivity extends BaseActivity {
                     LogUtil.v("LoadImageTask", "Image does not need to be rotated, returning bitmap");
                     return bitmap;
                 }
+
+                // Clear any memory to free up some space for image rotating
+                mActivity.get().app.getImageLoader().clearMemoryCache();
 
                 Matrix matrix = new Matrix();
                 switch (orientation) {

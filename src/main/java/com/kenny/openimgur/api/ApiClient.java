@@ -27,14 +27,13 @@ import de.greenrobot.event.util.AsyncExecutor;
  * Created by kcampagna on 6/14/14.
  */
 public class ApiClient {
+    private static final String TAG = ApiClient.class.getSimpleName();
 
     public enum HttpRequest {
         GET,
         POST,
         DELETE
     }
-
-    private static final String TAG = ApiClient.class.getSimpleName();
 
     public static final int STATUS_OK = 200;
 
@@ -233,6 +232,8 @@ public class ApiClient {
 
         switch (mRequestType) {
             case POST:
+                /* OKHttp does not allow for empty POST params when making a POST request. The Imgur Api has some POST calls
+                 that can be sent with empty POST params, so we need to just send something so OKHttp doesn't crash*/
                 if (postParams == null) {
                     throw new NullPointerException("Post params can not be null when making a POST call");
                 }

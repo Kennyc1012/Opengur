@@ -91,6 +91,8 @@ public class ImageUtil {
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
+        options.inPurgeable = true;
+        options.inInputShareable = true;
         BitmapFactory.decodeFile(file.getAbsolutePath(), options);
 
         // Calculate inSampleSize

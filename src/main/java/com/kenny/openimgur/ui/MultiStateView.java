@@ -233,7 +233,7 @@ public class MultiStateView extends FrameLayout {
      */
     public void setErrorText(@IdRes int textViewId, @StringRes int errorMessage) {
         if (mErrorView == null) {
-            throw new IllegalStateException("Error view is null");
+            throw new NullPointerException("Error view is null");
         }
 
         TextView errorTextView = (TextView) mErrorView.findViewById(textViewId);
@@ -250,7 +250,7 @@ public class MultiStateView extends FrameLayout {
      */
     public void setErrorText(@IdRes int textViewId, String errorMessage) {
         if (mErrorView == null) {
-            throw new IllegalStateException("Error view is null");
+            throw new NullPointerException("Error view is null");
         }
 
         TextView errorTextView = (TextView) mErrorView.findViewById(textViewId);
@@ -267,7 +267,7 @@ public class MultiStateView extends FrameLayout {
      */
     public void setEmptyText(@IdRes int textViewId, @StringRes int errorMessage) {
         if (mEmptyView == null) {
-            throw new IllegalStateException("Empty view is null");
+            throw new NullPointerException("Empty view is null");
         }
 
         TextView emptyTextView = (TextView) mEmptyView.findViewById(textViewId);
@@ -284,7 +284,7 @@ public class MultiStateView extends FrameLayout {
      */
     public void setEmptyText(@IdRes int textViewId, String errorMessage) {
         if (mEmptyView == null) {
-            throw new IllegalStateException("Empty view is null");
+            throw new NullPointerException("Empty view is null");
         }
 
         TextView emptyTextView = (TextView) mEmptyView.findViewById(textViewId);
@@ -323,10 +323,11 @@ public class MultiStateView extends FrameLayout {
         switch (mViewState) {
             case CONTENT:
                 if (mContentView == null) {
-                    throw new IllegalArgumentException("Content View is null");
+                    throw new NullPointerException("Content View is null");
                 }
 
                 mContentView.setVisibility(View.VISIBLE);
+
                 if (mLoadingView != null) {
                     mLoadingView.setVisibility(View.GONE);
                 }
@@ -343,10 +344,11 @@ public class MultiStateView extends FrameLayout {
 
             case LOADING:
                 if (mLoadingView == null) {
-                    throw new IllegalArgumentException("Loading View is null");
+                    throw new NullPointerException("Loading View is null");
                 }
 
                 mLoadingView.setVisibility(View.VISIBLE);
+
                 if (mContentView != null) {
                     mContentView.setVisibility(View.GONE);
                 }
@@ -363,10 +365,11 @@ public class MultiStateView extends FrameLayout {
 
             case EMPTY:
                 if (mEmptyView == null) {
-                    throw new IllegalArgumentException("Empty View is null");
+                    throw new NullPointerException("Empty View is null");
                 }
 
                 mEmptyView.setVisibility(View.VISIBLE);
+
                 if (mLoadingView != null) {
                     mLoadingView.setVisibility(View.GONE);
                 }
@@ -383,10 +386,11 @@ public class MultiStateView extends FrameLayout {
 
             case ERROR:
                 if (mErrorView == null) {
-                    throw new IllegalArgumentException("Error View is null");
+                    throw new NullPointerException("Error View is null");
                 }
 
                 mErrorView.setVisibility(View.VISIBLE);
+
                 if (mLoadingView != null) {
                     mLoadingView.setVisibility(View.GONE);
                 }

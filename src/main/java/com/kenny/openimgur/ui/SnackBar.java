@@ -76,7 +76,7 @@ public class SnackBar {
     }
 
     /**
-     * Canels all SnackBars for the given activity
+     * Cancels all SnackBars for the given activity
      *
      * @param activity
      */

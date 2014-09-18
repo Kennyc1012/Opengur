@@ -36,8 +36,6 @@ public class ProfileActivity extends BaseActivity {
 
             if (data != null && data.hasExtra(KEY_USERNAME)) {
                 username = data.getStringExtra(KEY_USERNAME);
-            } else if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
-                username = data.getData().getPathSegments().get(1);
             }
 
             getFragmentManager().beginTransaction().add(R.id.content, ProfileFragment.createInstance(username, false)).commit();

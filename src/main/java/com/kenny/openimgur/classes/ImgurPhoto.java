@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.kenny.openimgur.util.LogUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -81,7 +83,7 @@ public class ImgurPhoto extends ImgurBaseObject {
                 mSize = json.getInt(KEY_SIZE);
             }
         } catch (JSONException ex) {
-            ex.printStackTrace();
+            LogUtil.e("ImgurPhoto", "Error Decoding JSON", ex);
         }
     }
 

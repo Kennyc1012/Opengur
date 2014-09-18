@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.api.Endpoints;
+import com.kenny.openimgur.util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,7 +61,7 @@ public class ImgurAlbum extends ImgurBaseObject {
             }
 
         } catch (JSONException ex) {
-            ex.printStackTrace();
+            LogUtil.e("ImgurAlbum", "Error Decoding JSON", ex);
         }
     }
 

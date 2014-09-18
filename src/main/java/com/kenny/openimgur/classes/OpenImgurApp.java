@@ -173,8 +173,7 @@ public class OpenImgurApp extends Application {
             LogUtil.v(TAG, "New refresh token received");
             return true;
         } catch (JSONException e) {
-            e.printStackTrace();
-            LogUtil.w(TAG, "Error parsing refresh token result", e);
+            LogUtil.e(TAG, "Error parsing refresh token result", e);
             return false;
         }
 

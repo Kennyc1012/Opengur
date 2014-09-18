@@ -241,7 +241,7 @@ public class ImgurViewFragment extends BaseFragment {
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
 
-        e.printStackTrace();
+        LogUtil.e(TAG, "Error received from Event Bus", e);
     }
 
     private ImgurListener mImgurListener = new ImgurListener() {
@@ -351,12 +351,13 @@ public class ImgurViewFragment extends BaseFragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
             ArrayList<ImgurPhoto> copy = new ArrayList<ImgurPhoto>(mPhotoAdapter.getPhotos());
             outState.putParcelableArrayList(KEY_ITEMS, copy);
         }
 
         outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);
+
+        super.onSaveInstanceState(outState);
     }
 }

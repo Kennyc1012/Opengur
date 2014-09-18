@@ -33,6 +33,7 @@ import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.FilterDialogFragment;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -261,7 +262,9 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
 
         if (mAdapter == null || mAdapter.isEmpty()) {
             mMultiView.setViewState(MultiStateView.ViewState.LOADING);
@@ -276,13 +279,8 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
     public void onDestroyView() {
+        EventBus.getDefault().unregister(this);
         mMultiView = null;
         mGridView = null;
         mHandler.removeCallbacksAndMessages(null);
@@ -440,8 +438,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
      * @return
      */
     private String getGalleryUrl() {
-        return String.format(Endpoints.GALLERY.getUrl(), mSection.getSection(),
-                mSort.getSort(), mCurrentPage);
+        return String.format(Endpoints.GALLERY.getUrl(), mSection.getSection(), mSort.getSort(), mCurrentPage);
     }
 
     /**
@@ -490,7 +487,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
                 }
 
             } catch (JSONException e) {
-                e.printStackTrace();
+                LogUtil.e(TAG, "Error parsing JSON", e);
                 mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
             }
         }
@@ -512,12 +509,12 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
 
-        e.printStackTrace();
+        LogUtil.e(TAG, "Error received from Event Bus", e);
     }
 
     @Override
     public void onFilterChange(GallerySection section, GallerySort sort) {
-        if (section == mSection && sort == sort) {
+        if (section == mSection && mSort == sort) {
             // Don't fetch data if they haven't changed anything
             return;
         }
@@ -554,7 +551,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
                         mListener.onLoadingComplete(PAGE);
                     }
 
-
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
 
                     // Due to MultiStateView setting the views visibility to GONE, the list will not reset to the top
@@ -582,10 +578,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
                     break;
 
                 default:
-                    if (mListener != null) {
-                        mListener.onLoadingComplete(PAGE);
-                    }
-
                     super.handleMessage(msg);
                     break;
             }

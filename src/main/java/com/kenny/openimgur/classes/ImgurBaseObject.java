@@ -3,6 +3,8 @@ package com.kenny.openimgur.classes;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.kenny.openimgur.util.LogUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -155,7 +157,7 @@ public abstract class ImgurBaseObject implements Parcelable {
             }
 
         } catch (JSONException ex) {
-            ex.printStackTrace();
+            LogUtil.e("ImgurBaseObject", "Error Decoding JSON", ex);
         }
     }
 

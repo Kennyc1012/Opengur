@@ -132,7 +132,6 @@ public class SqlHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             user = new ImgurUser(cursor, false);
-
         }
 
         cursor.close();

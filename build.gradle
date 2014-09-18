@@ -39,7 +39,7 @@ dependencies {
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile 'com.android.support:support-annotations:+'
     compile 'com.android.support:support-v13:18.0.+'
-    compile 'de.greenrobot:eventbus:2.2.1'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile project(':libraries:TabBarView')
+    compile project(':libraries:EventBus')
 }

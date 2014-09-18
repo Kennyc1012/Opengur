@@ -63,8 +63,6 @@ public class BaseActivity extends Activity {
             tintManager.setStatusBarTintEnabled(true);
             tintManager.setTintColor(getResources().getColor(R.color.status_bar_tint));
         }
-
-
     }
 
     @Override

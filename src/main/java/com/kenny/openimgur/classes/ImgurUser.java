@@ -9,6 +9,7 @@ import android.text.format.DateUtils;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.DBContracts.UserContract;
+import com.kenny.openimgur.util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -220,7 +221,7 @@ public class ImgurUser implements Parcelable {
             }
 
         } catch (JSONException ex) {
-            ex.printStackTrace();
+            LogUtil.e("ImgurUser", "Error Decoding JSON", ex);
         }
 
         return false;

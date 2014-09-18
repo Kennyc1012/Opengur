@@ -25,6 +25,7 @@ import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
 import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.FileUtil;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 
 import java.lang.ref.WeakReference;
@@ -104,7 +105,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             findPreference("version").setSummary(version);
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            LogUtil.e("Settings Activity", "Unable to get version summary", e);
         }
     }
 

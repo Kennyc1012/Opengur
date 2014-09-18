@@ -3,6 +3,8 @@ package com.kenny.openimgur.classes;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.kenny.openimgur.util.LogUtil;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,7 +85,7 @@ public class ImgurComment extends ImgurBaseObject {
             }
 
         } catch (JSONException ex) {
-            ex.printStackTrace();
+            LogUtil.e("ImgurComment", "Error Decoding JSON", ex);
         }
     }
 

@@ -42,6 +42,7 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -210,20 +211,18 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+
         if (mAdapter == null || mAdapter.isEmpty()) {
             mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
         }
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
     public void onDestroyView() {
+        EventBus.getDefault().unregister(this);
         mSearchEditText = null;
         mMultiView = null;
         mGridView = null;
@@ -429,7 +428,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     private void configurePreviousSearches() {
         List<String> searches = app.getSql().getSubReddits();
 
-        if (searches != null && searches.size() > 0 && mCurrentPage > 0) {
+        if (searches != null && searches.size() > 0) {
             mSearchEditText.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, searches));
         }
     }
@@ -529,7 +528,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
 
-        e.printStackTrace();
+        LogUtil.e(TAG, "Error received from Event Bus", e);
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {

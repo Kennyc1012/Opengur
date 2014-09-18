@@ -13,7 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 
 import com.kenny.openimgur.classes.OpenImgurApp;
@@ -156,20 +156,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (!shouldShow && uploadMenuShowing) {
             float hideDistance;
             uploadMenuShowing = false;
+            hideDistance = mUploadButtonHeight + (mUploadButtonHeight / 2);
             // Add extra distance to the hiding of the button if on KitKat due to the translucent nav bar
             if (OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.KITKAT) {
                 if (mNavBarHeight == -1) mNavBarHeight = ViewUtils.getNavigationBarHeight(getApplicationContext());
-                hideDistance = mNavBarHeight + mUploadButtonHeight + (mUploadButtonHeight / 2);
-            } else {
-                hideDistance = mUploadButtonHeight;
+                hideDistance += mNavBarHeight;
             }
 
-            mUploadMenu.animate().setInterpolator(new DecelerateInterpolator()).translationY(hideDistance).setDuration(350).start();
+            mUploadMenu.animate().setInterpolator(new AccelerateDecelerateInterpolator()).translationY(hideDistance).setDuration(350).start();
             // Close the menu if it is open
             if (uploadMenuOpen) animateUploadMenu();
         } else if (shouldShow && !uploadMenuShowing) {
             uploadMenuShowing = true;
-            mUploadMenu.animate().setInterpolator(new DecelerateInterpolator()).translationY(0).setDuration(350).start();
+            mUploadMenu.animate().setInterpolator(new AccelerateDecelerateInterpolator()).translationY(0).setDuration(350).start();
         }
     }
 
@@ -237,7 +236,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
             });
 
-            set.setInterpolator(new DecelerateInterpolator());
+            set.setInterpolator(new AccelerateDecelerateInterpolator());
             set.start();
         }
     }

@@ -374,7 +374,9 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
 
         if (mDidAddProfileToErrorView || mAdapter != null) {
             CustomLinkMovement.getInstance().addListener(ProfileFragment.this);
@@ -384,12 +386,12 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onPause() {
         super.onPause();
-        EventBus.getDefault().unregister(this);
         CustomLinkMovement.getInstance().removeListener(ProfileFragment.this);
     }
 
     @Override
     public void onDestroyView() {
+        EventBus.getDefault().unregister(this);
         mWebView = null;
         mMultiView = null;
         mGridView = null;
@@ -590,7 +592,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
             }
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            LogUtil.e(TAG, "Error decoding JSON", e);
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
         }
     }
@@ -606,7 +608,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
 
-        e.printStackTrace();
+        LogUtil.e(TAG,"Error received from Event Bus",e);
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {

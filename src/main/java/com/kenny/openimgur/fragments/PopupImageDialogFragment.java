@@ -157,7 +157,7 @@ public class PopupImageDialogFragment extends DialogFragment {
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(R.string.loading_image_error));
         }
 
-        e.printStackTrace();
+        LogUtil.e("PopupImageDialogFragment", "Error received from Event Bus", e);
     }
 
     /**

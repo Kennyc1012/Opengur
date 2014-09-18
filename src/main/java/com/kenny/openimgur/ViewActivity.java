@@ -626,7 +626,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     break;
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            LogUtil.e(TAG, "Error Decoding JSON", e);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_JSON_EXCEPTION);
         }
     }
 
@@ -646,7 +647,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_INTERNAL_ERROR);
         }
 
-        e.printStackTrace();
+        LogUtil.e(TAG, "Error received from Event Bus", e);
     }
 
     @Override
@@ -667,10 +668,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             LinkUtils.LinkMatch match = LinkUtils.findImgurLinkMatch(url);
 
             switch (match) {
-                // TODO
-                /*case GALLERY:
-                    //  startActivity(createIntent(app.getApplicationContext(), url));
-                    break;*/
+
+                case GALLERY:
+                    Intent intent = ViewActivity.createIntent(getApplicationContext(), url).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    break;
 
                 case IMAGE_URL:
                     PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
@@ -805,7 +807,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_COMMENT, new ArrayList<ImgurComment>(mCommentAdapter.getItems()));
         }
@@ -813,6 +814,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         outState.putBoolean(KEY_LOAD_COMMENTS, mLoadComments);
         outState.putString(KEY_SORT, mCommentSort.getSort());
         outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
+
+        super.onSaveInstanceState(outState);
     }
 
     private void onListItemClick(int position) {
@@ -871,8 +874,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             mCommentAdapter.setOP(imgurObject.getAccount());
                             // Add and remove the header view for pre 4.4 header support
                             mCommentList.addHeaderView(mCommentListHeader);
-                            mCommentList.removeHeaderView(mCommentListHeader);
                             mCommentList.setAdapter(mCommentAdapter);
+                            mCommentList.removeHeaderView(mCommentListHeader);
                         } else {
                             mCommentAdapter.setOP(imgurObject.getAccount());
                             mCommentArray.clear();
