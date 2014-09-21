@@ -219,9 +219,9 @@ public class ImgurViewFragment extends BaseFragment {
                     }
                     break;
             }
-        } catch (Exception e) {
+        } catch (JSONException e) {
             LogUtil.e(TAG, "Error while receiving event", e);
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_INTERNAL_ERROR);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_JSON_EXCEPTION);
         }
     }
 
@@ -286,27 +286,33 @@ public class ImgurViewFragment extends BaseFragment {
 
                     @Override
                     public void onLoadingFailed(String s, View view, FailReason failReason) {
-                        SnackBar.show(getActivity(), R.string.loading_image_error);
-                        prog.setVisibility(View.GONE);
-                        play.setVisibility(View.VISIBLE);
+                        if (image != null && getActivity() != null) {
+                            SnackBar.show(getActivity(), R.string.loading_image_error);
+                            prog.setVisibility(View.GONE);
+                            play.setVisibility(View.VISIBLE);
+                        }
                     }
 
                     @Override
                     public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                        if (!ImageUtil.loadAndDisplayGif(image, s, app.getImageLoader())) {
-                            SnackBar.show(getActivity(), R.string.loading_image_error);
-                            prog.setVisibility(View.GONE);
-                            play.setVisibility(View.VISIBLE);
-                        } else {
-                            prog.setVisibility(View.GONE);
+                        if (image != null && getActivity() != null) {
+                            if (!ImageUtil.loadAndDisplayGif(image, s, app.getImageLoader())) {
+                                SnackBar.show(getActivity(), R.string.loading_image_error);
+                                prog.setVisibility(View.GONE);
+                                play.setVisibility(View.VISIBLE);
+                            } else {
+                                prog.setVisibility(View.GONE);
+                            }
                         }
                     }
 
                     @Override
                     public void onLoadingCancelled(String s, View view) {
-                        SnackBar.show(getActivity(), R.string.loading_image_error);
-                        prog.setVisibility(View.GONE);
-                        play.setVisibility(View.VISIBLE);
+                        if (image != null && getActivity() != null) {
+                            SnackBar.show(getActivity(), R.string.loading_image_error);
+                            prog.setVisibility(View.GONE);
+                            play.setVisibility(View.VISIBLE);
+                        }
                     }
                 });
             } else {
@@ -343,9 +349,11 @@ public class ImgurViewFragment extends BaseFragment {
                     mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCodeStringResource((Integer) msg.obj));
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
-            }
 
-            super.handleMessage(msg);
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
         }
     };
 
@@ -357,7 +365,6 @@ public class ImgurViewFragment extends BaseFragment {
         }
 
         outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);
-
         super.onSaveInstanceState(outState);
     }
 }

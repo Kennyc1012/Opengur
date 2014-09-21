@@ -14,7 +14,7 @@
         android:visibility="gone"
         app:drawable="@drawable/ic_action_camera"
         app:shadowColor="@android:color/black"
-        app:color="@color/accent_color_blue_200" />
+        app:color="@color/accent_color_red_200" />
 
     <com.kenny.openimgur.ui.FloatingActionButton
         android:id="@+id/galleryUpload"
@@ -24,7 +24,7 @@
         android:visibility="gone"
         app:drawable="@drawable/ic_action_picture"
         app:shadowColor="@android:color/black"
-        app:color="@color/accent_color_blue_200" />
+        app:color="@color/accent_color_red_200" />
 
     <com.kenny.openimgur.ui.FloatingActionButton
         android:id="@+id/linkUpload"
@@ -34,7 +34,7 @@
         android:visibility="gone"
         app:drawable="@drawable/ic_action_web"
         app:shadowColor="@android:color/black"
-        app:color="@color/accent_color_blue_200" />
+        app:color="@color/accent_color_red_200" />
 
     <com.kenny.openimgur.ui.FloatingActionButton
         android:id="@+id/uploadButton"
@@ -43,6 +43,6 @@
         android:layout_gravity="end"
         app:drawable="@drawable/ic_action_add"
         app:shadowColor="@android:color/black"
-        app:color="@color/accent_color_blue_200" />
+        app:color="@color/accent_color_red_200" />
 
 </FrameLayout>

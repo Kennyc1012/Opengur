@@ -57,6 +57,8 @@ public class DBContracts {
 
         public static final String COLUMN_LAST_SEEN = "last_seen";
 
+        public static final String COLUMN_CREATED = "created";
+
         public static final int COLUMN_INDEX_ID = 0;
 
         public static final int COLUMN_INDEX_USERNAME = 1;
@@ -67,12 +69,15 @@ public class DBContracts {
 
         public static final int COLUMN_INDEX_LAST_SEEN = 4;
 
+        public static final int COLUMN_INDEX_CREATED = 5;
+
         public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
                 " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
                 COLUMN_USERNAME + " TEXT NOT NULL, " +
                 COLUMN_REP + " INTEGER, " +
                 COLUMN_BIO + " TEXT, " +
-                COLUMN_LAST_SEEN + " INTEGER);";
+                COLUMN_LAST_SEEN + " INTEGER, " +
+                COLUMN_CREATED + " INTEGER);";
 
         public static final String SEARCH_USER_SQL = "SELECT * FROM " + TABLE_NAME +
                 " WHERE " + COLUMN_USERNAME + " = '%s' LIMIT 0,1";

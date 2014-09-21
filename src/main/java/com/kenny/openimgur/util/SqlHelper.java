@@ -152,6 +152,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(ProfileContract.COLUMN_BIO, profile.getBio());
         values.put(ProfileContract.COLUMN_REP, profile.getReputation());
         values.put(ProfileContract.COLUMN_LAST_SEEN, profile.getLastSeen());
+        values.put(ProfileContract.COLUMN_CREATED, profile.getCreated());
         db.insertWithOnConflict(ProfileContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }

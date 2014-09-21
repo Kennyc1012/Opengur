@@ -161,6 +161,7 @@ public class ImgurUser implements Parcelable {
             mReputation = cursor.getLong(DBContracts.ProfileContract.COLUMN_INDEX_REP);
             mLastSeen = cursor.getLong(DBContracts.ProfileContract.COLUMN_INDEX_LAST_SEEN);
             mNotoriety = Notoriety.getNotoriety(mReputation);
+            mCreated = cursor.getLong(DBContracts.ProfileContract.COLUMN_INDEX_CREATED);
         }
     }
 

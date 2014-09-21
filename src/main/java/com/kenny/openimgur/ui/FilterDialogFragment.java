@@ -86,7 +86,7 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
             sort = GalleryFragment.GallerySort.getSortFromString(bundle.getString(KEY_SORT, GalleryFragment.GallerySort.VIRAL.getSort()));
         }
 
-        mSeekBar.setProgress(GalleryFragment.GallerySection.getPositionFromSeection(section));
+        mSeekBar.setProgress(GalleryFragment.GallerySection.getPositionFromSection(section));
         mSectionLabel.setText(section.getResourceId());
 
         switch (sort) {
@@ -105,7 +105,6 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int position, boolean b) {
-                mSectionLabel.animateText(GalleryFragment.GallerySection.getSectionFromPosition(position).getResourceId());
             }
 
             @Override
@@ -115,7 +114,18 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                int position = seekBar.getProgress();
 
+                if (position <= 25) {
+                    seekBar.setProgress(0);
+                    mSectionLabel.animateText(GalleryFragment.GallerySection.getSectionFromPosition(0).getResourceId());
+                } else if (position <= 75) {
+                    seekBar.setProgress(49);
+                    mSectionLabel.animateText(GalleryFragment.GallerySection.getSectionFromPosition(1).getResourceId());
+                } else {
+                    seekBar.setProgress(99);
+                    mSectionLabel.animateText(GalleryFragment.GallerySection.getSectionFromPosition(2).getResourceId());
+                }
             }
         });
 
@@ -143,7 +153,15 @@ public class FilterDialogFragment extends DialogFragment implements View.OnClick
                             break;
                     }
 
-                    section = GalleryFragment.GallerySection.getSectionFromPosition(mSeekBar.getProgress());
+                    int position = mSeekBar.getProgress();
+
+                    if (position == 49) {
+                        position = 1;
+                    } else if (position == 99) {
+                        position = 2;
+                    }
+
+                    section = GalleryFragment.GallerySection.getSectionFromPosition(position);
 
                     if (mListener != null) {
                         mListener.onFilterChange(section, sort);

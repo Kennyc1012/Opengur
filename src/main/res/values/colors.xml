@@ -4,7 +4,7 @@
     <color name="black_circle_button_pressed">#50000000</color>
     <color name="black_circle_button_default">#80000000</color>
     <color name="window_bg_color">#eeeeee</color>
-    <color name="accent_color_blue_200">#a6baff</color>
+    <color name="accent_color_red_200">#ff5177</color>
     <color name="accent_color_blue_700">#4d69ff</color>
     <color name="comment_bg_default">#ffffff</color>
     <color name="comment_bg_selected">#e5e5e5</color>

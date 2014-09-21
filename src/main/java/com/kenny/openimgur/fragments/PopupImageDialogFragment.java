@@ -74,7 +74,7 @@ public class PopupImageDialogFragment extends DialogFragment {
         Bundle bundle = getArguments();
 
         if (bundle == null || !bundle.containsKey(KEY_URL)) {
-            dismissAllowingStateLoss();
+            dismiss();
             return;
         }
 
@@ -95,7 +95,7 @@ public class PopupImageDialogFragment extends DialogFragment {
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dismissAllowingStateLoss();
+                dismiss();
                 startActivity(ViewPhotoActivity.createIntent(getActivity(), mImageUrl));
             }
         });
@@ -115,6 +115,7 @@ public class PopupImageDialogFragment extends DialogFragment {
 
     @Override
     public void onDestroyView() {
+        OpenImgurApp.getInstance(getActivity()).getImageLoader().cancelDisplayTask(mImage);
         mHandler.removeCallbacksAndMessages(null);
         mMultiView = null;
         mImage = null;
@@ -175,25 +176,31 @@ public class PopupImageDialogFragment extends DialogFragment {
 
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
-                dismissAllowingStateLoss();
-                Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                if (isAdded()) {
+                    dismiss();
+                    Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                if (isAnimated) {
-                    if (!ImageUtil.loadAndDisplayGif((ImageView) view, s, OpenImgurApp.getInstance(getActivity()).getImageLoader())) {
-                        Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
-                        dismissAllowingStateLoss();
+                if (isAdded()) {
+                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    if (isAnimated) {
+                        if (!ImageUtil.loadAndDisplayGif((ImageView) view, s, OpenImgurApp.getInstance(getActivity()).getImageLoader())) {
+                            Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                            dismiss();
+                        }
                     }
                 }
             }
 
             @Override
             public void onLoadingCancelled(String s, View view) {
-                dismissAllowingStateLoss();
-                Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                if (isAdded()) {
+                    dismiss();
+                    Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

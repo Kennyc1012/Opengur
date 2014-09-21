@@ -847,11 +847,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         View animateView = ImgurBaseObject.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
                         AnimatorSet set = new AnimatorSet();
                         set.playTogether(
-                                ObjectAnimator.ofFloat(animateView, "scaleY", 1.0f, 1.5f, 1.0f),
-                                ObjectAnimator.ofFloat(animateView, "scaleX", 1.0f, 1.5f, 1.0f)
+                                ObjectAnimator.ofFloat(animateView, "scaleY", 1.0f, 2.0f, 1.0f),
+                                ObjectAnimator.ofFloat(animateView, "scaleX", 1.0f, 2.0f, 1.0f)
                         );
 
-                        set.setDuration(750L).setInterpolator(new OvershootInterpolator());
+                        set.setDuration(1500L).setInterpolator(new OvershootInterpolator());
                         set.start();
                     } else {
                         SnackBar.show(ViewActivity.this, (Integer) msg.obj);

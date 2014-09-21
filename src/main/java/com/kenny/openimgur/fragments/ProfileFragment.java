@@ -517,7 +517,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
             }
 
             mIsLoading = true;
-            mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
+            mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS,null, null);
         } else {
             LogUtil.v(TAG, "Selected user present in database and has valid data, fetching gallery");
             getGalleryData();
@@ -547,68 +547,72 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
     }
 
     public void onEventAsync(@NonNull ImgurBusEvent event) {
-        try {
-            int status = event.json.getInt(ApiClient.KEY_STATUS);
+        if (isResumed()) {
+            try {
+                int status = event.json.getInt(ApiClient.KEY_STATUS);
 
-            switch (event.eventType) {
-                case PROFILE_DETAILS:
-                    if (status == ApiClient.STATUS_OK) {
-                        if (mSelectedUser == null) {
-                            mSelectedUser = new ImgurUser(event.json);
-                        } else {
-                            mSelectedUser.parseJsonForValues(event.json);
-                        }
-
-                        app.getSql().insertProfile(mSelectedUser);
-                        getGalleryData();
-                    } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
-                    }
-                    break;
-
-                case ACCOUNT_GALLERY_FAVORITES:
-                case ACCOUNT_SUBMISSIONS:
-                    if (status == ApiClient.STATUS_OK) {
-                        List<ImgurBaseObject> objects = new ArrayList<ImgurBaseObject>();
-                        JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
-
-                        for (int i = 0; i < arr.length(); i++) {
-                            JSONObject item = arr.getJSONObject(i);
-
-                            if (item.has("is_album") && item.getBoolean("is_album")) {
-                                ImgurAlbum a = new ImgurAlbum(item);
-                                objects.add(a);
+                switch (event.eventType) {
+                    case PROFILE_DETAILS:
+                        if (status == ApiClient.STATUS_OK) {
+                            if (mSelectedUser == null) {
+                                mSelectedUser = new ImgurUser(event.json);
                             } else {
-                                ImgurPhoto p = new ImgurPhoto(item);
-                                objects.add(p);
+                                mSelectedUser.parseJsonForValues(event.json);
                             }
+
+                            app.getSql().insertProfile(mSelectedUser);
+                            getGalleryData();
+                        } else {
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
                         }
+                        break;
 
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, objects);
-                    } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
-                    }
-                    break;
+                    case ACCOUNT_GALLERY_FAVORITES:
+                    case ACCOUNT_SUBMISSIONS:
+                        if (status == ApiClient.STATUS_OK) {
+                            List<ImgurBaseObject> objects = new ArrayList<ImgurBaseObject>();
+                            JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
+
+                            for (int i = 0; i < arr.length(); i++) {
+                                JSONObject item = arr.getJSONObject(i);
+
+                                if (item.has("is_album") && item.getBoolean("is_album")) {
+                                    ImgurAlbum a = new ImgurAlbum(item);
+                                    objects.add(a);
+                                } else {
+                                    ImgurPhoto p = new ImgurPhoto(item);
+                                    objects.add(p);
+                                }
+                            }
+
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, objects);
+                        } else {
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
+                        }
+                        break;
+                }
+
+            } catch (JSONException e) {
+                LogUtil.e(TAG, "Error decoding JSON", e);
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
             }
-
-        } catch (JSONException e) {
-            LogUtil.e(TAG, "Error decoding JSON", e);
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
         }
     }
 
     public void onEventMainThread(ThrowableFailureEvent event) {
-        Throwable e = event.getThrowable();
+        if (isResumed()) {
+            Throwable e = event.getThrowable();
 
-        if (e instanceof IOException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
-        } else if (e instanceof JSONException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-        } else {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
+            if (e instanceof IOException) {
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
+            } else if (e instanceof JSONException) {
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
+            } else {
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
+            }
+
+            LogUtil.e(TAG, "Error received from Event Bus", e);
         }
-
-        LogUtil.e(TAG,"Error received from Event Bus",e);
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {

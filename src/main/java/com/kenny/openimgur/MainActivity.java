@@ -42,6 +42,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private FloatingActionButton mLinkUpload;
 
+    private FloatingActionButton mUploadButton;
+
     private boolean uploadMenuOpen = false;
 
     private boolean uploadMenuShowing = false;
@@ -63,11 +65,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         TabBarView tabBar = (TabBarView) View.inflate(getApplicationContext(), R.layout.tab_ab_layout, null);
         tabBar.setViewPager(mPager);
         mUploadMenu = findViewById(R.id.uploadMenu);
-        FloatingActionButton uploadButton = (FloatingActionButton) mUploadMenu.findViewById(R.id.uploadButton);
+        mUploadButton = (FloatingActionButton) mUploadMenu.findViewById(R.id.uploadButton);
         mLinkUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.linkUpload);
         mCameraUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.cameraUpload);
         mGalleryUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.galleryUpload);
-        uploadButton.setOnClickListener(this);
+        mUploadButton.setOnClickListener(this);
         mLinkUpload.setOnClickListener(this);
         mCameraUpload.setOnClickListener(this);
         mGalleryUpload.setOnClickListener(this);
@@ -188,7 +190,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     ObjectAnimator.ofFloat(mGalleryUpload, translation, (mUploadMenuButtonHeight + mUploadButtonHeight + 50) * -1),
                     ObjectAnimator.ofFloat(mCameraUpload, "alpha", 0.0f, 1.0f),
                     ObjectAnimator.ofFloat(mGalleryUpload, "alpha", 0.0f, 1.0f),
-                    ObjectAnimator.ofFloat(mLinkUpload, "alpha", 0.0f, 1.0f)
+                    ObjectAnimator.ofFloat(mLinkUpload, "alpha", 0.0f, 1.0f),
+                    ObjectAnimator.ofFloat(mUploadButton, "rotation", 0.0f, 135.0f)
             );
 
             set.addListener(new AnimatorListenerAdapter() {
@@ -213,7 +216,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     ObjectAnimator.ofFloat(mGalleryUpload, translation, 0),
                     ObjectAnimator.ofFloat(mCameraUpload, "alpha", 1.0f, 0.0f),
                     ObjectAnimator.ofFloat(mGalleryUpload, "alpha", 1.0f, 0.0f),
-                    ObjectAnimator.ofFloat(mLinkUpload, "alpha", 1.0f, 0.0f)
+                    ObjectAnimator.ofFloat(mLinkUpload, "alpha", 1.0f, 0.0f),
+                    ObjectAnimator.ofFloat(mUploadButton, "rotation", 135.0f, 0.0f)
             );
 
             set.addListener(new AnimatorListenerAdapter() {

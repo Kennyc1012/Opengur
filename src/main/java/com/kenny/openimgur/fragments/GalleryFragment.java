@@ -89,7 +89,13 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
          * @return
          */
         public static GallerySection getSectionFromString(String section) {
-            return HOT.getSection().equals(section) ? HOT : USER;
+            if (HOT.getSection().equals(section)) {
+                return HOT;
+            } else if (TOP.getSection().equals(section)) {
+                return TOP;
+            }
+
+            return USER;
         }
 
         /**
@@ -98,11 +104,17 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
          * @param section
          * @return
          */
-        public static int getPositionFromSeection(GallerySection section) {
+        public static int getPositionFromSection(GallerySection section) {
             GallerySection[] sections = GallerySection.values();
 
             for (int i = 0; i < sections.length; i++) {
                 if (section.equals(sections[i])) {
+                    if (i == 1) {
+                        return 49;
+                    } else if (i == 2) {
+                        return 99;
+                    }
+
                     return i;
                 }
             }
@@ -372,8 +384,8 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
         if (savedInstanceState == null) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             mQuality = pref.getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
-            mSort = GallerySort.getSortFromString(pref.getString("sort", null));
             mSection = GallerySection.getSectionFromString(pref.getString("section", null));
+            mSort = GallerySort.getSortFromString(pref.getString("sort", null));
         } else {
             mSort = GallerySort.getSortFromString(savedInstanceState.getString(KEY_SORT, GallerySort.TIME.getSort()));
             mSection = GallerySection.getSectionFromString(savedInstanceState.getString(KEY_SECTION, GallerySection.HOT.getSection()));
