@@ -1,9 +1,10 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.support.annotation.StringRes;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 
 import com.kenny.openimgur.R;
@@ -24,20 +25,16 @@ public class PopupDialogViewBuilder {
 
     private View mView;
 
+    private AlertDialog mDialog;
+
     public PopupDialogViewBuilder(Context context) {
         mView = View.inflate(context, R.layout.popup_fragment, null);
         mTitle = (TextViewRoboto) mView.findViewById(R.id.title);
         mMessage = (TextViewRoboto) mView.findViewById(R.id.message);
         mNegativeBtn = (Button) mView.findViewById(R.id.negative);
         mPositiveBtn = (Button) mView.findViewById(R.id.positive);
-    }
-
-    public PopupDialogViewBuilder(Activity activity) {
-        mView = View.inflate(activity, R.layout.popup_fragment, null);
-        mTitle = (TextViewRoboto) mView.findViewById(R.id.title);
-        mMessage = (TextViewRoboto) mView.findViewById(R.id.message);
-        mNegativeBtn = (Button) mView.findViewById(R.id.negative);
-        mPositiveBtn = (Button) mView.findViewById(R.id.positive);
+        mDialog = new AlertDialog.Builder(context).create();
+        mDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
     }
 
     public PopupDialogViewBuilder setTitle(@StringRes int title) {
@@ -55,20 +52,43 @@ public class PopupDialogViewBuilder {
         return this;
     }
 
-    public PopupDialogViewBuilder setNegativeButton(@StringRes int text, View.OnClickListener onClickListener) {
+    public PopupDialogViewBuilder setNegativeButton(@StringRes int text, final View.OnClickListener onClickListener) {
         mNegativeBtn.setText(text);
-        mNegativeBtn.setOnClickListener(onClickListener);
+        mNegativeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onClickListener != null) {
+                    onClickListener.onClick(view);
+                }
+                mDialog.dismiss();
+            }
+        });
+
         return this;
     }
 
-    public PopupDialogViewBuilder setPositiveButton(@StringRes int text, View.OnClickListener onClickListener) {
+    public PopupDialogViewBuilder setPositiveButton(@StringRes int text, final View.OnClickListener onClickListener) {
         mPositiveBtn.setText(text);
-        mPositiveBtn.setOnClickListener(onClickListener);
+        mPositiveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onClickListener != null) {
+                    onClickListener.onClick(view);
+                }
+
+                mDialog.dismiss();
+            }
+        });
         return this;
     }
 
     public View build() {
         return mView;
+    }
+
+    public void show() {
+        mDialog.setView(build());
+        mDialog.show();
     }
 
 }

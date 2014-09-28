@@ -28,24 +28,4 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="Snack_Bar">
-        <item name="android:background">@color/snack_back_bg</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:paddingLeft">@dimen/snack_bar_left_right_padding</item>
-        <item name="android:paddingRight">@dimen/snack_bar_left_right_padding</item>
-        <item name="android:paddingTop">@dimen/snack_bar_top_padding</item>
-        <item name="android:paddingBottom">@dimen/snack_bar_bottom_padding</item>
-        <item name="android:layout_gravity">bottom</item>
-        <item name="android:minHeight">@dimen/snack_bar_height</item>
-        <item name="android:maxHeight">@dimen/snack_bar_max_height</item>
-    </style>
-
-    <style name="Snack_Bar_Title">
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">@dimen/snack_bar_text_size</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
 </resources>

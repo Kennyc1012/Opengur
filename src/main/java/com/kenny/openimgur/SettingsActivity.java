@@ -23,10 +23,10 @@ import android.webkit.WebView;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
-import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
+import com.kenny.snackbar.SnackBar;
 
 import java.lang.ref.WeakReference;
 
@@ -138,23 +138,16 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     @Override
     public boolean onPreferenceClick(final Preference preference) {
         if (preference.getKey().equals(CURRENT_CACHE_SIZE_KEY)) {
-            final AlertDialog dialog = new AlertDialog.Builder(SettingsActivity.this).create();
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-
-            dialog.setView(new PopupDialogViewBuilder(getApplicationContext()).setTitle(R.string.clear_cache)
-                    .setMessage(R.string.clear_cache_message).setNegativeButton(R.string.cancel, new View.OnClickListener() {
+            new PopupDialogViewBuilder(SettingsActivity.this)
+                    .setTitle(R.string.clear_cache)
+                    .setMessage(R.string.clear_cache_message)
+                    .setNegativeButton(R.string.cancel, null)
+                    .setPositiveButton(R.string.yes, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            dialog.dismiss();
-                        }
-                    }).setPositiveButton(R.string.yes, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            dialog.dismiss();
                             new DeleteCacheTask(SettingsActivity.this).execute();
                         }
-                    }).build());
-            dialog.show();
+                    }).show();
             return true;
         } else if (preference.getKey().equals(REDDIT_SEARCH_KEY)) {
             new SqlHelper(getApplicationContext()).deleteAllSubRedditSearches();

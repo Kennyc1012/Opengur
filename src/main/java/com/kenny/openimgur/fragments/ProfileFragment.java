@@ -1,7 +1,6 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -18,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -47,10 +45,10 @@ import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
+import com.kenny.snackbar.SnackBar;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
 import org.json.JSONArray;
@@ -313,15 +311,11 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                 return true;
 
             case R.id.logout:
-                final AlertDialog dialog = new AlertDialog.Builder(getActivity()).create();
-                dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                dialog.setView(new PopupDialogViewBuilder(getActivity()).setTitle(R.string.logout)
-                        .setMessage(R.string.logout_confirm).setNegativeButton(R.string.cancel, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                dialog.dismiss();
-                            }
-                        }).setPositiveButton(R.string.yes, new View.OnClickListener() {
+                new PopupDialogViewBuilder(getActivity())
+                        .setTitle(R.string.logout)
+                        .setMessage(R.string.logout_confirm)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.yes, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 app.onLogout();
@@ -334,10 +328,8 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
                                 configWebView();
                                 mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-                                dialog.dismiss();
                             }
-                        }).build());
-                dialog.show();
+                        }).show();
                 return true;
 
             case R.id.refresh:
@@ -420,7 +412,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
         lp.setMargins(0, ViewUtils.getHeightForTranslucentStyle(getActivity()), 0, 0);
         mWebView.loadUrl(Endpoints.LOGIN.getUrl());
-        CookieManager.getInstance().setAcceptCookie(false);
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -479,6 +470,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                         String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), newUser.getUsername());
                         mApiClient = new ApiClient(detailsUrls, ApiClient.HttpRequest.GET);
                         mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
+                        CookieManager.getInstance().removeAllCookie();
                         mWebView.clearHistory();
                         mWebView.clearCache(true);
                         mWebView.clearFormData();
@@ -492,7 +484,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                     mWebView.loadUrl(Endpoints.LOGIN.getUrl());
                 }
 
-                return false;
+                return true;
             }
         });
     }
@@ -517,7 +509,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
             }
 
             mIsLoading = true;
-            mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS,null, null);
+            mApiClient.doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
         } else {
             LogUtil.v(TAG, "Selected user present in database and has valid data, fetching gallery");
             getGalleryData();
@@ -600,7 +592,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
     }
 
     public void onEventMainThread(ThrowableFailureEvent event) {
-        if (isResumed()) {
+        if (getUserVisibleHint()) {
             Throwable e = event.getThrowable();
 
             if (e instanceof IOException) {
@@ -639,7 +631,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                     } else if (mAdapter == null || mAdapter.isEmpty()) {
                         if (!mDidAddProfileToErrorView) {
                             mDidAddProfileToErrorView = true;
-                            LinearLayout container = (LinearLayout) mMultiView.getErrorView().findViewById(R.id.container);
+                            LinearLayout container = (LinearLayout) mMultiView.getView(MultiStateView.ViewState.ERROR).findViewById(R.id.container);
                             container.addView(ViewUtils.getProfileView(mSelectedUser, getActivity(), mMultiView, ProfileFragment.this), 0);
                             container.addView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0), 0);
                         }
@@ -672,7 +664,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
                         if (!mDidAddProfileToErrorView && mSelectedUser != null) {
                             mDidAddProfileToErrorView = true;
-                            LinearLayout container = (LinearLayout) mMultiView.getErrorView().findViewById(R.id.container);
+                            LinearLayout container = (LinearLayout) mMultiView.getView(MultiStateView.ViewState.EMPTY).findViewById(R.id.container);
                             container.addView(ViewUtils.getProfileView(mSelectedUser, getActivity(), mMultiView, ProfileFragment.this), 0);
                             container.addView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0), 0);
                         }

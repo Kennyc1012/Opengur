@@ -69,6 +69,7 @@ public class FloatingActionButton extends View {
         Display display = mWindowManager.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
+        a.recycle();
     }
 
     public void setColor(int color) {

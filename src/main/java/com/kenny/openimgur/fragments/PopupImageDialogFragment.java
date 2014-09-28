@@ -22,9 +22,9 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.snackbar.SnackBar;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 

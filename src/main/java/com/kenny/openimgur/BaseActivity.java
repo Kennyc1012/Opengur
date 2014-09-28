@@ -13,8 +13,8 @@ import android.view.View;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
-import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.snackbar.SnackBar;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 /**

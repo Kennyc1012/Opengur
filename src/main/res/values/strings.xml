@@ -134,7 +134,9 @@
     <string name="pref_comment_title">Load Comments</string>
     <string name="pref_comments_on">Automatically Load Comments</string>
     <string name="pref_comments_off">Don\'t Automatically Load Comments</string>
-    <string name="comments_off">Comments set not to load. Refresh to view comments</string>
+    <string name="comments_off">Comments set not to load</string>
+    <string name="load_comments">Load Comments</string>
+    <string name="retry">Retry</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys" translatable="false">

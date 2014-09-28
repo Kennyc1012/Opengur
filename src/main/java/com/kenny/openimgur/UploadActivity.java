@@ -2,12 +2,10 @@ package com.kenny.openimgur;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -26,7 +24,6 @@ import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -39,10 +36,10 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
-import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.snackbar.SnackBar;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -184,20 +181,12 @@ public class UploadActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.upload:
                 if (user == null) {
-                    final AlertDialog dialog = new AlertDialog.Builder(UploadActivity.this).create();
-                    dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-
-                    dialog.setView(new PopupDialogViewBuilder(getApplicationContext()).setTitle(R.string.not_logged_in)
-                            .setMessage(R.string.not_logged_in_msg).setNegativeButton(R.string.cancel, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    dialog.dismiss();
-                                }
-                            })
+                    new PopupDialogViewBuilder(UploadActivity.this).setTitle(R.string.not_logged_in)
+                            .setMessage(R.string.not_logged_in_msg)
+                            .setNegativeButton(R.string.cancel, null)
                             .setPositiveButton(R.string.yes, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    dialog.dismiss();
                                     if (mIsValidLink) {
                                         upload(mTitle.getText().toString(), mDesc.getText().toString(), mLink.getText().toString(), false);
                                     } else {
@@ -205,9 +194,7 @@ public class UploadActivity extends BaseActivity {
                                                 mTempFile : mCameraFile, false);
                                     }
                                 }
-                            }).build());
-
-                    dialog.show();
+                            }).show();
                 } else {
                     String title = mTitle.getText().toString();
                     String desc = mDesc.getText().toString();
@@ -585,34 +572,17 @@ public class UploadActivity extends BaseActivity {
                     dismissDialogFragment(DFRAGMENT_UPLOADING);
                     final String url = (String) msg.obj;
                     String message = getString(R.string.upload_success, url);
-
-                    final AlertDialog dialog = new AlertDialog.Builder(UploadActivity.this).create();
-                    dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-
-                    dialog.setView(new PopupDialogViewBuilder(getApplicationContext()).setTitle(R.string.upload_complete)
-                            .setMessage(message).setNegativeButton(R.string.dismiss, new View.OnClickListener() {
+                    new PopupDialogViewBuilder(UploadActivity.this)
+                            .setTitle(R.string.upload_complete)
+                            .setMessage(message).setNegativeButton(R.string.dismiss, null)
+                            .setPositiveButton(R.string.copy_link, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    dialog.dismiss();
-                                    finish();
-                                }
-                            }).setPositiveButton(R.string.copy_link, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    dialog.dismiss();
                                     ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                                     clipboard.setPrimaryClip(ClipData.newPlainText("link", url));
                                     finish();
-
                                 }
-                            }).build());
-                    dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                        @Override
-                        public void onDismiss(DialogInterface dialogInterface) {
-                            finish();
-                        }
-                    });
-                    dialog.show();
+                            }).show();
                     break;
 
                 case MESSAGE_ACTION_FAILED:

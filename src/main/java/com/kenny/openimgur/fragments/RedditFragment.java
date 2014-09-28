@@ -374,7 +374,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser && mMultiView != null &&
-                mMultiView.getViewState() != MultiStateView.ViewState.ERROR && mListener != null) {
+                mMultiView.getViewState() != MultiStateView.ViewState.CONTENT && mListener != null) {
             mListener.onLoadingComplete(PAGE);
         }
     }
@@ -518,17 +518,19 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
      * @param event
      */
     public void onEventMainThread(ThrowableFailureEvent event) {
-        Throwable e = event.getThrowable();
+        if (getUserVisibleHint()) {
+            Throwable e = event.getThrowable();
 
-        if (e instanceof IOException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
-        } else if (e instanceof JSONException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-        } else {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
+            if (e instanceof IOException) {
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
+            } else if (e instanceof JSONException) {
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
+            } else {
+                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
+            }
+
+            LogUtil.e(TAG, "Error received from Event Bus", e);
         }
-
-        LogUtil.e(TAG, "Error received from Event Bus", e);
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {
@@ -575,6 +577,14 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
                         }
 
                         mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
+                        mMultiView.setErrorButtonText(R.id.errorButton, R.string.retry);
+                        mMultiView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                search();
+                            }
+                        });
+
                         mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     }
 

@@ -3,16 +3,16 @@ package com.kenny.openimgur.ui;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.util.LogUtil;
 
 /**
  * View that handles different states. Idea from https://github.com/jenzz/Android-MultiStateListView
@@ -92,140 +92,6 @@ public class MultiStateView extends FrameLayout {
     }
 
     /**
-     * Sets the view for the Empty View
-     *
-     * @param resId Layout Resource for the Empty View
-     */
-    public void setEmptyView(@LayoutRes int resId) {
-        mEmptyView = mInflater.inflate(resId, this, false);
-        if (findViewById(mEmptyView.getId()) == null) {
-            addView(mEmptyView);
-        }
-    }
-
-    /**
-     * Sets the view for the Empty View
-     *
-     * @param view
-     */
-    public void setEmptyView(@NonNull View view) {
-        mEmptyView = view;
-        if (findViewById(mEmptyView.getId()) == null) {
-            addView(mEmptyView);
-        }
-    }
-
-    /**
-     * Sets the view for the Loading View
-     *
-     * @param resId Layout Resource for the Loading View
-     */
-    public void setLoadingView(@LayoutRes int resId) {
-        mLoadingView = mInflater.inflate(resId, this, false);
-        if (findViewById(mLoadingView.getId()) == null) {
-            addView(mLoadingView);
-        }
-    }
-
-    /**
-     * Sets the view for the Loading View
-     *
-     * @param view
-     */
-    public void setLoadingView(@NonNull View view) {
-        mLoadingView = view;
-        if (findViewById(mLoadingView.getId()) == null) {
-            addView(mLoadingView);
-        }
-    }
-
-    /**
-     * Sets the view for the Content View
-     *
-     * @param resId Layout Resource for the Content View
-     */
-    public void setContentView(@LayoutRes int resId) {
-        mContentView = mInflater.inflate(resId, this, false);
-        if (findViewById(mContentView.getId()) == null) {
-            addView(mContentView);
-        }
-    }
-
-    /**
-     * Sets the view for the Content View
-     *
-     * @param view
-     */
-    public void setContentView(@NonNull View view) {
-        mContentView = view;
-        if (findViewById(mContentView.getId()) == null) {
-            addView(mContentView);
-        }
-    }
-
-    /**
-     * Sets the view for the Error View
-     *
-     * @param resId Layout Resource for the Error View
-     */
-    public void setErrorView(@LayoutRes int resId) {
-        mErrorView = mInflater.inflate(resId, this, false);
-        if (findViewById(mErrorView.getId()) == null) {
-            addView(mErrorView);
-        }
-    }
-
-    /**
-     * Sets the view for the Error View
-     *
-     * @param view
-     */
-    public void setErrorView(@NonNull View view) {
-        mErrorView = view;
-        if (findViewById(mErrorView.getId()) == null) {
-            addView(mErrorView);
-        }
-    }
-
-    /**
-     * Sets the ErrorView along with the error message. The view MUST contain a TextView with the given id
-     *
-     * @param view         ErrorView
-     * @param textViewId   IdRes of the TextView within the ErrorView
-     * @param errorMessage StringRes of the error message
-     */
-    public void setErrorView(@NonNull View view, @IdRes int textViewId, @StringRes int errorMessage) {
-        mErrorView = view;
-        TextView errorTextView = (TextView) mErrorView.findViewById(textViewId);
-        if (errorTextView != null) {
-            errorTextView.setText(errorMessage);
-        }
-
-        if (findViewById(mErrorView.getId()) == null) {
-            addView(mErrorView);
-        }
-    }
-
-    /**
-     * Sets the ErrorView along with the error message. The view MUST contain a TextView with the given id
-     *
-     * @param resId        Layout Resource for the Empty View
-     * @param textViewId   IdRes of the TextView within the ErrorView
-     * @param errorMessage StringRes of the error message
-     */
-    public void setErrorView(@LayoutRes int resId, @IdRes int textViewId, @StringRes int errorMessage) {
-        mErrorView = mInflater.inflate(resId, this, false);
-        TextView errorTextView = (TextView) mErrorView.findViewById(textViewId);
-        if (errorTextView != null) {
-            errorTextView.setText(errorMessage);
-        }
-
-        if (findViewById(mErrorView.getId()) == null) {
-            addView(mErrorView);
-        }
-    }
-
-    /**
      * Sets the text for the Error View
      *
      * @param textViewId   TextView id in the ErrorView
@@ -260,23 +126,6 @@ public class MultiStateView extends FrameLayout {
     }
 
     /**
-     * Sets the text for the Empty View
-     *
-     * @param textViewId   TextView id in the Empty View
-     * @param errorMessage The error message
-     */
-    public void setEmptyText(@IdRes int textViewId, @StringRes int errorMessage) {
-        if (mEmptyView == null) {
-            throw new NullPointerException("Empty view is null");
-        }
-
-        TextView emptyTextView = (TextView) mEmptyView.findViewById(textViewId);
-        if (emptyTextView != null) {
-            emptyTextView.setText(errorMessage);
-        }
-    }
-
-    /**
      * Sets the text for the empty view
      *
      * @param textViewId   TextView id in the Empty View
@@ -293,8 +142,69 @@ public class MultiStateView extends FrameLayout {
         }
     }
 
-    public View getErrorView() {
-        return mErrorView;
+    /**
+     * Returns the view associated with the view state
+     *
+     * @param state
+     * @return
+     */
+    public View getView(ViewState state) {
+        switch (state) {
+            case LOADING:
+                return mLoadingView;
+
+            case CONTENT:
+                return mContentView;
+
+            case EMPTY:
+                return mEmptyView;
+
+            case ERROR:
+                return mErrorView;
+
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Sets the onClick listener for the error views button
+     *
+     * @param buttonId
+     * @param onClickListener
+     */
+    public void setErrorButtonClickListener(@IdRes int buttonId, OnClickListener onClickListener) {
+        if (mErrorView == null) {
+            throw new NullPointerException("Error View is null");
+        }
+
+        View button = mErrorView.findViewById(buttonId);
+
+        if (button != null) {
+            button.setOnClickListener(onClickListener);
+        } else {
+            LogUtil.w(TAG, "Unable to find view");
+        }
+    }
+
+    /**
+     * Sets the text of the error view's button
+     *
+     * @param buttonId
+     * @param stringId
+     */
+    public void setErrorButtonText(@IdRes int buttonId, @StringRes int stringId) {
+        if (mErrorView == null) {
+            throw new NullPointerException("Error View is null");
+        }
+
+        Button view = (Button) mErrorView.findViewById(buttonId);
+
+        if (view != null) {
+            view.setText(stringId);
+        } else {
+            LogUtil.w(TAG, "Unable to find view");
+        }
     }
 
     /**

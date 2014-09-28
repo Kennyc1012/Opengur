@@ -1,16 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.kenny.openimgur.ui.TextViewRoboto xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="@dimen/activity_horizontal_margin"
     android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:layout_marginTop="8dp"
-    android:textColor="#000000"
-    android:textSize="16sp"
-    android:id="@+id/errorMessage"
-    android:drawableTop="@drawable/error"
-    app:robotoFont="regular"
-    android:gravity="center_horizontal"
-    android:layout_gravity="center" />
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <com.kenny.openimgur.ui.TextViewRoboto
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="8dp"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:id="@+id/errorMessage"
+        android:drawableTop="@drawable/error"
+        app:robotoFont="regular"
+        android:gravity="center_horizontal"
+        tools:text="An error has occurred" />
+
+    <Button
+        android:id="@+id/errorButton"
+        style="@style/Action_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center_horizontal"
+        tools:text="Retry" />
+
+</LinearLayout>

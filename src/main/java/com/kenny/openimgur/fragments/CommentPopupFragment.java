@@ -18,8 +18,8 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
-import com.kenny.openimgur.ui.SnackBar;
 import com.kenny.openimgur.ui.TextViewRoboto;
+import com.kenny.snackbar.SnackBar;
 import com.squareup.okhttp.FormEncodingBuilder;
 
 import de.greenrobot.event.EventBus;
