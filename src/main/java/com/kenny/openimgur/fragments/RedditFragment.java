@@ -2,10 +2,8 @@ package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -29,7 +27,6 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.BaseActivity;
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -116,8 +113,6 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
 
     private static final String KEY_ITEMS = "items";
 
-    private static final String KEY_QUALITY = "quality";
-
     private static final String KEY_CURRENT_PAGE = "page";
 
     private static final String KEY_SORT = "redditSort";
@@ -153,8 +148,6 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     private float mAnimationHeight;
 
     private int mPreviousItem;
-
-    private String mQuality;
 
     private RedditSort mSort;
 
@@ -400,11 +393,8 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
 
     private void handleBundle(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            mQuality = pref.getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
             mSort = RedditSort.getSortFromString(app.getPreferences().getString(KEY_SORT, RedditSort.TIME.getSort()));
         } else {
-            mQuality = savedInstanceState.getString(KEY_QUALITY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
             mQuery = savedInstanceState.getString(KEY_QUERY, null);
             mSort = RedditSort.getSortFromString(savedInstanceState.getString(KEY_SORT, RedditSort.TIME.getSort()));
@@ -418,6 +408,8 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
                 if (mListener != null) {
                     mListener.onLoadingComplete(PAGE);
                 }
+
+                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
             }
         }
     }
@@ -457,7 +449,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
 
     private void setupAdapter(List<ImgurBaseObject> objects) {
         if (mAdapter == null) {
-            mAdapter = new GalleryAdapter(getActivity(), objects, mQuality);
+            mAdapter = new GalleryAdapter(getActivity(), objects);
             mAnimationHeight = getResources().getDimension(R.dimen.quick_return_edit_text_height) +
                     getResources().getDimension(R.dimen.quick_return_additional_padding);
             View header = ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), (int) mAnimationHeight);
@@ -602,7 +594,6 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_SORT, mSort.getSort());
-        outState.putString(KEY_QUALITY, mQuality);
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
         outState.putString(KEY_QUERY, mQuery);
 

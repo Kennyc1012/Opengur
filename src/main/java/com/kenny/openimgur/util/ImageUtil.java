@@ -219,10 +219,13 @@ public class ImageUtil {
      * @return EXIF rotation, Undefined if no orientation was obtained
      */
     public static int getImageRotation(File file) {
+        if (!FileUtil.isFileValid(file)) {
+            return ExifInterface.ORIENTATION_UNDEFINED;
+        }
+
         try {
             ExifInterface exif = new ExifInterface(file.getAbsolutePath());
             return exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-
         } catch (Exception e) {
             LogUtil.e(TAG, "Unable to get EXIF data from file", e);
         }

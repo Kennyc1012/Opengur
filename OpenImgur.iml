@@ -97,6 +97,7 @@
     <orderEntry type="library" exported="" name="support-v13-18.0.0" level="project" />
     <orderEntry type="library" exported="" name="collections-generic-4.01" level="project" />
     <orderEntry type="library" exported="" name="snack_bar" level="project" />
+    <orderEntry type="library" exported="" name="cardview-v7-21.0.0-rc1" level="project" />
     <orderEntry type="library" exported="" name="library-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="universal-image-loader-1.9.3" level="project" />
     <orderEntry type="module" module-name="TabBarView" exported="" />

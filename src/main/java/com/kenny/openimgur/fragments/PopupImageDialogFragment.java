@@ -79,7 +79,6 @@ public class PopupImageDialogFragment extends DialogFragment {
         }
 
         mMultiView = (MultiStateView) view.findViewById(R.id.multiView);
-        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mImage = (ImageView) mMultiView.findViewById(R.id.image);
         mImageUrl = bundle.getString(KEY_URL, null);
         final boolean isAnimated = bundle.getBoolean(KEY_ANIMATED, false);

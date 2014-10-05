@@ -19,7 +19,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -60,8 +59,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
     private static final String KEY_CURRENT_POSITION = "position";
 
     private static final String KEY_ITEMS = "items";
-
-    private static final String KEY_QUALITY = "quality";
 
     private static final String KEY_CURRENT_PAGE = "page";
 
@@ -244,8 +241,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
 
     private int mPreviousItem = 0;
 
-    private String mQuality;
-
     public static GalleryFragment createInstance() {
         return new GalleryFragment();
     }
@@ -383,19 +378,17 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
     private void handleBundle(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            mQuality = pref.getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
             mSection = GallerySection.getSectionFromString(pref.getString("section", null));
             mSort = GallerySort.getSortFromString(pref.getString("sort", null));
         } else {
             mSort = GallerySort.getSortFromString(savedInstanceState.getString(KEY_SORT, GallerySort.TIME.getSort()));
             mSection = GallerySection.getSectionFromString(savedInstanceState.getString(KEY_SECTION, GallerySection.HOT.getSection()));
-            mQuality = savedInstanceState.getString(KEY_QUALITY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
 
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ImgurBaseObject[] items = (ImgurBaseObject[]) savedInstanceState.getParcelableArray(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                mAdapter = new GalleryAdapter(getActivity(), new ArrayList<ImgurBaseObject>(Arrays.asList(items)), mQuality);
+                mAdapter = new GalleryAdapter(getActivity(), new ArrayList<ImgurBaseObject>(Arrays.asList(items)));
                 mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                 mGridView.setAdapter(mAdapter);
                 mGridView.setSelection(currentPosition);
@@ -554,7 +547,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
                     List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
 
                     if (mAdapter == null) {
-                        mAdapter = new GalleryAdapter(getActivity(), gallery, mQuality);
+                        mAdapter = new GalleryAdapter(getActivity(), gallery);
                         mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                         mGridView.setAdapter(mAdapter);
                     } else {
@@ -612,7 +605,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_SECTION, mSection.getSection());
         outState.putString(KEY_SORT, mSort.getSort());
-        outState.putString(KEY_QUALITY, mQuality);
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {

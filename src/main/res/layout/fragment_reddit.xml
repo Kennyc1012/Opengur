@@ -13,38 +13,46 @@
         app:contentView="@layout/grid_view"
         app:loadingView="@layout/loading_view"
         app:emptyView="@layout/reddit_empty"
-        app:errorView="@layout/error_view" />
+        app:errorView="@layout/error_view"
+        app:viewState="empty" />
 
-    <RelativeLayout
+    <android.support.v7.widget.CardView
         android:id="@+id/quickReturnView"
         android:layout_width="match_parent"
         android:layout_height="@dimen/quick_return_edit_text_height"
-        android:background="@drawable/card_bg"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin">
 
-        <ImageButton
-            android:id="@+id/clear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@android:style/Widget.ActionButton"
-            android:src="@drawable/ic_action_cancel"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:alpha="0" />
-
-        <AutoCompleteTextView
-            android:id="@+id/search"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:padding="8dp"
-            android:hint="@string/enter_sub_reddit"
-            android:imeOptions="actionSearch"
-            android:inputType="textAutoComplete"
-            android:layout_toLeftOf="@id/clear"
-            android:layout_toStartOf="@id/clear" />
+            android:layout_height="match_parent">
 
-    </RelativeLayout>
+            <ImageButton
+                android:id="@+id/clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@android:style/Widget.ActionButton"
+                android:src="@drawable/ic_action_cancel"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:alpha="0" />
+
+            <AutoCompleteTextView
+                android:id="@+id/search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:padding="8dp"
+                android:hint="@string/enter_sub_reddit"
+                android:textCursorDrawable="@null"
+                android:textColor="@android:color/black"
+                android:imeOptions="actionSearch"
+                android:inputType="textAutoComplete"
+                android:layout_toLeftOf="@id/clear"
+                android:layout_toStartOf="@id/clear" />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
 
 </FrameLayout>

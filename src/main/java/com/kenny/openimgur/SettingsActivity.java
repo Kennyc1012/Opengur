@@ -17,8 +17,10 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
+import android.widget.ImageView;
 
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
@@ -61,6 +63,19 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ImageView view = (ImageView) findViewById(android.R.id.home);
+        if (view != null) {
+            try {
+                ViewGroup viewGroup = (ViewGroup) view.getParent();
+                View upView = viewGroup.getChildAt(0);
+                int padding = getResources().getDimensionPixelSize(R.dimen.up_arrow_padding);
+                upView.setPadding(padding, padding, padding, padding);
+            } catch (Exception e) {
+                LogUtil.e("SettingsActivity", "Unable to set upAsHomeIndicator padding", e);
+            }
+        }
+
         mApp = ((OpenImgurApp) getApplication());
         addPreferencesFromResource(R.xml.settings);
         bindPreference(findPreference(CACHE_SIZE_KEY));

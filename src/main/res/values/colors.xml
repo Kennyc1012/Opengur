@@ -13,5 +13,6 @@
     <color name="action_button_pressed">#80E0E0E0</color>
     <color name="action_button_disabled">#1A999999</color>
     <color name="dialog_accept">#2196f3</color>
+    <color name="primary_blue_500">#5677fc</color>
 
 </resources>

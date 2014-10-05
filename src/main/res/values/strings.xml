@@ -137,6 +137,8 @@
     <string name="comments_off">Comments set not to load</string>
     <string name="load_comments">Load Comments</string>
     <string name="retry">Retry</string>
+    <string name="empty_upload">No Photo has been selected for upload</string>
+    <string name="gallery_upload_no_title">Gallery Submissions must have a title</string>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys" translatable="false">

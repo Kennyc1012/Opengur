@@ -36,17 +36,10 @@ public class SideGalleryAdapter extends BaseAdapter {
     public SideGalleryAdapter(Context context, ImageLoader imageLoader, ImgurBaseObject[] objects) {
         mInflater = LayoutInflater.from(context);
         mImageLoader = imageLoader;
-        String quality = PreferenceManager.getDefaultSharedPreferences(context).getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
         mGalleryItems = objects;
         mOptions = ImageUtil.getDisplayOptionsForGallery().build();
-
-        if (SettingsActivity.THUMBNAIL_QUALITY_LOW.equals(quality)) {
-            mQuality = ImgurPhoto.THUMBNAIL_SMALL;
-        } else if (SettingsActivity.THUMBNAIL_QUALITY_MEDIUM.equals(quality)) {
-            mQuality = ImgurPhoto.THUMBNAIL_MEDIUM;
-        } else {
-            mQuality = ImgurPhoto.THUMBNAIL_LARGE;
-        }
+        String quality = PreferenceManager.getDefaultSharedPreferences(context).getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
+        mQuality = ImgurPhoto.getQualityValue(quality);
     }
 
     @Override

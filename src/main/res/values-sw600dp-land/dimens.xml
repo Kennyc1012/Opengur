@@ -2,7 +2,7 @@
 <resources>
 
     <dimen name="activity_horizontal_margin">96dp</dimen>
-    <dimen name="comment_panel_width">350dp</dimen>
     <dimen name="view_activity_margin">16dp</dimen>
+    <dimen name="upload_image_margin">96dp</dimen>
 
 </resources>

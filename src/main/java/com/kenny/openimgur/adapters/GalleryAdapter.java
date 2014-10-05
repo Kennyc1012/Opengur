@@ -1,6 +1,7 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,19 +40,13 @@ public class GalleryAdapter extends BaseAdapter {
 
     private DisplayImageOptions mOptions;
 
-    public GalleryAdapter(Context context, List<ImgurBaseObject> objects, String quality) {
+    public GalleryAdapter(Context context, List<ImgurBaseObject> objects) {
         mInflater = LayoutInflater.from(context);
         mImageLoader = OpenImgurApp.getInstance(context).getImageLoader();
         mObjects = SetUniqueList.decorate(objects);
         mOptions = ImageUtil.getDisplayOptionsForGallery().build();
-
-        if (SettingsActivity.THUMBNAIL_QUALITY_LOW.equals(quality)) {
-            mThumbnailQuality = ImgurPhoto.THUMBNAIL_SMALL;
-        } else if (SettingsActivity.THUMBNAIL_QUALITY_MEDIUM.equals(quality)) {
-            mThumbnailQuality = ImgurPhoto.THUMBNAIL_MEDIUM;
-        } else {
-            mThumbnailQuality = ImgurPhoto.THUMBNAIL_LARGE;
-        }
+        String quality = PreferenceManager.getDefaultSharedPreferences(context).getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
+        mThumbnailQuality = ImgurPhoto.getQualityValue(quality);
     }
 
     /**

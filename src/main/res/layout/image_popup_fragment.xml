@@ -4,6 +4,8 @@
     android:id="@+id/multiView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/window_bg_color"
     app:loadingView="@layout/loading_view"
     app:contentView="@layout/popup_image"
-    android:padding="4dp"/>
+    app:viewState="loading"
+    android:padding="4dp" />

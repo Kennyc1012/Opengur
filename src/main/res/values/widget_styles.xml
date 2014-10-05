@@ -7,6 +7,7 @@
         <item name="android:background">@drawable/action_button_bg</item>
         <item name="android:padding">16dp</item>
         <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
     <style name="Radio_Button">

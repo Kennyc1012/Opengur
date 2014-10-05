@@ -1,6 +1,5 @@
 package com.kenny.openimgur;
 
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.ClipData;
@@ -21,8 +20,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -36,6 +33,7 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
+import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -98,6 +96,8 @@ public class UploadActivity extends BaseActivity {
 
     private CheckBox mGalleryCB;
 
+    private FloatingActionButton mUploadButton;
+
     private boolean mIsValidLink = false;
 
     private boolean mIsUploading = false;
@@ -110,12 +110,56 @@ public class UploadActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
-        getActionBar().setTitle(R.string.upload);
+        getActionBar().hide();
         mPreviewImage = (ImageView) findViewById(R.id.previewImage);
         mTitle = (EditText) findViewById(R.id.title);
         mDesc = (EditText) findViewById(R.id.desc);
         mLink = (EditText) findViewById(R.id.url);
         mGalleryCB = (CheckBox) findViewById(R.id.galleryUpload);
+        mUploadButton = (FloatingActionButton) findViewById(R.id.uploadButton);
+
+        mUploadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!mIsValidLink && mTempFile == null && mCameraFile == null) {
+                    // Nothing selected yet
+                    SnackBar.show(UploadActivity.this, R.string.empty_upload);
+                } else {
+                    if (user == null) {
+                        new PopupDialogViewBuilder(UploadActivity.this).setTitle(R.string.not_logged_in)
+                                .setMessage(R.string.not_logged_in_msg)
+                                .setNegativeButton(R.string.cancel, null)
+                                .setPositiveButton(R.string.yes, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        if (mIsValidLink) {
+                                            upload(mTitle.getText().toString(), mDesc.getText().toString(), mLink.getText().toString(), false);
+                                        } else {
+                                            upload(mTitle.getText().toString(), mDesc.getText().toString(), mTempFile != null ?
+                                                    mTempFile : mCameraFile, false);
+                                        }
+                                    }
+                                }).show();
+                    } else {
+                        String title = mTitle.getText().toString();
+                        String desc = mDesc.getText().toString();
+                        String link = mLink.getText().toString();
+
+                        if (mGalleryCB.isChecked() && TextUtils.isEmpty(title)) {
+                            SnackBar.show(UploadActivity.this, R.string.gallery_upload_no_title);
+                            return;
+                        }
+
+                        if (mIsValidLink) {
+                            upload(title, desc, link, mGalleryCB.isChecked());
+                        } else {
+                            upload(title, desc, mTempFile != null ?
+                                    mTempFile : mCameraFile, mGalleryCB.isChecked());
+                        }
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -168,56 +212,6 @@ public class UploadActivity extends BaseActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         handleBundle(savedInstanceState);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.upload, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.upload:
-                if (user == null) {
-                    new PopupDialogViewBuilder(UploadActivity.this).setTitle(R.string.not_logged_in)
-                            .setMessage(R.string.not_logged_in_msg)
-                            .setNegativeButton(R.string.cancel, null)
-                            .setPositiveButton(R.string.yes, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    if (mIsValidLink) {
-                                        upload(mTitle.getText().toString(), mDesc.getText().toString(), mLink.getText().toString(), false);
-                                    } else {
-                                        upload(mTitle.getText().toString(), mDesc.getText().toString(), mTempFile != null ?
-                                                mTempFile : mCameraFile, false);
-                                    }
-                                }
-                            }).show();
-                } else {
-                    String title = mTitle.getText().toString();
-                    String desc = mDesc.getText().toString();
-                    String link = mLink.getText().toString();
-
-                    if (mGalleryCB.isChecked() && TextUtils.isEmpty(title)) {
-                        // Shake the edit text to show that they have not enetered any text
-                        ObjectAnimator.ofFloat(mTitle, "translationX", 0, 25, -25, 25, -25, 15, -15, 6, -6, 0).setDuration(750L).start();
-                        return false;
-                    }
-
-                    if (mIsValidLink) {
-                        upload(title, desc, link, mGalleryCB.isChecked());
-                    } else {
-                        upload(title, desc, mTempFile != null ?
-                                mTempFile : mCameraFile, mGalleryCB.isChecked());
-                    }
-                }
-
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -363,13 +357,6 @@ public class UploadActivity extends BaseActivity {
         client.doWork(ImgurBusEvent.EventType.UPLOAD, String.valueOf(uploadToGallery), builder.build());
         mIsUploading = true;
 
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // Hide the upload button if there is no image ready for upload
-        menu.findItem(R.id.upload).setVisible(!(!mIsValidLink && mTempFile == null && mCameraFile == null));
-        return super.onPrepareOptionsMenu(menu);
     }
 
     /**

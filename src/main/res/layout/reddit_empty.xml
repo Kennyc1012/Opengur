@@ -1,27 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.kenny.openimgur.ui.TextViewRoboto xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:id="@+id/reddit_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/reddit_large"
-        android:layout_centerInParent="true" />
-
-    <com.kenny.openimgur.ui.TextViewRoboto
-        android:id="@+id/empty"
-        android:layout_marginTop="16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/subreddit_desc"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/reddit_image"
-        app:robotoFont="light" />
-
-</RelativeLayout>
+    android:id="@+id/empty"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/subreddit_desc"
+    android:textColor="@android:color/black"
+    android:drawableTop="@drawable/reddit_large"
+    android:layout_gravity="center"
+    android:drawablePadding="16dp"
+    app:robotoFont="light" />

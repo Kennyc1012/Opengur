@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.util.LogUtil;
 
 import org.json.JSONException;
@@ -154,4 +155,20 @@ public class ImgurPhoto extends ImgurBaseObject {
             return new ImgurPhoto[size];
         }
     };
+
+    /**
+     * Returns the quality string based on the settings value for quality
+     *
+     * @param quality
+     * @return
+     */
+    public static String getQualityValue(String quality) {
+        if (SettingsActivity.THUMBNAIL_QUALITY_LOW.equals(quality)) {
+            return ImgurPhoto.THUMBNAIL_SMALL;
+        } else if (SettingsActivity.THUMBNAIL_QUALITY_MEDIUM.equals(quality)) {
+            return ImgurPhoto.THUMBNAIL_MEDIUM;
+        }
+
+        return ImgurPhoto.THUMBNAIL_LARGE;
+    }
 }

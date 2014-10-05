@@ -18,6 +18,7 @@
         android:layout_marginLeft="@dimen/dialog_content_margin"
         android:layout_marginRight="@dimen/dialog_content_margin"
         android:hint="@string/comment_hint"
+        android:textCursorDrawable="@null"
         android:maxLength="140"
         android:inputType="textAutoComplete|textCapSentences|textMultiLine" />
 

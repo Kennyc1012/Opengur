@@ -5,27 +5,15 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <style name="Style_Not_Translucent" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+    <style name="Style_Not_Translucent" parent="@android:style/Theme.Holo">
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:actionOverflowButtonStyle">@style/MyActionButtonOverflow</item>
-        <item name="android:actionBarItemBackground">@drawable/selectable_background_open_imgur_style</item>
-        <item name="android:popupMenuStyle">@style/PopupMenu.Open_imgur_style</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownListView.Open_imgur_style</item>
-        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Open_imgur_style</item>
-        <item name="android:actionDropDownStyle">@style/DropDownNav.Open_imgur_style</item>
-        <item name="android:actionBarStyle">@style/ActionBar.Solid.Open_imgur_style</item>
-        <item name="android:actionModeBackground">@drawable/cab_background_top_open_imgur_style</item>
-        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_open_imgur_style</item>
-        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Open_imgur_style</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Style</item>
         <item name="android:windowBackground">@color/window_bg_color</item>
         <item name="android:homeAsUpIndicator">@drawable/ic_action_backarrow</item>
-
-        <!-- Light.DarkActionBar specific -->
-        <item name="android:actionBarWidgetTheme">@style/Theme.Open_imgur_style.Widget</item>
-
     </style>
 
 </resources>

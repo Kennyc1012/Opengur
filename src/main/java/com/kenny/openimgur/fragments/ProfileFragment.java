@@ -29,7 +29,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -73,8 +72,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
     private static final String KEY_ITEMS = "items";
 
-    private static final String KEY_QUALITY = "quality";
-
     private static final String KEY_CURRENT_PAGE = "page";
 
     private static final String KEY_USERNAME = "username";
@@ -100,8 +97,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
     private ApiClient mApiClient;
 
     private TabActivityListener mListener;
-
-    private String mQuality;
 
     private boolean mIsLoading = false;
 
@@ -260,10 +255,8 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
     private void handleBundle(Bundle savedInstanceState, Bundle args) {
         if (savedInstanceState == null) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            mQuality = pref.getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
             handleArguments(args);
         } else {
-            mQuality = savedInstanceState.getString(KEY_QUALITY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
             mFromMain = savedInstanceState.getBoolean(KEY_FROM_MAIN, false);
 
@@ -272,7 +265,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                 mCurrentEndpoint = savedInstanceState.getString(KEY_ENDPOINT, null).equals(Endpoints.ACCOUNT_GALLERY_FAVORITES.getUrl()) ? Endpoints.ACCOUNT_GALLERY_FAVORITES : Endpoints.ACCOUNT_SUBMISSIONS;
                 ImgurBaseObject[] items = (ImgurBaseObject[]) savedInstanceState.getParcelableArray(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                mAdapter = new GalleryAdapter(getActivity(), new ArrayList<ImgurBaseObject>(Arrays.asList(items)), mQuality);
+                mAdapter = new GalleryAdapter(getActivity(), new ArrayList<ImgurBaseObject>(Arrays.asList(items)));
                 mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                 mGridView.addHeaderView(ViewUtils.getProfileView(mSelectedUser, getActivity(), mMultiView, ProfileFragment.this));
                 mGridView.setAdapter(mAdapter);
@@ -621,7 +614,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
                     if (objects.size() > 0) {
                         if (mAdapter == null) {
-                            mAdapter = new GalleryAdapter(getActivity(), objects, mQuality);
+                            mAdapter = new GalleryAdapter(getActivity(), objects);
                             mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                             mGridView.addHeaderView(ViewUtils.getProfileView(mSelectedUser, getActivity(), mMultiView, ProfileFragment.this));
                             mGridView.setAdapter(mAdapter);
@@ -739,7 +732,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(KEY_QUALITY, mQuality);
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
         outState.putString(KEY_ENDPOINT, mCurrentEndpoint.getUrl());
         outState.putParcelable(KEY_USERNAME, mSelectedUser);

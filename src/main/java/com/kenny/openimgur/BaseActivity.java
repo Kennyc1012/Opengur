@@ -10,6 +10,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
@@ -42,6 +44,20 @@ public class BaseActivity extends Activity {
         ActionBar ab = getActionBar();
 
         if (ab != null) {
+
+            // Have to do some trickery to get the "Up" view to set its padding
+            ImageView view = (ImageView) findViewById(android.R.id.home);
+            if (view != null) {
+                try {
+                    ViewGroup viewGroup = (ViewGroup) view.getParent();
+                    View upView = viewGroup.getChildAt(0);
+                    int padding = getResources().getDimensionPixelSize(R.dimen.up_arrow_padding);
+                    upView.setPadding(padding, padding, padding, padding);
+                } catch (Exception e) {
+                    LogUtil.e(TAG, "Unable to set upAsHomeIndicator padding", e);
+                }
+            }
+
             ab.setTitle(null);
             ab.setIcon(new ColorDrawable(Color.TRANSPARENT));
 

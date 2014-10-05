@@ -98,7 +98,7 @@ public class FileUtil {
     }
 
     /**
-     * Returns a human readble file size
+     * Returns a human readable file size
      *
      * @param bytes
      * @param si
