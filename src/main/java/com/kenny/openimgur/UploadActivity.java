@@ -110,7 +110,6 @@ public class UploadActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
-        getActionBar().hide();
         mPreviewImage = (ImageView) findViewById(R.id.previewImage);
         mTitle = (EditText) findViewById(R.id.title);
         mDesc = (EditText) findViewById(R.id.desc);

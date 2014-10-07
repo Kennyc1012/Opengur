@@ -49,6 +49,8 @@ public abstract class ImgurBaseObject implements Parcelable {
 
     private static final String KEY_DELETE_HASH = "deletehash";
 
+    private static final String KEY_NSFW = "nsfw";
+
     private int mUpVotes;
 
     private int mDownVotes;
@@ -80,6 +82,8 @@ public abstract class ImgurBaseObject implements Parcelable {
     private long mBandwidth;
 
     private boolean mIsFavorited;
+
+    private boolean mIsNSFW = false;
 
     protected ImgurBaseObject(JSONObject json) {
         parseJson(json);
@@ -156,6 +160,10 @@ public abstract class ImgurBaseObject implements Parcelable {
                 mDeleteHash = json.getString(KEY_DELETE_HASH);
             }
 
+            if (json.has(KEY_NSFW) && !json.get(KEY_NSFW).equals(null)) {
+                mIsNSFW = json.getBoolean(KEY_NSFW);
+            }
+
         } catch (JSONException ex) {
             LogUtil.e("ImgurBaseObject", "Error Decoding JSON", ex);
         }
@@ -229,8 +237,8 @@ public abstract class ImgurBaseObject implements Parcelable {
         mIsFavorited = favorite;
     }
 
-    public void setVote(String vote) {
-        mVote = vote;
+    public boolean isNSFW() {
+        return mIsNSFW;
     }
 
     public void writeToParcel(Parcel out, int flags) {
@@ -248,6 +256,7 @@ public abstract class ImgurBaseObject implements Parcelable {
         out.writeString(mVote);
         out.writeString(mDeleteHash);
         out.writeInt(mIsFavorited ? 1 : 0);
+        out.writeInt(mIsNSFW ? 1 : 0);
         out.writeLong(mDate);
         out.writeLong(mBandwidth);
     }
@@ -267,6 +276,7 @@ public abstract class ImgurBaseObject implements Parcelable {
         mVote = in.readString();
         mDeleteHash = in.readString();
         mIsFavorited = in.readInt() == 1;
+        mIsNSFW = in.readInt() == 1;
         mDate = in.readLong();
         mBandwidth = in.readLong();
     }

@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -499,6 +500,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     protected void onDestroy() {
         mHandler.removeCallbacksAndMessages(null);
         dismissDialogFragment(DIALOG_LOADING);
+        dismissDialogFragment("comment");
         mPreviousCommentPositionArray.clear();
         mCommentArray.clear();
 
@@ -550,8 +552,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             case R.id.commentBtn:
                 if (user != null && user.isAccessTokenValid()) {
-                    Fragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), null);
-                    getFragmentManager().beginTransaction().add(fragment, "comment").commit();
+                    DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), null);
+                    showDialogFragment(fragment, "comment");
                 } else {
                     SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setSnackBarListener(this).setMessage(getString(R.string.user_not_logged_in)).build());
                 }
@@ -1082,8 +1084,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                     case R.id.reply:
                         if (activity.user != null) {
-                            Fragment fragment = CommentPopupFragment.createInstance(activity.mPagerAdapter.getImgurItem(activity.mCurrentPosition).getId(), activity.mSelectedComment.getId());
-                            activity.getFragmentManager().beginTransaction().add(fragment, "comment").commit();
+                            DialogFragment fragment = CommentPopupFragment.createInstance(activity.mPagerAdapter.getImgurItem(activity.mCurrentPosition).getId(), activity.mSelectedComment.getId());
+                            activity.showDialogFragment(fragment, "comment");
                         } else {
                             SnackBar.show(activity, new SnackBarItem.Builder().setSnackBarListener(activity).setMessage(activity.getString(R.string.user_not_logged_in)).build());
                         }

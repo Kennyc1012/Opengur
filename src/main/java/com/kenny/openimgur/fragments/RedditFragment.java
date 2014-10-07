@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.BaseActivity;
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -145,6 +147,8 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
 
     private boolean mInputIsShowing = true;
 
+    private boolean mAllowNSFW = false;
+
     private float mAnimationHeight;
 
     private int mPreviousItem;
@@ -178,6 +182,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mAllowNSFW = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(SettingsActivity.NSFW_KEY, false);
     }
 
     @Nullable
@@ -272,7 +277,6 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
                 if (!mIsLoading && !TextUtils.isEmpty(text)) {
                     if (mAdapter != null) {
                         mAdapter.clear();
-                        mAdapter.notifyDataSetChanged();
                     }
 
                     if (mListener != null) {
@@ -299,9 +303,9 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
                 if (charSequence.length() <= 0 && mClearButton.getAlpha() == 1.0f) {
-                    mClearButton.animate().alpha(0.0f).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+                    mClearButton.animate().alpha(0.0f).setInterpolator(new DecelerateInterpolator()).setDuration(200L);
                 } else if (charSequence.length() > 0 && mClearButton.getAlpha() == 0.0f) {
-                    mClearButton.animate().alpha(1.0f).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
+                    mClearButton.animate().alpha(1.0f).setInterpolator(new DecelerateInterpolator()).setDuration(200L);
                 }
             }
 
@@ -485,15 +489,26 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
 
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject item = arr.getJSONObject(i);
+                        ImgurBaseObject imgurObject;
 
                         if (item.has("is_album") && item.getBoolean("is_album")) {
-                            objects.add(new ImgurAlbum(item));
+                            imgurObject = new ImgurAlbum(item);
                         } else {
-                            objects.add(new ImgurPhoto(item));
+                            imgurObject = new ImgurPhoto(item);
+                        }
+
+                        if (!mAllowNSFW && !imgurObject.isNSFW()) {
+                            objects.add(imgurObject);
+                        } else if (mAllowNSFW) {
+                            objects.add(imgurObject);
                         }
                     }
 
-                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, objects);
+                    if (objects.size() <= 0) {
+                        mHandler.sendEmptyMessage(ImgurHandler.MESSAGE_EMPTY_RESULT);
+                    } else {
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, objects);
+                    }
                 } else {
                     mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
                 }

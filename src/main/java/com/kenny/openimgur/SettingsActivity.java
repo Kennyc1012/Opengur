@@ -40,6 +40,8 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     public static final String CACHE_SIZE_KEY = "cacheSize";
 
+    public static final String NSFW_KEY = "allowNSFW";
+
     public static final String CURRENT_CACHE_SIZE_KEY = "currentCacheSize";
 
     public static final String THUMBNAIL_QUALITY_KEY = "thumbnailQuality";

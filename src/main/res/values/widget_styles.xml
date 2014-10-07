@@ -29,4 +29,10 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <style name="Material.EditText" parent="@android:style/Widget.EditText">
+        <item name="android:background">@drawable/material_edit_text</item>
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
 </resources>

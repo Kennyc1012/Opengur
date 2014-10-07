@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/gallery">
+
+        <CheckBoxPreference
+            android:key="autoLoadComments"
+            android:summaryOn="@string/pref_comments_on"
+            android:summaryOff="@string/pref_comments_off"
+            android:title="@string/pref_comment_title"
+            android:defaultValue="true" />
+
+        <CheckBoxPreference
+            android:key="allowNSFW"
+            android:title="@string/nsfw_title"
+            android:summaryOn="@string/nsfw_summary_on"
+            android:summaryOff="@string/nsfw_summary_off"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/pref_cache_title">
 
         <ListPreference
@@ -22,17 +41,6 @@
             android:key="subreddit"
             android:title="@string/pref_reddit_cache"
             android:summary="@string/pref_reddit_desc" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/comments">
-
-        <CheckBoxPreference
-            android:key="autoLoadComments"
-            android:summaryOn="@string/pref_comments_on"
-            android:summaryOff="@string/pref_comments_off"
-            android:title="@string/pref_comment_title"
-            android:defaultValue="true" />
 
     </PreferenceCategory>
 

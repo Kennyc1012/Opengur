@@ -19,6 +19,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -239,6 +240,8 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
 
     private boolean mIsLoading = false;
 
+    private boolean mAllowNSFW = false;
+
     private int mPreviousItem = 0;
 
     public static GalleryFragment createInstance() {
@@ -264,6 +267,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mAllowNSFW = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(SettingsActivity.NSFW_KEY, false);
     }
 
     @Override
@@ -476,13 +480,18 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
 
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject item = arr.getJSONObject(i);
+                        ImgurBaseObject imgurObject;
 
                         if (item.has("is_album") && item.getBoolean("is_album")) {
-                            ImgurAlbum a = new ImgurAlbum(item);
-                            objects.add(a);
+                            imgurObject = new ImgurAlbum(item);
                         } else {
-                            ImgurPhoto p = new ImgurPhoto(item);
-                            objects.add(p);
+                            imgurObject = new ImgurPhoto(item);
+                        }
+
+                        if (!mAllowNSFW && !imgurObject.isNSFW()) {
+                            objects.add(imgurObject);
+                        } else if (mAllowNSFW) {
+                            objects.add(imgurObject);
                         }
                     }
 
@@ -523,6 +532,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
     public void onFilterChange(GallerySection section, GallerySort sort) {
         if (section == mSection && mSort == sort) {
             // Don't fetch data if they haven't changed anything
+            LogUtil.v(TAG, "Filters have not been updated");
             return;
         }
 
@@ -535,6 +545,9 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
         mCurrentPage = 0;
         mIsLoading = true;
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+
+        if (mListener != null) mListener.onLoadingStarted(PAGE);
+
         getGallery();
     }
 

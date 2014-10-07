@@ -30,7 +30,8 @@
                 android:layout_height="wrap_content"
                 android:maxLines="2"
                 app:robotoFont="light"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textColor="@android:color/black" />
 
             <com.kenny.openimgur.ui.TextViewRoboto
                 android:id="@+id/points"
@@ -38,8 +39,8 @@
                 android:layout_height="wrap_content"
                 app:robotoFont="regular"
                 android:textSize="14sp"
-                android:maxLines="1" />
-
+                android:maxLines="1"
+                android:textColor="@android:color/black" />
 
         </LinearLayout>
 

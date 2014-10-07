@@ -3,7 +3,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginTop="?android:attr/actionBarSize">
 
     <FrameLayout
         android:id="@+id/header"
@@ -14,7 +15,7 @@
         <com.kenny.openimgur.ui.TextViewRoboto
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="88dp"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:text="@string/upload"
             app:robotoFont="light"
             android:textSize="24sp"
@@ -46,9 +47,10 @@
 
             <EditText
                 android:id="@+id/url"
+                style="@style/Material.EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:inputType="textUri"
                 android:hint="@string/link_upload_desc"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -56,9 +58,10 @@
 
             <EditText
                 android:id="@+id/title"
+                style="@style/Material.EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:inputType="textCapSentences|textMultiLine"
                 android:hint="@string/upload_title"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -66,9 +69,10 @@
 
             <EditText
                 android:id="@+id/desc"
+                style="@style/Material.EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:inputType="textCapSentences|textMultiLine"
                 android:hint="@string/upload_desc"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -81,7 +85,10 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:text="@string/add_to_gallery" />
+                android:text="@string/add_to_gallery"
+                android:textColor="@android:color/black"
+                android:button="@drawable/check_box_blue"
+                android:checked="false" />
 
         </LinearLayout>
     </ScrollView>
@@ -90,7 +97,8 @@
         android:id="@+id/uploadButton"
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:layout_marginLeft="16dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
         app:drawable="@drawable/ic_action_upload"
         app:shadowColor="@android:color/black"
         app:color="@color/accent_color_red_200"

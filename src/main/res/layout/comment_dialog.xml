@@ -13,14 +13,17 @@
 
     <EditText
         android:id="@+id/comment"
+        style="@style/Material.EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dialog_content_margin"
         android:layout_marginRight="@dimen/dialog_content_margin"
         android:hint="@string/comment_hint"
-        android:textCursorDrawable="@null"
         android:maxLength="140"
-        android:inputType="textAutoComplete|textCapSentences|textMultiLine" />
+        android:inputType="textNoSuggestions|textCapSentences|textMultiLine">
+
+        <requestFocus />
+    </EditText>
 
     <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/remainingCharacters"

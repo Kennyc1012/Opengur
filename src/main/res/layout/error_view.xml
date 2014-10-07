@@ -16,7 +16,7 @@
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="8dp"
-        android:textColor="#000000"
+        android:textColor="@android:color/black"
         android:textSize="16sp"
         android:id="@+id/errorMessage"
         android:drawableTop="@drawable/error"
