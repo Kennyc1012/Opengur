@@ -37,4 +37,12 @@
         android:src="@drawable/ic_action_message"
         style="@android:style/Widget.ActionButton" />
 
+    <ImageButton
+        android:id="@+id/sortComments"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/ic_action_sort"
+        style="@android:style/Widget.ActionButton" />
+
 </LinearLayout>

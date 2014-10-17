@@ -2,10 +2,9 @@
 <com.kenny.openimgur.ui.MultiStateView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/multiView"
+    android:background="@android:color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/window_bg_color"
     app:loadingView="@layout/loading_view"
     app:contentView="@layout/popup_image"
-    app:viewState="loading"
-    android:padding="4dp" />
+    app:viewState="loading" />

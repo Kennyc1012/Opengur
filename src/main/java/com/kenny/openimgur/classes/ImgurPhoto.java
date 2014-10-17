@@ -3,8 +3,11 @@ package com.kenny.openimgur.classes;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.kenny.openimgur.SettingsActivity;
+import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 
 import org.json.JSONException;
@@ -120,17 +123,36 @@ public class ImgurPhoto extends ImgurBaseObject {
     /**
      * Returns the link to the images thumbnail
      *
-     * @param size Size the thumbnail should be
+     * @param size         Size the thumbnail should be
+     * @param recreateLink If the link should be recreated due to a thumbnail being present in the link
+     * @param ext          The extension for the recreated link, usually will be for large gifs
      * @return
      */
-    public String getThumbnail(@NonNull String size) {
+    public String getThumbnail(@NonNull String size, boolean recreateLink, @Nullable String ext) {
         if (getLink() != null && getId() != null) {
-            String link = getLink();
-            link = link.replace(getId(), getId() + size);
-            return link;
+
+            if (recreateLink) {
+                return new StringBuilder("http://i.imgur.com/").append(getId()).append(size).append(ext).toString();
+            } else {
+                return getLink().replace(getId(), getId() + size);
+            }
         }
 
         return null;
+    }
+
+    /**
+     * Returns if the link provided by the Api already has a thumbnail worked into it. This is used for larger gifs
+     *
+     * @return
+     */
+    public boolean isLinkAThumbnail() {
+        if (TextUtils.isEmpty(getId()) || TextUtils.isEmpty(getLink())) {
+            return false;
+        }
+
+        String idFromUrl = LinkUtils.getId(getLink());
+        return !getId().equals(idFromUrl);
     }
 
     public void writeToParcel(Parcel out, int flags) {

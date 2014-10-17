@@ -14,6 +14,7 @@ import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.ui.TextViewRoboto;
+import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -77,7 +78,14 @@ public class SideGalleryAdapter extends BaseAdapter {
 
         // Get the appropriate photo to display
         if (object instanceof ImgurPhoto) {
-            photoUrl = ((ImgurPhoto) object).getThumbnail(mQuality);
+            ImgurPhoto photoObject = ((ImgurPhoto) object);
+
+            // Check if the link is a thumbed version of a large gif
+            if (photoObject.hasMP4Link() && photoObject.isLinkAThumbnail() && ImgurPhoto.IMAGE_TYPE_GIF.equals(photoObject.getType())) {
+                photoUrl = photoObject.getThumbnail(mQuality, true, FileUtil.EXTENSION_GIF);
+            } else {
+                photoUrl = ((ImgurPhoto) object).getThumbnail(mQuality, false, null);
+            }
         } else {
             photoUrl = ((ImgurAlbum) object).getCoverUrl(mQuality);
         }

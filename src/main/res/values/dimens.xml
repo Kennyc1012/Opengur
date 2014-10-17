@@ -4,7 +4,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="gallery_column_height">160dp</dimen>
     <dimen name="gallery_item_text_size">16sp</dimen>
-    <dimen name="play_button_radius">55dp</dimen>
     <dimen name="fab_button_radius">72dp</dimen>
     <dimen name="fab_button_radius_smaller">64dp</dimen>
     <dimen name="profile_username_textsize">24sp</dimen>

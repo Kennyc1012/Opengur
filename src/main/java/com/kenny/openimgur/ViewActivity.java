@@ -23,13 +23,14 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.ShareActionProvider;
+import android.widget.VideoView;
 
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -53,7 +54,6 @@ import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 import com.kenny.snackbar.SnackBarItem;
-import com.kenny.snackbar.SnackBarListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -75,7 +75,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  * Created by kcampagna on 7/12/14.
  */
 public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener,
-        PopupItemChooserDialog.ChooserListener, SnackBarListener, SideGalleryFragment.SideGalleryListener {
+        PopupItemChooserDialog.ChooserListener, SideGalleryFragment.SideGalleryListener {
     private enum CommentSort {
         BEST("best"),
         NEW("new"),
@@ -241,7 +241,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 if (!mIsResuming) {
                     mCurrentPosition = position;
                     loadComments();
-                    getActionBar().setTitle(mPagerAdapter.getImgurItem(position).getTitle());
                     invalidateOptionsMenu();
 
                     if (mSideGalleryFragment != null) {
@@ -270,6 +269,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         mDownVoteBtn = (ImageButton) findViewById(R.id.downVoteBtn);
         mDownVoteBtn.setOnClickListener(this);
         findViewById(R.id.commentBtn).setOnClickListener(this);
+        findViewById(R.id.sortComments).setOnClickListener(this);
         initSlidingView();
         handleIntent(getIntent());
     }
@@ -450,7 +450,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 // If we start on the 0 page, the onPageSelected event won't fire
                 if (mCurrentPosition == 0) {
                     loadComments();
-                    getActionBar().setTitle(mPagerAdapter.getImgurItem(mCurrentPosition).getTitle());
                 } else {
                     mViewPager.setCurrentItem(mCurrentPosition);
                 }
@@ -469,7 +468,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mCommentList.setAdapter(mCommentAdapter);
             }
 
-            getActionBar().setTitle(mPagerAdapter.getImgurItem(position).getTitle());
             if (mLoadComments) {
                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
             } else {
@@ -545,7 +543,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                     mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, vote, new FormEncodingBuilder().add("vote", vote).build());
                 } else {
-                    SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setSnackBarListener(this).setMessage(getString(R.string.user_not_logged_in)).build());
+                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
 
                 break;
@@ -555,8 +553,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), null);
                     showDialogFragment(fragment, "comment");
                 } else {
-                    SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setSnackBarListener(this).setMessage(getString(R.string.user_not_logged_in)).build());
+                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
+                break;
+
+            case R.id.sortComments:
+                showDialogFragment(PopupItemChooserDialog.createInstance(CommentSort.getItemsForArray(getApplicationContext())), "yes");
                 break;
         }
     }
@@ -681,15 +683,15 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public void onPhotoTap(ImageView parent) {
+    public void onPhotoTap(View View) {
     }
 
     @Override
-    public void onPhotoLongTapListener(ImageView image) {
+    public void onPhotoLongTapListener(View View) {
     }
 
     @Override
-    public void onPlayTap(ProgressBar prog, ImageView image, ImageButton play) {
+    public void onPlayTap(final ProgressBar prog, final ImageButton play, final ImageView image, final VideoView video) {
     }
 
     @Override
@@ -698,30 +700,35 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             LinkUtils.LinkMatch match = LinkUtils.findImgurLinkMatch(url);
 
             switch (match) {
-
                 case GALLERY:
                     Intent intent = ViewActivity.createIntent(getApplicationContext(), url).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;
 
                 case IMAGE_URL:
-                    PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
+                    PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true, false)
+                            .show(getFragmentManager(), "popup");
+                    break;
+
+                case VIDEO_URL:
+                    PopupImageDialogFragment.getInstance(url, true, true, true)
                             .show(getFragmentManager(), "popup");
                     break;
 
                 case IMAGE:
                     String[] split = url.split("\\/");
-                    PopupImageDialogFragment.getInstance(split[split.length - 1], false, false)
+                    PopupImageDialogFragment.getInstance(split[split.length - 1], false, false, false)
                             .show(getFragmentManager(), "popup");
                     break;
 
                 case NONE:
                 default:
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
                     if (browserIntent.resolveActivity(getPackageManager()) != null) {
                         startActivity(browserIntent);
                     } else {
-                        SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString(R.string.cant_launch_intent)).build());
+                        SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
                     }
                     break;
             }
@@ -755,29 +762,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public void onSnackBarStarted(Object o) {
-        if (!mIsTablet && !mSlidingPane.isPanelExpanded()) {
-            mSlidingPane.animate().translationY(-getResources().getDimension(R.dimen.snack_bar_height))
-                    .setInterpolator(new AccelerateDecelerateInterpolator())
-                    .setDuration(400L);
-        }
-    }
-
-    @Override
-    public void onSnackBarAction(Object o) {
-        // NOOP
-    }
-
-    @Override
-    public void onSnackBarFinished(Object o) {
-        if (!mIsTablet && mSlidingPane.getTranslationY() != 0) {
-            mSlidingPane.animate().translationY(0)
-                    .setInterpolator(new AccelerateDecelerateInterpolator())
-                    .setDuration(300L);
-        }
-    }
-
-    @Override
     public void onItemSelected(int position) {
         mViewPager.setCurrentItem(position);
     }
@@ -807,7 +791,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     mApiClient.setRequestType(ApiClient.HttpRequest.POST);
                     mApiClient.doWork(ImgurBusEvent.EventType.FAVORITE, imgurObj.getId(), body);
                 } else {
-                    SnackBar.show(this, new SnackBarItem.Builder().setSnackBarListener(ViewActivity.this).setMessage(getString(R.string.user_not_logged_in)).build());
+                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
                 return true;
 
@@ -833,10 +817,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
 
                 return true;
-
-            case R.id.sortComments:
-                showDialogFragment(PopupItemChooserDialog.createInstance(CommentSort.getItemsForArray(getApplicationContext())), "yes");
-                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -858,9 +838,24 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             menu.findItem(R.id.favorite).setIcon(imgurObject.isFavorited() ?
                     R.drawable.ic_action_unfavorite : R.drawable.ic_action_favorite);
 
+            updateShareProvider((ShareActionProvider) menu.findItem(R.id.share).getActionProvider(), imgurObject);
         }
 
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    /**
+     * Updates the share provider to the current selected object
+     *
+     * @param provider
+     * @param imgurBaseObject
+     */
+    private void updateShareProvider(ShareActionProvider provider, ImgurBaseObject imgurBaseObject) {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
+        shareIntent.putExtra(Intent.EXTRA_TEXT, imgurBaseObject.getTitle() + " " + imgurBaseObject.getGalleryLink());
+        provider.setShareIntent(shareIntent);
     }
 
     @Override
@@ -996,7 +991,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     final ImgurBaseObject[] objects = new ImgurBaseObject[]{(ImgurBaseObject) msg.obj};
                     mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
                     mViewPager.setAdapter(mPagerAdapter);
-                    getActionBar().setTitle(objects[0].getTitle());
                     invalidateOptionsMenu();
                     loadComments();
                     break;
@@ -1071,7 +1065,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             activity.mApiClient.setRequestType(ApiClient.HttpRequest.POST);
                             activity.mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
                         } else {
-                            SnackBar.show(activity, new SnackBarItem.Builder().setSnackBarListener(activity).setMessage(activity.getString(R.string.user_not_logged_in)).build());
+                            SnackBar.show(activity, R.string.user_not_logged_in);
                         }
 
                         mode.finish();
@@ -1087,7 +1081,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             DialogFragment fragment = CommentPopupFragment.createInstance(activity.mPagerAdapter.getImgurItem(activity.mCurrentPosition).getId(), activity.mSelectedComment.getId());
                             activity.showDialogFragment(fragment, "comment");
                         } else {
-                            SnackBar.show(activity, new SnackBarItem.Builder().setSnackBarListener(activity).setMessage(activity.getString(R.string.user_not_logged_in)).build());
+                            SnackBar.show(activity, R.string.user_not_logged_in);
                         }
 
                         mode.finish();

@@ -17,21 +17,16 @@
             android:summaryOff="@string/nsfw_summary_off"
             android:defaultValue="false" />
 
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/pref_cache_title">
-
-        <ListPreference
-            android:key="cacheSize"
-            android:title="@string/pref_cache_size"
-            android:entries="@array/pref_cache_size_items"
-            android:entryValues="@array/pref_cache_size_keys" />
-
         <ListPreference
             android:key="thumbnailQuality"
             android:title="@string/thumbnail_quality"
             android:entries="@array/pref_thumbnail_quality"
-            android:entryValues="@array/pref_thumbnail_quality_keys" />
+            android:entryValues="@array/pref_thumbnail_quality_keys"
+            android:defaultValue="low" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_cache_title">
 
         <Preference
             android:key="currentCacheSize"

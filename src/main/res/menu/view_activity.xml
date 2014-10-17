@@ -3,6 +3,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/share"
+        android:showAsAction="ifRoom"
+        android:title="Share"
+        android:actionProviderClass="android.widget.ShareActionProvider" />
+
+    <item
         android:id="@+id/favorite"
         android:title="@string/favorite"
         android:icon="@drawable/ic_action_favorite"
@@ -18,13 +24,6 @@
         android:id="@+id/refresh"
         android:title="@string/refresh"
         android:icon="@drawable/ic_action_navigation_refresh"
-        android:showAsAction="ifRoom" />
-
-
-    <item
-        android:id="@+id/sortComments"
-        android:title="@string/sort_comments"
-        android:icon="@drawable/ic_action_sort"
         android:showAsAction="ifRoom" />
 
     <item

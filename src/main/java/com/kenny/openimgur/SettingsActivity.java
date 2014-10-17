@@ -23,6 +23,7 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
 import com.kenny.openimgur.util.FileUtil;
@@ -38,21 +39,11 @@ import java.lang.ref.WeakReference;
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     public static final String REDDIT_SEARCH_KEY = "subreddit";
 
-    public static final String CACHE_SIZE_KEY = "cacheSize";
-
     public static final String NSFW_KEY = "allowNSFW";
 
     public static final String CURRENT_CACHE_SIZE_KEY = "currentCacheSize";
 
     public static final String THUMBNAIL_QUALITY_KEY = "thumbnailQuality";
-
-    public static final String CACHE_SIZE_128_MB = "128";
-
-    public static final String CACHE_SIZE_256_MB = "256";
-
-    public static final String CACHE_SIZE_512_MB = "512";
-
-    public static final String CACHE_SIZE_1_GB = "1024";
 
     public static final String THUMBNAIL_QUALITY_LOW = "low";
 
@@ -80,7 +71,6 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
         mApp = ((OpenImgurApp) getApplication());
         addPreferencesFromResource(R.xml.settings);
-        bindPreference(findPreference(CACHE_SIZE_KEY));
         bindPreference(findPreference(THUMBNAIL_QUALITY_KEY));
         findPreference(REDDIT_SEARCH_KEY).setOnPreferenceClickListener(this);
         findPreference(CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
@@ -117,7 +107,9 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     protected void onResume() {
         super.onResume();
         long cacheSize = FileUtil.getDirectorySize(mApp.getImageLoader().getDiskCache().getDirectory());
+        cacheSize += VideoCache.getInstance().getCacheSize();
         findPreference(CURRENT_CACHE_SIZE_KEY).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
+
         try {
             String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             findPreference("version").setSummary(version);
@@ -208,7 +200,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         protected Long doInBackground(Void... voids) {
             SettingsActivity activity = mActivity.get();
             activity.mApp.getImageLoader().clearDiskCache();
-            return FileUtil.getDirectorySize(activity.mApp.getCacheDir());
+            VideoCache.getInstance().deleteCache();
+            long cacheSize = FileUtil.getDirectorySize(activity.mApp.getCacheDir());
+            cacheSize += VideoCache.getInstance().getCacheSize();
+            return cacheSize;
         }
 
         @Override

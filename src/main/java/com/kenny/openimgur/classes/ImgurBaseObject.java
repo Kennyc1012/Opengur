@@ -2,6 +2,7 @@ package com.kenny.openimgur.classes;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.kenny.openimgur.util.LogUtil;
 
@@ -51,6 +52,10 @@ public abstract class ImgurBaseObject implements Parcelable {
 
     private static final String KEY_NSFW = "nsfw";
 
+    private static final String KEY_GIFV = "gifv";
+
+    private static final String KEY_MP4 = "mp4";
+
     private int mUpVotes;
 
     private int mDownVotes;
@@ -70,6 +75,10 @@ public abstract class ImgurBaseObject implements Parcelable {
     private String mAccountId;
 
     private String mLink;
+
+    private String mGifVLink;
+
+    private String mMP4Link;
 
     private String mRedditLink;
 
@@ -164,6 +173,14 @@ public abstract class ImgurBaseObject implements Parcelable {
                 mIsNSFW = json.getBoolean(KEY_NSFW);
             }
 
+            if (json.has(KEY_GIFV) && !json.get(KEY_GIFV).equals(null)) {
+                mGifVLink = json.getString(KEY_GIFV);
+            }
+
+            if (json.has(KEY_MP4) && !json.get(KEY_MP4).equals(null)) {
+                mMP4Link = json.getString(KEY_MP4);
+            }
+
         } catch (JSONException ex) {
             LogUtil.e("ImgurBaseObject", "Error Decoding JSON", ex);
         }
@@ -241,6 +258,31 @@ public abstract class ImgurBaseObject implements Parcelable {
         return mIsNSFW;
     }
 
+    public boolean hasGifVLink() {
+        return !TextUtils.isEmpty(mGifVLink);
+    }
+
+    public boolean hasMP4Link() {
+        return !TextUtils.isEmpty(mMP4Link);
+    }
+
+    public String getMP4Link() {
+        return mMP4Link;
+    }
+
+    public String getGifVLink() {
+        return mGifVLink;
+    }
+
+    /**
+     * Returns the gallery link
+     *
+     * @return
+     */
+    public String getGalleryLink() {
+        return new StringBuilder("http://imgur.com/").append("gallery/").append(getId()).toString();
+    }
+
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(mUpVotes);
         out.writeInt(mDownVotes);
@@ -255,6 +297,8 @@ public abstract class ImgurBaseObject implements Parcelable {
         out.writeString(mRedditLink);
         out.writeString(mVote);
         out.writeString(mDeleteHash);
+        out.writeString(mGifVLink);
+        out.writeString(mMP4Link);
         out.writeInt(mIsFavorited ? 1 : 0);
         out.writeInt(mIsNSFW ? 1 : 0);
         out.writeLong(mDate);
@@ -275,6 +319,8 @@ public abstract class ImgurBaseObject implements Parcelable {
         mRedditLink = in.readString();
         mVote = in.readString();
         mDeleteHash = in.readString();
+        mGifVLink = in.readString();
+        mMP4Link = in.readString();
         mIsFavorited = in.readInt() == 1;
         mIsNSFW = in.readInt() == 1;
         mDate = in.readLong();

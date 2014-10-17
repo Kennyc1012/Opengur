@@ -31,10 +31,16 @@
                 android:adjustViewBounds="true"
                 android:layout_centerHorizontal="true" />
 
+            <VideoView
+                android:id="@+id/videoView"
+                android:layout_width="match_parent"
+                android:layout_height="1000dp"
+                android:visibility="gone" />
+
             <ImageButton
                 android:id="@+id/play"
-                android:layout_width="@dimen/play_button_radius"
-                android:layout_height="@dimen/play_button_radius"
+                android:layout_width="@dimen/fab_button_radius"
+                android:layout_height="@dimen/fab_button_radius"
                 android:background="@drawable/black_circle"
                 android:src="@drawable/ic_action_play"
                 android:layout_centerInParent="true" />

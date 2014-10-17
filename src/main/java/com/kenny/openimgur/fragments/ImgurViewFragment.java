@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.VideoView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.ViewPhotoActivity;
@@ -31,6 +32,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.TextViewRoboto;
@@ -53,11 +55,12 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
+import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Created by kcampagna on 7/12/14.
  */
-public class ImgurViewFragment extends BaseFragment {
+public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private static final String KEY_IMGUR_OBJECT = "imgurobject";
 
     private static final String KEY_ITEMS = "items";
@@ -69,6 +72,8 @@ public class ImgurViewFragment extends BaseFragment {
     private ImgurBaseObject mImgurObject;
 
     private PhotoAdapter mPhotoAdapter;
+
+    private static final long FIVE_MB = 5 * 1024 * 1024;
 
     public static ImgurViewFragment createInstance(@NonNull ImgurBaseObject obj) {
         ImgurViewFragment fragment = new ImgurViewFragment();
@@ -104,7 +109,7 @@ public class ImgurViewFragment extends BaseFragment {
         if (savedInstanceState != null) {
             mImgurObject = savedInstanceState.getParcelable(KEY_IMGUR_OBJECT);
             List<ImgurPhoto> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
-            mPhotoAdapter = new PhotoAdapter(getActivity(), photos, mImgurListener);
+            mPhotoAdapter = new PhotoAdapter(getActivity(), photos, this);
             createHeader();
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -124,7 +129,7 @@ public class ImgurViewFragment extends BaseFragment {
         if (mImgurObject instanceof ImgurPhoto) {
             List<ImgurPhoto> photo = new ArrayList<ImgurPhoto>(1);
             photo.add(((ImgurPhoto) mImgurObject));
-            mPhotoAdapter = new PhotoAdapter(getActivity(), photo, mImgurListener);
+            mPhotoAdapter = new PhotoAdapter(getActivity(), photo, this);
             createHeader();
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -133,7 +138,7 @@ public class ImgurViewFragment extends BaseFragment {
             ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
             api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
         } else {
-            mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurListener);
+            mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), this);
             createHeader();
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -185,7 +190,7 @@ public class ImgurViewFragment extends BaseFragment {
         EventBus.getDefault().register(this);
 
         if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
-            CustomLinkMovement.getInstance().addListener(mImgurListener);
+            CustomLinkMovement.getInstance().addListener(this);
         }
     }
 
@@ -193,7 +198,15 @@ public class ImgurViewFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
-        CustomLinkMovement.getInstance().removeListener(mImgurListener);
+        CustomLinkMovement.getInstance().removeListener(this);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        // In case a gif is playing, this will cause them to stop when swiped the fragment is swiped away
+        if (!isVisibleToUser && mPhotoAdapter != null) mPhotoAdapter.notifyDataSetChanged();
     }
 
     public void onEventAsync(@NonNull ImgurBusEvent event) {
@@ -244,40 +257,64 @@ public class ImgurViewFragment extends BaseFragment {
         LogUtil.e(TAG, "Error received from Event Bus", e);
     }
 
-    private ImgurListener mImgurListener = new ImgurListener() {
-        @Override
-        public void onPhotoTap(ImageView image) {
-            int position = mListView.getPositionForView(image) - mListView.getHeaderViewsCount();
-            startActivity(ViewPhotoActivity.createIntent(getActivity(), mPhotoAdapter.getItem(position)));
+    @Override
+    public void onPhotoTap(View view) {
+        // Try to pause either the gif or video if it is currently playing
+        if (mPhotoAdapter.attemptToPause(view)) return;
+
+        int position = mListView.getPositionForView(view) - mListView.getHeaderViewsCount();
+        startActivity(ViewPhotoActivity.createIntent(getActivity(), mPhotoAdapter.getItem(position)));
+    }
+
+    @Override
+    public void onPhotoLongTapListener(View view) {
+        final int position = mListView.getPositionForView(view) - mListView.getHeaderViewsCount();
+
+        if (position >= 0) {
+            new AlertDialog.Builder(getActivity()).setItems(new String[]{getString(R.string.copy_link)}, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    ImgurBaseObject obj = mPhotoAdapter.getItem(position);
+                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboard.setPrimaryClip(ClipData.newPlainText("link", obj.getLink()));
+                }
+            }).show();
         }
+    }
 
-        @Override
-        public void onPhotoLongTapListener(ImageView image) {
-            final int position = mListView.getPositionForView(image) - mListView.getHeaderViewsCount();
+    @Override
+    public void onPlayTap(final ProgressBar prog, final ImageButton play, final ImageView image, final VideoView video) {
+        final ImgurPhoto photo = mPhotoAdapter.getItem(mListView.getPositionForView(image) - mListView.getHeaderViewsCount());
 
-            if (position >= 0) {
-                new AlertDialog.Builder(getActivity()).setItems(new String[]{getString(R.string.copy_link)}, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ImgurBaseObject obj = mPhotoAdapter.getItem(position);
-                        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                        clipboard.setPrimaryClip(ClipData.newPlainText("link", obj.getLink()));
-                    }
-                }).show();
-            }
-        }
-
-        @Override
-        public void onPlayTap(final ProgressBar prog, final ImageView image, final ImageButton play) {
-            ImageLoader loader = app.getImageLoader();
-            int position = mListView.getPositionForView(image) - mListView.getHeaderViewsCount();
-            prog.setVisibility(View.VISIBLE);
+        if (image.getVisibility() == View.VISIBLE && image.getDrawable() instanceof GifDrawable) {
             play.setVisibility(View.GONE);
-            final ImgurPhoto photo = mPhotoAdapter.getItem(position);
+            ((GifDrawable) image.getDrawable()).start();
+            return;
+        }
+
+        if (video.getVisibility() == View.VISIBLE && video.getDuration() > 0) {
+            play.setVisibility(View.GONE);
+            video.start();
+            return;
+        }
+
+        play.setVisibility(View.GONE);
+        prog.setVisibility(View.VISIBLE);
+
+        // Load regular gifs if they are less than 5mb
+        if (photo.getSize() <= FIVE_MB && !photo.isLinkAThumbnail()) {
+            ImageLoader loader = app.getImageLoader();
             File file = DiskCacheUtils.findInCache(photo.getLink(), loader.getDiskCache());
 
-            // Need to do a check since we might be loading a thumbnail and not the actual gif here
-            if (!FileUtil.isFileValid(file)) {
+            if (FileUtil.isFileValid(file)) {
+                if (!ImageUtil.loadAndDisplayGif(image, photo.getLink(), app.getImageLoader())) {
+                    SnackBar.show(getActivity(), R.string.loading_image_error);
+                    prog.setVisibility(View.GONE);
+                    play.setVisibility(View.VISIBLE);
+                } else {
+                    prog.setVisibility(View.GONE);
+                }
+            } else {
                 loader.loadImage(photo.getLink(), new ImageLoadingListener() {
                     @Override
                     public void onLoadingStarted(String s, View view) {
@@ -315,26 +352,57 @@ public class ImgurViewFragment extends BaseFragment {
                         }
                     }
                 });
+            }
+        } else {
+            File file = VideoCache.getInstance().getVideoFile(photo.getMP4Link());
+
+            if (FileUtil.isFileValid(file)) {
+                video.setVisibility(View.VISIBLE);
+                video.setVideoPath(file.getAbsolutePath());
+                image.setVisibility(View.GONE);
+                prog.setVisibility(View.GONE);
+                video.start();
             } else {
-                if (!ImageUtil.loadAndDisplayGif(image, photo.getLink(), app.getImageLoader())) {
-                    SnackBar.show(getActivity(), R.string.loading_image_error);
-                    prog.setVisibility(View.GONE);
-                    play.setVisibility(View.VISIBLE);
-                } else {
-                    prog.setVisibility(View.GONE);
-                }
+                VideoCache.getInstance().putVideo(photo.getMP4Link(), new VideoCache.VideoCacheListener() {
+                    @Override
+                    public void onVideoDownloadStart(String key, String url) {
+                        if (image != null && getActivity() != null) {
+                            prog.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onVideoDownloadFailed(Exception ex, String url) {
+                        if (image != null && getActivity() != null) {
+                            SnackBar.show(getActivity(), R.string.loading_image_error);
+                            prog.setVisibility(View.GONE);
+                            play.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onVideoDownloadComplete(File file) {
+                        if (video != null && getActivity() != null) {
+                            video.setVideoPath(file.getAbsolutePath());
+                            image.setVisibility(View.GONE);
+                            prog.setVisibility(View.GONE);
+                            video.setVisibility(View.VISIBLE);
+                            video.start();
+                        }
+                    }
+                });
             }
         }
+    }
 
-        @Override
-        public void onLinkTap(View textView, String url) {
-        }
+    @Override
+    public void onLinkTap(View textView, String url) {
+    }
 
-        @Override
-        public void onViewRepliesTap(View view) {
-            // NOOP
-        }
-    };
+    @Override
+    public void onViewRepliesTap(View view) {
+        // NOOP
+    }
 
     private ImgurHandler mHandler = new ImgurHandler() {
 

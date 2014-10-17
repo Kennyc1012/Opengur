@@ -27,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.VideoView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.ViewActivity;
@@ -677,17 +678,17 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
     };
 
     @Override
-    public void onPhotoTap(ImageView parent) {
+    public void onPhotoTap(View view) {
         // NOOP
     }
 
     @Override
-    public void onPhotoLongTapListener(ImageView image) {
+    public void onPhotoLongTapListener(View view) {
         // NOOP
     }
 
     @Override
-    public void onPlayTap(ProgressBar prog, ImageView image, ImageButton play) {
+    public void onPlayTap(final ProgressBar prog, final ImageButton play, final ImageView image, final VideoView video) {
         // NOOP
     }
 
@@ -698,23 +699,30 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
             switch (match) {
                 case GALLERY:
-                    startActivity(ViewActivity.createIntent(getActivity(), url));
+                    Intent intent = ViewActivity.createIntent(getActivity(), url).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                     break;
 
                 case IMAGE_URL:
-                    PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true)
+                    PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true, false)
+                            .show(getFragmentManager(), "popup");
+                    break;
+
+                case VIDEO_URL:
+                    PopupImageDialogFragment.getInstance(url, true, true, true)
                             .show(getFragmentManager(), "popup");
                     break;
 
                 case IMAGE:
                     String[] split = url.split("\\/");
-                    PopupImageDialogFragment.getInstance(split[split.length - 1], false, false)
+                    PopupImageDialogFragment.getInstance(split[split.length - 1], false, false, false)
                             .show(getFragmentManager(), "popup");
                     break;
 
                 case NONE:
                 default:
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
                     if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                         startActivity(browserIntent);
                     } else {

@@ -16,18 +16,26 @@ import android.widget.LinearLayout;
 
 public class TabBarView extends LinearLayout {
     public interface IconTabProvider {
-        @DrawableRes public int getPageIconResId(int position);
+        @DrawableRes
+        public int getPageIconResId(int position);
     }
 
-    private static final int STRIP_HEIGHT = 6;
+    private static final int STRIP_HEIGHT = 4;
 
     private final Paint mPaint;
+
     private int mStripHeight;
+
     private float mOffset = 0f;
+
     private static int mSelectedTab = 0;
+
     private ViewPager mViewPager;
+
     private int mTabCount;
+
     private final PageListener mPageListener = new PageListener();
+
     private OnPageChangeListener mOnPageChangeListener;
 
     public TabBarView(Context context) {
@@ -35,19 +43,17 @@ public class TabBarView extends LinearLayout {
     }
 
     public TabBarView(Context context, AttributeSet attrs) {
-        this(context, attrs, android.R.attr.actionBarTabBarStyle);
+        this(context, attrs, 0);
     }
 
     public TabBarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
         setWillNotDraw(false);
-
         mPaint = new Paint();
         mPaint.setColor(Color.WHITE);
         mPaint.setAntiAlias(true);
-
-        mStripHeight = (int)(STRIP_HEIGHT * getResources().getDisplayMetrics().density + .5f);
+        mPaint.setAlpha((int)(255 * .55));
+        mStripHeight = (int) (STRIP_HEIGHT * getResources().getDisplayMetrics().density + .5f);
     }
 
     public void setStripColor(int color) {
@@ -158,8 +164,8 @@ public class TabBarView extends LinearLayout {
             CharSequence title = pagerAdapter.getPageTitle(i);
 
             int iconResId = 0;
-            if(pagerAdapter instanceof IconTabProvider) {
-                iconResId = ((IconTabProvider)pagerAdapter).getPageIconResId(i);
+            if (pagerAdapter instanceof IconTabProvider) {
+                iconResId = ((IconTabProvider) pagerAdapter).getPageIconResId(i);
             }
 
             if (getResources().getConfiguration().orientation == 1) {
@@ -172,7 +178,7 @@ public class TabBarView extends LinearLayout {
         getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 } else {
                     getViewTreeObserver().removeGlobalOnLayoutListener(this);
@@ -206,7 +212,7 @@ public class TabBarView extends LinearLayout {
                 mViewPager.setCurrentItem(i);
             }
         });
-        if(title != null) CheatSheet.setup(tab, title);
+        if (title != null) CheatSheet.setup(tab, title);
 
         this.addView(tab);
     }

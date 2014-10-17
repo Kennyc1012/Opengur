@@ -12,10 +12,7 @@ import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
-import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LargestLimitedMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -131,19 +128,11 @@ public class ImageUtil {
     /**
      * Initializes the ImageLoader
      */
-    public static void initImageLoader(Context context, long cache) {
-        DiskCache diskCache;
-        try {
-            diskCache = new LruDiscCache(context.getCacheDir(), new HashCodeFileNameGenerator(), cache);
-        } catch (IOException e) {
-            LogUtil.e(TAG, "Unable to create LruDiscCache, falling back to Unlimited", e);
-            diskCache = new UnlimitedDiscCache(context.getCacheDir());
-        }
-
+    public static void initImageLoader(Context context) {
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
                 .threadPoolSize(7)
                 .denyCacheImageMultipleSizesInMemory()
-                .diskCache(diskCache)
+                .diskCache(new UnlimitedDiscCache(context.getCacheDir()))
                 .defaultDisplayImageOptions(getDefaultDisplayOptions().build())
                 .memoryCache(new LargestLimitedMemoryCache(MEMORY_CACHE_LIMIT))
                 .build();

@@ -11,7 +11,7 @@ import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 
-import com.kenny.openimgur.SettingsActivity;
+import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.util.ImageUtil;
@@ -30,15 +30,7 @@ import org.json.JSONObject;
 public class OpenImgurApp extends Application {
     private static final String TAG = "OpenImgur";
 
-    private static final boolean USE_STRICT_MODE = true;
-
-    private static final long FILE_CACHE_LIMIT_1_GB = 1073741824L;
-
-    private static final long FILE_CACHE_LIMIT_512_MB = 536870912L;
-
-    private static final long FILE_CACHE_LIMIT_256_MB = 268435456L;
-
-    private static final long FILE_CACHE_LIMIT_128_MB = 134217728L;
+    private static final boolean USE_STRICT_MODE = BuildConfig.DEBUG;
 
     private static OpenImgurApp instance;
 
@@ -74,20 +66,7 @@ public class OpenImgurApp extends Application {
 
     public ImageLoader getImageLoader() {
         if (mImageLoader == null || !mImageLoader.isInited()) {
-            String cacheLimit = mPref.getString(SettingsActivity.CACHE_SIZE_KEY, SettingsActivity.CACHE_SIZE_256_MB);
-            long cache;
-
-            if (SettingsActivity.CACHE_SIZE_128_MB.equals(cacheLimit)) {
-                cache = FILE_CACHE_LIMIT_128_MB;
-            } else if (SettingsActivity.CACHE_SIZE_256_MB.equals(cacheLimit)) {
-                cache = FILE_CACHE_LIMIT_256_MB;
-            } else if (SettingsActivity.CACHE_SIZE_512_MB.equals(cacheLimit)) {
-                cache = FILE_CACHE_LIMIT_512_MB;
-            } else {
-                cache = FILE_CACHE_LIMIT_1_GB;
-            }
-
-            ImageUtil.initImageLoader(getApplicationContext(), cache);
+            ImageUtil.initImageLoader(getApplicationContext());
             mImageLoader = ImageLoader.getInstance();
         }
 
@@ -95,17 +74,16 @@ public class OpenImgurApp extends Application {
     }
 
     /**
-     * Returns if the device has an active internet connection
+     * Returns the type of active internet connection. Null if not connected
      *
      * @return
      */
-    public boolean isConnectedToInternet() {
+    public Integer getConnectionType() {
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo info = cm.getActiveNetworkInfo();
-
-        return info != null && info.isConnectedOrConnecting();
+        return info != null && info.isConnected() ? info.getType() : null;
     }
 
     public static OpenImgurApp getInstance() {

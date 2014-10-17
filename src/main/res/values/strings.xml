@@ -20,7 +20,7 @@
     </string-array>
 
     <string-array name="pager_titles">
-        <item>User Submitted</item>
+        <item>Gallery</item>
         <item>Subreddit</item>
         <item>Profile</item>
     </string-array>
@@ -125,7 +125,6 @@
     <string name="upload_complete">Upload Complete</string>
     <string name="view_licenses">View Open Source Licenses</string>
     <string name="reddit_search_cleared">Subreddit History Cleared</string>
-    <string name="sort_comments">Sort Comments</string>
     <string name="sort_new">New</string>
     <string name="sort_best">Best</string>
     <string name="sort_top">Top</string>

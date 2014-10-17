@@ -2,12 +2,14 @@ package com.kenny.openimgur.util;
 
 import android.util.Log;
 
+import com.kenny.openimgur.BuildConfig;
+
 /**
  * Created by kcampagna on 9/5/14.
  */
 public class LogUtil {
 
-    private static final boolean SHOULD_WRITE_LOGS = true;
+    private static final boolean SHOULD_WRITE_LOGS = BuildConfig.DEBUG;
 
     public static void v(String tag, String msg, Throwable tr) {
         if (SHOULD_WRITE_LOGS) Log.v(tag, msg, tr);
