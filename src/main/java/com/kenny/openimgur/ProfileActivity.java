@@ -38,8 +38,8 @@ public class ProfileActivity extends BaseActivity {
                 username = data.getStringExtra(KEY_USERNAME);
             }
 
-            getFragmentManager().beginTransaction().add(R.id.content, ProfileFragment.createInstance(username, false)).commit();
-            getActionBar().setTitle(R.string.profile);
+            getFragmentManager().beginTransaction().add(R.id.content, ProfileFragment.createInstance(username)).commit();
+            getSupportActionBar().setTitle(R.string.profile);
         }
     }
 }

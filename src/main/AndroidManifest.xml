@@ -27,7 +27,6 @@
         </activity>
         <activity
             android:name=".ViewActivity"
-            android:exported="true"
             android:theme="@style/Style_Not_Translucent" />
         <activity
             android:name=".ViewPhotoActivity"
@@ -38,11 +37,11 @@
             android:theme="@style/Settings_Style" />
         <activity
             android:name=".ProfileActivity"
-            android:theme="@style/Style_Fully_Translucent"
-            android:exported="true" />
+            android:theme="@style/Style_Fully_Translucent" />
         <activity
             android:name=".UploadActivity"
-            android:theme="@style/Style_Not_Translucent" />
+            android:theme="@style/Style_Not_Translucent"
+            android:label="@string/upload" />
 
         <service android:name=".DownloaderService" />
         <activity

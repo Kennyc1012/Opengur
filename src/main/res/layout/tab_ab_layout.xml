@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<com.mirko.tbv.TabBarView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tabBar"
-    android:layout_width="match_parent"
-    android:layout_height="?android:attr/actionBarSize"
-    android:orientation="horizontal"
-    android:background="@android:color/transparent" />

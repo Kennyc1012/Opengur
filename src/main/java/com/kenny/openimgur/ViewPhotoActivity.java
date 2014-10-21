@@ -76,7 +76,7 @@ public class ViewPhotoActivity extends BaseActivity {
         mImageView = (ImageView) mMultiView.getView(MultiStateView.ViewState.CONTENT).findViewById(R.id.image);
         mVideoView = (VideoView) mMultiView.getView(MultiStateView.ViewState.CONTENT).findViewById(R.id.video);
         boolean isVideo = intent.getBooleanExtra(KEY_IS_VIDEO, false);
-        getActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         if (isVideo) {
             displayVideo();

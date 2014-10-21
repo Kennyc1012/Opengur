@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/share"
-        android:showAsAction="ifRoom"
-        android:title="Share"
-        android:actionProviderClass="android.widget.ShareActionProvider" />
+        app:showAsAction="ifRoom"
+        android:title="@string/share"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
 
     <item
         android:id="@+id/favorite"
         android:title="@string/favorite"
         android:icon="@drawable/ic_action_favorite"
-        android:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/profile"
         android:title="@string/profile"
         android:icon="@drawable/ic_action_user"
-        android:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/refresh"
         android:title="@string/refresh"
         android:icon="@drawable/ic_action_navigation_refresh"
-        android:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/reddit"
         android:title="@string/view_reddit"
         android:icon="@drawable/ic_action_reddit"
-        android:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />
 
 </menu>

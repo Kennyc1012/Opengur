@@ -51,7 +51,6 @@ public class CommentAdapter extends BaseAdapter {
     public void clear() {
         if (mCurrentComments != null) {
             mCurrentComments.clear();
-
         }
     }
 

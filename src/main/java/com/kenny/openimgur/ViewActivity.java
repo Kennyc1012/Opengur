@@ -17,9 +17,11 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.util.LongSparseArray;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
-import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +31,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.ShareActionProvider;
 import android.widget.VideoView;
 
 import com.kenny.openimgur.adapters.CommentAdapter;
@@ -281,10 +282,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onPanelSlide(View view, float v) {
                 if (v >= 0.75f && mIsActionBarShowing) {
-                    getActionBar().hide();
+                    getSupportActionBar().hide();
                     mIsActionBarShowing = false;
                 } else if (v <= 0.75 && !mIsActionBarShowing) {
-                    getActionBar().show();
+                    getSupportActionBar().show();
                     mIsActionBarShowing = true;
                 }
             }
@@ -838,7 +839,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             menu.findItem(R.id.favorite).setIcon(imgurObject.isFavorited() ?
                     R.drawable.ic_action_unfavorite : R.drawable.ic_action_favorite);
 
-            updateShareProvider((ShareActionProvider) menu.findItem(R.id.share).getActionProvider(), imgurObject);
+            updateShareProvider((ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.share)), imgurObject);
         }
 
         return super.onPrepareOptionsMenu(menu);
@@ -880,7 +881,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 if (mActionMode != null) mActionMode.finish();
             } else {
                 mSelectedComment = mCommentAdapter.getItem(position);
-                if (mActionMode == null) mActionMode = startActionMode(new ActionBarCallBack(this));
+                if (mActionMode == null) mActionMode = startSupportActionMode(new ActionBarCallBack(this));
             }
         } else {
             // Header view

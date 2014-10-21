@@ -2,32 +2,26 @@
 
     <style name="Style_Fully_Translucent" parent="Style_Not_Translucent" />
 
-    <style name="Settings_Style" parent="@android:style/Theme.Holo.Light">
-        <item name="android:windowActionBarOverlay">false</item>
-        <item name="android:actionBarStyle">@style/ActionBar.Style</item>
-        <item name="android:homeAsUpIndicator">@drawable/ic_action_backarrow</item>
+    <style name="Settings_Style" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBarOverlay">false</item>
+        <item name="colorPrimary">@color/primary_blue_500</item>
+        <item name="colorPrimaryDark">@color/accent_color_blue_700</item>
+        <item name="colorAccent">@color/accent_color_red_200</item>
     </style>
 
-    <style name="Style_Not_Translucent" parent="@android:style/Theme.Holo">
-        <item name="android:windowActionBarOverlay">true</item>
+    <style name="Style_Not_Translucent" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:actionOverflowButtonStyle">@style/MyActionButtonOverflow</item>
-        <item name="android:actionBarStyle">@style/ActionBar.Style</item>
-        <item name="android:windowBackground">@color/window_bg_color</item>
-        <item name="android:homeAsUpIndicator">@drawable/empty_drawable</item>
+        <item name="android:windowBackground">@color/background_material_light</item>
+        <item name="colorPrimary">@color/primary_blue_500</item>
+        <item name="colorPrimaryDark">@color/accent_color_blue_700</item>
+        <item name="colorAccent">@color/accent_color_red_200</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
-    <style name="ActionBar.Style" parent="@android:style/Widget.Holo.ActionBar">
-        <item name="android:background">@color/primary_blue_500</item>
-        <item name="android:titleTextStyle">@style/MyTheme.ActionBar.TitleTextStyle</item>
-    </style>
-
-    <style name="MyActionButtonOverflow" parent="android:style/Widget.Holo.ActionButton.Overflow">
-        <item name="android:src">@drawable/ic_action_overflow_round</item>
-    </style>
-
-    <style name="MyTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-        <item name="android:textColor">@android:color/white</item>
+    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
     </style>
 
 </resources>

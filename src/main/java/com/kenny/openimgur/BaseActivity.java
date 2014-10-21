@@ -1,17 +1,12 @@
 package com.kenny.openimgur;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
@@ -22,7 +17,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 /**
  * Created by kcampagna on 6/21/14.
  */
-public class BaseActivity extends Activity {
+public class BaseActivity extends ActionBarActivity {
     public final String TAG = getClass().getSimpleName();
 
     public OpenImgurApp app;
@@ -41,25 +36,10 @@ public class BaseActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         LogUtil.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        ActionBar ab = getActionBar();
+        ActionBar ab = getSupportActionBar();
 
         if (ab != null) {
-
-            // Have to do some trickery to get the "Up" view to set its padding
-            ImageView view = (ImageView) findViewById(android.R.id.home);
-            if (view != null) {
-                try {
-                    ViewGroup viewGroup = (ViewGroup) view.getParent();
-                    View upView = viewGroup.getChildAt(0);
-                    int padding = getResources().getDimensionPixelSize(R.dimen.up_arrow_padding);
-                    upView.setPadding(padding, padding, padding, padding);
-                } catch (Exception e) {
-                    LogUtil.e(TAG, "Unable to set upAsHomeIndicator padding", e);
-                }
-            }
-
             ab.setTitle(null);
-            ab.setIcon(new ColorDrawable(Color.TRANSPARENT));
 
             if (mShouldShowHome) {
                 ab.setDisplayHomeAsUpEnabled(true);
@@ -75,7 +55,6 @@ public class BaseActivity extends Activity {
 
         if (mShouldTint) {
             SystemBarTintManager tintManager = new SystemBarTintManager(this);
-            // enable status bar tint
             tintManager.setStatusBarTintEnabled(true);
             tintManager.setTintColor(getResources().getColor(R.color.status_bar_tint));
         }
@@ -128,31 +107,6 @@ public class BaseActivity extends Activity {
     }
 
     /**
-     * Sets if the actionbar will display the back arrow in the action bar
-     *
-     * @param display
-     */
-    public void setShouldDisplayHome(boolean display) {
-        mShouldShowHome = display;
-    }
-
-    /**
-     * Sets the action bars view
-     *
-     * @param view
-     */
-    public void setActionBarView(View view) {
-        ActionBar ab = getActionBar();
-
-        if (ab != null) {
-            getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-            getActionBar().setCustomView(view);
-        } else {
-            LogUtil.w(TAG, "Action bar is null. Can not set custom view");
-        }
-    }
-
-    /**
      * Shows or hides the actionbar
      *
      * @param shouldShow If the actionbar should be shown
@@ -160,10 +114,10 @@ public class BaseActivity extends Activity {
     public void setActionBarVisibility(boolean shouldShow) {
         if (shouldShow && !mIsActionBarShowing) {
             mIsActionBarShowing = true;
-            getActionBar().show();
+            getSupportActionBar().show();
         } else if (!shouldShow && mIsActionBarShowing) {
             mIsActionBarShowing = false;
-            getActionBar().hide();
+            getSupportActionBar().hide();
         }
     }
 

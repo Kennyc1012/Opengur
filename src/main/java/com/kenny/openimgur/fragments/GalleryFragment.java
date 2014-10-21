@@ -25,11 +25,11 @@ import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.FilterDialogFragment;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -234,7 +234,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
 
     private GalleryAdapter mAdapter;
 
-    private TabActivityListener mListener;
+    private FragmentListener mListener;
 
     private ApiClient mApiClient;
 
@@ -252,8 +252,8 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        if (activity instanceof TabActivityListener) {
-            mListener = (TabActivityListener) activity;
+        if (activity instanceof FragmentListener) {
+            mListener = (FragmentListener) activity;
         }
     }
 
@@ -282,7 +282,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
             mIsLoading = true;
 
             if (mListener != null) {
-                mListener.onLoadingStarted(PAGE);
+                mListener.onLoadingStarted();
             }
 
             getGallery();
@@ -369,16 +369,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
         handleBundle(savedInstanceState);
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        if (isVisibleToUser && mMultiView != null &&
-                mMultiView.getViewState() == MultiStateView.ViewState.CONTENT && mListener != null) {
-            mListener.onLoadingComplete(PAGE);
-        }
-    }
-
     private void handleBundle(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -398,12 +388,14 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
                 mGridView.setSelection(currentPosition);
 
                 if (mListener != null) {
-                    mListener.onLoadingComplete(PAGE);
+                    mListener.onLoadingComplete();
                 }
 
                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
             }
         }
+
+        if (mListener != null) mListener.onUpdateActionBarTitle(getString(mSection.getResourceId()));
     }
 
     @Override
@@ -424,7 +416,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
                 }
 
                 if (mListener != null) {
-                    mListener.onLoadingStarted(PAGE);
+                    mListener.onLoadingStarted();
                 }
 
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);
@@ -546,7 +538,10 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
         mIsLoading = true;
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
 
-        if (mListener != null) mListener.onLoadingStarted(PAGE);
+        if (mListener != null) {
+            mListener.onLoadingStarted();
+            mListener.onUpdateActionBarTitle(getString(mSection.getResourceId()));
+        }
 
         getGallery();
     }
@@ -568,7 +563,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
                     }
 
                     if (mListener != null) {
-                        mListener.onLoadingComplete(PAGE);
+                        mListener.onLoadingComplete();
                     }
 
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -588,7 +583,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
                 case MESSAGE_ACTION_FAILED:
                     if (mAdapter == null || mAdapter.isEmpty()) {
                         if (mListener != null) {
-                            mListener.onError((Integer) msg.obj, PAGE);
+                            mListener.onError((Integer) msg.obj);
                         }
 
                         mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);

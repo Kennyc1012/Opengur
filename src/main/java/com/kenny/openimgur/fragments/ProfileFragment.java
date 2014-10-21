@@ -2,13 +2,12 @@ package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -36,13 +35,13 @@ import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.CustomLinkMovement;
+import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LinkUtils;
@@ -97,7 +96,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
     private ApiClient mApiClient;
 
-    private TabActivityListener mListener;
+    private FragmentListener mListener;
 
     private boolean mIsLoading = false;
 
@@ -105,14 +104,11 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
     private boolean mDidAddProfileToErrorView = false;
 
-    private boolean mFromMain = true;
-
     private int mPreviousItem;
 
-    public static ProfileFragment createInstance(@Nullable String userName, boolean isFromMain) {
+    public static ProfileFragment createInstance(@Nullable String userName) {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
-        args.putBoolean(KEY_FROM_MAIN, isFromMain);
 
         if (!TextUtils.isEmpty(userName)) {
             args.putString(KEY_USERNAME, userName);
@@ -126,8 +122,8 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        if (activity instanceof TabActivityListener) {
-            mListener = (TabActivityListener) activity;
+        if (activity instanceof FragmentListener) {
+            mListener = (FragmentListener) activity;
         }
     }
 
@@ -208,58 +204,36 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
         handleBundle(savedInstanceState, getArguments());
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        if (isVisibleToUser && mMultiView != null &&
-                mFromMain && mMultiView.getViewState() == MultiStateView.ViewState.EMPTY && mListener != null) {
-            mListener.onLoadingStarted(PAGE);
-            getActivity().getActionBar().show();
-        }
-
-        // User access got revoked somehow, go back to login view
-        if (mFromMain && isVisibleToUser && user == null
-                && mMultiView != null && mMultiView.getViewState() != MultiStateView.ViewState.EMPTY) {
-            if (mAdapter != null) {
-                mAdapter.clear();
-                mAdapter.notifyDataSetChanged();
-            }
-
-            configWebView();
-        }
-    }
-
     /**
      * Handles the arguments past to the fragment
      *
      * @param args
      */
     private void handleArguments(Bundle args) {
-        mFromMain = args.getBoolean(KEY_FROM_MAIN, false);
 
         if (args.containsKey(KEY_USERNAME)) {
             LogUtil.v(TAG, "User present in Bundle extras");
             String username = args.getString(KEY_USERNAME);
             mSelectedUser = app.getSql().getUser(username);
+            if (mListener != null) mListener.onUpdateActionBarTitle(username);
             configUser(username);
         } else if (app.getUser() != null) {
             LogUtil.v(TAG, "User already logged in");
             mSelectedUser = app.getUser();
+            if (mListener != null) mListener.onUpdateActionBarTitle(mSelectedUser.getUsername());
             configUser(null);
         } else {
             LogUtil.v(TAG, "No user present. Showing Login screen");
+            if (mListener != null) mListener.onUpdateActionBarTitle(getString(R.string.login));
             configWebView();
         }
     }
 
     private void handleBundle(Bundle savedInstanceState, Bundle args) {
         if (savedInstanceState == null) {
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             handleArguments(args);
         } else {
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
-            mFromMain = savedInstanceState.getBoolean(KEY_FROM_MAIN, false);
 
             if (savedInstanceState.containsKey(KEY_ITEMS) && savedInstanceState.containsKey(KEY_USERNAME)) {
                 mSelectedUser = savedInstanceState.getParcelable(KEY_USERNAME);
@@ -273,7 +247,8 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                 mGridView.setSelection(currentPosition);
 
                 if (mListener != null) {
-                    mListener.onLoadingComplete(PAGE);
+                    mListener.onLoadingComplete();
+                    mListener.onUpdateActionBarTitle(mSelectedUser.getUsername());
                 }
             } else {
                 handleArguments(args);
@@ -322,6 +297,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
                                 configWebView();
                                 mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+                                if (mListener != null) mListener.onUpdateActionBarTitle(getString(R.string.login));
                             }
                         }).show();
                 return true;
@@ -338,19 +314,16 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (mSelectedUser == null) {
-            menu.findItem(R.id.favorites).setVisible(false);
-            menu.findItem(R.id.submissions).setVisible(false);
-            menu.findItem(R.id.logout).setVisible(false);
-            menu.findItem(R.id.refresh).setVisible(false);
-        } else {
-            menu.findItem(R.id.logout).setVisible(mSelectedUser.isSelf());
-            menu.findItem(R.id.favorites).setVisible(mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS);
-            menu.findItem(R.id.submissions).setVisible(mCurrentEndpoint == Endpoints.ACCOUNT_GALLERY_FAVORITES);
-            if (mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS) {
-                menu.findItem(R.id.favorites).setShowAsAction(mFromMain ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        if (menu.hasVisibleItems()) {
+            if (mSelectedUser == null) {
+                menu.findItem(R.id.favorites).setVisible(false);
+                menu.findItem(R.id.submissions).setVisible(false);
+                menu.findItem(R.id.logout).setVisible(false);
+                menu.findItem(R.id.refresh).setVisible(false);
             } else {
-                menu.findItem(R.id.submissions).setShowAsAction(mFromMain ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                menu.findItem(R.id.logout).setVisible(mSelectedUser.isSelf());
+                menu.findItem(R.id.favorites).setVisible(mCurrentEndpoint == Endpoints.ACCOUNT_SUBMISSIONS);
+                menu.findItem(R.id.submissions).setVisible(mCurrentEndpoint == Endpoints.ACCOUNT_GALLERY_FAVORITES);
             }
         }
 
@@ -396,10 +369,10 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
      */
     private void configWebView() {
         if (mListener != null) {
-            mListener.onLoadingStarted(PAGE);
+            mListener.onLoadingStarted();
         }
 
-        getActivity().getActionBar().show();
+        ((ActionBarActivity) getActivity()).getSupportActionBar().show();
         mWebView = (WebView) mMultiView.findViewById(R.id.loginWebView);
         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
         // Add the empty space so the webview isnt cut off by the action bar
@@ -412,6 +385,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                 if (url.contains("#")) {
                     // We will extract the info from the callback url
                     mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                    if (mListener != null) mListener.onLoadingStarted();
                     String[] outerSplit = url.split("\\#")[1].split("\\&");
                     String username = null;
                     String accessToken = null;
@@ -468,6 +442,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                         mWebView.clearHistory();
                         mWebView.clearCache(true);
                         mWebView.clearFormData();
+                        if (mListener != null) mListener.onUpdateActionBarTitle(mSelectedUser.getUsername());
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, R.string.error_generic);
                     }
@@ -607,7 +582,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
             switch (msg.what) {
                 case ImgurHandler.MESSAGE_ACTION_COMPLETE:
                     if (mListener != null) {
-                        mListener.onLoadingComplete(PAGE);
+                        mListener.onLoadingComplete();
                     }
 
                     List<ImgurBaseObject> objects = (List<ImgurBaseObject>) msg.obj;
@@ -653,7 +628,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                 case ImgurHandler.MESSAGE_ACTION_FAILED:
                     if (mAdapter == null || mAdapter.isEmpty()) {
                         if (mListener != null) {
-                            mListener.onError((Integer) msg.obj, PAGE);
+                            mListener.onError((Integer) msg.obj);
                         }
 
                         if (!mDidAddProfileToErrorView && mSelectedUser != null) {
@@ -743,7 +718,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
         outState.putString(KEY_ENDPOINT, mCurrentEndpoint.getUrl());
         outState.putParcelable(KEY_USERNAME, mSelectedUser);
-        outState.putBoolean(KEY_FROM_MAIN, mFromMain);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
             outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllItems());

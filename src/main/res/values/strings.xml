@@ -10,21 +10,6 @@
     <string name="filter">Filter</string>
     <string name="comment_replies">View %d Replies</string>
     <string name="pref_cache_title">Cache</string>
-    <string name="pref_cache_size">Maximum Cache Size</string>
-
-    <string-array name="pref_cache_size_items" translatable="false">
-        <item>128MB</item>
-        <item>256MB</item>
-        <item>512MB</item>
-        <item>1GB</item>
-    </string-array>
-
-    <string-array name="pager_titles">
-        <item>Gallery</item>
-        <item>Subreddit</item>
-        <item>Profile</item>
-    </string-array>
-
     <string name="pref_reddit_cache">Subreddit Searches</string>
     <string name="pref_reddit_desc">Clear  subreddit search history</string>
     <string name="refresh">Refresh</string>
@@ -141,17 +126,22 @@
     <string name="nsfw_title">NSFW Images</string>
     <string name="nsfw_summary_on">Allow NSFW images</string>
     <string name="nsfw_summary_off">Don\'t allow NSFW images</string>
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Closed</string>
+    <string name="subreddit">Subreddit</string>
+    <string name="login">Login</string>
+
+    <string-array name="nav_items">
+        <item>Gallery</item>
+        <item>Subreddit</item>
+        <item>Profile</item>
+    </string-array>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
-    <string-array name="pref_cache_size_keys" translatable="false">
-        <item>128</item>
-        <item>256</item>
-        <item>512</item>
-        <item>1024</item>
-    </string-array>
     <string-array name="pref_thumbnail_quality_keys" translatable="false">
         <item>low</item>
         <item>medium</item>
         <item>high</item>
     </string-array>
+
 </resources>

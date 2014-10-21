@@ -109,6 +109,7 @@ public class UploadActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle(R.string.upload);
         setContentView(R.layout.activity_upload);
         mPreviewImage = (ImageView) findViewById(R.id.previewImage);
         mTitle = (EditText) findViewById(R.id.title);

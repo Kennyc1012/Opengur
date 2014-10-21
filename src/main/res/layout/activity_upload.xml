@@ -4,30 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="?android:attr/actionBarSize">
-
-    <FrameLayout
-        android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        android:background="@color/primary_blue_500">
-
-        <com.kenny.openimgur.ui.TextViewRoboto
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:text="@string/upload"
-            app:robotoFont="light"
-            android:textSize="24sp"
-            android:textColor="@android:color/white"
-            android:layout_gravity="center_vertical" />
-
-    </FrameLayout>
+    android:layout_marginTop="?actionBarSize">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/header">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,7 +28,6 @@
 
             <EditText
                 android:id="@+id/url"
-                style="@style/Material.EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -58,7 +38,6 @@
 
             <EditText
                 android:id="@+id/title"
-                style="@style/Material.EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -69,7 +48,6 @@
 
             <EditText
                 android:id="@+id/desc"
-                style="@style/Material.EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -87,7 +65,6 @@
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:text="@string/add_to_gallery"
                 android:textColor="@android:color/black"
-                android:button="@drawable/check_box_blue"
                 android:checked="false" />
 
         </LinearLayout>
@@ -100,9 +77,6 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
         app:drawable="@drawable/ic_action_upload"
-        app:shadowColor="@android:color/black"
-        app:color="@color/accent_color_red_200"
-        android:layout_below="@id/header"
-        android:translationY="-32dp" />
+        app:fabColor="@color/accent_color_red_200" />
 
 </RelativeLayout>

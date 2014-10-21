@@ -34,11 +34,11 @@ import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.TabActivityListener;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
@@ -137,7 +137,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
 
     private ApiClient mApiClient;
 
-    private TabActivityListener mListener;
+    private FragmentListener mListener;
 
     private int mCurrentPage = 0;
 
@@ -195,8 +195,8 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        if (activity instanceof TabActivityListener) {
-            mListener = (TabActivityListener) activity;
+        if (activity instanceof FragmentListener) {
+            mListener = (FragmentListener) activity;
         }
     }
 
@@ -279,14 +279,16 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
                         mAdapter.clear();
                     }
 
-                    if (mListener != null) {
-                        mListener.onLoadingStarted(PAGE);
-                    }
-
                     mQuery = text;
                     mCurrentPage = 0;
                     search();
                     mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+
+                    if (mListener != null) {
+                        mListener.onLoadingStarted();
+                        mListener.onUpdateActionBarTitle(mQuery);
+                    }
+
                     return true;
                 }
 
@@ -367,16 +369,6 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        if (isVisibleToUser && mMultiView != null &&
-                mMultiView.getViewState() != MultiStateView.ViewState.CONTENT && mListener != null) {
-            mListener.onLoadingComplete(PAGE);
-        }
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.reddit, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -410,11 +402,17 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
                 mGridView.setSelection(currentPosition);
 
                 if (mListener != null) {
-                    mListener.onLoadingComplete(PAGE);
+                    mListener.onLoadingComplete();
                 }
 
                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
             }
+        }
+
+        if (TextUtils.isEmpty(mQuery) && mListener != null) {
+            mListener.onUpdateActionBarTitle(getString(R.string.subreddit));
+        } else if (mListener != null) {
+            mListener.onUpdateActionBarTitle(mQuery);
         }
     }
 
@@ -557,7 +555,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
 
                 case MESSAGE_ACTION_COMPLETE:
                     if (mListener != null) {
-                        mListener.onLoadingComplete(PAGE);
+                        mListener.onLoadingComplete();
                     }
 
                     List<ImgurBaseObject> objects = (List<ImgurBaseObject>) msg.obj;
@@ -580,7 +578,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
                 case MESSAGE_ACTION_FAILED:
                     if (mAdapter == null || mAdapter.isEmpty()) {
                         if (mListener != null) {
-                            mListener.onError((Integer) msg.obj, PAGE);
+                            mListener.onError((Integer) msg.obj);
                         }
 
                         mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);

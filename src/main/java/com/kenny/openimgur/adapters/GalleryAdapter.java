@@ -29,7 +29,7 @@ import java.util.List;
  * Created by kcampagna on 7/27/14.
  */
 public class GalleryAdapter extends BaseAdapter {
-    public static final int MAX_ITEMS = 100;
+    public static final int MAX_ITEMS = 200;
 
     private LayoutInflater mInflater;
 
