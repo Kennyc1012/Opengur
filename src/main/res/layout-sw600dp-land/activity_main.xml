@@ -15,19 +15,18 @@
         <include
             layout="@layout/upload_menu"
             android:id="@+id/uploadMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/upload_button_margin_right"
-            android:layout_marginBottom="@dimen/upload_button_margin_bottom"
-            android:visibility="visible" />
+            android:layout_marginBottom="@dimen/upload_button_margin_bottom" />
 
     </RelativeLayout>
 
     <fragment
         android:id="@+id/navDrawer"
-        android:layout_width="wrap_content"
+        android:layout_width="320dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:name="com.kenny.openimgur.fragments.NavFragment" />

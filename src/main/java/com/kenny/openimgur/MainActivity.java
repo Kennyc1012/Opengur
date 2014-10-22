@@ -5,6 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
@@ -22,7 +24,6 @@ import com.kenny.openimgur.fragments.NavFragment;
 import com.kenny.openimgur.fragments.ProfileFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.ui.FloatingActionButton;
-import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 
 /**
@@ -36,6 +37,10 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     private static final int PAGE_SUBREDDIT = 1;
 
     private static final int PAGE_PROFILE = 2;
+
+    private static final int PAGE_SETTINGS = 4;
+
+    private static final int PAGE_FEEDBACK = 5;
 
     private int mCurrentPage = -1;
 
@@ -87,28 +92,14 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
     @Override
     public void onListItemSelected(int position) {
+        if (position <= 2 && mCurrentPage == position) return;
+        changePage(position);
         mDrawer.closeDrawers();
-        if (mCurrentPage == position) return;
-        mCurrentPage = position;
-        changePage();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mNavFragment.onOptionsItemSelected(item)) return true;
-
-        switch (item.getItemId()) {
-            case R.id.settings:
-                startActivity(SettingsActivity.createIntent(getApplicationContext()));
-                return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -125,8 +116,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (savedInstanceState == null) {
-            mCurrentPage = app.getPreferences().getInt(KEY_CURRENT_PAGE, PAGE_GALLERY);
-            changePage();
+            changePage(app.getPreferences().getInt(KEY_CURRENT_PAGE, PAGE_GALLERY));
         } else {
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, PAGE_GALLERY);
         }
@@ -136,28 +126,42 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
     /**
      * Changes the fragment
+     *
+     * @param position The pages position
      */
-    private void changePage() {
+    private void changePage(int position) {
         Fragment fragment = null;
 
-        switch (mCurrentPage) {
+        switch (position) {
             case PAGE_GALLERY:
                 fragment = GalleryFragment.createInstance();
+                mCurrentPage = position;
                 break;
 
             case PAGE_PROFILE:
                 fragment = ProfileFragment.createInstance(null);
+                mCurrentPage = position;
                 break;
 
             case PAGE_SUBREDDIT:
                 fragment = RedditFragment.createInstance();
+                mCurrentPage = position;
+                break;
+
+            case PAGE_SETTINGS:
+                startActivity(SettingsActivity.createIntent(getApplicationContext()));
+                break;
+
+            case PAGE_FEEDBACK:
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                        "mailto", "kennyc.developer@gmail.com", null));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Open Imgur Feedback");
+                startActivity(Intent.createChooser(emailIntent, getString(R.string.send_feedback)));
                 break;
         }
 
         if (fragment != null) {
             getFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
-        } else {
-            LogUtil.w(TAG, "Unable to determine fragment for page " + mCurrentPage);
         }
     }
 
@@ -200,6 +204,11 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     @Override
     public void onUpdateActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
+    }
+
+    @Override
+    public void onUpdateUser(String username, String defaultTitle) {
+        if (mNavFragment != null) mNavFragment.onUsernameChange(username, defaultTitle);
     }
 
     @Override

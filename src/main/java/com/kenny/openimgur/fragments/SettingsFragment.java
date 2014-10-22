@@ -21,7 +21,6 @@ import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.snackbar.SnackBar;
 
 import java.lang.ref.WeakReference;
@@ -39,7 +38,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         mApp = OpenImgurApp.getInstance(getActivity());
         addPreferencesFromResource(R.xml.settings);
         bindPreference(findPreference(SettingsActivity.THUMBNAIL_QUALITY_KEY));
-        findPreference(SettingsActivity.REDDIT_SEARCH_KEY).setOnPreferenceClickListener(this);
         findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
@@ -95,10 +93,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                             new DeleteCacheTask(SettingsFragment.this).execute();
                         }
                     }).show();
-            return true;
-        } else if (preference.getKey().equals(SettingsActivity.REDDIT_SEARCH_KEY)) {
-            new SqlHelper(getActivity()).deleteAllSubRedditSearches();
-            SnackBar.show(getActivity(), R.string.reddit_search_cleared);
             return true;
         } else if (preference.getKey().equals("licenses")) {
             AlertDialog dialog = new AlertDialog.Builder(getActivity())

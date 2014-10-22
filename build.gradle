@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId "com.kenny.openimgur"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 21
         versionCode 1
         versionName "0.0.1"

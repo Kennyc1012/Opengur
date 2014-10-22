@@ -7,24 +7,17 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Editable;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.kenny.openimgur.BaseActivity;
 import com.kenny.openimgur.R;
@@ -119,17 +112,9 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
 
     private static final String KEY_SORT = "redditSort";
 
-    private static final int PAGE = 1;
-
-    private AutoCompleteTextView mSearchEditText;
-
-    private View mQuickReturnView;
-
     private MultiStateView mMultiView;
 
     private HeaderGridView mGridView;
-
-    private ImageButton mClearButton;
 
     private String mQuery;
 
@@ -145,11 +130,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
 
     private boolean mHasMore = true;
 
-    private boolean mInputIsShowing = true;
-
     private boolean mAllowNSFW = false;
-
-    private float mAnimationHeight;
 
     private int mPreviousItem;
 
@@ -221,11 +202,8 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     @Override
     public void onDestroyView() {
         EventBus.getDefault().unregister(this);
-        mSearchEditText = null;
         mMultiView = null;
         mGridView = null;
-        mClearButton = null;
-        mQuickReturnView = null;
         mHandler.removeCallbacksAndMessages(null);
 
         if (mAdapter != null) {
@@ -266,14 +244,45 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
             }
         });
 
-        mSearchEditText = (AutoCompleteTextView) view.findViewById(R.id.search);
-        configurePreviousSearches();
+        handleBundle(savedInstanceState);
+    }
 
-        mSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+    @Override
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+        //NOOP
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        // Hide the actionbar when scrolling down, show when scrolling up
+        if (firstVisibleItem > mPreviousItem) {
+            if (mListener != null) {
+                mListener.onHideActionBar(false);
+            }
+        } else if (firstVisibleItem < mPreviousItem) {
+            if (mListener != null) {
+                mListener.onHideActionBar(true);
+            }
+        }
+
+        mPreviousItem = firstVisibleItem;
+
+        // Load more items when hey get to the end of the list
+        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading && mHasMore) {
+            mCurrentPage++;
+            search();
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.reddit, menu);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
+        searchView.setQueryHint(getString(R.string.enter_sub_reddit));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                String text = textView.getText().toString();
-
+            public boolean onQueryTextSubmit(String text) {
                 if (!mIsLoading && !TextUtils.isEmpty(text)) {
                     if (mAdapter != null) {
                         mAdapter.clear();
@@ -294,83 +303,13 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
 
                 return false;
             }
-        });
-
-        mSearchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                // NOOP
-            }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                if (charSequence.length() <= 0 && mClearButton.getAlpha() == 1.0f) {
-                    mClearButton.animate().alpha(0.0f).setInterpolator(new DecelerateInterpolator()).setDuration(200L);
-                } else if (charSequence.length() > 0 && mClearButton.getAlpha() == 0.0f) {
-                    mClearButton.animate().alpha(1.0f).setInterpolator(new DecelerateInterpolator()).setDuration(200L);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // NOOP
+            public boolean onQueryTextChange(String s) {
+                return false;
             }
         });
 
-        mQuickReturnView = view.findViewById(R.id.quickReturnView);
-        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mQuickReturnView.getLayoutParams();
-        float extraSpace = ViewUtils.getHeightForTranslucentStyle(getActivity()) + getResources().getDimension(R.dimen.quick_return_additional_padding);
-        lp.setMargins(lp.leftMargin, (int) extraSpace, lp.rightMargin, lp.bottomMargin);
-        mClearButton = (ImageButton) view.findViewById(R.id.clear);
-        mClearButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSearchEditText.setText(null);
-            }
-        });
-        handleBundle(savedInstanceState);
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView absListView, int i) {
-        //NOOP
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        // Hide the actionbar when scrolling down, show when scrolling up
-        if (firstVisibleItem > mPreviousItem) {
-            if (mListener != null) {
-                mListener.onHideActionBar(false);
-            }
-
-            if (mInputIsShowing) {
-                mInputIsShowing = false;
-                mQuickReturnView.animate().translationY(-mAnimationHeight).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
-            }
-        } else if (firstVisibleItem < mPreviousItem) {
-            if (mListener != null) {
-                mListener.onHideActionBar(true);
-            }
-
-            if (!mInputIsShowing) {
-                mInputIsShowing = true;
-                mQuickReturnView.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).setDuration(500L);
-            }
-        }
-
-        mPreviousItem = firstVisibleItem;
-
-        // Load more items when hey get to the end of the list
-        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading && mHasMore) {
-            mCurrentPage++;
-            search();
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.reddit, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -417,17 +356,6 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     }
 
     /**
-     * Configures the previous search adapter to the AutoCompleteTextView
-     */
-    private void configurePreviousSearches() {
-        List<String> searches = app.getSql().getSubReddits();
-
-        if (searches != null && searches.size() > 0) {
-            mSearchEditText.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, searches));
-        }
-    }
-
-    /**
      * Performs the Api search
      */
     private void search() {
@@ -452,10 +380,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     private void setupAdapter(List<ImgurBaseObject> objects) {
         if (mAdapter == null) {
             mAdapter = new GalleryAdapter(getActivity(), objects);
-            mAnimationHeight = getResources().getDimension(R.dimen.quick_return_edit_text_height) +
-                    getResources().getDimension(R.dimen.quick_return_additional_padding);
-            View header = ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), (int) mAnimationHeight);
-            mAnimationHeight += ViewUtils.getHeightForTranslucentStyle(getActivity());
+            View header = ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0);
             mGridView.addHeaderView(header);
             mGridView.setAdapter(mAdapter);
         } else {
@@ -482,8 +407,6 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
                     }
 
                     List<ImgurBaseObject> objects = new ArrayList<ImgurBaseObject>();
-                    // Only enter into the database if we received results and on the first page (new search)
-                    if (mCurrentPage == 0) app.getSql().insertSubReddit(mQuery);
 
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject item = arr.getJSONObject(i);
@@ -523,19 +446,18 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
      * @param event
      */
     public void onEventMainThread(ThrowableFailureEvent event) {
-        if (getUserVisibleHint()) {
-            Throwable e = event.getThrowable();
+        Throwable e = event.getThrowable();
 
-            if (e instanceof IOException) {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
-            } else if (e instanceof JSONException) {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-            } else {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
-            }
-
-            LogUtil.e(TAG, "Error received from Event Bus", e);
+        if (e instanceof IOException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
+        } else if (e instanceof JSONException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
+        } else {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
+
+        LogUtil.e(TAG, "Error received from Event Bus", e);
+
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {
@@ -559,7 +481,6 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
                     }
 
                     List<ImgurBaseObject> objects = (List<ImgurBaseObject>) msg.obj;
-                    configurePreviousSearches();
                     setupAdapter(objects);
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
 

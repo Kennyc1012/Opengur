@@ -4,14 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/filter"
-        android:title="@string/filter"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/refresh"
         android:title="@string/refresh"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_navigation_refresh" />
+
+    <item
+        android:id="@+id/filter"
+        android:title="@string/filter"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_filter" />
 
 </menu>

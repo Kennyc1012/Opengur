@@ -51,9 +51,15 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mListView = (ListView) view;
-        mListView.setAdapter(mAdapter = new NavAdapter(getActivity(), R.array.nav_items));
+        String[] navItems = getResources().getStringArray(R.array.nav_items);
+
+        if (app.getUser() != null) {
+            navItems[2] = app.getUser().getUsername();
+        }
+
+        mListView.setAdapter(mAdapter = new NavAdapter(getActivity(), navItems));
         mListView.setOnItemClickListener(this);
-        mListView.setPadding((int) getResources().getDimension(R.dimen.nav_padding), ViewUtils.getHeightForTranslucentStyle(getActivity()), 0, 0);
+        mListView.setPadding(0, ViewUtils.getHeightForTranslucentStyle(getActivity()), 0, 0);
     }
 
     @Override
@@ -61,6 +67,16 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
         mListView = null;
         mToggle = null;
         super.onDestroyView();
+    }
+
+    /**
+     * Updates the title for the profile nav item
+     *
+     * @param username The username if the user is logged in
+     * @param title    The default title for the item
+     */
+    public void onUsernameChange(String username, String title) {
+        if (mAdapter != null) mAdapter.onUsernameChange(username, title);
     }
 
     /**

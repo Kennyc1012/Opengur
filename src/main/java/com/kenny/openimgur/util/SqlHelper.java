@@ -7,15 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.util.DBContracts.ProfileContract;
-import com.kenny.openimgur.util.DBContracts.RedditContract;
 import com.kenny.openimgur.util.DBContracts.UserContract;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by kcampagna on 7/25/14.
@@ -35,7 +30,6 @@ public class SqlHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(UserContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(ProfileContract.CREATE_TABLE_SQL);
-        sqLiteDatabase.execSQL(RedditContract.CREATE_TABLE_SQL);
     }
 
     @Override
@@ -155,59 +149,5 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(ProfileContract.COLUMN_CREATED, profile.getCreated());
         db.insertWithOnConflict(ProfileContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
-    }
-
-    /**
-     * Returns all the previously searched sub reddits
-     *
-     * @return
-     */
-    public List<String> getSubReddits() {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(RedditContract.SEARCH_SUBBRET_SQL, null);
-        List<String> results = null;
-
-        if (cursor != null) {
-            results = new ArrayList<String>(cursor.getCount());
-
-            while (cursor.moveToNext()) {
-                results.add(cursor.getString(RedditContract.COLUMN_INDEX_SUBREDDIT));
-            }
-
-            cursor.close();
-        }
-
-        db.close();
-        return results;
-    }
-
-    /**
-     * Inserts a sub reddit into the database
-     *
-     * @param subReddit
-     */
-    public void insertSubReddit(String subReddit) {
-        if (TextUtils.isEmpty(subReddit)) {
-            return;
-        }
-
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues(1);
-        values.put(RedditContract.COLUMN_SUBREDDIT, subReddit.toLowerCase());
-        db.insertWithOnConflict(RedditContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-        db.close();
-    }
-
-    /**
-     * Deletes the subreddit search history
-     *
-     * @return Number of records deleted
-     */
-    public int deleteAllSubRedditSearches() {
-        SQLiteDatabase db = getWritableDatabase();
-        int deleted;
-        deleted = db.delete(RedditContract.TABLE_NAME, null, null);
-        db.close();
-        return deleted;
     }
 }

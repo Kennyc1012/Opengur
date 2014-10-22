@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.kenny.openimgur.ui.TextViewRoboto xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    app:robotoFont="regular"
+    android:textSize="16sp"
+    android:textColor="@color/abc_primary_text_material_light"
+    android:layout_gravity="center_vertical"
+    android:paddingLeft="@dimen/nav_padding"
+    android:minHeight="?attr/listPreferredItemHeight" />

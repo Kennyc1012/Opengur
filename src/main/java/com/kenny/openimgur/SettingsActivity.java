@@ -12,8 +12,6 @@ import com.kenny.snackbar.SnackBar;
  * Created by kcampagna on 6/30/14.
  */
 public class SettingsActivity extends BaseActivity {
-    public static final String REDDIT_SEARCH_KEY = "subreddit";
-
     public static final String NSFW_KEY = "allowNSFW";
 
     public static final String CURRENT_CACHE_SIZE_KEY = "currentCacheSize";

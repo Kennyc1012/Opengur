@@ -13,4 +13,6 @@ public interface FragmentListener {
     void onLoadingComplete();
 
     void onError(int errorCode);
+
+    void onUpdateUser(String username, String defaultTitle);
 }

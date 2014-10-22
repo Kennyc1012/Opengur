@@ -10,8 +10,6 @@
     <string name="filter">Filter</string>
     <string name="comment_replies">View %d Replies</string>
     <string name="pref_cache_title">Cache</string>
-    <string name="pref_reddit_cache">Subreddit Searches</string>
-    <string name="pref_reddit_desc">Clear  subreddit search history</string>
     <string name="refresh">Refresh</string>
     <string name="pref_current_cache_size">Current Cache Size</string>
     <string name="clear_cache">Clear Cache</string>
@@ -109,7 +107,6 @@
     <string name="upload_success">Upload successful. Image can be viewed at %s</string>
     <string name="upload_complete">Upload Complete</string>
     <string name="view_licenses">View Open Source Licenses</string>
-    <string name="reddit_search_cleared">Subreddit History Cleared</string>
     <string name="sort_new">New</string>
     <string name="sort_best">Best</string>
     <string name="sort_top">Top</string>
@@ -130,11 +127,16 @@
     <string name="nav_close">Closed</string>
     <string name="subreddit">Subreddit</string>
     <string name="login">Login</string>
+    <string name="send_feedback">Send Feedback</string>
+    <string name="search">Search</string>
 
     <string-array name="nav_items">
         <item>Gallery</item>
         <item>Subreddit</item>
         <item>Profile</item>
+        <item>Divider</item>
+        <item>Settings</item>
+        <item>Feedback</item>
     </string-array>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->

@@ -32,18 +32,9 @@
             android:key="currentCacheSize"
             android:title="@string/pref_current_cache_size" />
 
-        <Preference
-            android:key="subreddit"
-            android:title="@string/pref_reddit_cache"
-            android:summary="@string/pref_reddit_desc" />
-
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/developer">
-
-        <Preference
-            android:key="version"
-            android:title="@string/version" />
 
         <Preference
             android:key="licenses"
@@ -54,6 +45,10 @@
             android:key="openSource"
             android:title="@string/open_source"
             android:summary="@string/view_source" />
+
+        <Preference
+            android:key="version"
+            android:title="@string/version" />
 
     </PreferenceCategory>
 

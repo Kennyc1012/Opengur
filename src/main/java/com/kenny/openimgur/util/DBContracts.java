@@ -82,18 +82,4 @@ public class DBContracts {
         public static final String SEARCH_USER_SQL = "SELECT * FROM " + TABLE_NAME +
                 " WHERE " + COLUMN_USERNAME + " = '%s' LIMIT 0,1";
     }
-
-    public static class RedditContract implements BaseColumns {
-        public static final String TABLE_NAME = "subreddits";
-
-        public static final String COLUMN_SUBREDDIT = "sub";
-
-        public static final int COLUMN_INDEX_SUBREDDIT = 1;
-
-        public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
-                " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
-                COLUMN_SUBREDDIT + " TEXT NOT NULL, unique (" + COLUMN_SUBREDDIT + "));";
-
-        public static final String SEARCH_SUBBRET_SQL = "SELECT * FROM " + TABLE_NAME;
-    }
 }

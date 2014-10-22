@@ -76,10 +76,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
     private static final String KEY_USERNAME = "username";
 
-    private static final String KEY_FROM_MAIN = "fromMain";
-
-    private static final int PAGE = 2;
-
     private MultiStateView mMultiView;
 
     private HeaderGridView mGridView;
@@ -297,7 +293,10 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
                                 configWebView();
                                 mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-                                if (mListener != null) mListener.onUpdateActionBarTitle(getString(R.string.login));
+                                if (mListener != null) {
+                                    mListener.onUpdateActionBarTitle(getString(R.string.login));
+                                    mListener.onUpdateUser(null, getString(R.string.profile));
+                                }
                             }
                         }).show();
                 return true;
@@ -442,7 +441,10 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                         mWebView.clearHistory();
                         mWebView.clearCache(true);
                         mWebView.clearFormData();
-                        if (mListener != null) mListener.onUpdateActionBarTitle(mSelectedUser.getUsername());
+                        if (mListener != null) {
+                            mListener.onUpdateActionBarTitle(mSelectedUser.getUsername());
+                            mListener.onUpdateUser(mSelectedUser.getUsername(), getString(R.string.profile));
+                        }
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, R.string.error_generic);
                     }
@@ -561,19 +563,18 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
     }
 
     public void onEventMainThread(ThrowableFailureEvent event) {
-        if (getUserVisibleHint()) {
-            Throwable e = event.getThrowable();
+        Throwable e = event.getThrowable();
 
-            if (e instanceof IOException) {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
-            } else if (e instanceof JSONException) {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-            } else {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
-            }
-
-            LogUtil.e(TAG, "Error received from Event Bus", e);
+        if (e instanceof IOException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
+        } else if (e instanceof JSONException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
+        } else {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
+
+        LogUtil.e(TAG, "Error received from Event Bus", e);
+
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {

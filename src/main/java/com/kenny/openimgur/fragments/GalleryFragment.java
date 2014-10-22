@@ -63,8 +63,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
 
     private static final String KEY_CURRENT_PAGE = "page";
 
-    private static final int PAGE = 0;
-
     public enum GallerySection {
         HOT("hot"),
         USER("user"),
@@ -505,19 +503,17 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
      * @param event
      */
     public void onEventMainThread(ThrowableFailureEvent event) {
-        if (getUserVisibleHint()) {
-            Throwable e = event.getThrowable();
+        Throwable e = event.getThrowable();
 
-            if (e instanceof IOException) {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
-            } else if (e instanceof JSONException) {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-            } else {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
-            }
-
-            LogUtil.e(TAG, "Error received from Event Bus", e);
+        if (e instanceof IOException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
+        } else if (e instanceof JSONException) {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
+        } else {
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
+
+        LogUtil.e(TAG, "Error received from Event Bus", e);
     }
 
     @Override
