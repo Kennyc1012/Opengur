@@ -59,7 +59,6 @@ public class ViewPhotoActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setShouldTint(false);
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
 

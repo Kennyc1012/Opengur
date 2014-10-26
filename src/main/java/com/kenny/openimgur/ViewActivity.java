@@ -203,7 +203,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setShouldTint(false);
         super.onCreate(savedInstanceState);
         mIsTablet = getResources().getBoolean(R.bool.is_tablet);
         setContentView(R.layout.activity_view);
@@ -788,8 +787,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     }
 
                     final RequestBody body = new FormEncodingBuilder().add("id", imgurObj.getId()).build();
-                    mApiClient.setUrl(url);
-                    mApiClient.setRequestType(ApiClient.HttpRequest.POST);
+
+                    if (mApiClient == null) {
+                        mApiClient = new ApiClient(url, ApiClient.HttpRequest.POST);
+                    } else {
+                        mApiClient.setUrl(url);
+                        mApiClient.setRequestType(ApiClient.HttpRequest.POST);
+                    }
+
                     mApiClient.doWork(ImgurBusEvent.EventType.FAVORITE, imgurObj.getId(), body);
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);

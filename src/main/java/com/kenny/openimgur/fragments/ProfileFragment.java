@@ -157,11 +157,11 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                         if (firstVisibleItem > mPreviousItem) {
                             if (mListener != null) {
-                                mListener.onHideActionBar(false);
+                                mListener.onUpdateActionBar(false);
                             }
                         } else if (firstVisibleItem < mPreviousItem) {
                             if (mListener != null) {
-                                mListener.onHideActionBar(true);
+                                mListener.onUpdateActionBar(true);
                             }
                         }
 

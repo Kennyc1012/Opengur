@@ -54,8 +54,8 @@ public enum Endpoints {
     // albumid or imageid / comment parent
     COMMENT_REPLY("https://api.imgur.com/3/gallery/%s/comment/%s"),
 
-    // Subreddit,sort,page
-    SUBREDDIT("https://api.imgur.com/3/gallery/r/%s/%s/all/%d"),
+    // Subreddit,sort,sort date,page
+    SUBREDDIT("https://api.imgur.com/3/gallery/r/%s/%s/%s/%d"),
 
     UPLOAD("https://api.imgur.com/3/upload"),
 

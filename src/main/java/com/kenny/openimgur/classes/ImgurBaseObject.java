@@ -12,7 +12,7 @@ import org.json.JSONObject;
 /**
  * Base class to hold common values between Imgur Api responses
  */
-public abstract class ImgurBaseObject implements Parcelable {
+public class ImgurBaseObject implements Parcelable {
 
     public static final String VOTE_UP = "up";
 
@@ -283,6 +283,7 @@ public abstract class ImgurBaseObject implements Parcelable {
         return new StringBuilder("http://imgur.com/").append("gallery/").append(getId()).toString();
     }
 
+    @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(mUpVotes);
         out.writeInt(mDownVotes);
@@ -303,6 +304,21 @@ public abstract class ImgurBaseObject implements Parcelable {
         out.writeInt(mIsNSFW ? 1 : 0);
         out.writeLong(mDate);
         out.writeLong(mBandwidth);
+    }
+
+    public static final Parcelable.Creator<ImgurBaseObject> CREATOR = new Parcelable.Creator<ImgurBaseObject>() {
+        public ImgurBaseObject createFromParcel(Parcel in) {
+            return new ImgurBaseObject(in);
+        }
+
+        public ImgurBaseObject[] newArray(int size) {
+            return new ImgurBaseObject[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     protected ImgurBaseObject(Parcel in) {

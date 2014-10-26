@@ -5,12 +5,14 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +21,7 @@ import android.view.animation.OvershootInterpolator;
 
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.NavFragment;
 import com.kenny.openimgur.fragments.ProfileFragment;
@@ -115,6 +118,13 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+
+        // Dismiss any filter fragments that might be left behind
+        if (getFragmentManager().findFragmentByTag("filter") != null) {
+            FragmentManager fm = getFragmentManager();
+            fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commitAllowingStateLoss();
+        }
+
         if (savedInstanceState == null) {
             changePage(app.getPreferences().getInt(KEY_CURRENT_PAGE, PAGE_GALLERY));
         } else {
@@ -167,7 +177,8 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
     @Override
     protected void onDestroy() {
-        app.getPreferences().edit().putInt(KEY_CURRENT_PAGE, mCurrentPage).commit();
+        app.getPreferences().edit().putInt(KEY_CURRENT_PAGE, mCurrentPage).apply();
+        app.onDestroy();
         super.onDestroy();
     }
 
@@ -178,7 +189,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     }
 
     @Override
-    public void onHideActionBar(boolean shouldShow) {
+    public void onUpdateActionBar(boolean shouldShow) {
         setActionBarVisibility(shouldShow);
         animateUploadMenuButton(shouldShow);
     }
@@ -338,5 +349,26 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             uploadMenuShowing = true;
             mUploadMenu.animate().setInterpolator(new AccelerateDecelerateInterpolator()).translationY(0).setDuration(350).start();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawer.isDrawerOpen(Gravity.START)) {
+            mDrawer.closeDrawers();
+            return;
+        } else if (getFragmentManager().findFragmentByTag("filter") != null) {
+            FragmentManager fm = getFragmentManager();
+            Fragment fragment = fm.findFragmentByTag("filter");
+
+            if (fragment instanceof GalleryFilterFragment) {
+                ((GalleryFilterFragment) fragment).dismiss(null, null);
+            } else {
+                fm.beginTransaction().remove(fragment).commit();
+            }
+
+            return;
+        }
+
+        super.onBackPressed();
     }
 }

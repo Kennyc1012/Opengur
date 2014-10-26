@@ -1,7 +1,8 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -19,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 
-import com.kenny.openimgur.BaseActivity;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.ViewActivity;
@@ -53,8 +53,8 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class RedditFragment extends BaseFragment implements AbsListView.OnScrollListener {
-    private enum RedditSort {
+public class RedditFragment extends BaseFragment implements RedditFilterFragment.RedditFilterListener, AbsListView.OnScrollListener {
+    public enum RedditSort {
         TIME("time"),
         TOP("top");
 
@@ -68,29 +68,6 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
             return mSort;
         }
 
-        public static RedditSort getSortFromPosition(int position) {
-            return RedditSort.values()[position];
-        }
-
-        public static String[] getItemsForArray(Context context) {
-            RedditSort[] items = RedditSort.values();
-            String[] values = new String[items.length];
-
-            for (int i = 0; i < items.length; i++) {
-                switch (items[i]) {
-                    case TIME:
-                        values[i] = context.getString(R.string.sort_time);
-                        break;
-
-                    case TOP:
-                        values[i] = context.getString(R.string.sort_top);
-                        break;
-                }
-            }
-
-            return values;
-        }
-
         public static RedditSort getSortFromString(String item) {
             for (RedditSort s : RedditSort.values()) {
                 if (s.getSort().equals(item)) {
@@ -99,6 +76,34 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
             }
 
             return TIME;
+        }
+    }
+
+    public enum RedditTopSort {
+        DAY("day"),
+        WEEK("week"),
+        MONTH("month"),
+        YEAR("year"),
+        ALL("all");
+
+        private final String mSort;
+
+        RedditTopSort(String sort) {
+            mSort = sort;
+        }
+
+        public String getSort() {
+            return mSort;
+        }
+
+        public static RedditTopSort getSortFromString(String sort) {
+            for (RedditTopSort s : RedditTopSort.values()) {
+                if (s.getSort().equals(sort)) {
+                    return s;
+                }
+            }
+
+            return DAY;
         }
     }
 
@@ -111,6 +116,8 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     private static final String KEY_CURRENT_PAGE = "page";
 
     private static final String KEY_SORT = "redditSort";
+
+    private static final String KEY_TOP_SORT = "redditTopSort";
 
     private MultiStateView mMultiView;
 
@@ -136,24 +143,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
 
     private RedditSort mSort;
 
-    private PopupItemChooserDialog.ChooserListener mSortListener = new PopupItemChooserDialog.ChooserListener() {
-        @Override
-        public void onItemSelected(int position, String item) {
-            RedditSort sort = RedditSort.getSortFromPosition(position);
-
-            if (sort != mSort) {
-                mSort = sort;
-
-                // Don't bother making an Api call if the there is nothing being searched for the list is empty
-                if (mAdapter != null && !mAdapter.isEmpty() && !TextUtils.isEmpty(mQuery)) {
-                    mAdapter.clear();
-                    mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-                    mCurrentPage = 0;
-                    search();
-                }
-            }
-        }
-    };
+    private RedditTopSort mTopSort;
 
     public static RedditFragment createInstance() {
         return new RedditFragment();
@@ -211,7 +201,11 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
             mAdapter = null;
         }
 
-        app.getPreferences().edit().putString(KEY_SORT, mSort.getSort()).apply();
+        app.getPreferences().edit()
+                .putString(KEY_SORT, mSort.getSort())
+                .putString(KEY_TOP_SORT, mTopSort.getSort())
+                .apply();
+        
         super.onDestroy();
     }
 
@@ -257,11 +251,11 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
         // Hide the actionbar when scrolling down, show when scrolling up
         if (firstVisibleItem > mPreviousItem) {
             if (mListener != null) {
-                mListener.onHideActionBar(false);
+                mListener.onUpdateActionBar(false);
             }
         } else if (firstVisibleItem < mPreviousItem) {
             if (mListener != null) {
-                mListener.onHideActionBar(true);
+                mListener.onUpdateActionBar(true);
             }
         }
 
@@ -316,23 +310,59 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.sort:
-                PopupItemChooserDialog fragment = PopupItemChooserDialog.createInstance(RedditSort.getItemsForArray(getActivity()));
-                fragment.setChooserListener(mSortListener);
-                ((BaseActivity) getActivity()).showDialogFragment(fragment, "sort");
+            case R.id.filter:
+                if (mListener != null) mListener.onUpdateActionBar(false);
+
+                RedditFilterFragment fragment = RedditFilterFragment.createInstance(mSort, RedditTopSort.DAY);
+                fragment.setFilterListener(this);
+                getFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .add(android.R.id.content, fragment, "filter")
+                        .commit();
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onFilterChanged(RedditSort sort, RedditTopSort topSort) {
+        FragmentManager fm = getFragmentManager();
+        fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
+        if (mListener != null) mListener.onUpdateActionBar(true);
+
+        // Null values represent that the filter was canceled
+        if (sort == null || topSort == null) {
+            return;
+        }
+
+        if (sort == mSort && topSort == mTopSort) {
+            // Don't fetch data if they haven't changed anything
+            LogUtil.v(TAG, "Filters have not been updated");
+            return;
+        }
+
+        mSort = sort;
+        mTopSort = topSort;
+
+        // Don't bother making an Api call if the there is no present query
+        if (mAdapter != null && !mAdapter.isEmpty() && !TextUtils.isEmpty(mQuery)) {
+            mAdapter.clear();
+            mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+            mCurrentPage = 0;
+            search();
+        }
+    }
+
     private void handleBundle(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             mSort = RedditSort.getSortFromString(app.getPreferences().getString(KEY_SORT, RedditSort.TIME.getSort()));
+            mTopSort = RedditTopSort.getSortFromString(app.getPreferences().getString(KEY_TOP_SORT, RedditSort.TIME.getSort()));
         } else {
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
             mQuery = savedInstanceState.getString(KEY_QUERY, null);
             mSort = RedditSort.getSortFromString(savedInstanceState.getString(KEY_SORT, RedditSort.TIME.getSort()));
+            mTopSort = RedditTopSort.getSortFromString(savedInstanceState.getString(KEY_TOP_SORT, RedditTopSort.DAY.getSort()));
 
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ImgurBaseObject[] items = (ImgurBaseObject[]) savedInstanceState.getParcelableArray(KEY_ITEMS);
@@ -373,8 +403,9 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
      * Returns the url for the Api request
      */
     private String getUrl() {
-        // Strip out any white space before sending the query, all sub reddits don't have spaces
-        return String.format(Endpoints.SUBREDDIT.getUrl(), mQuery.replaceAll("\\s", ""), mSort.getSort(), mCurrentPage);
+        // Strip out any white space before sending the query, all subreddits don't have spaces
+        return String.format(Endpoints.SUBREDDIT.getUrl(), mQuery.replaceAll("\\s", ""), mSort.getSort(),
+                mTopSort.getSort(), mCurrentPage);
     }
 
     private void setupAdapter(List<ImgurBaseObject> objects) {
@@ -530,6 +561,7 @@ public class RedditFragment extends BaseFragment implements AbsListView.OnScroll
         outState.putString(KEY_SORT, mSort.getSort());
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
         outState.putString(KEY_QUERY, mQuery);
+        outState.putString(KEY_TOP_SORT, mTopSort.getSort());
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
             outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllItems());

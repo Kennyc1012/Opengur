@@ -1,7 +1,8 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Message;
@@ -30,7 +31,6 @@ import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.ui.FilterDialogFragment;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
@@ -52,7 +52,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class GalleryFragment extends BaseFragment implements FilterDialogFragment.FilterListener, AbsListView.OnScrollListener {
+public class GalleryFragment extends BaseFragment implements GalleryFilterFragment.FilterListener, AbsListView.OnScrollListener {
     private static final String KEY_SECTION = "section";
 
     private static final String KEY_SORT = "sort";
@@ -65,8 +65,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
 
     public enum GallerySection {
         HOT("hot"),
-        USER("user"),
-        TOP("top");
+        USER("user");
 
         private final String mSection;
 
@@ -87,8 +86,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
         public static GallerySection getSectionFromString(String section) {
             if (HOT.getSection().equals(section)) {
                 return HOT;
-            } else if (TOP.getSection().equals(section)) {
-                return TOP;
             }
 
             return USER;
@@ -147,9 +144,6 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
                 case HOT:
                     return R.string.viral;
 
-                case TOP:
-                    return R.string.top_score;
-
                 case USER:
                     return R.string.user_sub;
             }
@@ -160,6 +154,7 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
 
     public enum GallerySort {
         TIME("time"),
+        RISING("rising"),
         VIRAL("viral");
 
         private final String mSort;
@@ -181,42 +176,11 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
         public static GallerySort getSortFromString(String sort) {
             if (TIME.getSort().equals(sort)) {
                 return TIME;
+            } else if (RISING.getSort().equals(sort)) {
+                return RISING;
             }
 
             return VIRAL;
-        }
-
-        /**
-         * Returns a string array for the popup dialog for choosing filter options
-         *
-         * @param context
-         * @return
-         */
-        public static String[] getPopupArray(Context context) {
-            GallerySort[] items = GallerySort.values();
-            String[] array = new String[items.length];
-            for (int i = 0; i < items.length; i++) {
-                array[i] = context.getString(getStringId(items[i]));
-            }
-
-            return array;
-        }
-
-        /**
-         * Returns the string id for the corresponding GallerySort enum
-         *
-         * @param sort
-         * @return
-         */
-        public static int getStringId(GallerySort sort) {
-            switch (sort) {
-                case TIME:
-                    return R.string.filter_time;
-
-                case VIRAL:
-                default:
-                    return R.string.filter_popular;
-            }
         }
     }
 
@@ -314,9 +278,9 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         // Hide the actionbar when scrolling down, show when scrolling up
         if (firstVisibleItem > mPreviousItem && mListener != null) {
-            mListener.onHideActionBar(false);
+            mListener.onUpdateActionBar(false);
         } else if (firstVisibleItem < mPreviousItem && mListener != null) {
-            mListener.onHideActionBar(true);
+            mListener.onUpdateActionBar(true);
         }
 
         mPreviousItem = firstVisibleItem;
@@ -422,9 +386,14 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
                 return true;
 
             case R.id.filter:
-                FilterDialogFragment filter = FilterDialogFragment.createInstance(mSort, mSection);
-                filter.setFilterListner(this);
-                filter.show(getFragmentManager(), "filter");
+                if (mListener != null) mListener.onUpdateActionBar(false);
+
+                GalleryFilterFragment fragment = GalleryFilterFragment.createInstance(mSort, mSection);
+                fragment.setFilterListener(this);
+                getFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .add(android.R.id.content, fragment, "filter")
+                        .commit();
                 return true;
         }
 
@@ -518,6 +487,15 @@ public class GalleryFragment extends BaseFragment implements FilterDialogFragmen
 
     @Override
     public void onFilterChange(GallerySection section, GallerySort sort) {
+        FragmentManager fm = getFragmentManager();
+        fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
+        if (mListener != null) mListener.onUpdateActionBar(true);
+
+        // Null values represent that the filter was canceled
+        if (section == null || sort == null) {
+            return;
+        }
+
         if (section == mSection && mSort == sort) {
             // Don't fetch data if they haven't changed anything
             LogUtil.v(TAG, "Filters have not been updated");

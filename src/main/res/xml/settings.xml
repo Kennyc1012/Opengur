@@ -32,6 +32,13 @@
             android:key="currentCacheSize"
             android:title="@string/pref_current_cache_size" />
 
+        <ListPreference
+            android:key="cacheLife"
+            android:title="@string/pref_cache_life_title"
+            android:entries="@array/pref_cache_life_items"
+            android:entryValues="@array/pref_cache_life_keys"
+            android:defaultValue="never" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/developer">

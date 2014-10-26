@@ -12,19 +12,16 @@ import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
-import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 /**
  * Created by kcampagna on 6/21/14.
  */
-public class BaseActivity extends ActionBarActivity {
+abstract public class BaseActivity extends ActionBarActivity {
     public final String TAG = getClass().getSimpleName();
 
     public OpenImgurApp app;
 
     public ImgurUser user;
-
-    private boolean mShouldTint = true;
 
     private boolean mIsActionBarShowing = true;
 
@@ -52,12 +49,6 @@ public class BaseActivity extends ActionBarActivity {
         mIsLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
         app = OpenImgurApp.getInstance(getApplicationContext());
         user = app.getUser();
-
-        if (mShouldTint) {
-            SystemBarTintManager tintManager = new SystemBarTintManager(this);
-            tintManager.setStatusBarTintEnabled(true);
-            tintManager.setTintColor(getResources().getColor(R.color.status_bar_tint));
-        }
     }
 
     @Override
@@ -95,15 +86,6 @@ public class BaseActivity extends ActionBarActivity {
     protected void onDestroy() {
         LogUtil.v(TAG, "onDestroy");
         super.onDestroy();
-    }
-
-    /**
-     * Sets if the activity should allow for status bar tinting, will only affect devices 4.4+
-     *
-     * @param tint
-     */
-    public void setShouldTint(boolean tint) {
-        mShouldTint = tint;
     }
 
     /**

@@ -6,7 +6,7 @@ package com.kenny.openimgur.classes;
 public interface FragmentListener {
     void onUpdateActionBarTitle(String title);
 
-    void onHideActionBar(boolean shouldShow);
+    void onUpdateActionBar(boolean shouldShow);
 
     void onLoadingStarted();
 

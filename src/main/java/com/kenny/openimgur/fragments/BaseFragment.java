@@ -10,7 +10,7 @@ import com.kenny.openimgur.util.LogUtil;
 /**
  * Created by kcampagna on 9/5/14.
  */
-public class BaseFragment extends Fragment {
+abstract public class BaseFragment extends Fragment {
     public final String TAG = getClass().getSimpleName();
 
     public OpenImgurApp app;

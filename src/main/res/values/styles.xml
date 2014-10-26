@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Style_Fully_Translucent" parent="Style_Not_Translucent" />
+    <style name="Style_Translucent" parent="Style_Not_Translucent" />
 
     <style name="Settings_Style" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBarOverlay">false</item>

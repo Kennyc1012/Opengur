@@ -38,6 +38,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         mApp = OpenImgurApp.getInstance(getActivity());
         addPreferencesFromResource(R.xml.settings);
         bindPreference(findPreference(SettingsActivity.THUMBNAIL_QUALITY_KEY));
+        bindPreference(findPreference(SettingsActivity.CACHE_LIFE_KEY));
         findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
@@ -131,8 +132,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         @Override
         protected Long doInBackground(Void... voids) {
             SettingsFragment frag = mFragment.get();
-            frag.mApp.getImageLoader().clearDiskCache();
-            VideoCache.getInstance().deleteCache();
+            frag.mApp.deleteAllCache();
             long cacheSize = FileUtil.getDirectorySize(frag.mApp.getCacheDir());
             cacheSize += VideoCache.getInstance().getCacheSize();
             return cacheSize;

@@ -14,6 +14,8 @@ import com.kenny.snackbar.SnackBar;
 public class SettingsActivity extends BaseActivity {
     public static final String NSFW_KEY = "allowNSFW";
 
+    public static final String CACHE_LIFE_KEY = "cacheLife";
+
     public static final String CURRENT_CACHE_SIZE_KEY = "currentCacheSize";
 
     public static final String THUMBNAIL_QUALITY_KEY = "thumbnailQuality";
@@ -23,6 +25,16 @@ public class SettingsActivity extends BaseActivity {
     public static final String THUMBNAIL_QUALITY_MEDIUM = "medium";
 
     public static final String THUMBNAIL_QUALITY_HIGH = "high";
+
+    public static final String CACHE_LIFE_NEVER = "never";
+
+    public static final String CACHE_LIFE_EXIT = "exit";
+
+    public static final String CACHE_LIFE_3 = "three";
+
+    public static final String CACHE_LIFE_7 = "seven";
+
+    public static final String CACHE_LIFE_14 = "fourteen";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

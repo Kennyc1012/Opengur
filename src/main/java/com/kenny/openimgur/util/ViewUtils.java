@@ -38,14 +38,7 @@ public class ViewUtils {
         int height = (int) styledAttributes.getDimension(0, 0);
         styledAttributes.recycle();
 
-        // On 4.4 + devices, we need to account for the status bar
-        if (OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.KITKAT) {
-            int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
-            if (resourceId > 0) {
-                height += context.getResources().getDimensionPixelSize(resourceId);
-            }
-        }
-
+        height += getStatusBarHeight(context);
         return height;
     }
 
@@ -117,5 +110,25 @@ public class ViewUtils {
         }
 
         return 0;
+    }
+
+    /**
+     * Returns the height of the status bar
+     *
+     * @param context
+     * @return
+     */
+    public static int getStatusBarHeight(Context context) {
+        int height = 0;
+
+        // On 4.4 + devices, we need to account for the status bar
+        if (OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.KITKAT) {
+            int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                height = context.getResources().getDimensionPixelSize(resourceId);
+            }
+        }
+
+        return height;
     }
 }

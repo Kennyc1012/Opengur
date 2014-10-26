@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 
 import com.kenny.openimgur.BuildConfig;
+import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.util.ImageUtil;
@@ -109,6 +110,38 @@ public class OpenImgurApp extends Application {
     public void setUser(ImgurUser user) {
         this.mUser = user;
         mSql.insertUser(user);
+    }
+
+    /**
+     * Called when the app is destroyed
+     */
+    public void onDestroy() {
+        String cacheClear = mPref.getString(SettingsActivity.CACHE_LIFE_KEY, SettingsActivity.CACHE_LIFE_NEVER);
+        long clearTime = System.currentTimeMillis() - mPref.getLong("lastClearedCache", 0);
+
+        if (SettingsActivity.CACHE_LIFE_NEVER.equals(cacheClear)) {
+            // Do nothing
+        } else if (SettingsActivity.CACHE_LIFE_EXIT.equals(cacheClear)) {
+            deleteAllCache();
+        } else if (SettingsActivity.CACHE_LIFE_3.equals(cacheClear) && clearTime >= DateUtils.DAY_IN_MILLIS * 3) {
+            deleteAllCache();
+            mPref.edit().putLong("lastClearedCache", System.currentTimeMillis()).apply();
+        } else if (SettingsActivity.CACHE_LIFE_7.equals(cacheClear) && clearTime >= DateUtils.DAY_IN_MILLIS * 7) {
+            deleteAllCache();
+            mPref.edit().putLong("lastClearedCache", System.currentTimeMillis()).apply();
+        } else if (SettingsActivity.CACHE_LIFE_14.equals(cacheClear) && clearTime >= DateUtils.DAY_IN_MILLIS * 14) {
+            deleteAllCache();
+            mPref.edit().putLong("lastClearedCache", System.currentTimeMillis()).apply();
+        }
+    }
+
+    /**
+     * Deletes all of the caches
+     */
+    public void deleteAllCache() {
+        mImageLoader.clearDiskCache();
+        mImageLoader.clearMemoryCache();
+        VideoCache.getInstance().deleteCache();
     }
 
     /**

@@ -1,8 +1,8 @@
 <resources>
 
-    <style name="Style_Fully_Translucent" parent="Style_Not_Translucent">
+    <style name="Style_Translucent" parent="Style_Not_Translucent">
         <item name="android:windowTranslucentNavigation">@bool/translucent_nav_bar</item>
-        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentStatus">false</item>
     </style>
 
     <style name="Style_Not_Translucent" parent="Theme.AppCompat.Light.DarkActionBar">
