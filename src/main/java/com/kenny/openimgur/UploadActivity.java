@@ -1,5 +1,7 @@
 package com.kenny.openimgur;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.ClipData;
@@ -21,6 +23,8 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -33,7 +37,6 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
-import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -96,7 +99,7 @@ public class UploadActivity extends BaseActivity {
 
     private CheckBox mGalleryCB;
 
-    private FloatingActionButton mUploadButton;
+    private Button mUploadButton;
 
     private boolean mIsValidLink = false;
 
@@ -109,57 +112,14 @@ public class UploadActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setTitle(R.string.upload);
+        getSupportActionBar().setTitle(getString(R.string.upload));
         setContentView(R.layout.activity_upload);
         mPreviewImage = (ImageView) findViewById(R.id.previewImage);
         mTitle = (EditText) findViewById(R.id.title);
         mDesc = (EditText) findViewById(R.id.desc);
         mLink = (EditText) findViewById(R.id.url);
         mGalleryCB = (CheckBox) findViewById(R.id.galleryUpload);
-        mUploadButton = (FloatingActionButton) findViewById(R.id.uploadButton);
-
-        mUploadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mIsValidLink && mTempFile == null && mCameraFile == null) {
-                    // Nothing selected yet
-                    SnackBar.show(UploadActivity.this, R.string.empty_upload);
-                } else {
-                    if (user == null) {
-                        new PopupDialogViewBuilder(UploadActivity.this).setTitle(R.string.not_logged_in)
-                                .setMessage(R.string.not_logged_in_msg)
-                                .setNegativeButton(R.string.cancel, null)
-                                .setPositiveButton(R.string.yes, new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        if (mIsValidLink) {
-                                            upload(mTitle.getText().toString(), mDesc.getText().toString(), mLink.getText().toString(), false);
-                                        } else {
-                                            upload(mTitle.getText().toString(), mDesc.getText().toString(), mTempFile != null ?
-                                                    mTempFile : mCameraFile, false);
-                                        }
-                                    }
-                                }).show();
-                    } else {
-                        String title = mTitle.getText().toString();
-                        String desc = mDesc.getText().toString();
-                        String link = mLink.getText().toString();
-
-                        if (mGalleryCB.isChecked() && TextUtils.isEmpty(title)) {
-                            SnackBar.show(UploadActivity.this, R.string.gallery_upload_no_title);
-                            return;
-                        }
-
-                        if (mIsValidLink) {
-                            upload(title, desc, link, mGalleryCB.isChecked());
-                        } else {
-                            upload(title, desc, mTempFile != null ?
-                                    mTempFile : mCameraFile, mGalleryCB.isChecked());
-                        }
-                    }
-                }
-            }
-        });
+        mUploadButton = (Button) findViewById(R.id.uploadButton);
     }
 
     /**
@@ -377,7 +337,6 @@ public class UploadActivity extends BaseActivity {
                 public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
                     // Only when these files are null will we listen for the text change
                     mIsValidLink = false;
-                    invalidateOptionsMenu();
                     if (mTempFile == null && mCameraFile == null && !TextUtils.isEmpty(charSequence)) {
                         mHandler.removeMessages(ImgurHandler.MESSAGE_SEARCH_URL);
                         mHandler.sendMessageDelayed(mHandler.obtainMessage(ImgurHandler.MESSAGE_SEARCH_URL, charSequence.toString()), TEXT_DELAY);
@@ -398,6 +357,50 @@ public class UploadActivity extends BaseActivity {
                 if (checked && user == null) {
                     SnackBar.show(UploadActivity.this, R.string.gallery_no_user);
                     button.setChecked(false);
+                }
+            }
+        });
+
+
+        mUploadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!mIsValidLink && mTempFile == null && mCameraFile == null) {
+                    // Nothing selected yet
+                    SnackBar.show(UploadActivity.this, R.string.empty_upload);
+                } else {
+                    if (user == null) {
+                        new PopupDialogViewBuilder(UploadActivity.this).setTitle(R.string.not_logged_in)
+                                .setMessage(R.string.not_logged_in_msg)
+                                .setNegativeButton(R.string.cancel, null)
+                                .setPositiveButton(R.string.yes, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        if (mIsValidLink) {
+                                            upload(mTitle.getText().toString(), mDesc.getText().toString(), mLink.getText().toString(), false);
+                                        } else {
+                                            upload(mTitle.getText().toString(), mDesc.getText().toString(), mTempFile != null ?
+                                                    mTempFile : mCameraFile, false);
+                                        }
+                                    }
+                                }).show();
+                    } else {
+                        String title = mTitle.getText().toString();
+                        String desc = mDesc.getText().toString();
+                        String link = mLink.getText().toString();
+
+                        if (mGalleryCB.isChecked() && TextUtils.isEmpty(title)) {
+                            SnackBar.show(UploadActivity.this, R.string.gallery_upload_no_title);
+                            return;
+                        }
+
+                        if (mIsValidLink) {
+                            upload(title, desc, link, mGalleryCB.isChecked());
+                        } else {
+                            upload(title, desc, mTempFile != null ?
+                                    mTempFile : mCameraFile, mGalleryCB.isChecked());
+                        }
+                    }
                 }
             }
         });
@@ -430,7 +433,6 @@ public class UploadActivity extends BaseActivity {
                                 // Not using dismissDialogFragment due to fast gif decoding before the fragment
                                 // gets added to the view
                                 fragment.dismiss();
-                                invalidateOptionsMenu();
                                 mLink.setVisibility(View.GONE);
                             } catch (IOException ex) {
                                 LogUtil.e(TAG, "Unable to play gif, falling back to still image", ex);
@@ -527,13 +529,29 @@ public class UploadActivity extends BaseActivity {
                             mIsValidLink = false;
                             mPreviewImage.setImageResource(R.drawable.photo_placeholder);
                             SnackBar.show(UploadActivity.this, R.string.invalid_url);
-                            invalidateOptionsMenu();
+
+                            mUploadButton.animate().alpha(0.0f).setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime))
+                                    .setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new AnimatorListenerAdapter() {
+
+                                @Override
+                                public void onAnimationCancel(Animator animation) {
+                                    super.onAnimationCancel(animation);
+                                    animation.removeAllListeners();
+                                    mUploadButton.setVisibility(View.GONE);
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    animation.removeAllListeners();
+                                    mUploadButton.setVisibility(View.GONE);
+                                }
+                            });
                         }
 
                         @Override
                         public void onLoadingComplete(String url, View view, Bitmap bitmap) {
                             mIsValidLink = true;
-
                             if (url.endsWith(".gif")) {
                                 if (!ImageUtil.loadAndDisplayGif(mPreviewImage, url, app.getImageLoader())) {
                                     mPreviewImage.setImageBitmap(bitmap);
@@ -542,7 +560,15 @@ public class UploadActivity extends BaseActivity {
                                 mPreviewImage.setImageBitmap(bitmap);
                             }
 
-                            invalidateOptionsMenu();
+                            mUploadButton.animate().alpha(1.0f).setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime))
+                                    .setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationStart(Animator animation) {
+                                    super.onAnimationStart(animation);
+                                    animation.removeAllListeners();
+                                    mUploadButton.setVisibility(View.VISIBLE);
+                                }
+                            });
                         }
 
                         @Override
@@ -550,7 +576,24 @@ public class UploadActivity extends BaseActivity {
                             mIsValidLink = false;
                             mPreviewImage.setImageResource(R.drawable.photo_placeholder);
                             SnackBar.show(UploadActivity.this, R.string.invalid_url);
-                            invalidateOptionsMenu();
+
+                            mUploadButton.animate().alpha(0.0f).setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime))
+                                    .setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new AnimatorListenerAdapter() {
+
+                                @Override
+                                public void onAnimationCancel(Animator animation) {
+                                    super.onAnimationCancel(animation);
+                                    animation.removeAllListeners();
+                                    mUploadButton.setVisibility(View.GONE);
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    animation.removeAllListeners();
+                                    mUploadButton.setVisibility(View.GONE);
+                                }
+                            });
                         }
                     });
                     break;
@@ -649,10 +692,17 @@ public class UploadActivity extends BaseActivity {
                 }
 
                 LogUtil.v("LoadImageTask", "Image will be rotated");
-                Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                bitmap.recycle();
-                return rotatedBitmap;
+                Bitmap rotatedBitmap = null;
 
+                try {
+                    rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                    bitmap.recycle();
+                } catch (OutOfMemoryError e) {
+                    LogUtil.e("LoadImageTask", "Out of memory while rotating image", e);
+                    return bitmap;
+                }
+
+                return rotatedBitmap;
             } catch (Exception e) {
                 LogUtil.e("LoadImageTask", "Error decoding Image", e);
             }
@@ -668,6 +718,7 @@ public class UploadActivity extends BaseActivity {
                 if (bitmap != null) {
                     activity.mPreviewImage.setImageBitmap(bitmap);
                     activity.mLink.setVisibility(View.GONE);
+                    activity.mUploadButton.setVisibility(View.VISIBLE);
                 } else {
                     SnackBar.show(activity, R.string.upload_decode_error);
                     if (FileUtil.isFileValid(activity.mTempFile)) {
@@ -675,7 +726,6 @@ public class UploadActivity extends BaseActivity {
                     }
                 }
 
-                activity.invalidateOptionsMenu();
                 activity.dismissDialogFragment(DFRAGMENT_DECODING);
                 mActivity.clear();
             }

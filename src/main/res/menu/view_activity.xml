@@ -22,12 +22,6 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/refresh"
-        android:title="@string/refresh"
-        android:icon="@drawable/ic_action_navigation_refresh"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/reddit"
         android:title="@string/view_reddit"
         android:icon="@drawable/ic_action_reddit"

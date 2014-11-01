@@ -1,82 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
     android:layout_marginTop="?actionBarSize">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/previewImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/upload_image_margin"
-                android:layout_marginRight="@dimen/upload_image_margin"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/photo_placeholder" />
-
-            <EditText
-                android:id="@+id/url"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:inputType="textUri"
-                android:hint="@string/link_upload_desc"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin" />
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/title"
+                <ImageView
+                    android:id="@+id/previewImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/upload_image_margin"
+                    android:layout_marginRight="@dimen/upload_image_margin"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/photo_placeholder" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
+
+                    <CheckBox
+                        android:id="@+id/galleryUpload"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:layout_marginRight="@dimen/activity_horizontal_margin"
+                        android:text="@string/add_to_gallery"
+                        android:textColor="@android:color/black"
+                        android:checked="false" />
+
+                    <Button
+                        android:id="@+id/uploadButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/upload"
+                        android:textColor="@color/accent_color_red_200"
+                        android:textAllCaps="true"
+                        style="@style/Widget.AppCompat.ActionButton"
+                        android:visibility="gone" />
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+
+        <android.support.v7.widget.CardView
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:inputType="textCapSentences|textMultiLine"
-                android:hint="@string/upload_title"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin" />
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:inputType="textCapSentences|textMultiLine"
-                android:hint="@string/upload_desc"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin" />
+                <EditText
+                    android:id="@+id/url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:inputType="textUri"
+                    android:hint="@string/link_upload_desc"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin" />
 
-            <CheckBox
-                android:id="@+id/galleryUpload"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:text="@string/add_to_gallery"
-                android:textColor="@android:color/black"
-                android:checked="false" />
+                <EditText
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:hint="@string/upload_title"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin" />
 
-        </LinearLayout>
-    </ScrollView>
+                <EditText
+                    android:id="@+id/desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:hint="@string/upload_desc"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin" />
 
-    <com.kenny.openimgur.ui.FloatingActionButton
-        android:id="@+id/uploadButton"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="16dp"
-        app:drawable="@drawable/ic_action_upload"
-        app:fabColor="@color/accent_color_red_200" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
 
-</RelativeLayout>
+    </LinearLayout>
+</ScrollView>

@@ -7,8 +7,6 @@
     <color name="accent_color_blue_700">#4d69ff</color>
     <color name="comment_bg_default">#ffffff</color>
     <color name="comment_bg_selected">#e5e5e5</color>
-    <color name="action_button_pressed">#80E0E0E0</color>
-    <color name="action_button_disabled">#1A999999</color>
     <color name="dialog_accept">@color/material_deep_teal_500</color>
     <color name="primary_blue_500">#5677fc</color>
 

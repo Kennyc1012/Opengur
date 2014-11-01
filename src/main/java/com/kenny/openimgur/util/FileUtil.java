@@ -14,11 +14,13 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -56,8 +58,10 @@ public class FileUtil {
 
         InputStream in;
 
+        String link = photo.isLinkAThumbnail() && photo.hasMP4Link() ? photo.getMP4Link() : photo.getLink();
+
         try {
-            in = new URL(photo.getLink()).openStream();
+            in = new URL(link).openStream();
         } catch (IOException e) {
             LogUtil.e(TAG, "Unable to open stream from url", e);
             return false;
@@ -231,5 +235,37 @@ public class FileUtil {
                 LogUtil.e(TAG, "Unable to close stream", ex);
             }
         }
+    }
+
+    /**
+     * Copies one file to another
+     *
+     * @param sourceFile The file to copy
+     * @param destFile   The destination file to copy to
+     * @return If successful
+     */
+    public static boolean copyFile(File sourceFile, File destFile) {
+        if (isFileValid(destFile)) {
+            destFile.delete();
+        }
+
+        FileChannel source = null;
+        FileChannel destination = null;
+        boolean success = false;
+
+        try {
+            source = new FileInputStream(sourceFile).getChannel();
+            destination = new FileOutputStream(destFile).getChannel();
+            destination.transferFrom(source, 0, source.size());
+            success = true;
+        } catch (Exception e) {
+            LogUtil.e(TAG, "Error whiling copying file", e);
+            success = false;
+        } finally {
+            closeStream(source);
+            closeStream(destination);
+        }
+
+        return success;
     }
 }

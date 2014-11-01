@@ -21,7 +21,6 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import pl.droidsonroids.gif.GifDrawable;
@@ -69,15 +68,10 @@ public class ImageUtil {
         int inSampleSize = 1;
 
         if (height > reqHeight || width > reqWidth) {
-
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
+            if (width > height) {
+                inSampleSize = Math.round((float) height / (float) reqHeight);
+            } else {
+                inSampleSize = Math.round((float) width / (float) reqWidth);
             }
         }
 
@@ -88,8 +82,6 @@ public class ImageUtil {
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        options.inPurgeable = true;
-        options.inInputShareable = true;
         BitmapFactory.decodeFile(file.getAbsolutePath(), options);
 
         // Calculate inSampleSize
@@ -173,32 +165,6 @@ public class ImageUtil {
                 .resetViewBeforeLoading(true)
                 .cacheInMemory(true)
                 .cacheOnDisk(true);
-    }
-
-    /**
-     * Saves a bitmap to a local file
-     *
-     * @param bitmap The bitmap to save
-     * @param file   The file to save the bitmap to
-     * @return If successful
-     */
-    public static boolean saveBitmapToFile(Bitmap bitmap, File file) {
-        if (!FileUtil.isFileValid(file)) {
-            LogUtil.w(TAG, "Invalid file, can not save bitmap");
-            return false;
-        }
-
-        try {
-            FileOutputStream fileStream = new FileOutputStream(file);
-            // Compress the file slightly
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fileStream);
-            FileUtil.closeStream(fileStream);
-            return true;
-        } catch (Exception e) {
-            LogUtil.e(TAG, "Unable to save bitmap to file", e);
-        }
-
-        return false;
     }
 
     /**

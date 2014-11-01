@@ -120,9 +120,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAllCaps="true"
-                android:textColor="#000000"
                 android:text="@string/cancel"
-                style="@style/Action_Button" />
+                style="@style/Widget.AppCompat.ActionButton" />
 
             <Button
                 android:id="@+id/positive"
@@ -131,7 +130,7 @@
                 android:textAllCaps="true"
                 android:text="@string/accept"
                 android:textColor="@color/dialog_accept"
-                style="@style/Action_Button" />
+                style="@style/Widget.AppCompat.ActionButton" />
 
         </LinearLayout>
 

@@ -801,14 +801,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
                 return true;
 
-            case R.id.refresh:
-                // Set load comments to true, load comments, then set it back to its original value to persist its state
-                boolean loadComments = mLoadComments;
-                mLoadComments = true;
-                loadComments();
-                mLoadComments = loadComments;
-                return true;
-
             case R.id.profile:
                 startActivity(ProfileActivity.createIntent(getApplicationContext(), mPagerAdapter.getImgurItem(mCurrentPosition).getAccount()));
                 return true;

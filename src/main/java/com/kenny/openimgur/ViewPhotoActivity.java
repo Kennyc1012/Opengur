@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.FileUtil;
@@ -32,6 +34,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
  * Created by kcampagna on 6/22/14.
  */
 public class ViewPhotoActivity extends BaseActivity {
+    private static final String KEY_VIDEO_POSITION = "position";
 
     private static final String KEY_URL = "url";
 
@@ -48,6 +51,8 @@ public class ViewPhotoActivity extends BaseActivity {
     private ImgurPhoto photo;
 
     private String mUrl;
+
+    private boolean mIsVideo = false;
 
     public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {
         return new Intent(context, ViewPhotoActivity.class).putExtra(KEY_IMAGE, photo);
@@ -68,6 +73,10 @@ public class ViewPhotoActivity extends BaseActivity {
             return;
         }
 
+        if (OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+
         setContentView(R.layout.image_popup_fragment);
         photo = getIntent().getParcelableExtra(KEY_IMAGE);
         mUrl = intent.getStringExtra(KEY_URL);
@@ -78,13 +87,13 @@ public class ViewPhotoActivity extends BaseActivity {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         if (isVideo) {
-            displayVideo();
+            displayVideo(savedInstanceState);
         } else {
             if (photo != null) {
                 if (photo.isAnimated()) {
                     if (photo.isLinkAThumbnail() || photo.getSize() > (1024 * 1024 * 5)) {
                         mUrl = photo.getMP4Link();
-                        displayVideo();
+                        displayVideo(savedInstanceState);
                         return;
                     } else {
                         mUrl = photo.getLink();
@@ -103,6 +112,7 @@ public class ViewPhotoActivity extends BaseActivity {
      * Displays the image
      */
     private void displayImage() {
+        mIsVideo = false;
         app.getImageLoader().displayImage(mUrl, mImageView, ImageUtil.getDisplayOptionsForView().build(), new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String s, View view) {
@@ -138,8 +148,17 @@ public class ViewPhotoActivity extends BaseActivity {
         });
     }
 
-    private void displayVideo() {
+    private void displayVideo(Bundle savedInstance) {
+        mIsVideo = true;
         File file = VideoCache.getInstance().getVideoFile(mUrl);
+        final int position;
+
+        // Check if our video was playing during a rotation
+        if (savedInstance != null && savedInstance.containsKey(KEY_VIDEO_POSITION)) {
+            position = savedInstance.getInt(KEY_VIDEO_POSITION, 0);
+        } else {
+            position = 0;
+        }
 
         if (FileUtil.isFileValid(file)) {
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -150,11 +169,11 @@ public class ViewPhotoActivity extends BaseActivity {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
                     mediaPlayer.setLooping(true);
+                    mediaPlayer.seekTo(position);
                 }
             });
 
             mVideoView.setVideoPath(file.getAbsolutePath());
-            // mVideoView.setMediaController(new MediaController(this));
             mVideoView.start();
         } else {
             // Should never happen
@@ -180,11 +199,11 @@ public class ViewPhotoActivity extends BaseActivity {
                         @Override
                         public void onPrepared(MediaPlayer mediaPlayer) {
                             mediaPlayer.setLooping(true);
+                            mediaPlayer.seekTo(position);
                         }
                     });
 
                     mVideoView.setVideoPath(file.getAbsolutePath());
-                    // mVideoView.setMediaController(new MediaController(ViewPhotoActivity.this));
                     mVideoView.start();
                 }
             });
@@ -215,5 +234,14 @@ public class ViewPhotoActivity extends BaseActivity {
         }
 
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (mIsVideo && mVideoView.isPlaying()) {
+            outState.putInt(KEY_VIDEO_POSITION, mVideoView.getCurrentPosition());
+        }
+
+        super.onSaveInstanceState(outState);
     }
 }

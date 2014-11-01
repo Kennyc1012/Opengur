@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Action_Button">
-        <item name="android:minWidth">88dp</item>
-        <item name="android:minHeight">36dp</item>
-        <item name="android:background">@drawable/action_button_bg</item>
-        <item name="android:padding">16dp</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@android:color/black</item>
-    </style>
-
     <style name="dialog_title">
         <item name="android:textColor">@android:color/black</item>
         <item name="android:layout_margin">@dimen/dialog_content_margin</item>

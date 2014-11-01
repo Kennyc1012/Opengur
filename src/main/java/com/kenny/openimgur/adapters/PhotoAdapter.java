@@ -122,6 +122,8 @@ public class PhotoAdapter extends BaseAdapter {
         holder.prog.setVisibility(View.GONE);
         holder.video.setVisibility(View.GONE);
         holder.image.setVisibility(View.VISIBLE);
+       // Linkify.addLinks(holder.title, Linkify.WEB_URLS);
+        //Linkify.addLinks(holder.desc, Linkify.WEB_URLS);
 
         if (holder.video.isPlaying()) {
             holder.video.stopPlayback();
@@ -196,6 +198,9 @@ public class PhotoAdapter extends BaseAdapter {
                 return true;
             }
         });
+
+       // holder.title.setMovementMethod(CustomLinkMovement.getInstance(mListener));
+        //holder.desc.setMovementMethod(CustomLinkMovement.getInstance(mListener));
     }
 
     /**
