@@ -8,6 +8,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,7 +20,6 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -33,6 +33,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
+import com.cocosw.bottomsheet.BottomSheet;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -64,7 +65,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -169,8 +169,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private ApiClient mApiClient;
 
     private boolean mIsActionBarShowing = true;
-
-    private ActionMode mActionMode;
 
     private ImgurComment mSelectedComment;
 
@@ -367,7 +365,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private void nextComments(final ImgurComment comment) {
         mSelectedComment = null;
         mCommentAdapter.setSelectedIndex(-1);
-        if (mActionMode != null) mActionMode.finish();
 
         mCommentList.animate().translationX(-mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
             @Override
@@ -396,7 +393,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private void previousComments(final ImgurComment comment) {
         mSelectedComment = null;
         mCommentAdapter.setSelectedIndex(-1);
-        if (mActionMode != null) mActionMode.finish();
 
         mCommentList.animate().translationX(mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
             @Override
@@ -875,15 +871,64 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             if (shouldClose) {
                 mSelectedComment = null;
-                if (mActionMode != null) mActionMode.finish();
             } else {
                 mSelectedComment = mCommentAdapter.getItem(position);
-                if (mActionMode == null) mActionMode = startSupportActionMode(new ActionBarCallBack(this));
+                showCommentSheet();
             }
         } else {
             // Header view
             previousComments(mCommentAdapter.getItem(0));
         }
+    }
+
+    /**
+     * Shows the Sheet for selecting an option on the selected comment
+     */
+    private void showCommentSheet() {
+        new BottomSheet.Builder(this, R.style.BottomSheet_StyleDialog)
+                .title(R.string.options)
+                .grid()
+                .sheet(R.menu.comment_menu)
+                .listener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        switch (which) {
+                            case R.id.upVote:
+                            case R.id.downVote:
+                                if (user != null) {
+                                    String vote = which == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
+                                    String url = String.format(Endpoints.COMMENT_VOTE.getUrl(), mSelectedComment.getId(), vote);
+                                    RequestBody body = new FormEncodingBuilder().add("id", mSelectedComment.getId()).build();
+                                    mApiClient.setUrl(url);
+                                    mApiClient.setRequestType(ApiClient.HttpRequest.POST);
+                                    mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
+                                } else {
+                                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                                }
+                                break;
+
+                            case R.id.profile:
+                                startActivity(ProfileActivity.createIntent(ViewActivity.this, mSelectedComment.getAuthor()));
+                                break;
+
+                            case R.id.reply:
+                                if (user != null) {
+                                    DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), mSelectedComment.getId());
+                                    showDialogFragment(fragment, "comment");
+                                } else {
+                                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                                }
+                                break;
+                        }
+                    }
+                })
+                .dismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        mSelectedComment = null;
+                        mCommentAdapter.setSelectedIndex(-1);
+                    }
+                }).show();
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {
@@ -1038,81 +1083,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 view.setAlpha(0);
             }
         }
-    }
-
-    private static class ActionBarCallBack implements ActionMode.Callback {
-        private WeakReference<ViewActivity> mActivity;
-
-        public ActionBarCallBack(ViewActivity activity) {
-            mActivity = new WeakReference<ViewActivity>(activity);
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            ViewActivity activity = mActivity.get();
-
-            if (activity != null) {
-                switch (item.getItemId()) {
-                    case R.id.upVote:
-                    case R.id.downVote:
-                        if (activity.user != null) {
-                            String vote = item.getItemId() == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
-                            String url = String.format(Endpoints.COMMENT_VOTE.getUrl(), activity.mSelectedComment.getId(), vote);
-                            RequestBody body = new FormEncodingBuilder().add("id", activity.mSelectedComment.getId()).build();
-                            activity.mApiClient.setUrl(url);
-                            activity.mApiClient.setRequestType(ApiClient.HttpRequest.POST);
-                            activity.mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
-                        } else {
-                            SnackBar.show(activity, R.string.user_not_logged_in);
-                        }
-
-                        mode.finish();
-                        return true;
-
-                    case R.id.profile:
-                        activity.startActivity(ProfileActivity.createIntent(activity, activity.mSelectedComment.getAuthor()));
-                        mode.finish();
-                        return true;
-
-                    case R.id.reply:
-                        if (activity.user != null) {
-                            DialogFragment fragment = CommentPopupFragment.createInstance(activity.mPagerAdapter.getImgurItem(activity.mCurrentPosition).getId(), activity.mSelectedComment.getId());
-                            activity.showDialogFragment(fragment, "comment");
-                        } else {
-                            SnackBar.show(activity, R.string.user_not_logged_in);
-                        }
-
-                        mode.finish();
-                        return true;
-                }
-            }
-
-            return false;
-        }
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.getMenuInflater().inflate(R.menu.comment_cab_menu, menu);
-            return true;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            ViewActivity activity = mActivity.get();
-
-            if (activity != null) {
-                activity.mActionMode = null;
-                activity.mSelectedComment = null;
-                activity.mCommentAdapter.setSelectedIndex(-1);
-                mActivity.clear();
-            }
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
     }
 
     private static class BrowsingAdapter extends FragmentStatePagerAdapter {

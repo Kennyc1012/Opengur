@@ -59,7 +59,7 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
 
         mListView.setAdapter(mAdapter = new NavAdapter(getActivity(), navItems));
         mListView.setOnItemClickListener(this);
-        mListView.setPadding(0, ViewUtils.getHeightForTranslucentStyle(getActivity()), 0, 0);
+        mListView.setPadding(0, ViewUtils.getStatusBarHeight(getActivity()), 0, 0);
     }
 
     @Override
@@ -90,7 +90,6 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 if (!isAdded()) return;
-
                 if (mListener != null) mListener.onDrawerToggle(true);
             }
 
@@ -98,7 +97,6 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
                 if (!isAdded()) return;
-
                 if (mListener != null) mListener.onDrawerToggle(false);
             }
         };
@@ -124,7 +122,7 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (mListener != null) mListener.onListItemSelected(i);
+        if (mListener != null) mListener.onNavigationItemSelected(i);
         setSelectedPage(i);
     }
 
@@ -138,7 +136,7 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
     }
 
     public static interface NavigationListener {
-        void onListItemSelected(int position);
+        void onNavigationItemSelected(int position);
 
         void onDrawerToggle(boolean isOpen);
     }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:title="@string/up_vote"
@@ -25,6 +25,12 @@
         android:title="@string/view_user"
         android:id="@+id/profile"
         android:icon="@drawable/ic_action_user"
+        app:showAsAction="always" />
+
+    <item
+        android:title="@string/cancel"
+        android:id="@+id/cancel"
+        android:icon="@drawable/ic_action_close"
         app:showAsAction="always" />
 
 </menu>

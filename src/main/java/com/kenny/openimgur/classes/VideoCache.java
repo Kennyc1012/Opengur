@@ -2,6 +2,7 @@ package com.kenny.openimgur.classes;
 
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -47,6 +48,11 @@ public class VideoCache {
      * @param listener Optional VideoCacheListener
      */
     public void putVideo(String url, @Nullable VideoCacheListener listener) {
+        if (TextUtils.isEmpty(url)) {
+            if (listener != null) listener.onVideoDownloadFailed(new NullPointerException("Url is null"), url);
+            return;
+        }
+
         String key = mKeyGenerator.generate(url);
         File file = getVideoFile(key);
 
@@ -78,6 +84,8 @@ public class VideoCache {
      * @return
      */
     public File getVideoFile(String url) {
+        if (TextUtils.isEmpty(url)) return null;
+
         String key = mKeyGenerator.generate(url);
         File file = new File(mCacheDir, key + ".mp4");
         return FileUtil.isFileValid(file) ? file : null;

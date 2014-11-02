@@ -10,14 +10,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.widget.RelativeLayout;
 
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.OpenImgurApp;
@@ -61,6 +61,8 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
     private FloatingActionButton mUploadButton;
 
+    private Toolbar mToolBar;
+
     private float mUploadButtonHeight;
 
     private float mUploadMenuButtonHeight;
@@ -74,9 +76,9 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
         setContentView(R.layout.activity_main);
+        mToolBar = (Toolbar) findViewById(R.id.toolBar);
+        setupToolBar();
         mNavFragment = (NavFragment) getFragmentManager().findFragmentById(R.id.navDrawer);
         mDrawer = (DrawerLayout) findViewById(R.id.drawerLayout);
         mNavFragment.configDrawerLayout(mDrawer);
@@ -93,8 +95,25 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         mUploadMenuButtonHeight = getResources().getDimension(R.dimen.fab_button_radius_smaller);
     }
 
+    /**
+     * Sets up the tool bar to take the place of the action bar
+     */
+    private void setupToolBar() {
+        if (isLandscape() && !isTablet()) {
+            // Don't add the extra padding
+        } else {
+            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mToolBar.getLayoutParams();
+            lp.setMargins(0, ViewUtils.getStatusBarHeight(getApplicationContext()), 0, 0);
+            mToolBar.setLayoutParams(lp);
+        }
+
+        setSupportActionBar(mToolBar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+    }
+
     @Override
-    public void onListItemSelected(int position) {
+    public void onNavigationItemSelected(int position) {
         if (position <= 2 && mCurrentPage == position) return;
         changePage(position);
         mDrawer.closeDrawers();
@@ -104,15 +123,6 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mNavFragment.onOptionsItemSelected(item)) return true;
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
-            menu.clear();
-        }
-
-        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -190,7 +200,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
     @Override
     public void onUpdateActionBar(boolean shouldShow) {
-        setActionBarVisibility(shouldShow);
+        setActionBarVisibility(mToolBar, shouldShow);
         animateUploadMenuButton(shouldShow);
     }
 
@@ -224,11 +234,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
     @Override
     public void onDrawerToggle(boolean isOpen) {
-        if (isOpen) {
-            setActionBarVisibility(true);
-        }
-
-        supportInvalidateOptionsMenu();
+        // NOOP
     }
 
     @Override

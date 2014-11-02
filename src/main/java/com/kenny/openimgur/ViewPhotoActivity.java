@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -18,7 +17,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.FileUtil;
@@ -65,16 +63,13 @@ public class ViewPhotoActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStatusBarColor(Color.TRANSPARENT);
         Intent intent = getIntent();
 
         if (intent == null || (!intent.hasExtra(KEY_IMAGE) && !intent.hasExtra(KEY_URL))) {
             Toast.makeText(getApplicationContext(), R.string.error_generic, Toast.LENGTH_SHORT).show();
             finish();
             return;
-        }
-
-        if (OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
         setContentView(R.layout.image_popup_fragment);
@@ -154,7 +149,7 @@ public class ViewPhotoActivity extends BaseActivity {
         final int position;
 
         // Check if our video was playing during a rotation
-        if (savedInstance != null && savedInstance.containsKey(KEY_VIDEO_POSITION)) {
+        if (savedInstance != null) {
             position = savedInstance.getInt(KEY_VIDEO_POSITION, 0);
         } else {
             position = 0;
@@ -176,7 +171,6 @@ public class ViewPhotoActivity extends BaseActivity {
             mVideoView.setVideoPath(file.getAbsolutePath());
             mVideoView.start();
         } else {
-            // Should never happen
             VideoCache.getInstance().putVideo(mUrl, new VideoCache.VideoCacheListener() {
                 @Override
                 public void onVideoDownloadStart(String key, String url) {

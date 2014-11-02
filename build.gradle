@@ -46,5 +46,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.0'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
     compile(name: 'snack_bar', ext: 'aar')
+    compile(name: 'bottom_sheet', ext: 'aar')
     compile project(':libraries:EventBus')
 }

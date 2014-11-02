@@ -4,13 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <fragment
-        android:id="@+id/sideGallery"
-        android:name="com.kenny.openimgur.fragments.SideGalleryFragment"
-        android:layout_width="250dp"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?android:attr/actionBarSize"/>
-
     <com.sothree.slidinguppanel.SlidingUpPanelLayout
         android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
@@ -18,7 +11,8 @@
         android:gravity="bottom"
         app:panelHeight="?android:attr/actionBarSize"
         app:shadowHeight="4dp"
-        app:dragView="@+id/topContainer">
+        app:dragView="@+id/topContainer"
+        android:layout_weight="1">
 
         <!-- MAIN CONTENT -->
         <android.support.v4.view.ViewPager
@@ -50,5 +44,12 @@
 
         </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+    <fragment
+        android:id="@+id/sideGallery"
+        android:name="com.kenny.openimgur.fragments.SideGalleryFragment"
+        android:layout_width="250dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?android:attr/actionBarSize" />
 
 </LinearLayout>

@@ -138,6 +138,7 @@
     <string name="reddit_top_filter_month">Month</string>
     <string name="reddit_top_filter_year">Year</string>
     <string name="reddit_top_filter_all">All</string>
+    <string name="options">Options</string>
 
     <string-array name="pref_cache_life_items">
         <item>Never</item>

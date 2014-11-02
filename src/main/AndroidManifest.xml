@@ -15,7 +15,7 @@
         android:label="@string/app_name">
         <activity
             android:name=".MainActivity"
-            android:theme="@style/Style_Translucent">
+            android:theme="@style/Style_Translucent_Main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

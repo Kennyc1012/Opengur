@@ -1,11 +1,15 @@
 package com.kenny.openimgur;
 
+import android.annotation.SuppressLint;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.kenny.openimgur.classes.ImgurUser;
@@ -29,6 +33,8 @@ abstract public class BaseActivity extends ActionBarActivity {
 
     private boolean mShouldShowHome = true;
 
+    private boolean mIsTablet = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LogUtil.v(TAG, "onCreate");
@@ -49,6 +55,7 @@ abstract public class BaseActivity extends ActionBarActivity {
         mIsLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
         app = OpenImgurApp.getInstance(getApplicationContext());
         user = app.getUser();
+        mIsTablet = getResources().getBoolean(R.bool.is_tablet);
     }
 
     @Override
@@ -104,6 +111,22 @@ abstract public class BaseActivity extends ActionBarActivity {
     }
 
     /**
+     * Shows or hides the actionbar
+     *
+     * @param toolbar    The toolbar that is taking the place of the actionbar
+     * @param shouldShow If the actionbar should be shown
+     */
+    public void setActionBarVisibility(Toolbar toolbar, boolean shouldShow) {
+        if (shouldShow && !mIsActionBarShowing) {
+            mIsActionBarShowing = true;
+            toolbar.animate().translationY(0);
+        } else if (!shouldShow && mIsActionBarShowing) {
+            mIsActionBarShowing = false;
+            toolbar.animate().translationY(-toolbar.getHeight());
+        }
+    }
+
+    /**
      * Returns if the current activity is in landscape orientation
      *
      * @return
@@ -143,6 +166,27 @@ abstract public class BaseActivity extends ActionBarActivity {
 
         if (fragment != null && fragment instanceof DialogFragment) {
             ((DialogFragment) fragment).dismiss();
+        }
+    }
+
+    /**
+     * Returns if the current device is a tablet (600dp+ width)
+     *
+     * @return
+     */
+    public boolean isTablet() {
+        return mIsTablet;
+    }
+
+    /**
+     * Sets the color of the status bar, only for SDK 21+ devices
+     *
+     * @param color
+     */
+    @SuppressLint("NewApi")
+    public void setStatusBarColor(@ColorRes int color) {
+        if (app.SDK_VERSION >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(color);
         }
     }
 }

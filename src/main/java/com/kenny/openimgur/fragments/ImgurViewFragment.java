@@ -373,6 +373,8 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
                     @Override
                     public void onVideoDownloadFailed(Exception ex, String url) {
+                        LogUtil.e(TAG, "Unable to download video", ex);
+
                         if (image != null && getActivity() != null) {
                             SnackBar.show(getActivity(), R.string.loading_image_error);
                             prog.setVisibility(View.GONE);
@@ -410,7 +412,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
-                    setupFragmentWithObject((ImgurBaseObject) msg.obj);
+                    mImgurObject = ((ImgurBaseObject) msg.obj);
+                    mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), ImgurViewFragment.this);
+                    createHeader();
+                    mListView.setAdapter(mPhotoAdapter);
+                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                     break;
 
                 case MESSAGE_ACTION_FAILED:
