@@ -1,0 +1,10 @@
+/build
+.idea
+.gradle
+.DS_Store
+bin/
+gen/
+/gradle
+gradlew
+gradlew.bat
+/libraries/EventBus/build
