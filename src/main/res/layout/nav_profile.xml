@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/accent_color_blue_700"
+    android:paddingLeft="@dimen/nav_padding"
+    android:paddingRight="@dimen/nav_padding"
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_account_circle" />
+
+    <com.kenny.openimgur.ui.TextViewRoboto
+        android:id="@+id/profileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        app:robotoFont="medium" />
+
+    <com.kenny.openimgur.ui.TextViewRoboto
+        android:id="@+id/reputation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:robotoFont="regular"
+        android:textSize="14sp" />
+
+</LinearLayout>

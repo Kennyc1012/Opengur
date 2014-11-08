@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NavAdapter;
+import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.util.ViewUtils;
 
 /**
@@ -52,12 +53,7 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
         super.onViewCreated(view, savedInstanceState);
         mListView = (ListView) view;
         String[] navItems = getResources().getStringArray(R.array.nav_items);
-
-        if (app.getUser() != null) {
-            navItems[2] = app.getUser().getUsername();
-        }
-
-        mListView.setAdapter(mAdapter = new NavAdapter(getActivity(), navItems));
+        mListView.setAdapter(mAdapter = new NavAdapter(getActivity(), navItems, app.getUser()));
         mListView.setOnItemClickListener(this);
         mListView.setPadding(0, ViewUtils.getStatusBarHeight(getActivity()), 0, 0);
     }
@@ -70,13 +66,12 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
     }
 
     /**
-     * Updates the title for the profile nav item
+     * Updates the Logged in user
      *
-     * @param username The username if the user is logged in
-     * @param title    The default title for the item
+     * @param user The newly logged in user
      */
-    public void onUsernameChange(String username, String title) {
-        if (mAdapter != null) mAdapter.onUsernameChange(username, title);
+    public void onUsernameChange(ImgurUser user) {
+        if (mAdapter != null) mAdapter.onUsernameChange(user);
     }
 
     /**

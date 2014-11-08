@@ -43,7 +43,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -62,6 +61,8 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
     private static final String KEY_ITEMS = "items";
 
     private static final String KEY_CURRENT_PAGE = "page";
+
+    private static final String KEY_SHOW_VIRAL = "showViral";
 
     public enum GallerySection {
         HOT("hot"),
@@ -204,6 +205,8 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
 
     private boolean mAllowNSFW = false;
 
+    private boolean mShowViral = true;
+
     private int mPreviousItem = 0;
 
     public static GalleryFragment createInstance() {
@@ -264,8 +267,9 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
         }
 
         SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
-        edit.putString("section", mSection.getSection());
-        edit.putString("sort", mSort.getSort()).apply();
+        edit.putString(KEY_SECTION, mSection.getSection());
+        edit.putBoolean(KEY_SHOW_VIRAL, mShowViral);
+        edit.putString(KEY_SORT, mSort.getSort()).apply();
         super.onDestroyView();
     }
 
@@ -334,17 +338,19 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
     private void handleBundle(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            mSection = GallerySection.getSectionFromString(pref.getString("section", null));
-            mSort = GallerySort.getSortFromString(pref.getString("sort", null));
+            mSection = GallerySection.getSectionFromString(pref.getString(KEY_SECTION, null));
+            mSort = GallerySort.getSortFromString(pref.getString(KEY_SORT, null));
+            mShowViral = pref.getBoolean(KEY_SHOW_VIRAL, true);
         } else {
             mSort = GallerySort.getSortFromString(savedInstanceState.getString(KEY_SORT, GallerySort.TIME.getSort()));
             mSection = GallerySection.getSectionFromString(savedInstanceState.getString(KEY_SECTION, GallerySection.HOT.getSection()));
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
+            mShowViral = savedInstanceState.getBoolean(KEY_SHOW_VIRAL, true);
 
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
-                ImgurBaseObject[] items = (ImgurBaseObject[]) savedInstanceState.getParcelableArray(KEY_ITEMS);
+                ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                mAdapter = new GalleryAdapter(getActivity(), new ArrayList<ImgurBaseObject>(Arrays.asList(items)));
+                mAdapter = new GalleryAdapter(getActivity(), items);
                 mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                 mGridView.setAdapter(mAdapter);
                 mGridView.setSelection(currentPosition);
@@ -388,7 +394,7 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
             case R.id.filter:
                 if (mListener != null) mListener.onUpdateActionBar(false);
 
-                GalleryFilterFragment fragment = GalleryFilterFragment.createInstance(mSort, mSection);
+                GalleryFilterFragment fragment = GalleryFilterFragment.createInstance(mSort, mSection, mShowViral);
                 fragment.setFilterListener(this);
                 getFragmentManager().beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -406,7 +412,7 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
      * @return
      */
     private String getGalleryUrl() {
-        return String.format(Endpoints.GALLERY.getUrl(), mSection.getSection(), mSort.getSort(), mCurrentPage);
+        return String.format(Endpoints.GALLERY.getUrl(), mSection.getSection(), mSort.getSort(), mCurrentPage, mShowViral);
     }
 
     /**
@@ -486,19 +492,13 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
     }
 
     @Override
-    public void onFilterChange(GallerySection section, GallerySort sort) {
+    public void onFilterChange(GallerySection section, GallerySort sort, boolean showViral) {
         FragmentManager fm = getFragmentManager();
         fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
         if (mListener != null) mListener.onUpdateActionBar(true);
 
         // Null values represent that the filter was canceled
-        if (section == null || sort == null) {
-            return;
-        }
-
-        if (section == mSection && mSort == sort) {
-            // Don't fetch data if they haven't changed anything
-            LogUtil.v(TAG, "Filters have not been updated");
+        if (section == null || sort == null || (section == mSection && mSort == sort && mShowViral == showViral)) {
             return;
         }
 
@@ -508,6 +508,7 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
 
         mSection = section;
         mSort = sort;
+        mShowViral = showViral;
         mCurrentPage = 0;
         mIsLoading = true;
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
@@ -588,11 +589,10 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
         outState.putString(KEY_SECTION, mSection.getSection());
         outState.putString(KEY_SORT, mSort.getSort());
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
+        outState.putBoolean(KEY_SHOW_VIRAL, mShowViral);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            ImgurBaseObject[] objects = new ImgurBaseObject[mAdapter.getCount()];
-            System.arraycopy(mAdapter.getAllItems(), 0, objects, 0, objects.length);
-            outState.putParcelableArray(KEY_ITEMS, objects);
+            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.getAllItems());
             outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
         }
 

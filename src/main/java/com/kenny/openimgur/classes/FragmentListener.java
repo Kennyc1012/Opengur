@@ -14,5 +14,5 @@ public interface FragmentListener {
 
     void onError(int errorCode);
 
-    void onUpdateUser(String username, String defaultTitle);
+    void onUpdateUser(ImgurUser user);
 }

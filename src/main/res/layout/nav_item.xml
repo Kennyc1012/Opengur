@@ -19,8 +19,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        app:robotoFont="regular"
-        android:textSize="16sp"
+        app:robotoFont="medium"
+        android:textSize="14sp"
         android:textColor="@color/abc_primary_text_material_light"
         android:layout_marginLeft="56dp"
         android:layout_gravity="center_vertical" />

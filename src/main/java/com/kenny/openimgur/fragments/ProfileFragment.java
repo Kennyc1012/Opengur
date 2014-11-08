@@ -56,7 +56,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -234,9 +233,9 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
             if (savedInstanceState.containsKey(KEY_ITEMS) && savedInstanceState.containsKey(KEY_USERNAME)) {
                 mSelectedUser = savedInstanceState.getParcelable(KEY_USERNAME);
                 mCurrentEndpoint = savedInstanceState.getString(KEY_ENDPOINT, null).equals(Endpoints.ACCOUNT_GALLERY_FAVORITES.getUrl()) ? Endpoints.ACCOUNT_GALLERY_FAVORITES : Endpoints.ACCOUNT_SUBMISSIONS;
-                ImgurBaseObject[] items = (ImgurBaseObject[]) savedInstanceState.getParcelableArray(KEY_ITEMS);
+                ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                mAdapter = new GalleryAdapter(getActivity(), new ArrayList<ImgurBaseObject>(Arrays.asList(items)));
+                mAdapter = new GalleryAdapter(getActivity(), items);
                 mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                 mGridView.addHeaderView(ViewUtils.getProfileView(mSelectedUser, getActivity(), mMultiView, ProfileFragment.this));
                 mGridView.setAdapter(mAdapter);
@@ -283,6 +282,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                         .setPositiveButton(R.string.yes, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                mSelectedUser = null;
                                 app.onLogout();
                                 getActivity().invalidateOptionsMenu();
 
@@ -295,7 +295,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                                 mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
                                 if (mListener != null) {
                                     mListener.onUpdateActionBarTitle(getString(R.string.login));
-                                    mListener.onUpdateUser(null, getString(R.string.profile));
+                                    mListener.onUpdateUser(null);
                                 }
                             }
                         }).show();
@@ -443,7 +443,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                         mWebView.clearFormData();
                         if (mListener != null) {
                             mListener.onUpdateActionBarTitle(mSelectedUser.getUsername());
-                            mListener.onUpdateUser(mSelectedUser.getUsername(), getString(R.string.profile));
                         }
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, R.string.error_generic);
@@ -523,7 +522,12 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                                 mSelectedUser.parseJsonForValues(event.json);
                             }
 
-                            app.getSql().insertProfile(mSelectedUser);
+                            if (mSelectedUser.isSelf()) {
+                                app.getSql().updateUserInfo(mSelectedUser);
+                            } else {
+                                app.getSql().insertProfile(mSelectedUser);
+                            }
+
                             getGalleryData();
                         } else {
                             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
@@ -584,6 +588,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                 case ImgurHandler.MESSAGE_ACTION_COMPLETE:
                     if (mListener != null) {
                         mListener.onLoadingComplete();
+                        if (mSelectedUser.isSelf()) mListener.onUpdateUser(mSelectedUser);
                     }
 
                     List<ImgurBaseObject> objects = (List<ImgurBaseObject>) msg.obj;
@@ -721,7 +726,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
         outState.putParcelable(KEY_USERNAME, mSelectedUser);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllItems());
+            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.getAllItems());
             outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
         }
 

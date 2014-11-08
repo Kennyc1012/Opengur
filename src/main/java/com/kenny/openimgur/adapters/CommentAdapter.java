@@ -172,9 +172,9 @@ public class CommentAdapter extends BaseAdapter {
                 .append(" : ").append(date);
         Spannable span = new SpannableString(sb.toString());
 
-        int color = context.getResources().getColor(android.R.color.holo_green_light);
+        int color = context.getResources().getColor(R.color.notoriety_positive);
         if (comment.getPoints() < 0) {
-            color = context.getResources().getColor(android.R.color.holo_red_light);
+            color = context.getResources().getColor(R.color.notoriety_negative);
         }
 
         if (isOp) {

@@ -22,6 +22,8 @@ public class DBContracts {
 
         public static final String COLUMN_PRO_EXPIRATION = "pro_expiration";
 
+        public static final String COLUMN_REPUTATION = "rep";
+
         public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
                 " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
                 COLUMN_NAME + " TEXT NOT NULL," +
@@ -29,7 +31,8 @@ public class DBContracts {
                 COLUMN_REFRESH_TOKEN + " TEXT NOT NULL," +
                 COLUMN_CREATED + " INTEGER," +
                 COLUMN_ACCESS_TOKEN_EXPIRATION + " INTEGER," +
-                COLUMN_PRO_EXPIRATION + " INTEGER);";
+                COLUMN_PRO_EXPIRATION + " INTEGER," +
+                COLUMN_REPUTATION + " INTEGER);";
 
         public static int COLUMN_INDEX_ID = 0;
 
@@ -44,6 +47,8 @@ public class DBContracts {
         public static int COLUMN_INDEX_ACCESS_TOKEN_EXPIRATION = 5;
 
         public static int COLUMN_INDEX_PRO_EXPIRATION = 6;
+
+        public static int COLUMN_INDEX_REPUTATION = 7;
     }
 
     public static class ProfileContract implements BaseColumns {

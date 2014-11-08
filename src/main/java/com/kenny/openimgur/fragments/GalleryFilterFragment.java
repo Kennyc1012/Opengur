@@ -1,5 +1,7 @@
 package com.kenny.openimgur.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -27,6 +30,8 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
 
     private static final String KEY_SORT = "sort";
 
+    private static final String KEY_VIRAL = "showViral";
+
     private RadioGroup mSectionRG;
 
     private FilterListener mListener;
@@ -39,20 +44,24 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
 
     private TextView mTime;
 
+    private CheckBox mShowViral;
+
     private boolean mHasThreeSortOpts = false;
 
     /**
      * Creates a new instance of GalleryFilterFragment
      *
-     * @param sort    The current GallerySort
-     * @param section The current GallerySection
+     * @param sort      The current GallerySort
+     * @param section   The current GallerySection
+     * @param showViral If viral images should be shown in User Sub
      * @return
      */
-    public static GalleryFilterFragment createInstance(GalleryFragment.GallerySort sort, GalleryFragment.GallerySection section) {
+    public static GalleryFilterFragment createInstance(GalleryFragment.GallerySort sort, GalleryFragment.GallerySection section, boolean showViral) {
         Bundle args = new Bundle();
         GalleryFilterFragment fragment = new GalleryFilterFragment();
         args.putString(KEY_SECTION, section.getSection());
         args.putString(KEY_SORT, sort.getSort());
+        args.putBoolean(KEY_VIRAL, showViral);
         fragment.setArguments(args);
         return fragment;
     }
@@ -88,20 +97,26 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
         mTime = (TextView) view.findViewById(R.id.time);
         mSeekBar = (SeekBar) view.findViewById(R.id.sortSeekBar);
         mSectionRG = (RadioGroup) view.findViewById(R.id.sectionGroup);
+        mShowViral = (CheckBox) view.findViewById(R.id.showViral);
         Bundle args = getArguments();
         GalleryFragment.GallerySort sort = GalleryFragment.GallerySort.getSortFromString(args.getString(KEY_SORT, null));
         GalleryFragment.GallerySection section = GalleryFragment.GallerySection.getSectionFromString(args.getString(KEY_SECTION, null));
+        mShowViral.setChecked( args.getBoolean(KEY_VIRAL, true));
 
         switch (section) {
             case USER:
                 mHasThreeSortOpts = true;
                 mSectionRG.check(R.id.userSubRB);
+                mShowViral.setAlpha(1.0f);
+                mShowViral.setVisibility(View.VISIBLE);
                 break;
 
             case HOT:
                 mHasThreeSortOpts = false;
                 mRising.setAlpha(0.0f);
                 mSectionRG.check(R.id.viralRB);
+                mShowViral.setAlpha(0.0f);
+                mShowViral.setVisibility(View.INVISIBLE);
                 break;
         }
 
@@ -214,11 +229,29 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
             case R.id.userSubRB:
                 mHasThreeSortOpts = true;
                 mRising.animate().alpha(1.0f).setDuration(300L);
+                mShowViral.animate().alpha(1.0f).setDuration(300L)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+                                super.onAnimationStart(animation);
+                                animation.removeAllListeners();
+                                mShowViral.setVisibility(View.VISIBLE);
+                            }
+                        });
                 break;
 
             case R.id.viralRB:
                 mHasThreeSortOpts = false;
                 mRising.animate().alpha(0.0f).setDuration(300L);
+                mShowViral.animate().alpha(0.0f).setDuration(300L)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                animation.removeAllListeners();
+                                mShowViral.setVisibility(View.INVISIBLE);
+                            }
+                        });
 
                 // Need to reset the progress bar if it previously had three options
                 if (mSeekBar.getProgress() == 50) {
@@ -273,7 +306,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                if (mListener != null) mListener.onFilterChange(section, sort);
+                if (mListener != null) mListener.onFilterChange(section, sort, mShowViral.isChecked());
             }
 
             @Override
@@ -300,7 +333,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
     }
 
     public static interface FilterListener {
-        void onFilterChange(GalleryFragment.GallerySection section, GalleryFragment.GallerySort sort);
+        void onFilterChange(GalleryFragment.GallerySection section, GalleryFragment.GallerySort sort, boolean showViral);
     }
 
 }

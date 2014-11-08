@@ -111,7 +111,6 @@
     <string name="sort_new">New</string>
     <string name="sort_best">Best</string>
     <string name="sort_top">Top</string>
-    <string name="sort_time">Time</string>
     <string name="pref_comment_title">Load Comments</string>
     <string name="pref_comments_on">Automatically Load Comments</string>
     <string name="pref_comments_off">Don\'t Automatically Load Comments</string>
@@ -139,6 +138,8 @@
     <string name="reddit_top_filter_year">Year</string>
     <string name="reddit_top_filter_all">All</string>
     <string name="options">Options</string>
+    <string name="login_msg">Tap to login</string>
+    <string name="filter_show_viral">Show Viral</string>
 
     <string-array name="pref_cache_life_items">
         <item>Never</item>
@@ -149,9 +150,9 @@
     </string-array>
 
     <string-array name="nav_items">
+        <item>Profile</item>
         <item>Gallery</item>
         <item>Subreddit</item>
-        <item>Profile</item>
         <item>Divider</item>
         <item>Settings</item>
         <item>Feedback</item>

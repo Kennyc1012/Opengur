@@ -132,6 +132,19 @@ public class ImgurUser implements Parcelable {
                     return R.string.notoriety_forever_alone;
             }
         }
+
+        /**
+         * Returns the color associated with the notoriety level
+         *
+         * @return
+         */
+        public int getNotorietyColor() {
+            if (this == FOREVER_ALONE) {
+                return R.color.notoriety_negative;
+            }
+
+            return R.color.notoriety_positive;
+        }
     }
 
     public ImgurUser(JSONObject json) {
@@ -154,6 +167,8 @@ public class ImgurUser implements Parcelable {
             mAccessToken = cursor.getString(UserContract.COLUMN_INDEX_ACCESS_TOKEN);
             mRefreshToken = cursor.getString(UserContract.COLUMN_INDEX_REFRESH_TOKEN);
             mAccessTokenExpiration = cursor.getLong(UserContract.COLUMN_INDEX_ACCESS_TOKEN_EXPIRATION);
+            mReputation = cursor.getLong(UserContract.COLUMN_INDEX_REPUTATION);
+            mNotoriety = Notoriety.getNotoriety(mReputation);
         } else {
             mId = cursor.getInt(DBContracts.ProfileContract.COLUMN_INDEX_ID);
             mUsername = cursor.getString(DBContracts.ProfileContract.COLUMN_INDEX_USERNAME);

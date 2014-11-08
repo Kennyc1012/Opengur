@@ -23,6 +23,7 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -97,10 +98,8 @@ public class GalleryAdapter extends BaseAdapter {
         return array;
     }
 
-    public ImgurBaseObject[] getAllItems() {
-        ImgurBaseObject[] items = new ImgurBaseObject[mObjects.size()];
-        mObjects.toArray(items);
-        return items;
+    public ArrayList<ImgurBaseObject> getAllItems() {
+        return new ArrayList<ImgurBaseObject>(mObjects);
     }
 
     @Override

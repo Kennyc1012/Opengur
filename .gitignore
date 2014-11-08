@@ -7,4 +7,5 @@ gen/
 /gradle
 gradlew
 gradlew.bat
+openimgur.keystore
 /libraries/EventBus/build

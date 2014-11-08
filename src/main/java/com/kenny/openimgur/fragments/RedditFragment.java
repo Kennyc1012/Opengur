@@ -44,7 +44,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -205,7 +204,7 @@ public class RedditFragment extends BaseFragment implements RedditFilterFragment
                 .putString(KEY_SORT, mSort.getSort())
                 .putString(KEY_TOP_SORT, mTopSort.getSort())
                 .apply();
-        
+
         super.onDestroy();
     }
 
@@ -313,7 +312,7 @@ public class RedditFragment extends BaseFragment implements RedditFilterFragment
             case R.id.filter:
                 if (mListener != null) mListener.onUpdateActionBar(false);
 
-                RedditFilterFragment fragment = RedditFilterFragment.createInstance(mSort, RedditTopSort.DAY);
+                RedditFilterFragment fragment = RedditFilterFragment.createInstance(mSort, mTopSort);
                 fragment.setFilterListener(this);
                 getFragmentManager().beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -365,9 +364,9 @@ public class RedditFragment extends BaseFragment implements RedditFilterFragment
             mTopSort = RedditTopSort.getSortFromString(savedInstanceState.getString(KEY_TOP_SORT, RedditTopSort.DAY.getSort()));
 
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
-                ImgurBaseObject[] items = (ImgurBaseObject[]) savedInstanceState.getParcelableArray(KEY_ITEMS);
+                ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                setupAdapter(new ArrayList<ImgurBaseObject>(Arrays.asList(items)));
+                setupAdapter(items);
                 mGridView.setSelection(currentPosition);
 
                 if (mListener != null) {
@@ -564,7 +563,7 @@ public class RedditFragment extends BaseFragment implements RedditFilterFragment
         outState.putString(KEY_TOP_SORT, mTopSort.getSort());
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArray(KEY_ITEMS, mAdapter.getAllItems());
+            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.getAllItems());
             outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
         }
 

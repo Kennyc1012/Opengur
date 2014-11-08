@@ -51,8 +51,8 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
     public static RedditFilterFragment createInstance(RedditFragment.RedditSort sort, RedditFragment.RedditTopSort topSort) {
         RedditFilterFragment fragment = new RedditFilterFragment();
         Bundle args = new Bundle(2);
-        args.putString(KEY_SORT, sort.getSort());
-        args.putString(KEY_TOP_SORT, topSort.getSort());
+        args.putSerializable(KEY_SORT, sort);
+        args.putSerializable(KEY_TOP_SORT, topSort);
         fragment.setArguments(args);
         return fragment;
     }
@@ -83,8 +83,8 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
         mAll = (TextView) view.findViewById(R.id.all);
 
         Bundle args = getArguments();
-        RedditFragment.RedditSort sort = RedditFragment.RedditSort.getSortFromString(args.getString(KEY_SORT, null));
-        RedditFragment.RedditTopSort topSort = RedditFragment.RedditTopSort.getSortFromString(args.getString(KEY_TOP_SORT, null));
+        RedditFragment.RedditSort sort = (RedditFragment.RedditSort) args.getSerializable(KEY_SORT);
+        RedditFragment.RedditTopSort topSort = (RedditFragment.RedditTopSort) args.getSerializable(KEY_TOP_SORT);
         mSortRG.check(sort == RedditFragment.RedditSort.TIME ? R.id.newestRB : R.id.topRB);
         mDateRangeContainer.setVisibility(sort == RedditFragment.RedditSort.TOP ? View.VISIBLE : View.GONE);
 

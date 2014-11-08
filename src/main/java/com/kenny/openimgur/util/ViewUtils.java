@@ -79,9 +79,7 @@ public class ViewUtils {
         String reputationText = user.getReputation() + " " + context.getString(R.string.profile_rep_date, date);
         TextViewRoboto notoriety = (TextViewRoboto) header.findViewById(R.id.notoriety);
         notoriety.setText(user.getNotoriety().getStringId());
-        int notorietyColor = user.getNotoriety() == ImgurUser.Notoriety.FOREVER_ALONE ?
-                context.getResources().getColor(android.R.color.holo_red_light) : context.getResources().getColor(android.R.color.holo_green_light);
-        notoriety.setTextColor(notorietyColor);
+        notoriety.setTextColor(context.getResources().getColor(user.getNotoriety().getNotorietyColor()));
         ((TextViewRoboto) header.findViewById(R.id.rep)).setText(reputationText);
         ((TextViewRoboto) header.findViewById(R.id.username)).setText(user.getUsername());
 

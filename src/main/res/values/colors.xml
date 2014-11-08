@@ -9,5 +9,7 @@
     <color name="comment_bg_selected">#e5e5e5</color>
     <color name="dialog_accept">@color/material_deep_teal_500</color>
     <color name="primary_blue_500">#5677fc</color>
+    <color name="notoriety_positive">#81C784</color>
+    <color name="notoriety_negative">#FF1744</color>
 
 </resources>

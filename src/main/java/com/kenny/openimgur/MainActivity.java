@@ -20,6 +20,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.RelativeLayout;
 
 import com.kenny.openimgur.classes.FragmentListener;
+import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
@@ -28,6 +29,7 @@ import com.kenny.openimgur.fragments.ProfileFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.util.ViewUtils;
+import com.kenny.snackbar.SnackBar;
 
 /**
  * Created by kcampagna on 10/19/14.
@@ -35,11 +37,11 @@ import com.kenny.openimgur.util.ViewUtils;
 public class MainActivity extends BaseActivity implements NavFragment.NavigationListener, FragmentListener, View.OnClickListener {
     private static final String KEY_CURRENT_PAGE = "current_page";
 
-    private static final int PAGE_GALLERY = 0;
+    private static final int PAGE_PROFILE = 0;
 
-    private static final int PAGE_SUBREDDIT = 1;
+    private static final int PAGE_GALLERY = 1;
 
-    private static final int PAGE_PROFILE = 2;
+    private static final int PAGE_SUBREDDIT = 2;
 
     private static final int PAGE_SETTINGS = 4;
 
@@ -176,12 +178,18 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                         "mailto", "kennyc.developer@gmail.com", null));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Open Imgur Feedback");
-                startActivity(Intent.createChooser(emailIntent, getString(R.string.send_feedback)));
+
+                if (emailIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(Intent.createChooser(emailIntent, getString(R.string.send_feedback)));
+                } else {
+                    SnackBar.show(this, R.string.cant_launch_intent);
+                }
                 break;
         }
 
         if (fragment != null) {
             getFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+            onUpdateActionBar(true);
         }
     }
 
@@ -228,8 +236,8 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     }
 
     @Override
-    public void onUpdateUser(String username, String defaultTitle) {
-        if (mNavFragment != null) mNavFragment.onUsernameChange(username, defaultTitle);
+    public void onUpdateUser(ImgurUser user) {
+        if (mNavFragment != null) mNavFragment.onUsernameChange(user);
     }
 
     @Override

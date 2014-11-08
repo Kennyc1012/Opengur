@@ -1,7 +1,5 @@
 package com.kenny.openimgur;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.ClipData;
@@ -23,7 +21,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -529,24 +526,6 @@ public class UploadActivity extends BaseActivity {
                             mIsValidLink = false;
                             mPreviewImage.setImageResource(R.drawable.photo_placeholder);
                             SnackBar.show(UploadActivity.this, R.string.invalid_url);
-
-                            mUploadButton.animate().alpha(0.0f).setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime))
-                                    .setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new AnimatorListenerAdapter() {
-
-                                @Override
-                                public void onAnimationCancel(Animator animation) {
-                                    super.onAnimationCancel(animation);
-                                    animation.removeAllListeners();
-                                    mUploadButton.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    super.onAnimationEnd(animation);
-                                    animation.removeAllListeners();
-                                    mUploadButton.setVisibility(View.GONE);
-                                }
-                            });
                         }
 
                         @Override
@@ -559,16 +538,6 @@ public class UploadActivity extends BaseActivity {
                             } else {
                                 mPreviewImage.setImageBitmap(bitmap);
                             }
-
-                            mUploadButton.animate().alpha(1.0f).setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime))
-                                    .setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new AnimatorListenerAdapter() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-                                    super.onAnimationStart(animation);
-                                    animation.removeAllListeners();
-                                    mUploadButton.setVisibility(View.VISIBLE);
-                                }
-                            });
                         }
 
                         @Override
@@ -576,24 +545,6 @@ public class UploadActivity extends BaseActivity {
                             mIsValidLink = false;
                             mPreviewImage.setImageResource(R.drawable.photo_placeholder);
                             SnackBar.show(UploadActivity.this, R.string.invalid_url);
-
-                            mUploadButton.animate().alpha(0.0f).setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime))
-                                    .setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new AnimatorListenerAdapter() {
-
-                                @Override
-                                public void onAnimationCancel(Animator animation) {
-                                    super.onAnimationCancel(animation);
-                                    animation.removeAllListeners();
-                                    mUploadButton.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    super.onAnimationEnd(animation);
-                                    animation.removeAllListeners();
-                                    mUploadButton.setVisibility(View.GONE);
-                                }
-                            });
                         }
                     });
                     break;

@@ -5,8 +5,8 @@ package com.kenny.openimgur.api;
  * https://api.imgur.com/endpoints
  */
 public enum Endpoints {
-    // section/sort/page
-    GALLERY("https://api.imgur.com/3/gallery/%s/%s/%d"),
+    // section/sort/page/show viral bool
+    GALLERY("https://api.imgur.com/3/gallery/%s/%s/%d?showViral=%s"),
 
     // item id
     IMAGE_DETAILS("https://api.imgur.com/3/image/%s"),

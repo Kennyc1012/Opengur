@@ -2,9 +2,8 @@ package com.kenny.openimgur.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.PorterDuff;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.TextViewRoboto;
 
 /**
@@ -20,9 +20,9 @@ import com.kenny.openimgur.ui.TextViewRoboto;
 public class NavAdapter extends BaseAdapter {
 
     /*
-        0. Gallery
+        0. Profile
         1. Subreddit
-        2. Profile
+        2. Gallery
         3. Divider (No Text)
         4. Settings
         5. Feedback
@@ -32,7 +32,7 @@ public class NavAdapter extends BaseAdapter {
 
     private static final int VIEW_TYPE_DIVIDER = 1;
 
-    private static final int VIEW_TYPE_SECONDARY = 2;
+    private static final int VIEW_TYPE_PROFILE = 2;
 
     private String[] mTitles;
 
@@ -40,9 +40,12 @@ public class NavAdapter extends BaseAdapter {
 
     private int mSelectedPosition;
 
-    public NavAdapter(Context context, String[] titles) {
+    private ImgurUser mUser;
+
+    public NavAdapter(Context context, String[] titles, ImgurUser user) {
         mInflater = LayoutInflater.from(context);
         mTitles = titles;
+        mUser = user;
     }
 
     @Override
@@ -63,15 +66,15 @@ public class NavAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         switch (getItemViewType(position)) {
-            case VIEW_TYPE_PRIMARY:
-                return renderPrimary(position, convertView, parent);
-
             case VIEW_TYPE_DIVIDER:
                 return mInflater.inflate(R.layout.nav_divider, parent, false);
 
-            case VIEW_TYPE_SECONDARY:
+            case VIEW_TYPE_PROFILE:
+                return renderProfile(position, parent);
+
+            case VIEW_TYPE_PRIMARY:
             default:
-                return renderSecondary(position, parent);
+                return renderPrimary(position, convertView, parent);
         }
     }
 
@@ -88,20 +91,22 @@ public class NavAdapter extends BaseAdapter {
             holder = (NavHolder) convertView.getTag();
         }
 
-        // We will tint the drawables so we don't need to import another set
         Resources res = convertView.getResources();
         holder.icon.setImageDrawable(getDrawable(position, res));
         holder.title.setText(getItem(position));
-        holder.title.setTextColor(mSelectedPosition == position ?
-                res.getColor(R.color.accent_color_red_200) : res.getColor(R.color.abc_primary_text_material_light));
-
+        convertView.setBackgroundColor(mSelectedPosition == position ? Color.LTGRAY : Color.WHITE);
         return convertView;
     }
 
-    private View renderSecondary(int position, ViewGroup parent) {
-        TextViewRoboto title = (TextViewRoboto) mInflater.inflate(R.layout.nav_item_secondary, parent, false);
-        title.setText(getItem(position));
-        return title;
+    private View renderProfile(int position, ViewGroup parent) {
+        View view = mInflater.inflate(R.layout.nav_profile, parent, false);
+        Resources res = view.getResources();
+        TextViewRoboto name = (TextViewRoboto) view.findViewById(R.id.profileName);
+        name.setText(mUser != null ? mUser.getUsername() : getItem(position));
+        TextViewRoboto rep = (TextViewRoboto) view.findViewById(R.id.reputation);
+        rep.setText(mUser != null ? mUser.getNotoriety().getStringId() : R.string.login_msg);
+        rep.setTextColor(mUser != null ? res.getColor(mUser.getNotoriety().getNotorietyColor()) : Color.WHITE);
+        return view;
     }
 
     @Override
@@ -111,13 +116,13 @@ public class NavAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        if (position <= 2) {
-            return VIEW_TYPE_PRIMARY;
-        } else if (position < 4) {
+        if (position == 0) {
+            return VIEW_TYPE_PROFILE;
+        } else if (position == 3) {
             return VIEW_TYPE_DIVIDER;
         }
 
-        return VIEW_TYPE_SECONDARY;
+        return VIEW_TYPE_PRIMARY;
     }
 
     @Override
@@ -146,38 +151,30 @@ public class NavAdapter extends BaseAdapter {
      * @return
      */
     private Drawable getDrawable(int position, Resources res) {
-        Drawable draw = null;
-
         switch (position) {
-            case 0:
-                draw = res.getDrawable(R.drawable.ic_action_gallery).mutate();
-                break;
-
             case 1:
-                draw = res.getDrawable(R.drawable.ic_action_reddit).mutate();
-                break;
+                return res.getDrawable(R.drawable.ic_action_gallery);
 
             case 2:
-                draw = res.getDrawable(R.drawable.ic_account).mutate();
-                break;
+                return res.getDrawable(R.drawable.ic_action_reddit_nav);
+
+            case 4:
+                return res.getDrawable(R.drawable.ic_action_settings);
+
+            case 5:
+                return res.getDrawable(R.drawable.ic_action_email);
         }
 
-        if (draw != null) {
-            int color = mSelectedPosition == position ? res.getColor(R.color.accent_color_red_200) : res.getColor(R.color.abc_primary_text_material_light);
-            draw.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
-        }
-
-        return draw;
+        return null;
     }
 
     /**
-     * Updates the title for the profile nav item
+     * Updates the Logged in user
      *
-     * @param username The username if the user is logged in
-     * @param title    The default title for the item
+     * @param user The newly logged in user
      */
-    public void onUsernameChange(String username, String title) {
-        mTitles[2] = TextUtils.isEmpty(username) ? title : username;
+    public void onUsernameChange(ImgurUser user) {
+        mUser = user;
         notifyDataSetChanged();
     }
 

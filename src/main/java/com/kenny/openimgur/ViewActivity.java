@@ -393,10 +393,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private void previousComments(final ImgurComment comment) {
         mSelectedComment = null;
         mCommentAdapter.setSelectedIndex(-1);
+        mCommentList.clearAnimation();
 
         mCommentList.animate().translationX(mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                animation.removeAllListeners();
+
                 if (mPreviousCommentPositionArray.size() <= 1) {
                     mCommentList.removeHeaderView(mCommentListHeader);
                 }
@@ -521,7 +525,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 } else {
                     mSlidingPane.expandPanel();
                 }
-
                 break;
 
             case R.id.upVoteBtn:
@@ -541,7 +544,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
-
                 break;
 
             case R.id.commentBtn:
