@@ -16,17 +16,22 @@
             android:layout_height="wrap_content"
             android:background="@color/primary_blue_500"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:title="@string/filter"
             app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha" />
+
+        <com.kenny.openimgur.ui.TextViewRoboto
+            style="@style/SectionTitle"
+            android:text="@string/gallery_filter"
+            app:robotoFont="regular" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:text="@string/section"
             android:textColor="@color/accent_color_blue_700"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin" />
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="8dp" />
 
         <RadioGroup
             android:id="@+id/sectionGroup"
@@ -56,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:text="@string/sort_by"
             android:textColor="@color/accent_color_blue_700"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -67,7 +72,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin">
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="8dp">
 
             <TextView
                 android:id="@+id/time"
@@ -128,16 +134,16 @@
                 android:id="@+id/negative"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAllCaps="true"
                 android:text="@string/cancel"
+                android:textAllCaps="true"
                 style="@style/Widget.AppCompat.ActionButton" />
 
             <Button
                 android:id="@+id/positive"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAllCaps="true"
                 android:text="@string/accept"
+                android:textAllCaps="true"
                 android:textColor="@color/dialog_accept"
                 style="@style/Widget.AppCompat.ActionButton" />
 

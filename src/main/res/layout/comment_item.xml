@@ -3,25 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="?android:listPreferredItemHeight"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:paddingTop="8dp"
+    android:paddingRight="16dp"
+    android:paddingLeft="16dp"
+    android:paddingBottom="8dp"
     android:descendantFocusability="blocksDescendants">
 
     <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/author"
-        app:robotoFont="light"
+        app:robotoFont="regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000000"
+        android:textColor="@color/primary_text_default_material_light"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         android:layout_marginBottom="8dp" />
 
     <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/comment"
-        app:robotoFont="regular"
+        app:robotoFont="medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#000000"
-        android:textSize="20sp" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/primary_text_default_material_light" />
 
     <Button
         android:id="@+id/replies"

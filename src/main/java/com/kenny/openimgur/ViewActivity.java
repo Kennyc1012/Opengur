@@ -182,6 +182,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private boolean mIsTablet;
 
+    private boolean mIsCommentsAnimating = false;
+
     private BrowsingAdapter mPagerAdapter;
 
     private CommentSort mCommentSort;
@@ -363,12 +365,18 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
      * @param comment
      */
     private void nextComments(final ImgurComment comment) {
+        if (mIsCommentsAnimating) return;
+
+        mIsCommentsAnimating = true;
         mSelectedComment = null;
         mCommentAdapter.setSelectedIndex(-1);
 
         mCommentList.animate().translationX(-mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                animation.removeAllListeners();
+
                 mCommentArray.put(Long.valueOf(comment.getId()), new ArrayList<ImgurComment>(mCommentAdapter.getItems()));
                 mPreviousCommentPositionArray.put(Long.valueOf(comment.getId()), mCommentList.getFirstVisiblePosition());
                 mCommentAdapter.clear();
@@ -380,7 +388,18 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mCommentAdapter.addComments(comment.getReplies());
                 mCommentAdapter.notifyDataSetChanged();
                 mCommentList.setSelection(0);
-                ObjectAnimator.ofFloat(mCommentList, "translationX", mCommentList.getWidth(), 0).setDuration(250).start();
+                Animator anim = ObjectAnimator.ofFloat(mCommentList, "translationX", mCommentList.getWidth(), 0);
+
+                anim.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        animation.removeAllListeners();
+                        mIsCommentsAnimating = false;
+                    }
+                });
+
+                anim.setDuration(250).start();
             }
         }).start();
     }
@@ -391,9 +410,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
      * @param comment
      */
     private void previousComments(final ImgurComment comment) {
+        if (mIsCommentsAnimating) return;
+
+        mIsCommentsAnimating = true;
         mSelectedComment = null;
         mCommentAdapter.setSelectedIndex(-1);
-        mCommentList.clearAnimation();
 
         mCommentList.animate().translationX(mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
             @Override
@@ -411,7 +432,18 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mCommentAdapter.notifyDataSetChanged();
                 mCommentList.setSelection(mPreviousCommentPositionArray.get(comment.getParentId()));
                 mPreviousCommentPositionArray.remove(comment.getParentId());
-                ObjectAnimator.ofFloat(mCommentList, "translationX", -mCommentList.getWidth(), 0).setDuration(250).start();
+                Animator anim = ObjectAnimator.ofFloat(mCommentList, "translationX", -mCommentList.getWidth(), 0);
+
+                anim.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        animation.removeAllListeners();
+                        mIsCommentsAnimating = false;
+                    }
+                });
+
+                anim.setDuration(250).start();
             }
         }).start();
     }

@@ -165,9 +165,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             author.setText("- ?????");
         }
 
-        pointText.setText(mImgurObject.getScore() + " " + getString(R.string.points));
+
+        int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
+        pointText.setText((mImgurObject.getUpVotes() - mImgurObject.getDownVotes()) + " " + getString(R.string.points));
         pointsBar.setUpVotes(mImgurObject.getUpVotes());
-        pointsBar.setTotalPoints(mImgurObject.getDownVotes() + mImgurObject.getUpVotes());
+        pointsBar.setTotalPoints(totalPoints);
         mListView.addHeaderView(headerView);
     }
 

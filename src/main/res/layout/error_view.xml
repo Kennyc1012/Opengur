@@ -27,9 +27,11 @@
     <Button
         android:id="@+id/errorButton"
         style="@style/Widget.AppCompat.ActionButton"
+        android:textColor="@color/accent_color_red_200"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:textAllCaps="true"
         android:layout_gravity="center_horizontal"
         tools:text="Retry" />
 

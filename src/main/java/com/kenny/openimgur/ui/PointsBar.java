@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.kenny.openimgur.R;
+
 /**
  * Created by kcampagna on 8/3/14.
  */
@@ -34,11 +36,11 @@ public class PointsBar extends View {
     }
 
     private void init() {
-        mUpPaint.setColor(getResources().getColor(android.R.color.holo_green_light));
+        mUpPaint.setColor(getResources().getColor(R.color.notoriety_positive));
         mUpPaint.setStrokeWidth(4);
         mUpPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         setWillNotDraw(false);
-        setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+        setBackgroundColor(getResources().getColor(R.color.notoriety_negative));
     }
 
     @Override

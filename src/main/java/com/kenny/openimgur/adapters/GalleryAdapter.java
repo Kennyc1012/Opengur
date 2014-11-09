@@ -150,7 +150,7 @@ public class GalleryAdapter extends BaseAdapter {
 
         mImageLoader.cancelDisplayTask(holder.imageViewAware);
         mImageLoader.displayImage(photoUrl, holder.imageViewAware, mOptions);
-        holder.tv.setText(obj.getScore() + " " + holder.tv.getContext().getString(R.string.points));
+        holder.tv.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.tv.getContext().getString(R.string.points));
         return convertView;
     }
 
