@@ -27,7 +27,6 @@ public class RoutingActivity extends BaseActivity {
     private void handleIntent(Intent intent) {
         if (intent == null || intent.getData() == null) {
             LogUtil.w(TAG, "No url was passed. How did that happen?");
-            // TODO Toast message
             finish();
             return;
         }

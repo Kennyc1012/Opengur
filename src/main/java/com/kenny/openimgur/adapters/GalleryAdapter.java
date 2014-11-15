@@ -84,7 +84,7 @@ public class GalleryAdapter extends BaseAdapter {
      * @param position The position of the selected items
      * @return
      */
-    public ImgurBaseObject[] getItems(int position) {
+    public ArrayList<ImgurBaseObject> getItems(int position) {
         List<ImgurBaseObject> objects;
 
         if (position - MAX_ITEMS / 2 < 0) {
@@ -93,9 +93,7 @@ public class GalleryAdapter extends BaseAdapter {
             objects = mObjects.subList(position - (MAX_ITEMS / 2), position + (MAX_ITEMS / 2) <= mObjects.size() ? position + (MAX_ITEMS / 2) : mObjects.size());
         }
 
-        ImgurBaseObject[] array = new ImgurBaseObject[objects.size()];
-        objects.toArray(array);
-        return array;
+        return new ArrayList<ImgurBaseObject>(objects);
     }
 
     public ArrayList<ImgurBaseObject> getAllItems() {

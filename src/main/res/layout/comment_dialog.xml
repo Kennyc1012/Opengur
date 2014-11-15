@@ -58,6 +58,7 @@
             android:layout_height="wrap_content"
             android:text="@string/post"
             android:textAllCaps="true"
+            android:textColor="@color/dialog_accept"
             style="@style/Widget.AppCompat.ActionButton" />
 
     </LinearLayout>

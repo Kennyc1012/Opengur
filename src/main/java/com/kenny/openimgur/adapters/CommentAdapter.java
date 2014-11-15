@@ -164,6 +164,7 @@ public class CommentAdapter extends BaseAdapter {
         int spanLength = author.length();
 
         if (isOp) {
+            // TODO Other languages for OP?
             sb.append(" OP");
             spanLength += 3;
         }

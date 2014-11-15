@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -66,7 +65,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -190,7 +188,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private SideGalleryFragment mSideGalleryFragment;
 
-    public static Intent createIntent(Context context, ImgurBaseObject[] objects, int position) {
+    public static Intent createIntent(Context context, ArrayList<ImgurBaseObject> objects, int position) {
         Intent intent = new Intent(context, ViewActivity.class);
         intent.putExtra(KEY_POSITION, position);
         intent.putExtra(KEY_OBJECTS, objects);
@@ -271,7 +269,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         findViewById(R.id.commentBtn).setOnClickListener(this);
         findViewById(R.id.sortComments).setOnClickListener(this);
         initSlidingView();
-        handleIntent(getIntent());
+        handleIntent(getIntent(), savedInstanceState);
     }
 
     private void initSlidingView() {
@@ -312,9 +310,15 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     /**
      * Handles the Intent arguments
      *
-     * @param intent Arguments
+     * @param intent             Arguments
+     * @param savedInstanceState Bundle if restoring
      */
-    private void handleIntent(Intent intent) {
+    private void handleIntent(Intent intent, Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            LogUtil.v(TAG, "Bundle present, will restore in onPostCreate");
+            return;
+        }
+
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             LogUtil.v(TAG, "Received Gallery via ACTION_VIEW");
             mGalleryId = intent.getData().getPathSegments().get(1);
@@ -323,9 +327,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             finish();
         } else {
             mCurrentPosition = intent.getIntExtra(KEY_POSITION, 0);
-            Parcelable[] passed = intent.getParcelableArrayExtra(KEY_OBJECTS);
-            ImgurBaseObject[] objects = new ImgurBaseObject[passed.length];
-            System.arraycopy(passed, 0, objects, 0, objects.length);
+            ArrayList<ImgurBaseObject> objects = intent.getParcelableArrayListExtra(KEY_OBJECTS);
             mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
 
             if (mSideGalleryFragment != null) {
@@ -490,9 +492,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             mCommentSort = CommentSort.getSortFromString(savedInstanceState.getString(KEY_SORT, CommentSort.NEW.getSort()));
             mLoadComments = savedInstanceState.getBoolean(KEY_LOAD_COMMENTS, true);
             mIsResuming = true;
-            int position = savedInstanceState.getInt(KEY_POSITION, 0);
+            mCurrentPosition = savedInstanceState.getInt(KEY_POSITION, 0);
+            ArrayList<ImgurBaseObject> objects = savedInstanceState.getParcelableArrayList(KEY_OBJECTS);
+            mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
             mViewPager.setAdapter(mPagerAdapter);
-            mViewPager.setCurrentItem(position);
+            mViewPager.setCurrentItem(mCurrentPosition);
+
+            if (mSideGalleryFragment != null) {
+                mSideGalleryFragment.addGalleryItems(objects);
+            }
+            
             List<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_COMMENT);
 
             if (comments != null) {
@@ -895,6 +904,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         outState.putBoolean(KEY_LOAD_COMMENTS, mLoadComments);
         outState.putString(KEY_SORT, mCommentSort.getSort());
         outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
+        outState.putParcelableArrayList(KEY_OBJECTS, new ArrayList<ImgurBaseObject>(mPagerAdapter.getItems()));
 
         super.onSaveInstanceState(outState);
     }
@@ -1065,7 +1075,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     break;
 
                 case MESSAGE_ITEM_DETAILS:
-                    final ImgurBaseObject[] objects = new ImgurBaseObject[]{(ImgurBaseObject) msg.obj};
+                    final ArrayList<ImgurBaseObject> objects = new ArrayList<ImgurBaseObject>(1);
+                    objects.add((ImgurBaseObject) msg.obj);
                     mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
                     mViewPager.setAdapter(mPagerAdapter);
                     invalidateOptionsMenu();
@@ -1120,11 +1131,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private static class BrowsingAdapter extends FragmentStatePagerAdapter {
-        private List<ImgurBaseObject> objects;
+        private ArrayList<ImgurBaseObject> objects;
 
-        public BrowsingAdapter(FragmentManager fm, ImgurBaseObject[] objects) {
+        public BrowsingAdapter(FragmentManager fm, ArrayList<ImgurBaseObject> objects) {
             super(fm);
-            this.objects = new ArrayList<ImgurBaseObject>(Arrays.asList(objects));
+            this.objects = objects;
         }
 
         @Override
@@ -1145,6 +1156,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             if (objects != null) {
                 objects.clear();
             }
+        }
+
+        public ArrayList<ImgurBaseObject> getItems() {
+            return objects;
         }
     }
 }

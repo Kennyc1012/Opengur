@@ -14,6 +14,8 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.SideGalleryAdapter;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 
+import java.util.ArrayList;
+
 /**
  * Created by kcampagna on 9/27/14.
  */
@@ -66,7 +68,7 @@ public class SideGalleryFragment extends BaseFragment {
         mAdapter = null;
     }
 
-    public void addGalleryItems(ImgurBaseObject[] galleryItems) {
+    public void addGalleryItems(ArrayList<ImgurBaseObject> galleryItems) {
         if (isAdded()) {
             mAdapter = new SideGalleryAdapter(getActivity(), app.getImageLoader(), galleryItems);
             mListView.setAdapter(mAdapter);

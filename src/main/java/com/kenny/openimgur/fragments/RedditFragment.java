@@ -223,13 +223,13 @@ public class RedditFragment extends BaseFragment implements RedditFilterFragment
                 // Don't respond to the header being clicked
 
                 if (adapterPosition >= 0) {
-                    ImgurBaseObject[] items = mAdapter.getItems(adapterPosition);
+                    ArrayList<ImgurBaseObject> items = mAdapter.getItems(adapterPosition);
                     int itemPosition = adapterPosition;
 
                     // Get the correct array index of the selected item
                     if (itemPosition > GalleryAdapter.MAX_ITEMS / 2) {
-                        itemPosition = items.length == GalleryAdapter.MAX_ITEMS ? GalleryAdapter.MAX_ITEMS / 2 :
-                                items.length - (mAdapter.getCount() - itemPosition);
+                        itemPosition = items.size() == GalleryAdapter.MAX_ITEMS ? GalleryAdapter.MAX_ITEMS / 2 :
+                                items.size() - (mAdapter.getCount() - itemPosition);
                     }
 
                     startActivity(ViewActivity.createIntent(getActivity(), items, itemPosition));

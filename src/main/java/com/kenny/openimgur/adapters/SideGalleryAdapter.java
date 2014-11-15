@@ -20,11 +20,13 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 
+import java.util.ArrayList;
+
 /**
  * Created by kcampagna on 9/27/14.
  */
 public class SideGalleryAdapter extends BaseAdapter {
-    private ImgurBaseObject[] mGalleryItems;
+    private ArrayList<ImgurBaseObject> mGalleryItems;
 
     private LayoutInflater mInflater;
 
@@ -34,7 +36,7 @@ public class SideGalleryAdapter extends BaseAdapter {
 
     private DisplayImageOptions mOptions;
 
-    public SideGalleryAdapter(Context context, ImageLoader imageLoader, ImgurBaseObject[] objects) {
+    public SideGalleryAdapter(Context context, ImageLoader imageLoader, ArrayList<ImgurBaseObject> objects) {
         mInflater = LayoutInflater.from(context);
         mImageLoader = imageLoader;
         mGalleryItems = objects;
@@ -45,12 +47,12 @@ public class SideGalleryAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mGalleryItems != null ? mGalleryItems.length : 0;
+        return mGalleryItems != null ? mGalleryItems.size() : 0;
     }
 
     @Override
-    public Object getItem(int i) {
-        return mGalleryItems != null ? mGalleryItems[i] : null;
+    public ImgurBaseObject getItem(int i) {
+        return mGalleryItems != null ? mGalleryItems.get(i) : null;
     }
 
     @Override
@@ -73,7 +75,7 @@ public class SideGalleryAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        ImgurBaseObject object = mGalleryItems[position];
+        ImgurBaseObject object = getItem(position);
         String photoUrl;
 
         // Get the appropriate photo to display

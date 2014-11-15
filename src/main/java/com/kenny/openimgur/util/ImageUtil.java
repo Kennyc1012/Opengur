@@ -31,9 +31,6 @@ import pl.droidsonroids.gif.GifDrawable;
 public class ImageUtil {
     private static final String TAG = "ImageUtil";
 
-    // 8MB
-    private static final int MEMORY_CACHE_LIMIT = 8388608;
-
     /**
      * Converts a bitmap to grayscale
      *
@@ -121,12 +118,14 @@ public class ImageUtil {
      * Initializes the ImageLoader
      */
     public static void initImageLoader(Context context) {
+        final int memory = (int) (Runtime.getRuntime().maxMemory() / 8);
+
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
                 .threadPoolSize(7)
                 .denyCacheImageMultipleSizesInMemory()
                 .diskCache(new UnlimitedDiscCache(context.getCacheDir()))
                 .defaultDisplayImageOptions(getDefaultDisplayOptions().build())
-                .memoryCache(new LargestLimitedMemoryCache(MEMORY_CACHE_LIMIT))
+                .memoryCache(new LargestLimitedMemoryCache(memory))
                 .build();
 
         ImageLoader.getInstance().init(config);
@@ -140,7 +139,7 @@ public class ImageUtil {
      */
     public static DisplayImageOptions.Builder getDisplayOptionsForGallery() {
         return getDefaultDisplayOptions()
-                .displayer(new FadeInBitmapDisplayer(750, true, false, false))
+                .displayer(new FadeInBitmapDisplayer(250, true, false, false))
                 .bitmapConfig(Bitmap.Config.RGB_565);
     }
 
