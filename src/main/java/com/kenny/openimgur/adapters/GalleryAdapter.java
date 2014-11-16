@@ -1,25 +1,19 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -29,52 +23,24 @@ import java.util.List;
 /**
  * Created by kcampagna on 7/27/14.
  */
-public class GalleryAdapter extends BaseAdapter {
+public class GalleryAdapter extends ImgurBaseAdapter {
     public static final int MAX_ITEMS = 200;
 
     private LayoutInflater mInflater;
 
-    private ImageLoader mImageLoader;
-
-    private SetUniqueList<ImgurBaseObject> mObjects;
-
-    private String mThumbnailQuality;
-
-    private DisplayImageOptions mOptions;
-
-    public GalleryAdapter(Context context, List<ImgurBaseObject> objects) {
+    public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects) {
+        super(context, objects, true);
         mInflater = LayoutInflater.from(context);
-        mImageLoader = OpenImgurApp.getInstance(context).getImageLoader();
-        mObjects = SetUniqueList.decorate(objects);
-        mOptions = ImageUtil.getDisplayOptionsForGallery().build();
-        String quality = PreferenceManager.getDefaultSharedPreferences(context).getString(SettingsActivity.THUMBNAIL_QUALITY_KEY, SettingsActivity.THUMBNAIL_QUALITY_LOW);
-        mThumbnailQuality = ImgurPhoto.getQualityValue(quality);
     }
 
-    /**
-     * Clears all the items from the adapter
-     */
-    public void clear() {
-        if (mObjects != null) {
-            mObjects.clear();
-        }
-
-        notifyDataSetInvalidated();
+    @Override
+    protected DisplayImageOptions getDisplayOptions() {
+        return ImageUtil.getDisplayOptionsForGallery().build();
     }
 
-    /**
-     * Adds a list of items into the current list
-     *
-     * @param items
-     */
-    public void addItems(List<ImgurBaseObject> items) {
-        if (mObjects == null) {
-            mObjects = SetUniqueList.decorate(items);
-        } else {
-            mObjects.addAll(items);
-        }
-
-        notifyDataSetChanged();
+    @Override
+    public ArrayList<ImgurBaseObject> retainItems() {
+        return new ArrayList<ImgurBaseObject>(getAllItems());
     }
 
     /**
@@ -86,33 +52,20 @@ public class GalleryAdapter extends BaseAdapter {
      */
     public ArrayList<ImgurBaseObject> getItems(int position) {
         List<ImgurBaseObject> objects;
+        int size = getCount();
 
         if (position - MAX_ITEMS / 2 < 0) {
-            objects = mObjects.subList(0, mObjects.size() > MAX_ITEMS ? position + (MAX_ITEMS / 2) : mObjects.size());
+            objects = getAllItems().subList(0, size > MAX_ITEMS ? position + (MAX_ITEMS / 2) : size);
         } else {
-            objects = mObjects.subList(position - (MAX_ITEMS / 2), position + (MAX_ITEMS / 2) <= mObjects.size() ? position + (MAX_ITEMS / 2) : mObjects.size());
+            objects = getAllItems().subList(position - (MAX_ITEMS / 2), position + (MAX_ITEMS / 2) <= size ? position + (MAX_ITEMS / 2) : size);
         }
 
         return new ArrayList<ImgurBaseObject>(objects);
     }
 
-    public ArrayList<ImgurBaseObject> getAllItems() {
-        return new ArrayList<ImgurBaseObject>(mObjects);
-    }
-
-    @Override
-    public int getCount() {
-        return mObjects != null ? mObjects.size() : 0;
-    }
-
     @Override
     public ImgurBaseObject getItem(int position) {
-        return mObjects != null ? mObjects.get(position) : null;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
+        return (ImgurBaseObject) super.getItem(position);
     }
 
     @Override
@@ -123,10 +76,7 @@ public class GalleryAdapter extends BaseAdapter {
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.gallery_item, parent, false);
-            holder = new ViewHolder();
-            holder.image = (ImageView) convertView.findViewById(R.id.image);
-            holder.tv = (TextViewRoboto) convertView.findViewById(R.id.score);
-            holder.imageViewAware = new ImageViewAware(holder.image, true);
+            holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -138,16 +88,15 @@ public class GalleryAdapter extends BaseAdapter {
 
             // Check if the link is a thumbed version of a large gif
             if (photoObject.hasMP4Link() && photoObject.isLinkAThumbnail() && ImgurPhoto.IMAGE_TYPE_GIF.equals(photoObject.getType())) {
-                photoUrl = photoObject.getThumbnail(mThumbnailQuality, true, FileUtil.EXTENSION_GIF);
+                photoUrl = photoObject.getThumbnail(ImgurPhoto.THUMBNAIL_GALLERY, true, FileUtil.EXTENSION_GIF);
             } else {
-                photoUrl = ((ImgurPhoto) obj).getThumbnail(mThumbnailQuality, false, null);
+                photoUrl = ((ImgurPhoto) obj).getThumbnail(ImgurPhoto.THUMBNAIL_GALLERY, false, null);
             }
         } else {
-            photoUrl = ((ImgurAlbum) obj).getCoverUrl(mThumbnailQuality);
+            photoUrl = ((ImgurAlbum) obj).getCoverUrl(ImgurPhoto.THUMBNAIL_GALLERY);
         }
 
-        mImageLoader.cancelDisplayTask(holder.imageViewAware);
-        mImageLoader.displayImage(photoUrl, holder.imageViewAware, mOptions);
+        displayImage(holder.image, photoUrl);
         holder.tv.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.tv.getContext().getString(R.string.points));
         return convertView;
     }
@@ -157,6 +106,9 @@ public class GalleryAdapter extends BaseAdapter {
 
         TextViewRoboto tv;
 
-        ImageViewAware imageViewAware;
+        public ViewHolder(View view) {
+            image = (ImageView) view.findViewById(R.id.image);
+            tv = (TextViewRoboto) view.findViewById(R.id.score);
+        }
     }
 }

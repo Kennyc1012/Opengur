@@ -5,4 +5,8 @@
     <dimen name="view_activity_margin">24dp</dimen>
     <dimen name="loading_circle_size">60dp</dimen>
 
+    <!-- Material Design Guidlines -->
+    <dimen name="keyline_margin">80dp</dimen>
+    <dimen name="content_padding">24dp</dimen>
+
 </resources>

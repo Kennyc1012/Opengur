@@ -18,7 +18,11 @@
     <dimen name="upload_button_margin_right">0dp</dimen>
     <dimen name="upload_button_margin_bottom">16dp</dimen>
     <dimen name="upload_image_margin">0dp</dimen>
-    <dimen name="nav_padding">16dp</dimen>
-    <dimen name="left_margin">72dp</dimen>
+
+    <!-- Material Design Guidlines -->
+    <dimen name="keyline_margin">72dp</dimen>
+    <dimen name="content_padding">16dp</dimen>
+    <dimen name="drawer_max_width">320dp</dimen>
+    <dimen name="toolbar_with_section_height">128dp</dimen>
 
 </resources>

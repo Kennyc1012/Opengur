@@ -20,19 +20,4 @@
         <item name="drawSelectorOnTop">true</item>
     </style>
 
-    <style name="SectionTitle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Display1</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingLeft">@dimen/left_margin</item>
-        <item name="android:paddingBottom">16dp</item>
-        <item name="android:paddingTop">16dp</item>
-        <item name="android:paddingRight">16dp</item>
-        <item name="android:background">@color/primary_blue_500</item>
-        <item name="android:layout_marginBottom">16dp</item>
-    </style>
-
-
 </resources>

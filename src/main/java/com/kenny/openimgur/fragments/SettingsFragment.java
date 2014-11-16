@@ -18,7 +18,6 @@ import android.webkit.WebView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.classes.OpenImgurApp;
-import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
@@ -37,8 +36,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         super.onCreate(savedInstanceState);
         mApp = OpenImgurApp.getInstance(getActivity());
         addPreferencesFromResource(R.xml.settings);
-        bindPreference(findPreference(SettingsActivity.THUMBNAIL_QUALITY_KEY));
-        bindPreference(findPreference(SettingsActivity.CACHE_LIFE_KEY));
+        bindPreference(findPreference(SettingsActivity.CACHE_SIZE_KEY));
         findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
@@ -53,7 +51,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     public void onResume() {
         super.onResume();
         long cacheSize = FileUtil.getDirectorySize(mApp.getImageLoader().getDiskCache().getDirectory());
-        cacheSize += VideoCache.getInstance().getCacheSize();
         findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
 
         try {
@@ -134,7 +131,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             SettingsFragment frag = mFragment.get();
             frag.mApp.deleteAllCache();
             long cacheSize = FileUtil.getDirectorySize(frag.mApp.getCacheDir());
-            cacheSize += VideoCache.getInstance().getCacheSize();
             return cacheSize;
         }
 

@@ -436,8 +436,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
-            ArrayList<ImgurPhoto> copy = new ArrayList<ImgurPhoto>(mPhotoAdapter.getPhotos());
-            outState.putParcelableArrayList(KEY_ITEMS, copy);
+            outState.putParcelableArrayList(KEY_ITEMS, mPhotoAdapter.retainItems());
         }
 
         outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -17,42 +16,27 @@ import android.widget.VideoView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pl.droidsonroids.gif.GifDrawable;
 
-public class PhotoAdapter extends BaseAdapter {
-    private List<ImgurPhoto> mPhotos;
-
+public class PhotoAdapter extends ImgurBaseAdapter {
     private LayoutInflater mInflater;
-
-    private ImageLoader mImageLoader;
 
     private ImgurListener mListener;
 
     private static final long PHOTO_SIZE_LIMIT = 1048576L;
 
-    private DisplayImageOptions mOptions;
-
     public PhotoAdapter(Context context, List<ImgurPhoto> photos, ImgurListener listener) {
+        super(context, photos, true);
         mInflater = LayoutInflater.from(context);
-        mPhotos = photos;
-        mImageLoader = OpenImgurApp.getInstance(context).getImageLoader();
         mListener = listener;
-        mOptions = ImageUtil.getDisplayOptionsForView().build();
-    }
-
-    public void clear() {
-        if (mPhotos != null) {
-            mPhotos.clear();
-        }
     }
 
     /**
@@ -63,31 +47,19 @@ public class PhotoAdapter extends BaseAdapter {
         mListener = null;
     }
 
-    public List<ImgurPhoto> getPhotos() {
-        return mPhotos;
+    @Override
+    protected DisplayImageOptions getDisplayOptions() {
+        return ImageUtil.getDisplayOptionsForView().build();
     }
 
     @Override
-    public int getCount() {
-        if (mPhotos != null) {
-            return mPhotos.size();
-        }
-
-        return 0;
+    public ArrayList<ImgurPhoto> retainItems() {
+        return new ArrayList<ImgurPhoto>(getAllItems());
     }
 
     @Override
     public ImgurPhoto getItem(int position) {
-        if (mPhotos != null) {
-            return mPhotos.get(position);
-        }
-
-        return null;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
+        return (ImgurPhoto) super.getItem(position);
     }
 
     @Override
@@ -96,14 +68,8 @@ public class PhotoAdapter extends BaseAdapter {
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.view_photo_item, parent, false);
-            holder = new PhotoViewHolder();
+            holder = new PhotoViewHolder(convertView);
             holder.root = convertView;
-            holder.play = (ImageButton) convertView.findViewById(R.id.play);
-            holder.image = (ImageView) convertView.findViewById(R.id.image);
-            holder.prog = (ProgressBar) convertView.findViewById(R.id.progressBar);
-            holder.desc = (TextViewRoboto) convertView.findViewById(R.id.desc);
-            holder.title = (TextViewRoboto) convertView.findViewById(R.id.title);
-            holder.video = (VideoView) convertView.findViewById(R.id.videoView);
             holder.video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
@@ -122,7 +88,7 @@ public class PhotoAdapter extends BaseAdapter {
         holder.prog.setVisibility(View.GONE);
         holder.video.setVisibility(View.GONE);
         holder.image.setVisibility(View.VISIBLE);
-       // Linkify.addLinks(holder.title, Linkify.WEB_URLS);
+        // Linkify.addLinks(holder.title, Linkify.WEB_URLS);
         //Linkify.addLinks(holder.desc, Linkify.WEB_URLS);
 
         if (holder.video.isPlaying()) {
@@ -149,8 +115,7 @@ public class PhotoAdapter extends BaseAdapter {
             holder.title.setVisibility(View.GONE);
         }
 
-        mImageLoader.cancelDisplayTask(holder.image);
-        mImageLoader.displayImage(url, holder.image, mOptions);
+        displayImage(holder.image, url);
         return convertView;
     }
 
@@ -199,7 +164,7 @@ public class PhotoAdapter extends BaseAdapter {
             }
         });
 
-       // holder.title.setMovementMethod(CustomLinkMovement.getInstance(mListener));
+        // holder.title.setMovementMethod(CustomLinkMovement.getInstance(mListener));
         //holder.desc.setMovementMethod(CustomLinkMovement.getInstance(mListener));
     }
 
@@ -214,12 +179,12 @@ public class PhotoAdapter extends BaseAdapter {
 
         // Check if we have an mp4 and if we should load its thumbnail
         if (photo.isAnimated() && photo.hasMP4Link() && photo.isLinkAThumbnail()) {
-            if (photo.getWidth() > 1024 || photo.getHeight() > 1024) {
+            if (photo.getSize() > PHOTO_SIZE_LIMIT) {
                 url = photo.getThumbnail(ImgurPhoto.THUMBNAIL_HUGE, true, FileUtil.EXTENSION_GIF);
             } else {
                 url = photo.getLink();
             }
-        } else if (photo.getWidth() > 1024 || photo.getHeight() > 1024 || photo.getSize() > PHOTO_SIZE_LIMIT) {
+        } else if (photo.getSize() > PHOTO_SIZE_LIMIT) {
             url = photo.getThumbnail(ImgurPhoto.THUMBNAIL_HUGE, false, null);
         } else {
             url = photo.getLink();
@@ -266,5 +231,14 @@ public class PhotoAdapter extends BaseAdapter {
         VideoView video;
 
         View root;
+
+        public PhotoViewHolder(View view) {
+            play = (ImageButton) view.findViewById(R.id.play);
+            image = (ImageView) view.findViewById(R.id.image);
+            prog = (ProgressBar) view.findViewById(R.id.progressBar);
+            desc = (TextViewRoboto) view.findViewById(R.id.desc);
+            title = (TextViewRoboto) view.findViewById(R.id.title);
+            video = (VideoView) view.findViewById(R.id.videoView);
+        }
     }
 }

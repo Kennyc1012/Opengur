@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.kenny.openimgur.SettingsActivity;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 
@@ -28,6 +27,8 @@ public class ImgurPhoto extends ImgurBaseObject {
 
     // 1024x1024
     public static final String THUMBNAIL_HUGE = "h";
+
+    public static final String THUMBNAIL_GALLERY = "b";
 
     private static final String KEY_TYPE = "type";
 
@@ -177,20 +178,4 @@ public class ImgurPhoto extends ImgurBaseObject {
             return new ImgurPhoto[size];
         }
     };
-
-    /**
-     * Returns the quality string based on the settings value for quality
-     *
-     * @param quality
-     * @return
-     */
-    public static String getQualityValue(String quality) {
-        if (SettingsActivity.THUMBNAIL_QUALITY_LOW.equals(quality)) {
-            return ImgurPhoto.THUMBNAIL_SMALL;
-        } else if (SettingsActivity.THUMBNAIL_QUALITY_MEDIUM.equals(quality)) {
-            return ImgurPhoto.THUMBNAIL_MEDIUM;
-        }
-
-        return ImgurPhoto.THUMBNAIL_LARGE;
-    }
 }

@@ -50,6 +50,7 @@ import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
+import org.apache.commons.collections15.list.SetUniqueList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -182,7 +183,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                 int adapterPosition = position - headerSize;
                 // Don't respond to the header being clicked
                 if (adapterPosition >= 0) {
-                   ArrayList<ImgurBaseObject> items = mAdapter.getItems(adapterPosition);
+                    ArrayList<ImgurBaseObject> items = mAdapter.getItems(adapterPosition);
                     int itemPosition = adapterPosition;
 
                     // Get the correct array index of the selected item
@@ -235,7 +236,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                 mCurrentEndpoint = savedInstanceState.getString(KEY_ENDPOINT, null).equals(Endpoints.ACCOUNT_GALLERY_FAVORITES.getUrl()) ? Endpoints.ACCOUNT_GALLERY_FAVORITES : Endpoints.ACCOUNT_SUBMISSIONS;
                 ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                mAdapter = new GalleryAdapter(getActivity(), items);
+                mAdapter = new GalleryAdapter(getActivity(), SetUniqueList.decorate(items));
                 mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                 mGridView.addHeaderView(ViewUtils.getProfileView(mSelectedUser, getActivity(), mMultiView, ProfileFragment.this));
                 mGridView.setAdapter(mAdapter);
@@ -288,7 +289,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
                                 if (mAdapter != null) {
                                     mAdapter.clear();
-                                    mAdapter.notifyDataSetChanged();
                                 }
 
                                 configWebView();
@@ -596,7 +596,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
                     if (objects.size() > 0) {
                         if (mAdapter == null) {
-                            mAdapter = new GalleryAdapter(getActivity(), objects);
+                            mAdapter = new GalleryAdapter(getActivity(), SetUniqueList.decorate(objects));
                             mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                             mGridView.addHeaderView(ViewUtils.getProfileView(mSelectedUser, getActivity(), mMultiView, ProfileFragment.this));
                             mGridView.setAdapter(mAdapter);
@@ -726,7 +726,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
         outState.putParcelable(KEY_USERNAME, mSelectedUser);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.getAllItems());
+            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.retainItems());
             outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
         }
 

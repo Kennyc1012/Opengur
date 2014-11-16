@@ -34,12 +34,22 @@ public class ViewUtils {
      * @return
      */
     public static int getHeightForTranslucentStyle(Context context) {
-        final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(new int[]{android.R.attr.actionBarSize});
-        int height = (int) styledAttributes.getDimension(0, 0);
-        styledAttributes.recycle();
+        return getActionBarHeight(context) + getStatusBarHeight(context);
+    }
 
-        height += getStatusBarHeight(context);
-        return height;
+    /**
+     * Returns the height of the actionbar
+     *
+     * @param context
+     * @return
+     */
+    public static int getActionBarHeight(Context context) {
+        final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
+                new int[]{android.support.v7.appcompat.R.attr.actionBarSize});
+
+        int abHeight = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
+        return abHeight;
     }
 
     /**
@@ -49,6 +59,7 @@ public class ViewUtils {
      * @param additionalHeight Additonal height to be added to the view
      * @return
      */
+
     public static View getHeaderViewForTranslucentStyle(Context context, int additionalHeight) {
         View v = View.inflate(context, R.layout.empty_header, null);
         int height = getHeightForTranslucentStyle(context);

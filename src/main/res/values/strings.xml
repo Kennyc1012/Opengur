@@ -36,14 +36,6 @@
     <string name="error_600">Unable to connect to Imgur. Check your connection and try again.</string>
     <string name="error_800">The Api sent an empty response causing a JSON exception.</string>
     <string name="dismiss">Dismiss</string>
-    <string name="thumbnail_quality">Thumbnail Quality</string>
-
-    <string-array name="pref_thumbnail_quality">
-        <item>Low (Uses less data)</item>
-        <item>Medium</item>
-        <item>High (Uses more data)</item>
-    </string-array>
-
     <string name="empty_comment_message">No comments have been posted yet.</string>
     <string name="cant_launch_intent">Your device in unable to handle this link</string>
     <string name="loading_image_error">Unable to load image.</string>
@@ -129,7 +121,7 @@
     <string name="login">Login</string>
     <string name="send_feedback">Send Feedback</string>
     <string name="search">Search</string>
-    <string name="pref_cache_life_title">Delete Cached Images</string>
+    <string name="pref_cache_size_title">Maximum Cache Size</string>
     <string name="section">Section</string>
     <string name="date_range">Date Range</string>
     <string name="reddit_top_filter_day">Day</string>
@@ -143,12 +135,12 @@
     <string name="gallery_filter">Gallery Filter</string>
     <string name="reddit_filter">Subreddit Filter</string>
 
-    <string-array name="pref_cache_life_items">
-        <item>Never</item>
-        <item>On exit</item>
-        <item>After Three Days</item>
-        <item>After One Week</item>
-        <item>After Two Weeks</item>
+    <string-array name="pref_cache_size_items">
+        <item>256MB</item>
+        <item>512MB</item>
+        <item>1GB</item>
+        <item>2GB</item>
+        <item>Unlimited</item>
     </string-array>
 
     <string-array name="nav_items">
@@ -161,18 +153,12 @@
     </string-array>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
-    <string-array name="pref_thumbnail_quality_keys" translatable="false">
-        <item>low</item>
-        <item>medium</item>
-        <item>high</item>
-    </string-array>
-
-    <string-array name="pref_cache_life_keys" translatable="false">
-        <item>never</item>
-        <item>exit</item>
-        <item>three</item>
-        <item>seven</item>
-        <item>fourteen</item>
+    <string-array name="pref_cache_size_keys" translatable="false">
+        <item>256</item>
+        <item>512</item>
+        <item>1024</item>
+        <item>2048</item>
+        <item>unlimited</item>
     </string-array>
 
 </resources>

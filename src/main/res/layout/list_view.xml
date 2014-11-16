@@ -2,7 +2,7 @@
     android:id="@+id/list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="?android:attr/actionBarSize"
+    android:layout_marginTop="?attr/actionBarSize"
     android:dividerHeight="16dp"
     android:layout_marginLeft="@dimen/view_activity_margin"
     android:layout_marginRight="@dimen/view_activity_margin"

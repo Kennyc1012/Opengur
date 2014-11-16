@@ -350,7 +350,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             if (mCommentAdapter != null) {
                 mCommentAdapter.clear();
-                mCommentAdapter.notifyDataSetChanged();
             }
 
             mMultiView.setViewState(MultiStateView.ViewState.LOADING);
@@ -379,7 +378,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 super.onAnimationEnd(animation);
                 animation.removeAllListeners();
 
-                mCommentArray.put(Long.valueOf(comment.getId()), new ArrayList<ImgurComment>(mCommentAdapter.getItems()));
+                mCommentArray.put(Long.valueOf(comment.getId()), mCommentAdapter.retainItems());
                 mPreviousCommentPositionArray.put(Long.valueOf(comment.getId()), mCommentList.getFirstVisiblePosition());
                 mCommentAdapter.clear();
 
@@ -387,8 +386,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     mCommentList.addHeaderView(mCommentListHeader);
                 }
 
-                mCommentAdapter.addComments(comment.getReplies());
-                mCommentAdapter.notifyDataSetChanged();
+                mCommentAdapter.addItems(comment.getReplies());
                 mCommentList.setSelection(0);
                 Animator anim = ObjectAnimator.ofFloat(mCommentList, "translationX", mCommentList.getWidth(), 0);
 
@@ -429,7 +427,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
 
                 mCommentAdapter.clear();
-                mCommentAdapter.addComments(mCommentArray.get(comment.getParentId()));
+                mCommentAdapter.addItems(mCommentArray.get(comment.getParentId()));
                 mCommentArray.remove(comment.getParentId());
                 mCommentAdapter.notifyDataSetChanged();
                 mCommentList.setSelection(mPreviousCommentPositionArray.get(comment.getParentId()));
@@ -501,7 +499,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             if (mSideGalleryFragment != null) {
                 mSideGalleryFragment.addGalleryItems(objects);
             }
-            
+
             List<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_COMMENT);
 
             if (comments != null) {
@@ -898,14 +896,13 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
-            outState.putParcelableArrayList(KEY_COMMENT, new ArrayList<ImgurComment>(mCommentAdapter.getItems()));
+            outState.putParcelableArrayList(KEY_COMMENT, mCommentAdapter.retainItems());
         }
 
         outState.putBoolean(KEY_LOAD_COMMENTS, mLoadComments);
         outState.putString(KEY_SORT, mCommentSort.getSort());
         outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
-        outState.putParcelableArrayList(KEY_OBJECTS, new ArrayList<ImgurBaseObject>(mPagerAdapter.getItems()));
-
+        outState.putParcelableArrayList(KEY_OBJECTS, mPagerAdapter.retainItems());
         super.onSaveInstanceState(outState);
     }
 
@@ -1021,8 +1018,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             mCommentArray.clear();
                             mPreviousCommentPositionArray.clear();
                             mCommentList.removeHeaderView(mCommentListHeader);
-                            mCommentAdapter.addComments(comments);
-                            mCommentAdapter.notifyDataSetChanged();
+                            mCommentAdapter.addItems(comments);
                         }
 
                         mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -1158,8 +1154,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
 
-        public ArrayList<ImgurBaseObject> getItems() {
-            return objects;
+        public ArrayList<ImgurBaseObject> retainItems() {
+            return new ArrayList<ImgurBaseObject>(objects);
         }
     }
 }

@@ -37,6 +37,7 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
+import org.apache.commons.collections15.list.SetUniqueList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -350,7 +351,7 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                mAdapter = new GalleryAdapter(getActivity(), items);
+                mAdapter = new GalleryAdapter(getActivity(), SetUniqueList.decorate(items));
                 mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                 mGridView.setAdapter(mAdapter);
                 mGridView.setSelection(currentPosition);
@@ -530,7 +531,7 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
                     List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
 
                     if (mAdapter == null) {
-                        mAdapter = new GalleryAdapter(getActivity(), gallery);
+                        mAdapter = new GalleryAdapter(getActivity(), SetUniqueList.decorate(gallery));
                         mGridView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                         mGridView.setAdapter(mAdapter);
                     } else {
@@ -592,7 +593,7 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
         outState.putBoolean(KEY_SHOW_VIRAL, mShowViral);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.getAllItems());
+            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.retainItems());
             outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
         }
 

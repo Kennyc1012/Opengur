@@ -25,7 +25,7 @@
             android:id="@+id/topContainer"
             layout="@layout/sliding_tab_buttons"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize" />
+            android:layout_height="?attr/actionBarSize" />
 
         <com.kenny.openimgur.ui.MultiStateView
             android:id="@+id/multiView"

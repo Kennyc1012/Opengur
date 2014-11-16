@@ -38,6 +38,7 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
+import org.apache.commons.collections15.list.SetUniqueList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -409,7 +410,7 @@ public class RedditFragment extends BaseFragment implements RedditFilterFragment
 
     private void setupAdapter(List<ImgurBaseObject> objects) {
         if (mAdapter == null) {
-            mAdapter = new GalleryAdapter(getActivity(), objects);
+            mAdapter = new GalleryAdapter(getActivity(), SetUniqueList.decorate(objects));
             View header = ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0);
             mGridView.addHeaderView(header);
             mGridView.setAdapter(mAdapter);
@@ -563,7 +564,7 @@ public class RedditFragment extends BaseFragment implements RedditFilterFragment
         outState.putString(KEY_TOP_SORT, mTopSort.getSort());
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.getAllItems());
+            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.retainItems());
             outState.putInt(KEY_CURRENT_POSITION, mGridView.getFirstVisiblePosition());
         }
 

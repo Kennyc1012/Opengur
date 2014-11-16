@@ -2,8 +2,6 @@
 
     <style name="Style_Translucent" parent="Style_Not_Translucent" />
 
-
-
     <style name="Settings_Style" parent="Imgur_Style_Base">
         <item name="windowActionBarOverlay">false</item>
     </style>

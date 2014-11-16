@@ -11,8 +11,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.SideGalleryAdapter;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+
+import org.apache.commons.collections15.list.SetUniqueList;
 
 import java.util.ArrayList;
 
@@ -20,7 +22,7 @@ import java.util.ArrayList;
  * Created by kcampagna on 9/27/14.
  */
 public class SideGalleryFragment extends BaseFragment {
-    private SideGalleryAdapter mAdapter;
+    private GalleryAdapter mAdapter;
 
     private ListView mListView;
 
@@ -36,6 +38,10 @@ public class SideGalleryFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         view.setBackgroundColor(Color.WHITE);
+        int padding = (int) getResources().getDimension(R.dimen.content_padding);
+        view.setPadding(padding, 0, padding, 0);
+        view.setBackgroundColor(Color.TRANSPARENT);
+
         mListView = (ListView) view.findViewById(R.id.list);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -70,7 +76,7 @@ public class SideGalleryFragment extends BaseFragment {
 
     public void addGalleryItems(ArrayList<ImgurBaseObject> galleryItems) {
         if (isAdded()) {
-            mAdapter = new SideGalleryAdapter(getActivity(), app.getImageLoader(), galleryItems);
+            mAdapter = new GalleryAdapter(getActivity(), SetUniqueList.decorate(galleryItems));
             mListView.setAdapter(mAdapter);
         }
     }
@@ -81,7 +87,7 @@ public class SideGalleryFragment extends BaseFragment {
      * @param position
      */
     public void onPositionChanged(int position) {
-        if (isAdded() && mAdapter != null) {
+        if (isAdded()) {
             mListView.setSelection(position);
         }
     }

@@ -42,9 +42,9 @@ public class NavAdapter extends BaseAdapter {
 
     private ImgurUser mUser;
 
-    public NavAdapter(Context context, String[] titles, ImgurUser user) {
+    public NavAdapter(Context context, ImgurUser user) {
         mInflater = LayoutInflater.from(context);
-        mTitles = titles;
+        mTitles = context.getResources().getStringArray(R.array.nav_items);
         mUser = user;
     }
 

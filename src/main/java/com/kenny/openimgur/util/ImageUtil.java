@@ -8,15 +8,21 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.media.ExifInterface;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.SettingsActivity;
+import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.cache.memory.impl.LargestLimitedMemoryCache;
+import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
@@ -118,14 +124,40 @@ public class ImageUtil {
      * Initializes the ImageLoader
      */
     public static void initImageLoader(Context context) {
+        long discCacheSize = 1024 * 1024;
+        DiskCache discCache;
+        String discCacheAllowance = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(SettingsActivity.CACHE_SIZE_KEY, SettingsActivity.CACHE_SIZE_512MB);
+
+        if (SettingsActivity.CACHE_SIZE_256MB.equals(discCacheAllowance)) {
+            discCacheSize *= 256;
+        } else if (SettingsActivity.CACHE_SIZE_512MB.equals(discCacheAllowance)) {
+            discCacheSize *= 512;
+        } else if (SettingsActivity.CACHE_SIZE_1GB.equals(discCacheAllowance)) {
+            discCacheSize *= 1024;
+        } else if (SettingsActivity.CACHE_SIZE_2GB.equals(discCacheAllowance)) {
+            discCacheSize *= 2048;
+        } else {
+            discCacheSize = 0;
+        }
+
+        try {
+            discCache = new LruDiscCache(context.getCacheDir(), new Md5FileNameGenerator(), discCacheSize);
+            LogUtil.v(TAG, "Disc cache set to " + discCacheSize + " bytes");
+        } catch (IOException e) {
+            LogUtil.e(TAG, "Unable to set the disc cache, falling back to unlimited", e);
+            discCache = new UnlimitedDiscCache(context.getCacheDir());
+        }
+
         final int memory = (int) (Runtime.getRuntime().maxMemory() / 8);
+        LogUtil.v(TAG, "Using " + memory + " bytes for memory cache");
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
                 .threadPoolSize(7)
                 .denyCacheImageMultipleSizesInMemory()
-                .diskCache(new UnlimitedDiscCache(context.getCacheDir()))
+                .diskCache(discCache)
                 .defaultDisplayImageOptions(getDefaultDisplayOptions().build())
-                .memoryCache(new LargestLimitedMemoryCache(memory))
+                .memoryCache(new LRULimitedMemoryCache(memory))
                 .build();
 
         ImageLoader.getInstance().init(config);
@@ -150,7 +182,9 @@ public class ImageUtil {
      * @return
      */
     public static DisplayImageOptions.Builder getDisplayOptionsForView() {
-        return getDefaultDisplayOptions().showImageOnLoading(R.drawable.place_holder);
+        return getDefaultDisplayOptions().
+                imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+                .showImageOnLoading(R.drawable.place_holder);
     }
 
     /**

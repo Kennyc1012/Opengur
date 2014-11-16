@@ -36,8 +36,7 @@ public class VideoCache {
     }
 
     private VideoCache() {
-        mCacheDir = new File(OpenImgurApp.getInstance().getApplicationContext().getFilesDir(), "video_cache");
-        mCacheDir.mkdirs();
+        mCacheDir = OpenImgurApp.getInstance().getApplicationContext().getCacheDir();
         mKeyGenerator = new Md5FileNameGenerator();
     }
 
@@ -89,38 +88,6 @@ public class VideoCache {
         String key = mKeyGenerator.generate(url);
         File file = new File(mCacheDir, key + ".mp4");
         return FileUtil.isFileValid(file) ? file : null;
-    }
-
-    /**
-     * Returns the size in bytes of the video cache
-     *
-     * @return
-     */
-    public long getCacheSize() {
-        long size = 0;
-
-        if (FileUtil.isFileValid(mCacheDir) && mCacheDir.isDirectory()) {
-            for (File f : mCacheDir.listFiles()) {
-                size += f.length();
-            }
-        }
-
-        return size;
-    }
-
-    /**
-     * Clears the Video Cache
-     */
-    public void deleteCache() {
-        try {
-            if (mCacheDir != null) {
-                for (File f : mCacheDir.listFiles()) {
-                    f.delete();
-                }
-            }
-        } catch (Exception e) {
-            LogUtil.e(TAG, "An error occurred whiling clearing the video cache", e);
-        }
     }
 
     public static interface VideoCacheListener {

@@ -52,10 +52,16 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mListView = (ListView) view;
-        String[] navItems = getResources().getStringArray(R.array.nav_items);
-        mListView.setAdapter(mAdapter = new NavAdapter(getActivity(), navItems, app.getUser()));
+        mListView.setAdapter(mAdapter = new NavAdapter(getActivity(), app.getUser()));
         mListView.setOnItemClickListener(this);
         mListView.setPadding(0, ViewUtils.getStatusBarHeight(getActivity()), 0, 0);
+
+        // Set the width of the drawer for non tablets (screen width - actionbar height)
+        if (!getResources().getBoolean(R.bool.is_tablet)) {
+            int width = getResources().getDisplayMetrics().widthPixels - ViewUtils.getActionBarHeight(getActivity());
+            DrawerLayout.LayoutParams lp = new DrawerLayout.LayoutParams(width, DrawerLayout.LayoutParams.MATCH_PARENT);
+            view.setLayoutParams(lp);
+        }
     }
 
     @Override

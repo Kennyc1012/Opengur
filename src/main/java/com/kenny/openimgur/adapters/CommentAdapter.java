@@ -10,7 +10,6 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 
 import com.kenny.openimgur.R;
@@ -18,13 +17,12 @@ import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.ui.TextViewRoboto;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommentAdapter extends BaseAdapter {
-    private List<ImgurComment> mCurrentComments;
-
+public class CommentAdapter extends ImgurBaseAdapter {
     private LayoutInflater mInflater;
 
     private ImgurListener mListener;
@@ -34,24 +32,19 @@ public class CommentAdapter extends BaseAdapter {
     private String mOP;
 
     public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
-        mCurrentComments = comments;
+        super(context, comments, false);
         mInflater = LayoutInflater.from(context);
         mListener = listener;
     }
 
-    /**
-     * Returns all comments in the adapter
-     *
-     * @return
-     */
-    public List<ImgurComment> getItems() {
-        return mCurrentComments;
+    @Override
+    protected DisplayImageOptions getDisplayOptions() {
+        return null;
     }
 
-    public void clear() {
-        if (mCurrentComments != null) {
-            mCurrentComments.clear();
-        }
+    @Override
+    public ArrayList<ImgurComment> retainItems() {
+        return new ArrayList<ImgurComment>(getAllItems());
     }
 
     /**
@@ -62,33 +55,9 @@ public class CommentAdapter extends BaseAdapter {
         mListener = null;
     }
 
-    public void addComments(List<ImgurComment> comments) {
-        if (mCurrentComments == null) {
-            mCurrentComments = new ArrayList<ImgurComment>();
-        }
-
-        mCurrentComments.addAll(comments);
-    }
-
-    @Override
-    public int getCount() {
-        if (mCurrentComments != null) {
-            return mCurrentComments.size();
-        }
-        return 0;
-    }
-
     @Override
     public ImgurComment getItem(int position) {
-        if (mCurrentComments != null && !mCurrentComments.isEmpty()) {
-            return mCurrentComments.get(position);
-        }
-        return null;
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return 0;
+        return (ImgurComment) super.getItem(position);
     }
 
     @Override
@@ -98,10 +67,7 @@ public class CommentAdapter extends BaseAdapter {
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.comment_item, parent, false);
-            holder = new CommentViewHolder();
-            holder.comment = (TextViewRoboto) convertView.findViewById(R.id.comment);
-            holder.author = (TextViewRoboto) convertView.findViewById(R.id.author);
-            holder.replies = (Button) convertView.findViewById(R.id.replies);
+            holder = new CommentViewHolder(convertView);
             holder.replies.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -217,5 +183,11 @@ public class CommentAdapter extends BaseAdapter {
         TextViewRoboto author, comment;
 
         Button replies;
+
+        public CommentViewHolder(View view) {
+            comment = (TextViewRoboto) view.findViewById(R.id.comment);
+            author = (TextViewRoboto) view.findViewById(R.id.author);
+            replies = (Button) view.findViewById(R.id.replies);
+        }
     }
 }

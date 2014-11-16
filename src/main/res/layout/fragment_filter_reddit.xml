@@ -13,15 +13,24 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/toolbar_with_section_height"
+            android:minHeight="?attr/actionBarSize"
             android:background="@color/primary_blue_500"
+            android:gravity="bottom"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha" />
+            app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha">
 
-        <com.kenny.openimgur.ui.TextViewRoboto
-            style="@style/SectionTitle"
-            android:text="@string/reddit_filter"
-            app:robotoFont="regular"/>
+            <com.kenny.openimgur.ui.TextViewRoboto
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textColor="@android:color/white"
+                android:text="@string/reddit_filter"
+                android:paddingRight="@dimen/content_padding"
+                android:paddingBottom="@dimen/content_padding"
+                app:robotoFont="regular" />
+
+        </android.support.v7.widget.Toolbar>
 
         <TextView
             android:layout_width="match_parent"
