@@ -5,7 +5,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.VideoView;
+
+import com.kenny.openimgur.ui.VideoView;
 
 public interface ImgurListener {
     void onPhotoTap(View view);

@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true" />
 
-            <VideoView
+            <com.kenny.openimgur.ui.VideoView
                 android:id="@+id/videoView"
                 android:layout_width="match_parent"
                 android:layout_height="1000dp"

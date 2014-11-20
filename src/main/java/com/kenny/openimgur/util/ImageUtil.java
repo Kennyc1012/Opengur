@@ -22,7 +22,6 @@ import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
@@ -182,8 +181,8 @@ public class ImageUtil {
      * @return
      */
     public static DisplayImageOptions.Builder getDisplayOptionsForView() {
-        return getDefaultDisplayOptions().
-                imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+        return getDefaultDisplayOptions()
+                //imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
                 .showImageOnLoading(R.drawable.place_holder);
     }
 

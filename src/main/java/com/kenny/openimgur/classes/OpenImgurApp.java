@@ -44,6 +44,8 @@ public class OpenImgurApp extends Application {
 
     private ImgurUser mUser;
 
+    private boolean mIsFetchingAccessToken = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -133,12 +135,13 @@ public class OpenImgurApp extends Application {
      * @return If the token will be refreshed
      */
     public boolean checkRefreshToken() {
-        if (mUser != null && !mUser.isAccessTokenValid()) {
+        if (mUser != null && !mUser.isAccessTokenValid() && !mIsFetchingAccessToken) {
             LogUtil.v(TAG, "Token expired or is expiring soon, requesting new token");
+            mIsFetchingAccessToken = true;
             new RefreshTokenTask().execute(mUser);
             return true;
         } else {
-            LogUtil.v(TAG, "User is null or token is still valid, no need to request a new token");
+            LogUtil.v(TAG, "User is null, token is still valid, or currently request a token, no need to request a new token");
         }
 
         return false;
@@ -157,9 +160,11 @@ public class OpenImgurApp extends Application {
             mUser.setTokens(accessToken, refreshToken, expiration);
             mSql.updateUserTokens(accessToken, refreshToken, expiration);
             LogUtil.v(TAG, "New refresh token received");
+            mIsFetchingAccessToken = false;
             return true;
         } catch (JSONException e) {
             LogUtil.e(TAG, "Error parsing refresh token result", e);
+            mIsFetchingAccessToken = false;
             return false;
         }
 
@@ -186,6 +191,7 @@ public class OpenImgurApp extends Application {
                 return onReceivedRefreshToken(client.doWork(body));
             } catch (Exception e) {
                 LogUtil.e(TAG, "Error parsing user tokens", e);
+                mIsFetchingAccessToken = false;
                 return false;
             }
         }

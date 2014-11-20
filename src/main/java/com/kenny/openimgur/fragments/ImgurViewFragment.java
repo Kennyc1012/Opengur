@@ -18,7 +18,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.VideoView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.ViewPhotoActivity;
@@ -36,6 +35,7 @@ import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.TextViewRoboto;
+import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;

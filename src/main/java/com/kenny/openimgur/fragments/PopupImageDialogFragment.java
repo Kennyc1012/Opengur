@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.ViewPhotoActivity;
@@ -26,6 +25,7 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -135,7 +135,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
         EventBus.getDefault().register(this);
 
         if (mVideo != null && mVideo.getDuration() > 0) {
-            mVideo.resume();
+            mVideo.start();
         }
     }
 
