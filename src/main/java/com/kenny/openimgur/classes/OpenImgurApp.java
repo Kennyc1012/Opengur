@@ -119,6 +119,7 @@ public class OpenImgurApp extends Application {
     public void deleteAllCache() {
         mImageLoader.clearDiskCache();
         mImageLoader.clearMemoryCache();
+        VideoCache.getInstance().deleteCache();
     }
 
     /**
@@ -140,10 +141,9 @@ public class OpenImgurApp extends Application {
             mIsFetchingAccessToken = true;
             new RefreshTokenTask().execute(mUser);
             return true;
-        } else {
-            LogUtil.v(TAG, "User is null, token is still valid, or currently request a token, no need to request a new token");
         }
 
+        LogUtil.v(TAG, "User is null, token is still valid, or currently request a token, no need to request a new token");
         return false;
     }
 

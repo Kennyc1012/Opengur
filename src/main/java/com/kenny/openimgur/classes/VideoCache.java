@@ -36,7 +36,8 @@ public class VideoCache {
     }
 
     private VideoCache() {
-        mCacheDir = OpenImgurApp.getInstance().getApplicationContext().getCacheDir();
+        mCacheDir = new File(OpenImgurApp.getInstance().getApplicationContext().getCacheDir(), "video_cache");
+        mCacheDir.mkdirs();
         mKeyGenerator = new Md5FileNameGenerator();
     }
 
@@ -88,6 +89,12 @@ public class VideoCache {
         String key = mKeyGenerator.generate(url);
         File file = new File(mCacheDir, key + ".mp4");
         return FileUtil.isFileValid(file) ? file : null;
+    }
+
+    public void deleteCache() {
+        if (FileUtil.isFileValid(mCacheDir)) {
+            for (File f : mCacheDir.listFiles()) f.delete();
+        }
     }
 
     public static interface VideoCacheListener {
