@@ -10,6 +10,7 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,6 +75,8 @@ public class VideoCache {
 
         if (FileUtil.isFileValid(file)) {
             new DownloadVideo(key, url, listener).execute(file);
+        } else if (listener != null) {
+            listener.onVideoDownloadFailed(new FileNotFoundException("Unable to create file for download"), url);
         }
     }
 
@@ -98,10 +101,13 @@ public class VideoCache {
     }
 
     public static interface VideoCacheListener {
+        // Called when the Video download starts
         void onVideoDownloadStart(String key, String url);
 
+        // Called when the video download fails
         void onVideoDownloadFailed(Exception ex, String url);
 
+        // Called when the video download completes
         void onVideoDownloadComplete(File file);
     }
 

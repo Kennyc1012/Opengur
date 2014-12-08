@@ -3,6 +3,7 @@ package com.kenny.openimgur.adapters;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,10 +43,16 @@ public class NavAdapter extends BaseAdapter {
 
     private ImgurUser mUser;
 
+    private int mSelectedColor;
+
+    private int mDefaultColor;
+
     public NavAdapter(Context context, ImgurUser user) {
         mInflater = LayoutInflater.from(context);
         mTitles = context.getResources().getStringArray(R.array.nav_items);
         mUser = user;
+        mSelectedColor = context.getResources().getColor(R.color.color_accent);
+        mDefaultColor = context.getResources().getColor(R.color.abc_primary_text_material_light);
     }
 
     @Override
@@ -91,10 +98,10 @@ public class NavAdapter extends BaseAdapter {
             holder = (NavHolder) convertView.getTag();
         }
 
-        Resources res = convertView.getResources();
-        holder.icon.setImageDrawable(getDrawable(position, res));
+        boolean isSelected = mSelectedPosition == position;
+        holder.icon.setImageDrawable(getDrawable(position, convertView.getResources(), isSelected));
         holder.title.setText(getItem(position));
-        convertView.setBackgroundColor(mSelectedPosition == position ? Color.LTGRAY : Color.WHITE);
+        holder.title.setTextColor(isSelected ? mSelectedColor : mDefaultColor);
         return convertView;
     }
 
@@ -103,6 +110,7 @@ public class NavAdapter extends BaseAdapter {
         Resources res = view.getResources();
         TextViewRoboto name = (TextViewRoboto) view.findViewById(R.id.profileName);
         name.setText(mUser != null ? mUser.getUsername() : getItem(position));
+        name.setTextColor(mSelectedPosition == position ? mSelectedColor : Color.WHITE);
         TextViewRoboto rep = (TextViewRoboto) view.findViewById(R.id.reputation);
         rep.setText(mUser != null ? mUser.getNotoriety().getStringId() : R.string.login_msg);
         rep.setTextColor(mUser != null ? res.getColor(mUser.getNotoriety().getNotorietyColor()) : Color.WHITE);
@@ -146,26 +154,36 @@ public class NavAdapter extends BaseAdapter {
     /**
      * Returns the drawable for the list item
      *
-     * @param position The position in the list
-     * @param res      Local resources
+     * @param position   The position in the list
+     * @param res        Local resources
+     * @param isSelected If the position is selected
      * @return
      */
-    private Drawable getDrawable(int position, Resources res) {
+    private Drawable getDrawable(int position, Resources res, boolean isSelected) {
+        Drawable drawable = null;
         switch (position) {
             case 1:
-                return res.getDrawable(R.drawable.ic_action_gallery);
+                drawable = res.getDrawable(R.drawable.ic_action_gallery).mutate();
+                break;
 
             case 2:
-                return res.getDrawable(R.drawable.ic_action_reddit_nav);
+                drawable = res.getDrawable(R.drawable.ic_action_reddit).mutate();
+                break;
 
             case 4:
-                return res.getDrawable(R.drawable.ic_action_settings);
+                drawable = res.getDrawable(R.drawable.ic_action_settings).mutate();
+                break;
 
             case 5:
-                return res.getDrawable(R.drawable.ic_action_email);
+                drawable = res.getDrawable(R.drawable.ic_action_email).mutate();
+                break;
         }
 
-        return null;
+        if (drawable != null) {
+            drawable.setColorFilter(isSelected ? mSelectedColor : mDefaultColor, PorterDuff.Mode.SRC_ATOP);
+        }
+
+        return drawable;
     }
 
     /**

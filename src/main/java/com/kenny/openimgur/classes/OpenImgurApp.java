@@ -36,7 +36,7 @@ public class OpenImgurApp extends Application {
 
     private ImageLoader mImageLoader;
 
-    public static final int SDK_VERSION = Build.VERSION.SDK_INT;
+    public int sdkVersion = Build.VERSION.SDK_INT;
 
     private SharedPreferences mPref;
 

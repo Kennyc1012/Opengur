@@ -1,4 +1,4 @@
-package com.kenny.openimgur;
+package com.kenny.openimgur.activities;
 
 import android.annotation.SuppressLint;
 import android.app.DialogFragment;
@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.util.LogUtil;
@@ -185,7 +186,7 @@ abstract public class BaseActivity extends ActionBarActivity {
      */
     @SuppressLint("NewApi")
     public void setStatusBarColor(@ColorRes int color) {
-        if (app.SDK_VERSION >= Build.VERSION_CODES.LOLLIPOP) {
+        if (app.sdkVersion >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(color);
         }
     }

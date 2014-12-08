@@ -78,7 +78,6 @@ public class CommentAdapter extends ImgurBaseAdapter {
             });
 
             holder.comment.setMovementMethod(CustomLinkMovement.getInstance(mListener));
-            convertView.setTag(holder);
         } else {
             holder = (CommentViewHolder) convertView.getTag();
         }
@@ -188,6 +187,7 @@ public class CommentAdapter extends ImgurBaseAdapter {
             comment = (TextViewRoboto) view.findViewById(R.id.comment);
             author = (TextViewRoboto) view.findViewById(R.id.author);
             replies = (Button) view.findViewById(R.id.replies);
+            view.setTag(this);
         }
     }
 }

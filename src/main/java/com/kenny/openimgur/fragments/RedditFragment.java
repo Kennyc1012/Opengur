@@ -21,8 +21,8 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.SettingsActivity;
-import com.kenny.openimgur.ViewActivity;
+import com.kenny.openimgur.activities.SettingsActivity;
+import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;

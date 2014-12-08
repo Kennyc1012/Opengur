@@ -1,4 +1,4 @@
-package com.kenny.openimgur;
+package com.kenny.openimgur.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -21,9 +21,9 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.RelativeLayout;
 
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.NavFragment;
@@ -368,7 +368,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             uploadMenuShowing = false;
             hideDistance = mUploadButtonHeight + (mUploadButtonHeight / 2);
             // Add extra distance to the hiding of the button if on KitKat due to the translucent nav bar
-            if (OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.KITKAT) {
+            if (app.sdkVersion >= Build.VERSION_CODES.KITKAT) {
                 if (mNavBarHeight == -1) mNavBarHeight = ViewUtils.getNavigationBarHeight(getApplicationContext());
                 hideDistance += mNavBarHeight;
             }

@@ -16,7 +16,7 @@ import android.view.Window;
 import android.webkit.WebView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.SettingsActivity;
+import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;

@@ -1,4 +1,4 @@
-package com.kenny.openimgur;
+package com.kenny.openimgur.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -32,6 +32,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.cocosw.bottomsheet.BottomSheet;
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -889,7 +890,15 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
-        shareIntent.putExtra(Intent.EXTRA_TEXT, imgurBaseObject.getTitle() + " " + imgurBaseObject.getGalleryLink());
+
+        String link = imgurBaseObject.getTitle() + " ";
+        if (TextUtils.isEmpty(imgurBaseObject.getRedditLink())) {
+            link += imgurBaseObject.getGalleryLink();
+        } else {
+            link += String.format("http://reddit.com%s", imgurBaseObject.getRedditLink());
+        }
+
+        shareIntent.putExtra(Intent.EXTRA_TEXT, link);
         provider.setShareIntent(shareIntent);
     }
 

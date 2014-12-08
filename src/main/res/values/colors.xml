@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="color_primary">#5677fc</color>
+    <color name="color_primary_dark">#4d69ff</color>
+    <color name="color_accent">#ff5177</color>
     <color name="black_circle_button_pressed">#50000000</color>
     <color name="black_circle_button_default">#80000000</color>
-    <color name="accent_color_red_200">#ff5177</color>
-    <color name="accent_color_blue_700">#4d69ff</color>
     <color name="comment_bg_default">#ffffff</color>
     <color name="comment_bg_selected">#e5e5e5</color>
     <color name="dialog_accept">@color/material_deep_teal_500</color>
-    <color name="primary_blue_500">#5677fc</color>
     <color name="notoriety_positive">#81C784</color>
     <color name="notoriety_negative">#FF1744</color>
 

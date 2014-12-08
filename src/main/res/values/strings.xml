@@ -21,12 +21,13 @@
     <string name="download_complete">Download Complete</string>
     <string name="tap_to_view">Tap to view</string>
     <string name="share">Share</string>
-    <string name="download_error">An error occurred while downloading</string>
-    <string name="error">Error</string>
+
     <string name="filter_popular">Popularity</string>
     <string name="filter_time">Newest</string>
     <string name="filter_rising">Rising</string>
     <string name="filter_top">Top</string>
+
+    <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
     <string name="error_401">This requires you to be logged in. Please login and try again.</string>
     <string name="error_403">You do not have permission to complete this action. You might need to login again.</string>
@@ -35,6 +36,9 @@
     <string name="error_503">Imgur is currently over capacity. Boo…</string>
     <string name="error_600">Unable to connect to Imgur. Check your connection and try again.</string>
     <string name="error_800">The Api sent an empty response causing a JSON exception.</string>
+    <string name="download_error">An error occurred while downloading</string>
+    <string name="error">Error</string>
+
     <string name="dismiss">Dismiss</string>
     <string name="empty_comment_message">No comments have been posted yet.</string>
     <string name="cant_launch_intent">Your device in unable to handle this link</string>

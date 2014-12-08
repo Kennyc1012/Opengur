@@ -92,31 +92,31 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
             case DAY:
                 mSeekBar.setProgress(0);
                 mDay.setTypeface(null, Typeface.BOLD);
-                mDay.setTextColor(getResources().getColor(R.color.accent_color_red_200));
+                mDay.setTextColor(getResources().getColor(R.color.color_accent));
                 break;
 
             case WEEK:
                 mSeekBar.setProgress(20);
                 mWeek.setTypeface(null, Typeface.BOLD);
-                mWeek.setTextColor(getResources().getColor(R.color.accent_color_red_200));
+                mWeek.setTextColor(getResources().getColor(R.color.color_accent));
                 break;
 
             case MONTH:
                 mSeekBar.setProgress(40);
                 mMonth.setTypeface(null, Typeface.BOLD);
-                mMonth.setTextColor(getResources().getColor(R.color.accent_color_red_200));
+                mMonth.setTextColor(getResources().getColor(R.color.color_accent));
                 break;
 
             case YEAR:
                 mSeekBar.setProgress(60);
                 mYear.setTypeface(null, Typeface.BOLD);
-                mYear.setTextColor(getResources().getColor(R.color.accent_color_red_200));
+                mYear.setTextColor(getResources().getColor(R.color.color_accent));
                 break;
 
             case ALL:
                 mSeekBar.setProgress(80);
                 mAll.setTypeface(null, Typeface.BOLD);
-                mAll.setTextColor(getResources().getColor(R.color.accent_color_red_200));
+                mAll.setTextColor(getResources().getColor(R.color.color_accent));
                 break;
         }
 
@@ -215,7 +215,7 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
      * @param topSort
      */
     private void updateTextView(RedditFragment.RedditTopSort topSort) {
-        int selected = getResources().getColor(R.color.accent_color_red_200);
+        int selected = getResources().getColor(R.color.color_accent);
         int black = Color.BLACK;
         int tfNormal = Typeface.NORMAL;
         int tfBold = Typeface.BOLD;

@@ -1,6 +1,5 @@
-package com.kenny.openimgur;
+package com.kenny.openimgur.activities;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -27,6 +26,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
@@ -405,7 +405,7 @@ public class UploadActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CODE_CAMERA:
                     if (FileUtil.isFileValid(mCameraFile)) {
@@ -559,7 +559,7 @@ public class UploadActivity extends BaseActivity {
                             .setPositiveButton(R.string.copy_link, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                    ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                                     clipboard.setPrimaryClip(ClipData.newPlainText("link", url));
                                     finish();
                                 }
@@ -584,7 +584,7 @@ public class UploadActivity extends BaseActivity {
         private DisplayMetrics mMetrics;
 
         public LoadImageTask(UploadActivity activity) {
-            mActivity = new WeakReference<UploadActivity>(activity);
+            mActivity = new WeakReference<>(activity);
             mMetrics = activity.getResources().getDisplayMetrics();
         }
 

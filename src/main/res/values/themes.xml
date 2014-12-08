@@ -1,0 +1,37 @@
+<resources>
+
+    <style name="Theme_Translucent" parent="Theme_Not_Translucent" />
+
+    <style name="Settings_Theme" parent="Imgur_Theme_Base">
+        <item name="windowActionBarOverlay">false</item>
+    </style>
+
+    <style name="Theme_Not_Translucent" parent="Imgur_Theme_Base">
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+
+
+    <style name="Imgur_Theme_Base" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="actionModeBackground">@color/color_primary</item>
+        <item name="android:windowBackground">@color/background_material_light</item>
+    </style>
+
+    <style name="Theme_Translucent_Main" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="actionModeBackground">@color/color_primary</item>
+        <item name="android:windowBackground">@color/background_material_light</item>
+    </style>
+
+</resources>
+

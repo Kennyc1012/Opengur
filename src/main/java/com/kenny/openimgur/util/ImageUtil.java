@@ -13,12 +13,11 @@ import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.SettingsActivity;
+import com.kenny.openimgur.activities.SettingsActivity;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -142,21 +141,21 @@ public class ImageUtil {
 
         try {
             discCache = new LruDiscCache(context.getCacheDir(), new Md5FileNameGenerator(), discCacheSize);
-            LogUtil.v(TAG, "Disc cache set to " + discCacheSize + " bytes");
+            LogUtil.v(TAG, "Disc cache set to " + FileUtil.humanReadableByteCount(discCacheSize, false));
         } catch (IOException e) {
             LogUtil.e(TAG, "Unable to set the disc cache, falling back to unlimited", e);
             discCache = new UnlimitedDiscCache(context.getCacheDir());
         }
 
         final int memory = (int) (Runtime.getRuntime().maxMemory() / 8);
-        LogUtil.v(TAG, "Using " + memory + " bytes for memory cache");
+        LogUtil.v(TAG, "Using " + FileUtil.humanReadableByteCount(memory, false) + "  for memory cache");
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                .threadPoolSize(7)
+                .threadPoolSize(5)
                 .denyCacheImageMultipleSizesInMemory()
                 .diskCache(discCache)
                 .defaultDisplayImageOptions(getDefaultDisplayOptions().build())
-                .memoryCache(new LRULimitedMemoryCache(memory))
+                .memoryCacheSize(memory)
                 .build();
 
         ImageLoader.getInstance().init(config);
@@ -182,7 +181,6 @@ public class ImageUtil {
      */
     public static DisplayImageOptions.Builder getDisplayOptionsForView() {
         return getDefaultDisplayOptions()
-                //imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
                 .showImageOnLoading(R.drawable.place_holder);
     }
 

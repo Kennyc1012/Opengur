@@ -1,8 +1,9 @@
-package com.kenny.openimgur;
+package com.kenny.openimgur.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 

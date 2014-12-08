@@ -16,7 +16,6 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.TextViewRoboto;
 
 import java.text.SimpleDateFormat;
@@ -56,7 +55,7 @@ public class ViewUtils {
      * Returns an empty view to occupy the space present in the translucent style
      *
      * @param context
-     * @param additionalHeight Additonal height to be added to the view
+     * @param additionalHeight Additional height to be added to the view
      * @return
      */
 
@@ -131,7 +130,7 @@ public class ViewUtils {
         int height = 0;
 
         // On 4.4 + devices, we need to account for the status bar
-        if (OpenImgurApp.SDK_VERSION >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
             if (resourceId > 0) {
                 height = context.getResources().getDimensionPixelSize(resourceId);

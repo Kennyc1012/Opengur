@@ -77,7 +77,6 @@ public class GalleryAdapter extends ImgurBaseAdapter {
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.gallery_item, parent, false);
             holder = new ViewHolder(convertView);
-            convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
@@ -109,6 +108,7 @@ public class GalleryAdapter extends ImgurBaseAdapter {
         public ViewHolder(View view) {
             image = (ImageView) view.findViewById(R.id.image);
             tv = (TextViewRoboto) view.findViewById(R.id.score);
+            view.setTag(this);
         }
     }
 }

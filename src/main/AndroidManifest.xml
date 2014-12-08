@@ -14,8 +14,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name">
         <activity
-            android:name=".MainActivity"
-            android:theme="@style/Style_Translucent_Main">
+            android:name=".activities.MainActivity"
+            android:theme="@style/Theme_Translucent_Main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,30 +23,30 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ViewActivity"
-            android:theme="@style/Style_Not_Translucent" />
+            android:name=".activities.ViewActivity"
+            android:theme="@style/Theme_Not_Translucent" />
         <activity
-            android:name=".ViewPhotoActivity"
-            android:theme="@style/Style_Translucent" />
+            android:name=".activities.ViewPhotoActivity"
+            android:theme="@style/Theme_Translucent" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/action_settings"
-            android:theme="@style/Settings_Style" />
+            android:theme="@style/Settings_Theme" />
         <activity
-            android:name=".ProfileActivity"
-            android:theme="@style/Style_Translucent" />
+            android:name=".activities.ProfileActivity"
+            android:theme="@style/Theme_Translucent" />
         <activity
-            android:name=".UploadActivity"
-            android:theme="@style/Style_Not_Translucent"
+            android:name=".activities.UploadActivity"
+            android:theme="@style/Theme_Not_Translucent"
             android:label="@string/upload" />
 
         <service android:name=".DownloaderService" />
         <activity
-            android:name=".RoutingActivity"
+            android:name=".activities.RoutingActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:label="@string/app_name"
-            android:theme="@style/Style_Not_Translucent">
+            android:theme="@style/Theme_Not_Translucent">
             <!-- Profiles -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

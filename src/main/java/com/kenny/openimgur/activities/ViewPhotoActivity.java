@@ -1,4 +1,4 @@
-package com.kenny.openimgur;
+package com.kenny.openimgur.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.kenny.openimgur.DownloaderService;
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.MultiStateView;

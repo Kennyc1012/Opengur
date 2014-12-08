@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@color/primary_blue_500">
+    android:background="@color/color_primary">
 
     <ImageButton
         android:id="@+id/panelUpBtn"

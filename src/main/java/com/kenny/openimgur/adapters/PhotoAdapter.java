@@ -78,7 +78,6 @@ public class PhotoAdapter extends ImgurBaseAdapter {
             });
 
             setClickListener(holder);
-            convertView.setTag(holder);
         } else {
             holder = (PhotoViewHolder) convertView.getTag();
         }
@@ -88,7 +87,7 @@ public class PhotoAdapter extends ImgurBaseAdapter {
         holder.prog.setVisibility(View.GONE);
         holder.video.setVisibility(View.GONE);
         holder.image.setVisibility(View.VISIBLE);
-        // Linkify.addLinks(holder.title, Linkify.WEB_URLS);
+        //Linkify.addLinks(holder.title, Linkify.WEB_URLS);
         //Linkify.addLinks(holder.desc, Linkify.WEB_URLS);
 
         if (holder.video.isPlaying()) {
@@ -239,6 +238,7 @@ public class PhotoAdapter extends ImgurBaseAdapter {
             desc = (TextViewRoboto) view.findViewById(R.id.desc);
             title = (TextViewRoboto) view.findViewById(R.id.title);
             video = (VideoView) view.findViewById(R.id.videoView);
+            view.setTag(this);
         }
     }
 }
