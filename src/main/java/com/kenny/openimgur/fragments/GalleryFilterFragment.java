@@ -98,10 +98,13 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
         mSeekBar = (SeekBar) view.findViewById(R.id.sortSeekBar);
         mSectionRG = (RadioGroup) view.findViewById(R.id.sectionGroup);
         mShowViral = (CheckBox) view.findViewById(R.id.showViral);
+        ((TextView) view.findViewById(R.id.sectionTitle)).setTextColor(getResources().getColor(theme.darkColor));
+        ((TextView) view.findViewById(R.id.sortTitle)).setTextColor(getResources().getColor(theme.darkColor));
+
         Bundle args = getArguments();
         GalleryFragment.GallerySort sort = GalleryFragment.GallerySort.getSortFromString(args.getString(KEY_SORT, null));
         GalleryFragment.GallerySection section = GalleryFragment.GallerySection.getSectionFromString(args.getString(KEY_SECTION, null));
-        mShowViral.setChecked( args.getBoolean(KEY_VIRAL, true));
+        mShowViral.setChecked(args.getBoolean(KEY_VIRAL, true));
 
         switch (section) {
             case USER:
@@ -122,20 +125,20 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
 
         switch (sort) {
             case RISING:
-                mRising.setTextColor(getResources().getColor(R.color.color_accent));
+                mRising.setTextColor(getResources().getColor(theme.accentColor));
                 mSeekBar.setProgress(50);
                 mRising.setTypeface(null, Typeface.BOLD);
                 break;
 
             case VIRAL:
-                mViral.setTextColor(getResources().getColor(R.color.color_accent));
+                mViral.setTextColor(getResources().getColor(theme.accentColor));
                 mSeekBar.setProgress(100);
                 mViral.setTypeface(null, Typeface.BOLD);
                 break;
 
             case TIME:
                 mSeekBar.setProgress(0);
-                mTime.setTextColor(getResources().getColor(R.color.color_accent));
+                mTime.setTextColor(getResources().getColor(theme.accentColor));
                 mTime.setTypeface(null, Typeface.BOLD);
                 break;
         }
@@ -160,6 +163,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
                 dismiss(null, null);
             }
         });
+        tb.setBackgroundColor(getResources().getColor(theme.primaryColor));
     }
 
     @Override
@@ -179,7 +183,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
         if (mHasThreeSortOpts) {
             if (position <= 33) {
                 mSeekBar.setProgress(0);
-                mTime.setTextColor(getResources().getColor(R.color.color_accent));
+                mTime.setTextColor(getResources().getColor(theme.accentColor));
                 mViral.setTextColor(Color.BLACK);
                 mRising.setTextColor(Color.BLACK);
                 mTime.setTypeface(null, Typeface.BOLD);
@@ -189,14 +193,14 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
                 mSeekBar.setProgress(50);
                 mTime.setTextColor(Color.BLACK);
                 mViral.setTextColor(Color.BLACK);
-                mRising.setTextColor(getResources().getColor(R.color.color_accent));
+                mRising.setTextColor(getResources().getColor(theme.accentColor));
                 mTime.setTypeface(null, Typeface.NORMAL);
                 mViral.setTypeface(null, Typeface.NORMAL);
                 mRising.setTypeface(null, Typeface.BOLD);
             } else {
                 mSeekBar.setProgress(100);
                 mTime.setTextColor(Color.BLACK);
-                mViral.setTextColor(getResources().getColor(R.color.color_accent));
+                mViral.setTextColor(getResources().getColor(theme.accentColor));
                 mRising.setTextColor(Color.BLACK);
                 mTime.setTypeface(null, Typeface.NORMAL);
                 mViral.setTypeface(null, Typeface.BOLD);
@@ -205,7 +209,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
         } else {
             if (position <= 50) {
                 mSeekBar.setProgress(0);
-                mTime.setTextColor(getResources().getColor(R.color.color_accent));
+                mTime.setTextColor(getResources().getColor(theme.accentColor));
                 mViral.setTextColor(Color.BLACK);
                 mRising.setTextColor(Color.BLACK);
                 mTime.setTypeface(null, Typeface.BOLD);
@@ -214,7 +218,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
             } else {
                 mSeekBar.setProgress(100);
                 mTime.setTextColor(Color.BLACK);
-                mViral.setTextColor(getResources().getColor(R.color.color_accent));
+                mViral.setTextColor(getResources().getColor(theme.accentColor));
                 mRising.setTextColor(Color.BLACK);
                 mTime.setTypeface(null, Typeface.NORMAL);
                 mViral.setTypeface(null, Typeface.BOLD);
@@ -256,7 +260,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
                 // Need to reset the progress bar if it previously had three options
                 if (mSeekBar.getProgress() == 50) {
                     mSeekBar.setProgress(100);
-                    mViral.setTextColor(getResources().getColor(R.color.color_accent));
+                    mViral.setTextColor(getResources().getColor(theme.accentColor));
                     mRising.setTextColor(Color.BLACK);
                 }
                 break;

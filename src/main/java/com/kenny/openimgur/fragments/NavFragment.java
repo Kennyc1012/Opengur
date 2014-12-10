@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NavAdapter;
+import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.util.ViewUtils;
 
@@ -134,6 +135,11 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
      */
     public void setSelectedPage(int position) {
         mAdapter.setSelectedPosition(position);
+    }
+
+    public void onUpdateTheme(ImgurTheme theme) {
+        this.theme = theme;
+        if (mAdapter != null) mAdapter.onUpdateTheme(theme, getResources());
     }
 
     public static interface NavigationListener {

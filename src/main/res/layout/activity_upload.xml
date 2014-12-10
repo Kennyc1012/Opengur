@@ -57,7 +57,6 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/upload"
-                        android:textColor="@color/color_accent"
                         android:textAllCaps="true"
                         style="@style/Widget.AppCompat.ActionButton"
                         android:visibility="visible" />

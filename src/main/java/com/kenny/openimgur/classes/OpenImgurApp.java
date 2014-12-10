@@ -9,9 +9,11 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.text.format.DateUtils;
 
 import com.kenny.openimgur.BuildConfig;
+import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.util.ImageUtil;
@@ -46,6 +48,8 @@ public class OpenImgurApp extends Application {
 
     private boolean mIsFetchingAccessToken = false;
 
+    private ImgurTheme mTheme = ImgurTheme.BLUE;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -53,6 +57,7 @@ public class OpenImgurApp extends Application {
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
+        mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, "blue"));
 
         if (USE_STRICT_MODE) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
@@ -145,6 +150,14 @@ public class OpenImgurApp extends Application {
 
         LogUtil.v(TAG, "User is null, token is still valid, or currently request a token, no need to request a new token");
         return false;
+    }
+
+    public ImgurTheme getImgurTheme() {
+        return mTheme;
+    }
+
+    public void setImgurTheme(@NonNull ImgurTheme theme) {
+        mTheme = theme;
     }
 
     /**

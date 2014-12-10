@@ -117,6 +117,7 @@ public class UploadActivity extends BaseActivity {
         mLink = (EditText) findViewById(R.id.url);
         mGalleryCB = (CheckBox) findViewById(R.id.galleryUpload);
         mUploadButton = (Button) findViewById(R.id.uploadButton);
+        mUploadButton.setTextColor(getResources().getColor(theme.accentColor));
     }
 
     /**

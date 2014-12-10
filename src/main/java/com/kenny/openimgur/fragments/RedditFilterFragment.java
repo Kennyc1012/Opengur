@@ -81,6 +81,8 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
         mMonth = (TextView) view.findViewById(R.id.month);
         mYear = (TextView) view.findViewById(R.id.year);
         mAll = (TextView) view.findViewById(R.id.all);
+        ((TextView) view.findViewById(R.id.sortTitle)).setTextColor(getResources().getColor(theme.darkColor));
+        ((TextView) view.findViewById(R.id.dateTitle)).setTextColor(getResources().getColor(theme.darkColor));
 
         Bundle args = getArguments();
         RedditFragment.RedditSort sort = (RedditFragment.RedditSort) args.getSerializable(KEY_SORT);
@@ -92,31 +94,31 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
             case DAY:
                 mSeekBar.setProgress(0);
                 mDay.setTypeface(null, Typeface.BOLD);
-                mDay.setTextColor(getResources().getColor(R.color.color_accent));
+                mDay.setTextColor(getResources().getColor(theme.accentColor));
                 break;
 
             case WEEK:
                 mSeekBar.setProgress(20);
                 mWeek.setTypeface(null, Typeface.BOLD);
-                mWeek.setTextColor(getResources().getColor(R.color.color_accent));
+                mWeek.setTextColor(getResources().getColor(theme.accentColor));
                 break;
 
             case MONTH:
                 mSeekBar.setProgress(40);
                 mMonth.setTypeface(null, Typeface.BOLD);
-                mMonth.setTextColor(getResources().getColor(R.color.color_accent));
+                mMonth.setTextColor(getResources().getColor(theme.accentColor));
                 break;
 
             case YEAR:
                 mSeekBar.setProgress(60);
                 mYear.setTypeface(null, Typeface.BOLD);
-                mYear.setTextColor(getResources().getColor(R.color.color_accent));
+                mYear.setTextColor(getResources().getColor(theme.accentColor));
                 break;
 
             case ALL:
                 mSeekBar.setProgress(80);
                 mAll.setTypeface(null, Typeface.BOLD);
-                mAll.setTextColor(getResources().getColor(R.color.color_accent));
+                mAll.setTextColor(getResources().getColor(theme.accentColor));
                 break;
         }
 
@@ -140,6 +142,7 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
                 dismiss(null, null);
             }
         });
+        tb.setBackgroundColor(getResources().getColor(theme.primaryColor));
     }
 
     @Override
@@ -215,7 +218,7 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
      * @param topSort
      */
     private void updateTextView(RedditFragment.RedditTopSort topSort) {
-        int selected = getResources().getColor(R.color.color_accent);
+        int selected = getResources().getColor(theme.accentColor);
         int black = Color.BLACK;
         int tfNormal = Typeface.NORMAL;
         int tfBold = Typeface.BOLD;

@@ -11,26 +11,58 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-
-
     <style name="Imgur_Theme_Base" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/color_primary</item>
-        <item name="colorPrimaryDark">@color/color_primary_dark</item>
-        <item name="colorAccent">@color/color_accent</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="actionModeBackground">@color/color_primary</item>
         <item name="android:windowBackground">@color/background_material_light</item>
     </style>
 
     <style name="Theme_Translucent_Main" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="colorPrimary">@color/color_primary</item>
-        <item name="colorPrimaryDark">@color/color_primary_dark</item>
-        <item name="colorAccent">@color/color_accent</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="actionModeBackground">@color/color_primary</item>
         <item name="android:windowBackground">@color/background_material_light</item>
+    </style>
+
+    <!-- Override styles -->
+    <style name="Theme_Blue">
+        <item name="colorPrimary">@color/theme_blue_primary</item>
+        <item name="colorPrimaryDark">@color/theme_blue_dark</item>
+        <item name="colorAccent">@color/theme_blue_accent</item>
+    </style>
+    <style name="Theme_Light_Blue">
+        <item name="colorPrimary">@color/theme_light_blue_primary</item>
+        <item name="colorPrimaryDark">@color/theme_light_blue_dark</item>
+        <item name="colorAccent">@color/theme_light_blue_accent</item>
+    </style>
+    <style name="Theme_Cyan">
+        <item name="colorPrimary">@color/theme_cyan_primary</item>
+        <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
+        <item name="colorAccent">@color/theme_cyan_accent</item>
+    </style>
+    <style name="Theme_Green">
+        <item name="colorPrimary">@color/theme_green_primary</item>
+        <item name="colorPrimaryDark">@color/theme_green_dark</item>
+        <item name="colorAccent">@color/theme_green_accent</item>
+    </style>
+    <style name="Theme_Teal">
+        <item name="colorPrimary">@color/theme_teal_primary</item>
+        <item name="colorPrimaryDark">@color/theme_teal_dark</item>
+        <item name="colorAccent">@color/theme_teal_accent</item>
+    </style>
+    <style name="Theme_Red">
+        <item name="colorPrimary">@color/theme_red_primary</item>
+        <item name="colorPrimaryDark">@color/theme_red_dark</item>
+        <item name="colorAccent">@color/theme_red_accent</item>
+    </style>
+    <style name="Theme_Pink">
+        <item name="colorPrimary">@color/theme_pink_primary</item>
+        <item name="colorPrimaryDark">@color/theme_pink_dark</item>
+        <item name="colorAccent">@color/theme_pink_accent</item>
+    </style>
+    <style name="Theme_Purple">
+        <item name="colorPrimary">@color/theme_purple_primary</item>
+        <item name="colorPrimaryDark">@color/theme_purple_dark</item>
+        <item name="colorAccent">@color/theme_purple_accent</item>
     </style>
 
 </resources>

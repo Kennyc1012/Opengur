@@ -210,6 +210,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         mMultiView = (MultiStateView) findViewById(R.id.multiView);
         mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mMultiView.setErrorButtonText(R.id.errorButton, R.string.load_comments);
+        findViewById(R.id.topContainer).setBackgroundColor(getResources().getColor(theme.primaryColor));
 
         mMultiView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
             @Override

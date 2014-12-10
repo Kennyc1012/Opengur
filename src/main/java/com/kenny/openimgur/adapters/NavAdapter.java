@@ -12,7 +12,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.TextViewRoboto;
 
 /**
@@ -47,12 +49,23 @@ public class NavAdapter extends BaseAdapter {
 
     private int mDefaultColor;
 
+    private int mProfileColor;
+
     public NavAdapter(Context context, ImgurUser user) {
+        ImgurTheme theme = OpenImgurApp.getInstance(context).getImgurTheme();
         mInflater = LayoutInflater.from(context);
-        mTitles = context.getResources().getStringArray(R.array.nav_items);
+        Resources res = context.getResources();
+        mTitles = res.getStringArray(R.array.nav_items);
         mUser = user;
-        mSelectedColor = context.getResources().getColor(R.color.color_accent);
-        mDefaultColor = context.getResources().getColor(R.color.abc_primary_text_material_light);
+        mSelectedColor = res.getColor(theme.accentColor);
+        mProfileColor = res.getColor(theme.primaryColor);
+        mDefaultColor = res.getColor(R.color.abc_primary_text_material_light);
+    }
+
+    public void onUpdateTheme(ImgurTheme theme, Resources res) {
+        mSelectedColor = res.getColor(theme.accentColor);
+        mProfileColor = res.getColor(theme.primaryColor);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -113,7 +126,7 @@ public class NavAdapter extends BaseAdapter {
         name.setTextColor(mSelectedPosition == position ? mSelectedColor : Color.WHITE);
         TextViewRoboto rep = (TextViewRoboto) view.findViewById(R.id.reputation);
         rep.setText(mUser != null ? mUser.getNotoriety().getStringId() : R.string.login_msg);
-        rep.setTextColor(mUser != null ? res.getColor(mUser.getNotoriety().getNotorietyColor()) : Color.WHITE);
+        view.setBackgroundColor(mProfileColor);
         return view;
     }
 

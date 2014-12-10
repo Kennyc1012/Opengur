@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.widget.RelativeLayout;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.NavFragment;
@@ -88,9 +90,13 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         mNavFragment.configDrawerLayout(mDrawer);
         mUploadMenu = findViewById(R.id.uploadMenu);
         mUploadButton = (FloatingActionButton) mUploadMenu.findViewById(R.id.uploadButton);
+        mUploadButton.setColor(getResources().getColor(theme.accentColor));
         mLinkUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.linkUpload);
+        mLinkUpload.setColor(getResources().getColor(theme.accentColor));
         mCameraUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.cameraUpload);
+        mCameraUpload.setColor(getResources().getColor(theme.accentColor));
         mGalleryUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.galleryUpload);
+        mGalleryUpload.setColor(getResources().getColor(theme.accentColor));
         mUploadButton.setOnClickListener(this);
         mLinkUpload.setOnClickListener(this);
         mCameraUpload.setOnClickListener(this);
@@ -111,6 +117,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             mToolBar.setLayoutParams(lp);
         }
 
+        mToolBar.setBackgroundColor(getResources().getColor(app.getImgurTheme().primaryColor));
         setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -173,7 +180,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 break;
 
             case PAGE_SETTINGS:
-                startActivity(SettingsActivity.createIntent(getApplicationContext()));
+                startActivityForResult(SettingsActivity.createIntent(getApplicationContext()), SettingsActivity.REQUEST_CODE);
                 break;
 
             case PAGE_FEEDBACK:
@@ -401,5 +408,26 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         }
 
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            // Set the theme if coming from the settings activity
+            case SettingsActivity.REQUEST_CODE:
+                app = OpenImgurApp.getInstance(getApplicationContext());
+                theme = app.getImgurTheme();
+                Resources res = getResources();
+                mToolBar.setBackgroundColor(res.getColor(theme.primaryColor));
+                mUploadButton.setColor(res.getColor(theme.accentColor));
+                mLinkUpload.setColor(res.getColor(theme.accentColor));
+                mCameraUpload.setColor(res.getColor(theme.accentColor));
+                mGalleryUpload.setColor(res.getColor(theme.accentColor));
+                setStatusBarColor(res.getColor(theme.darkColor));
+                mNavFragment.onUpdateTheme(theme);
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
