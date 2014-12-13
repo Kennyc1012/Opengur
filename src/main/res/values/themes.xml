@@ -29,9 +29,9 @@
         <item name="colorPrimaryDark">@color/theme_blue_dark</item>
         <item name="colorAccent">@color/theme_blue_accent</item>
     </style>
-    <style name="Theme_Light_Blue">
-        <item name="colorPrimary">@color/theme_light_blue_primary</item>
-        <item name="colorPrimaryDark">@color/theme_light_blue_dark</item>
+    <style name="Theme_Orange">
+        <item name="colorPrimary">@color/theme_orange_primary</item>
+        <item name="colorPrimaryDark">@color/theme_orange_dark</item>
         <item name="colorAccent">@color/theme_light_blue_accent</item>
     </style>
     <style name="Theme_Cyan">

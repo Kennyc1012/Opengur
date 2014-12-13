@@ -160,13 +160,13 @@
 
     <string-array name="pref_themes_items">
         <item>Blue</item>
-        <item>Light Blue</item>
         <item>Cyan</item>
         <item>Green</item>
-        <item>Teal</item>
-        <item>Red</item>
+        <item>Orange</item>
         <item>Pink</item>
         <item>Purple</item>
+        <item>Red</item>
+        <item>Teal</item>
     </string-array>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
@@ -180,13 +180,13 @@
 
     <string-array name="pref_theme_keys" translatable="false">
         <item>blue</item>
-        <item>ltblue</item>
         <item>cyan</item>
         <item>green</item>
-        <item>teal</item>
-        <item>red</item>
+        <item>orange</item>
         <item>pink</item>
         <item>purple</item>
+        <item>red</item>
+        <item>teal</item>
     </string-array>
 
 </resources>

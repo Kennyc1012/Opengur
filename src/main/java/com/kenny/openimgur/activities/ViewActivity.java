@@ -158,10 +158,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private CommentAdapter mCommentAdapter;
 
     // Keeps track of the previous list of comments as we progress in the stack
-    private LongSparseArray<ArrayList<ImgurComment>> mCommentArray = new LongSparseArray<ArrayList<ImgurComment>>();
+    private LongSparseArray<ArrayList<ImgurComment>> mCommentArray = new LongSparseArray<>();
 
     // Keeps track of the position of the comment list when navigating in the stack
-    private LongSparseArray<Integer> mPreviousCommentPositionArray = new LongSparseArray<Integer>();
+    private LongSparseArray<Integer> mPreviousCommentPositionArray = new LongSparseArray<>();
 
     private int mCurrentPosition = 0;
 
@@ -178,8 +178,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private boolean mIsResuming = false;
 
     private boolean mLoadComments;
-
-    private boolean mIsTablet;
 
     private boolean mIsCommentsAnimating = false;
 
@@ -203,7 +201,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIsTablet = getResources().getBoolean(R.bool.is_tablet);
         setContentView(R.layout.activity_view);
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
         mSlidingPane = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
@@ -1165,7 +1162,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         public ArrayList<ImgurBaseObject> retainItems() {
-            return new ArrayList<ImgurBaseObject>(objects);
+            return new ArrayList<>(objects);
         }
     }
 }

@@ -14,8 +14,8 @@
     <color name="theme_blue_dark">#1976D2</color>
     <color name="theme_blue_accent">#FF4081</color>
 
-    <color name="theme_light_blue_primary">#03A9F4</color>
-    <color name="theme_light_blue_dark">#0288D1</color>
+    <color name="theme_orange_primary">#FF5722</color>
+    <color name="theme_orange_dark">#E64A19</color>
     <color name="theme_light_blue_accent">#FF4081</color>
 
     <color name="theme_cyan_primary">#00BCD4</color>
@@ -30,8 +30,8 @@
     <color name="theme_teal_dark">#00796B</color>
     <color name="theme_teal_accent">#FF4081</color>
 
-    <color name="theme_red_primary">#F44336</color>
-    <color name="theme_red_dark">#D32F2F</color>
+    <color name="theme_red_primary">#da4336</color>
+    <color name="theme_red_dark">#b93221</color>
     <color name="theme_red_accent">#3D5AFE</color>
 
     <color name="theme_pink_primary">#E91E63</color>

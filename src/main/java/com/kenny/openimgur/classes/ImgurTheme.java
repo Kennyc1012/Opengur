@@ -11,7 +11,7 @@ import com.kenny.openimgur.R;
  */
 public enum ImgurTheme {
     BLUE("blue", R.style.Theme_Blue, R.color.theme_blue_primary, R.color.theme_blue_dark, R.color.theme_blue_accent),
-    LT_BLUE("ltblue", R.style.Theme_Light_Blue, R.color.theme_light_blue_primary, R.color.theme_light_blue_dark, R.color.theme_light_blue_accent),
+    ORANGE("orange", R.style.Theme_Orange, R.color.theme_orange_primary, R.color.theme_orange_dark, R.color.theme_light_blue_accent),
     CYAN("cyan", R.style.Theme_Cyan, R.color.theme_cyan_primary, R.color.theme_cyan_dark, R.color.theme_cyan_accent),
     GREEN("green", R.style.Theme_Green, R.color.theme_green_primary, R.color.theme_green_dark, R.color.theme_green_accent),
     TEAL("teal", R.style.Theme_Teal, R.color.theme_teal_primary, R.color.theme_teal_dark, R.color.theme_teal_accent),
@@ -50,8 +50,8 @@ public enum ImgurTheme {
     public static ImgurTheme getThemeFromString(String themeName) {
         ImgurTheme theme = BLUE;
 
-        if (LT_BLUE.themeName.equalsIgnoreCase(themeName)) {
-            theme = LT_BLUE;
+        if (ORANGE.themeName.equalsIgnoreCase(themeName)) {
+            theme = ORANGE;
         } else if (CYAN.themeName.equalsIgnoreCase(themeName)) {
             theme = CYAN;
         } else if (GREEN.themeName.equalsIgnoreCase(themeName)) {
