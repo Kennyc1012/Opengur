@@ -24,6 +24,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.InjectView;
 import pl.droidsonroids.gif.GifDrawable;
 
 public class PhotoAdapter extends ImgurBaseAdapter {
@@ -69,7 +70,6 @@ public class PhotoAdapter extends ImgurBaseAdapter {
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.view_photo_item, parent, false);
             holder = new PhotoViewHolder(convertView);
-            holder.root = convertView;
             holder.video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
@@ -218,27 +218,24 @@ public class PhotoAdapter extends ImgurBaseAdapter {
         return false;
     }
 
-    private static class PhotoViewHolder {
+    static class PhotoViewHolder extends ImgurViewHolder {
+        @InjectView(R.id.image)
         ImageView image;
-
+        @InjectView(R.id.play)
         ImageButton play;
-
+        @InjectView(R.id.progressBar)
         ProgressBar prog;
-
-        TextViewRoboto desc, title;
-
+        @InjectView(R.id.desc)
+        TextViewRoboto desc;
+        @InjectView(R.id.title)
+        TextViewRoboto title;
+        @InjectView(R.id.videoView)
         VideoView video;
-
         View root;
 
         public PhotoViewHolder(View view) {
-            play = (ImageButton) view.findViewById(R.id.play);
-            image = (ImageView) view.findViewById(R.id.image);
-            prog = (ProgressBar) view.findViewById(R.id.progressBar);
-            desc = (TextViewRoboto) view.findViewById(R.id.desc);
-            title = (TextViewRoboto) view.findViewById(R.id.title);
-            video = (VideoView) view.findViewById(R.id.videoView);
-            view.setTag(this);
+            super(view);
+            root = view;
         }
     }
 }

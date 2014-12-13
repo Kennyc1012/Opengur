@@ -21,6 +21,9 @@ import android.widget.TextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.util.ViewUtils;
 
+import butterknife.InjectView;
+import butterknife.OnClick;
+
 /**
  * Created by kcampagna on 10/26/14.
  */
@@ -32,21 +35,29 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
 
     private RedditFilterListener mListener;
 
-    private SeekBar mSeekBar;
+    @InjectView(R.id.dateSeekBar)
+    SeekBar mSeekBar;
 
-    private TextView mDay;
+    @InjectView(R.id.day)
+    TextView mDay;
 
-    private TextView mWeek;
+    @InjectView(R.id.week)
+    TextView mWeek;
 
-    private TextView mMonth;
+    @InjectView(R.id.month)
+    TextView mMonth;
 
-    private TextView mYear;
+    @InjectView(R.id.year)
+    TextView mYear;
 
-    private TextView mAll;
+    @InjectView(R.id.all)
+    TextView mAll;
 
-    private RadioGroup mSortRG;
+    @InjectView(R.id.sortRG)
+    RadioGroup mSortRG;
 
-    private View mDateRangeContainer;
+    @InjectView(R.id.dateRangeContainer)
+    View mDateRangeContainer;
 
     public static RedditFilterFragment createInstance(RedditFragment.RedditSort sort, RedditFragment.RedditTopSort topSort) {
         RedditFilterFragment fragment = new RedditFilterFragment();
@@ -73,17 +84,8 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         configToolBar((Toolbar) view.findViewById(R.id.toolBar));
-        mSeekBar = (SeekBar) view.findViewById(R.id.dateSeekBar);
-        mSortRG = (RadioGroup) view.findViewById(R.id.sortRG);
-        mDateRangeContainer = view.findViewById(R.id.dateRangeContainer);
-        mDay = (TextView) view.findViewById(R.id.day);
-        mWeek = (TextView) view.findViewById(R.id.week);
-        mMonth = (TextView) view.findViewById(R.id.month);
-        mYear = (TextView) view.findViewById(R.id.year);
-        mAll = (TextView) view.findViewById(R.id.all);
         ((TextView) view.findViewById(R.id.sortTitle)).setTextColor(getResources().getColor(theme.darkColor));
         ((TextView) view.findViewById(R.id.dateTitle)).setTextColor(getResources().getColor(theme.darkColor));
-
         Bundle args = getArguments();
         RedditFragment.RedditSort sort = (RedditFragment.RedditSort) args.getSerializable(KEY_SORT);
         RedditFragment.RedditTopSort topSort = (RedditFragment.RedditTopSort) args.getSerializable(KEY_TOP_SORT);
@@ -124,8 +126,6 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
 
         mSeekBar.setOnSeekBarChangeListener(this);
         mSortRG.setOnCheckedChangeListener(this);
-        view.findViewById(R.id.negative).setOnClickListener(this);
-        view.findViewById(R.id.positive).setOnClickListener(this);
 
         // I've never found fragment transaction animations to work properly, so we will animate the view
         // when it is added to the fragment manager
@@ -181,6 +181,7 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
         }
     }
 
+    @OnClick({R.id.negative, R.id.positive})
     @Override
     public void onClick(View view) {
         switch (view.getId()) {

@@ -15,6 +15,9 @@ import android.widget.ListView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.util.LogUtil;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by kcampagna on 9/5/14.
  */
@@ -25,7 +28,8 @@ public class PopupItemChooserDialog extends DialogFragment {
 
     private static final String KEY_ITEMS = "items";
 
-    private ListView mList;
+    @InjectView(R.id.list)
+    ListView mList;
 
     private ArrayAdapter<String> mAdapter;
 
@@ -91,7 +95,7 @@ public class PopupItemChooserDialog extends DialogFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mList = (ListView) view.findViewById(R.id.list);
+        ButterKnife.inject(this, view);
         String[] items = getArguments().getStringArray(KEY_ITEMS);
         mAdapter = new ArrayAdapter<String>(getActivity(), R.layout.chooser_item, items);
         mList.setAdapter(mAdapter);
@@ -113,7 +117,7 @@ public class PopupItemChooserDialog extends DialogFragment {
 
     @Override
     public void onDestroyView() {
-        mList = null;
+        ButterKnife.reset(this);
         super.onDestroyView();
     }
 

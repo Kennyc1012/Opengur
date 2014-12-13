@@ -21,6 +21,9 @@ import android.widget.TextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.util.ViewUtils;
 
+import butterknife.InjectView;
+import butterknife.OnClick;
+
 /**
  * Created by kcampagna on 10/25/14.
  */
@@ -32,19 +35,25 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
 
     private static final String KEY_VIRAL = "showViral";
 
-    private RadioGroup mSectionRG;
+    @InjectView(R.id.sectionGroup)
+    RadioGroup mSectionRG;
+
+    @InjectView(R.id.time)
+    TextView mTime;
+
+    @InjectView(R.id.rising)
+    TextView mRising;
+
+    @InjectView(R.id.viral)
+    TextView mViral;
+
+    @InjectView(R.id.sortSeekBar)
+    SeekBar mSeekBar;
+
+    @InjectView(R.id.showViral)
+    CheckBox mShowViral;
 
     private FilterListener mListener;
-
-    private SeekBar mSeekBar;
-
-    private TextView mViral;
-
-    private TextView mRising;
-
-    private TextView mTime;
-
-    private CheckBox mShowViral;
 
     private boolean mHasThreeSortOpts = false;
 
@@ -72,16 +81,6 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
         super.onDetach();
     }
 
-    @Override
-    public void onDestroyView() {
-        mTime = null;
-        mRising = null;
-        mViral = null;
-        mSeekBar = null;
-        mSectionRG = null;
-        super.onDestroyView();
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -92,15 +91,8 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         configToolBar((Toolbar) view.findViewById(R.id.toolBar));
-        mViral = (TextView) view.findViewById(R.id.viral);
-        mRising = (TextView) view.findViewById(R.id.rising);
-        mTime = (TextView) view.findViewById(R.id.time);
-        mSeekBar = (SeekBar) view.findViewById(R.id.sortSeekBar);
-        mSectionRG = (RadioGroup) view.findViewById(R.id.sectionGroup);
-        mShowViral = (CheckBox) view.findViewById(R.id.showViral);
         ((TextView) view.findViewById(R.id.sectionTitle)).setTextColor(getResources().getColor(theme.darkColor));
         ((TextView) view.findViewById(R.id.sortTitle)).setTextColor(getResources().getColor(theme.darkColor));
-
         Bundle args = getArguments();
         GalleryFragment.GallerySort sort = GalleryFragment.GallerySort.getSortFromString(args.getString(KEY_SORT, null));
         GalleryFragment.GallerySection section = GalleryFragment.GallerySection.getSectionFromString(args.getString(KEY_SECTION, null));
@@ -145,8 +137,6 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
 
         mSeekBar.setOnSeekBarChangeListener(this);
         mSectionRG.setOnCheckedChangeListener(this);
-        view.findViewById(R.id.negative).setOnClickListener(this);
-        view.findViewById(R.id.positive).setOnClickListener(this);
 
         // I've never found fragment transaction animations to work properly, so we will animate the view
         // when it is added to the fragment manager
@@ -267,6 +257,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
         }
     }
 
+    @OnClick({R.id.negative, R.id.positive})
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -310,7 +301,8 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                if (mListener != null) mListener.onFilterChange(section, sort, mShowViral.isChecked());
+                if (mListener != null)
+                    mListener.onFilterChange(section, sort, mShowViral.isChecked());
             }
 
             @Override

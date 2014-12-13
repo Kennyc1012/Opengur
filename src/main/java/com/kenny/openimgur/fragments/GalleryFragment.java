@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
@@ -186,15 +187,17 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
         }
     }
 
+    @InjectView(R.id.multiStateView)
+    MultiStateView mMultiView;
+
+    @InjectView(R.id.grid)
+    HeaderGridView mGridView;
+
     private GallerySection mSection = GallerySection.HOT;
 
     private GallerySort mSort = GallerySort.TIME;
 
     private int mCurrentPage = 0;
-
-    private MultiStateView mMultiView;
-
-    private HeaderGridView mGridView;
 
     private GalleryAdapter mAdapter;
 
@@ -258,8 +261,6 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
     @Override
     public void onDestroyView() {
         EventBus.getDefault().unregister(this);
-        mMultiView = null;
-        mGridView = null;
         mHandler.removeCallbacksAndMessages(null);
 
         if (mAdapter != null) {
@@ -307,8 +308,6 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
-        mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
         mGridView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true, this));
 
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -364,7 +363,8 @@ public class GalleryFragment extends BaseFragment implements GalleryFilterFragme
             }
         }
 
-        if (mListener != null) mListener.onUpdateActionBarTitle(getString(mSection.getResourceId()));
+        if (mListener != null)
+            mListener.onUpdateActionBarTitle(getString(mSection.getResourceId()));
     }
 
     @Override

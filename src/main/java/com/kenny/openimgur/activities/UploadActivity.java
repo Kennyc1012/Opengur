@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 import pl.droidsonroids.gif.GifDrawable;
@@ -82,21 +83,27 @@ public class UploadActivity extends BaseActivity {
 
     private static final String DFRAGMENT_UPLOADING = "uploading";
 
+    @InjectView(R.id.previewImage)
+    ImageView mPreviewImage;
+
+    @InjectView(R.id.title)
+    EditText mTitle;
+
+    @InjectView(R.id.desc)
+    EditText mDesc;
+
+    @InjectView(R.id.url)
+    EditText mLink;
+
+    @InjectView(R.id.galleryUpload)
+    CheckBox mGalleryCB;
+
+    @InjectView(R.id.uploadButton)
+    Button mUploadButton;
+
     private File mTempFile = null;
 
     private File mCameraFile = null;
-
-    private ImageView mPreviewImage;
-
-    private EditText mTitle;
-
-    private EditText mDesc;
-
-    private EditText mLink;
-
-    private CheckBox mGalleryCB;
-
-    private Button mUploadButton;
 
     private boolean mIsValidLink = false;
 
@@ -111,12 +118,6 @@ public class UploadActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle(getString(R.string.upload));
         setContentView(R.layout.activity_upload);
-        mPreviewImage = (ImageView) findViewById(R.id.previewImage);
-        mTitle = (EditText) findViewById(R.id.title);
-        mDesc = (EditText) findViewById(R.id.desc);
-        mLink = (EditText) findViewById(R.id.url);
-        mGalleryCB = (CheckBox) findViewById(R.id.galleryUpload);
-        mUploadButton = (Button) findViewById(R.id.uploadButton);
         mUploadButton.setTextColor(getResources().getColor(theme.accentColor));
     }
 

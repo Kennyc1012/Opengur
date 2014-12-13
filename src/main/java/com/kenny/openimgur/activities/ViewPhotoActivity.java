@@ -28,6 +28,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.io.File;
 
+import butterknife.InjectView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
@@ -42,11 +43,14 @@ public class ViewPhotoActivity extends BaseActivity {
 
     private static final String KEY_IS_VIDEO = "is_video";
 
-    private ImageView mImageView;
+    @InjectView(R.id.image)
+    ImageView mImageView;
 
-    private MultiStateView mMultiView;
+    @InjectView(R.id.multiView)
+    MultiStateView mMultiView;
 
-    private VideoView mVideoView;
+    @InjectView(R.id.video)
+    VideoView mVideoView;
 
     private ImgurPhoto photo;
 
@@ -77,9 +81,6 @@ public class ViewPhotoActivity extends BaseActivity {
         setContentView(R.layout.image_popup_fragment);
         photo = getIntent().getParcelableExtra(KEY_IMAGE);
         mUrl = intent.getStringExtra(KEY_URL);
-        mMultiView = (MultiStateView) findViewById(R.id.multiView);
-        mImageView = (ImageView) mMultiView.getView(MultiStateView.ViewState.CONTENT).findViewById(R.id.image);
-        mVideoView = (VideoView) mMultiView.getView(MultiStateView.ViewState.CONTENT).findViewById(R.id.video);
         boolean isVideo = intent.getBooleanExtra(KEY_IS_VIDEO, false);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
