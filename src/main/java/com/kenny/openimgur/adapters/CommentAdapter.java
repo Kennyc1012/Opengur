@@ -22,6 +22,8 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.InjectView;
+
 public class CommentAdapter extends ImgurBaseAdapter {
     private LayoutInflater mInflater;
 
@@ -32,7 +34,7 @@ public class CommentAdapter extends ImgurBaseAdapter {
     private String mOP;
 
     public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
-        super(context, comments, false);
+        super(context, comments);
         mInflater = LayoutInflater.from(context);
         mListener = listener;
     }
@@ -178,16 +180,16 @@ public class CommentAdapter extends ImgurBaseAdapter {
         return false;
     }
 
-    private static class CommentViewHolder {
-        TextViewRoboto author, comment;
-
+    static class CommentViewHolder extends ImgurViewHolder {
+        @InjectView(R.id.author)
+        TextViewRoboto author;
+        @InjectView(R.id.comment)
+        TextViewRoboto comment;
+        @InjectView(R.id.replies)
         Button replies;
 
         public CommentViewHolder(View view) {
-            comment = (TextViewRoboto) view.findViewById(R.id.comment);
-            author = (TextViewRoboto) view.findViewById(R.id.author);
-            replies = (Button) view.findViewById(R.id.replies);
-            view.setTag(this);
+            super(view);
         }
     }
 }
