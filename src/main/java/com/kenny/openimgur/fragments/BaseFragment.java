@@ -2,10 +2,13 @@ package com.kenny.openimgur.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.view.View;
 
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.util.LogUtil;
+
+import butterknife.ButterKnife;
 
 /**
  * Created by kcampagna on 9/5/14.
@@ -23,6 +26,13 @@ abstract public class BaseFragment extends Fragment {
         super.onCreate(savedInstanceState);
         app = OpenImgurApp.getInstance(getActivity());
         user = app.getUser();
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        LogUtil.v(TAG,"onViewCreated");
+        super.onViewCreated(view, savedInstanceState);
+        ButterKnife.inject(this,view);
     }
 
     @Override
@@ -52,6 +62,7 @@ abstract public class BaseFragment extends Fragment {
     @Override
     public void onDestroyView() {
         LogUtil.v(TAG, "onDestroyView");
+        ButterKnife.reset(this);
         super.onDestroyView();
     }
 }

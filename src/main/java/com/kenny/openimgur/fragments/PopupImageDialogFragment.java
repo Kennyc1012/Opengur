@@ -38,6 +38,8 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
@@ -46,20 +48,17 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  */
 public class PopupImageDialogFragment extends DialogFragment implements VideoCache.VideoCacheListener {
     private static final long PHOTO_SIZE_LIMIT = 1024 * 1024 * 5;
-
     private static final String KEY_URL = "url";
-
     private static final String KEY_ANIMATED = "animated";
-
     private static final String KEY_DIRECT_LINK = "direct_link";
-
     private static final String KEY_IS_VIDEO = "video";
 
-    private MultiStateView mMultiView;
-
-    private ImageView mImage;
-
-    private VideoView mVideo;
+    @InjectView(R.id.multiView)
+    MultiStateView mMultiView;
+    @InjectView(R.id.image)
+    ImageView mImage;
+    @InjectView(R.id.video)
+    VideoView mVideo;
 
     private String mImageUrl;
 
@@ -91,9 +90,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             return;
         }
 
-        mMultiView = (MultiStateView) view.findViewById(R.id.multiView);
-        mImage = (ImageView) mMultiView.getView(MultiStateView.ViewState.CONTENT).findViewById(R.id.image);
-        mVideo = (VideoView) mMultiView.getView(MultiStateView.ViewState.CONTENT).findViewById(R.id.video);
+        ButterKnife.inject(this,view);
         mImageUrl = bundle.getString(KEY_URL, null);
         boolean isAnimated = bundle.getBoolean(KEY_ANIMATED, false);
         boolean isDirectLink = bundle.getBoolean(KEY_DIRECT_LINK, true);
@@ -153,9 +150,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     public void onDestroyView() {
         OpenImgurApp.getInstance(getActivity()).getImageLoader().cancelDisplayTask(mImage);
         mHandler.removeCallbacksAndMessages(null);
-        mMultiView = null;
-        mImage = null;
-        mVideo = null;
+        ButterKnife.reset(this);
         super.onDestroyView();
     }
 

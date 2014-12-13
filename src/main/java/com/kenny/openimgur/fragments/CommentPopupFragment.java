@@ -22,6 +22,9 @@ import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.snackbar.SnackBar;
 import com.squareup.okhttp.FormEncodingBuilder;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 
 /**
@@ -31,10 +34,10 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
     private static final String KEY_GALLERY_ID = "gallery_id";
 
     private static final String KEY_PARENT_ID = "parent_id";
-
-    private EditText mEditText;
-
-    private TextViewRoboto mRemaining;
+    @InjectView(R.id.comment)
+    EditText mComment;
+    @InjectView(R.id.remainingCharacters)
+    TextViewRoboto mRemainingCharacters;
 
     private String mGalleryId;
 
@@ -63,8 +66,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
     @Override
     public void onStart() {
         super.onStart();
-        if (getDialog() == null)
-            return;
+        if (getDialog() == null) return;
 
         // Dialog Fragments are automatically set to wrap_content, so we need to force the width to fit our view
         int dialogWidth = (int) (getResources().getDisplayMetrics().widthPixels * .85);
@@ -74,8 +76,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
 
     @Override
     public void onDestroyView() {
-        mEditText = null;
-        mRemaining = null;
+        ButterKnife.reset(this);
         super.onDestroyView();
     }
 
@@ -95,10 +96,6 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mEditText = (EditText) view.findViewById(R.id.comment);
-        mRemaining = (TextViewRoboto) view.findViewById(R.id.remainingCharacters);
-        view.findViewById(R.id.cancel).setOnClickListener(this);
-        view.findViewById(R.id.post).setOnClickListener(this);
         Bundle args = getArguments();
 
         if (args == null || !args.containsKey(KEY_GALLERY_ID)) {
@@ -107,9 +104,10 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
             return;
         }
 
+        ButterKnife.inject(this,view);
         mGalleryId = args.getString(KEY_GALLERY_ID);
         mParentId = args.getString(KEY_PARENT_ID, null);
-        mEditText.addTextChangedListener(new TextWatcher() {
+        mComment.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
                 // NOOP
@@ -117,7 +115,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                mRemaining.setText(String.valueOf(140 - charSequence.length()));
+                mRemainingCharacters.setText(String.valueOf(140 - charSequence.length()));
             }
 
             @Override
@@ -128,6 +126,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
 
     }
 
+    @OnClick({R.id.cancel,R.id.post})
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -136,7 +135,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
                 break;
 
             case R.id.post:
-                String comment = mEditText.getText().toString();
+                String comment = mComment.getText().toString();
 
                 if (!TextUtils.isEmpty(comment)) {
                     // This event posting will trigger the Loading Dialog to be shown in the ViewActivity
@@ -148,7 +147,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
                     dismiss();
                 } else {
                     // Shake the edit text to show that they have not enetered any text
-                    ObjectAnimator.ofFloat(mEditText, "translationX", 0, 25, -25, 25, -25, 15, -15, 6, -6, 0).setDuration(750L).start();
+                    ObjectAnimator.ofFloat(mComment, "translationX", 0, 25, -25, 25, -25, 15, -15, 6, -6, 0).setDuration(750L).start();
                 }
                 break;
         }

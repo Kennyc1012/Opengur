@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0-rc4'
+        classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
 
@@ -50,6 +50,7 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
     compile 'com.github.kennyc1012:snackbar:1.0.2-SNAPSHOT:api11Release@aar'
     compile 'com.squareup.okhttp:okhttp:2.0.0'
+    compile 'com.jakewharton:butterknife:6.0.0'
     compile(name: 'bottom_sheet', ext: 'aar')
     compile project(':libraries:EventBus')
 }
