@@ -18,6 +18,8 @@ import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by kcampagna on 6/21/14.
  */
@@ -57,6 +59,12 @@ abstract public class BaseActivity extends ActionBarActivity {
         app = OpenImgurApp.getInstance(getApplicationContext());
         user = app.getUser();
         mIsTablet = getResources().getBoolean(R.bool.is_tablet);
+    }
+
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        ButterKnife.inject(this);
     }
 
     @Override
