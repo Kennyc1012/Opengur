@@ -5,4 +5,5 @@
     android:layout_height="match_parent"
     app:contentView="@layout/list_view"
     app:loadingView="@layout/loading_view"
-    app:errorView="@layout/error_view" />
+    app:errorView="@layout/error_view"
+    app:viewState="loading"/>

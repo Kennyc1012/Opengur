@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
@@ -76,11 +77,14 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
 
     private static final String KEY_USERNAME = "username";
 
-    private MultiStateView mMultiView;
+    @InjectView(R.id.multiView)
+    MultiStateView mMultiView;
 
-    private HeaderGridView mGridView;
+    @InjectView(R.id.grid)
+    HeaderGridView mGridView;
 
-    private WebView mWebView;
+    @InjectView(R.id.loginWebView)
+    WebView mWebView;
 
     private int mCurrentPage = 0;
 
@@ -144,8 +148,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mMultiView = (MultiStateView) view.findViewById(R.id.multiView);
-        mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
         mGridView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true,
                 new AbsListView.OnScrollListener() {
                     @Override
@@ -206,7 +208,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
      * @param args
      */
     private void handleArguments(Bundle args) {
-
         if (args.containsKey(KEY_USERNAME)) {
             LogUtil.v(TAG, "User present in Bundle extras");
             String username = args.getString(KEY_USERNAME);
@@ -372,7 +373,6 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
         }
 
         ((ActionBarActivity) getActivity()).getSupportActionBar().show();
-        mWebView = (WebView) mMultiView.findViewById(R.id.loginWebView);
         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
         // Add the empty space so the webview isnt cut off by the action bar
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mWebView.getLayoutParams();

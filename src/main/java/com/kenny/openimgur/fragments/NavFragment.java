@@ -18,11 +18,14 @@ import com.kenny.openimgur.adapters.NavAdapter;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.util.ViewUtils;
 
+import butterknife.InjectView;
+
 /**
  * Created by kcampagna on 10/19/14.
  */
 public class NavFragment extends BaseFragment implements ListView.OnItemClickListener {
-    private ListView mListView;
+    @InjectView(R.id.list)
+    ListView mListView;
 
     private ActionBarDrawerToggle mToggle;
 
@@ -51,7 +54,6 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mListView = (ListView) view;
         mListView.setAdapter(mAdapter = new NavAdapter(getActivity(), app.getUser()));
         mListView.setOnItemClickListener(this);
         mListView.setPadding(0, ViewUtils.getStatusBarHeight(getActivity()), 0, 0);

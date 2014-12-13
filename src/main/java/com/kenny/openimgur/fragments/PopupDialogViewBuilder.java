@@ -10,18 +10,25 @@ import android.widget.Button;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.ui.TextViewRoboto;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Creates the view for a popup dialog with an L material design
  * Created by kcampagna on 8/19/14.
  */
 public class PopupDialogViewBuilder {
-    private TextViewRoboto mTitle;
+    @InjectView(R.id.title)
+    TextViewRoboto mTitle;
 
-    private TextViewRoboto mMessage;
+    @InjectView(R.id.message)
+    TextViewRoboto mMessage;
 
-    private Button mNegativeBtn;
+    @InjectView(R.id.negative)
+    Button mNegativeBtn;
 
-    private Button mPositiveBtn;
+    @InjectView(R.id.positive)
+    Button mPositiveBtn;
 
     private View mView;
 
@@ -29,10 +36,7 @@ public class PopupDialogViewBuilder {
 
     public PopupDialogViewBuilder(Context context) {
         mView = View.inflate(context, R.layout.popup_fragment, null);
-        mTitle = (TextViewRoboto) mView.findViewById(R.id.title);
-        mMessage = (TextViewRoboto) mView.findViewById(R.id.message);
-        mNegativeBtn = (Button) mView.findViewById(R.id.negative);
-        mPositiveBtn = (Button) mView.findViewById(R.id.positive);
+        ButterKnife.inject(this, mView);
         mDialog = new AlertDialog.Builder(context).create();
         mDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
     }

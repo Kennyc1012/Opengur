@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
@@ -119,9 +120,11 @@ public class RedditFragment extends BaseFragment implements RedditFilterFragment
 
     private static final String KEY_TOP_SORT = "redditTopSort";
 
-    private MultiStateView mMultiView;
+    @InjectView(R.id.multiStateView)
+    MultiStateView mMultiView;
 
-    private HeaderGridView mGridView;
+    @InjectView(R.id.grid)
+    HeaderGridView mGridView;
 
     private String mQuery;
 
@@ -212,8 +215,6 @@ public class RedditFragment extends BaseFragment implements RedditFilterFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
-        mGridView = (HeaderGridView) mMultiView.findViewById(R.id.grid);
         mGridView.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true, this));
 
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

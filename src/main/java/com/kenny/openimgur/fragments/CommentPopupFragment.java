@@ -32,8 +32,8 @@ import de.greenrobot.event.EventBus;
  */
 public class CommentPopupFragment extends DialogFragment implements View.OnClickListener {
     private static final String KEY_GALLERY_ID = "gallery_id";
-
     private static final String KEY_PARENT_ID = "parent_id";
+
     @InjectView(R.id.comment)
     EditText mComment;
     @InjectView(R.id.remainingCharacters)
@@ -104,7 +104,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
             return;
         }
 
-        ButterKnife.inject(this,view);
+        ButterKnife.inject(this, view);
         mGalleryId = args.getString(KEY_GALLERY_ID);
         mParentId = args.getString(KEY_PARENT_ID, null);
         mComment.addTextChangedListener(new TextWatcher() {
@@ -126,7 +126,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
 
     }
 
-    @OnClick({R.id.cancel,R.id.post})
+    @OnClick({R.id.cancel, R.id.post})
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
