@@ -66,7 +66,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     private static final String KEY_ITEMS = "items";
 
-    @InjectView(R.id.multiStateView)
+    @InjectView(R.id.multiView)
     MultiStateView mMultiView;
 
     @InjectView(R.id.list)

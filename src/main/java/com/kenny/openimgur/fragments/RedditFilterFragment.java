@@ -33,7 +33,7 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
 
     private static final String KEY_TOP_SORT = "top_sort";
 
-    private RedditFilterListener mListener;
+    private FilterListener mListener;
 
     @InjectView(R.id.dateSeekBar)
     SeekBar mSeekBar;
@@ -301,11 +301,11 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
      *
      * @param listener
      */
-    public void setFilterListener(RedditFilterListener listener) {
+    public void setFilterListener(FilterListener listener) {
         mListener = listener;
     }
 
-    public static interface RedditFilterListener {
+    public static interface FilterListener {
         void onFilterChanged(RedditFragment.RedditSort sort, RedditFragment.RedditTopSort topSort);
     }
 }
