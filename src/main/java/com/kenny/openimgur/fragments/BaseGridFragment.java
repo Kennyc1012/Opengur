@@ -148,7 +148,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         mPreviousItem = firstVisibleItem;
 
         // Load more items when hey get to the end of the list
-        if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading) {
+        if (mHasMore && totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading) {
             mIsLoading = true;
             mCurrentPage++;
             fetchGallery();
