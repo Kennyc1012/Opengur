@@ -19,10 +19,10 @@ repositories {
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.1"
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.kenny.openimgur"
+        applicationId "com.kennyc.openimgur"
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 2
@@ -44,9 +44,9 @@ dependencies {
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.0.+'
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile 'com.android.support:support-annotations:+'
-    compile 'com.android.support:support-v13:21.0.+'
-    compile 'com.android.support:cardview-v7:21.+'
-    compile 'com.android.support:appcompat-v7:21.0.2'
+    compile 'com.android.support:support-v13:21.0.3'
+    compile 'com.android.support:cardview-v7:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
     compile 'com.github.kennyc1012:snackbar:1.0.3-SNAPSHOT:api11Release@aar'
     compile 'com.squareup.okhttp:okhttp:2.0.0'
