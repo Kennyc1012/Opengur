@@ -12,8 +12,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.ui.TextViewRoboto;
+
+import butterknife.InjectView;
 
 /**
  * Created by kcampagna on 10/19/14.
@@ -47,12 +51,23 @@ public class NavAdapter extends BaseAdapter {
 
     private int mDefaultColor;
 
+    private int mProfileColor;
+
     public NavAdapter(Context context, ImgurUser user) {
+        ImgurTheme theme = OpenImgurApp.getInstance(context).getImgurTheme();
         mInflater = LayoutInflater.from(context);
-        mTitles = context.getResources().getStringArray(R.array.nav_items);
+        Resources res = context.getResources();
+        mTitles = res.getStringArray(R.array.nav_items);
         mUser = user;
-        mSelectedColor = context.getResources().getColor(R.color.color_accent);
-        mDefaultColor = context.getResources().getColor(R.color.abc_primary_text_material_light);
+        mSelectedColor = res.getColor(theme.accentColor);
+        mProfileColor = res.getColor(theme.primaryColor);
+        mDefaultColor = res.getColor(R.color.abc_primary_text_material_light);
+    }
+
+    public void onUpdateTheme(ImgurTheme theme, Resources res) {
+        mSelectedColor = res.getColor(theme.accentColor);
+        mProfileColor = res.getColor(theme.primaryColor);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -89,11 +104,8 @@ public class NavAdapter extends BaseAdapter {
         NavHolder holder;
 
         if (convertView == null) {
-            holder = new NavHolder();
             convertView = mInflater.inflate(R.layout.nav_item, parent, false);
-            holder.icon = (ImageView) convertView.findViewById(R.id.icon);
-            holder.title = (TextViewRoboto) convertView.findViewById(R.id.title);
-            convertView.setTag(holder);
+            holder = new NavHolder(convertView);
         } else {
             holder = (NavHolder) convertView.getTag();
         }
@@ -113,7 +125,7 @@ public class NavAdapter extends BaseAdapter {
         name.setTextColor(mSelectedPosition == position ? mSelectedColor : Color.WHITE);
         TextViewRoboto rep = (TextViewRoboto) view.findViewById(R.id.reputation);
         rep.setText(mUser != null ? mUser.getNotoriety().getStringId() : R.string.login_msg);
-        rep.setTextColor(mUser != null ? res.getColor(mUser.getNotoriety().getNotorietyColor()) : Color.WHITE);
+        view.setBackgroundColor(mProfileColor);
         return view;
     }
 
@@ -196,9 +208,14 @@ public class NavAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    static class NavHolder {
+    static class NavHolder extends ImgurBaseAdapter.ImgurViewHolder {
+        @InjectView(R.id.title)
         TextViewRoboto title;
-
+        @InjectView(R.id.icon)
         ImageView icon;
+
+        public NavHolder(View view) {
+            super(view);
+        }
     }
 }

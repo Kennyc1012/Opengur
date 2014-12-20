@@ -16,17 +16,24 @@ import android.view.Window;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.ui.TextViewRoboto;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by kcampagna on 8/24/14.
  */
 public class LoadingDialogFragment extends DialogFragment {
     private static final String KEY_MESSAGE = "message";
-
     private static final String KEY_CANCELABLE = "cancelable";
 
-    private View c1, c2, c3;
-
-    private TextViewRoboto message;
+    @InjectView(R.id.message)
+    TextViewRoboto mMessage;
+    @InjectView(R.id.circleOne)
+    View mCircleOne;
+    @InjectView(R.id.circleTwo)
+    View mCircleTwo;
+    @InjectView(R.id.circleThree)
+    View mCircleThree;
 
     private AnimatorSet set;
 
@@ -42,35 +49,34 @@ public class LoadingDialogFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ButterKnife.inject(this, inflater.inflate(R.layout.loading_dialog, container, false));
         return inflater.inflate(R.layout.loading_dialog, container, false);
     }
 
     @Override
     public void onDestroyView() {
-        c1 = null;
-        c2 = null;
-        c3 = null;
-        message = null;
-        set.cancel();
-        set = null;
+        ButterKnife.reset(this);
+
+        if(set!=null) {
+            set.cancel();
+            set = null;
+        }
+
         super.onDestroyView();
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ButterKnife.inject(this,view);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setCancelable(getArguments().getBoolean(KEY_CANCELABLE, true));
-        c1 = view.findViewById(R.id.circleOne);
-        c2 = view.findViewById(R.id.circleTwo);
-        c3 = view.findViewById(R.id.circleThree);
-        message = (TextViewRoboto) view.findViewById(R.id.message);
-        message.setText(getArguments().getInt(KEY_MESSAGE));
+        mMessage.setText(getArguments().getInt(KEY_MESSAGE));
         set = new AnimatorSet();
         set.playSequentially(
-                buildAnimation(c1),
-                buildAnimation(c2),
-                buildAnimation(c3)
+                buildAnimation(mCircleOne),
+                buildAnimation(mCircleTwo),
+                buildAnimation(mCircleThree)
         );
 
         set.addListener(new AnimatorListenerAdapter() {

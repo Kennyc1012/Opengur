@@ -138,6 +138,8 @@
     <string name="filter_show_viral">Show Viral</string>
     <string name="gallery_filter">Gallery Filter</string>
     <string name="reddit_filter">Subreddit Filter</string>
+    <string name="pref_category_title">Theme</string>
+    <string name="pref_theme_title">App Color Theme</string>
 
     <string-array name="pref_cache_size_items">
         <item>256MB</item>
@@ -156,6 +158,17 @@
         <item>Feedback</item>
     </string-array>
 
+    <string-array name="pref_themes_items">
+        <item>Blue</item>
+        <item>Cyan</item>
+        <item>Green</item>
+        <item>Orange</item>
+        <item>Pink</item>
+        <item>Purple</item>
+        <item>Red</item>
+        <item>Teal</item>
+    </string-array>
+
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys" translatable="false">
         <item>256</item>
@@ -163,6 +176,17 @@
         <item>1024</item>
         <item>2048</item>
         <item>unlimited</item>
+    </string-array>
+
+    <string-array name="pref_theme_keys" translatable="false">
+        <item>blue</item>
+        <item>cyan</item>
+        <item>green</item>
+        <item>orange</item>
+        <item>pink</item>
+        <item>purple</item>
+        <item>red</item>
+        <item>teal</item>
     </string-array>
 
 </resources>

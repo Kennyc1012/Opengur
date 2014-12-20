@@ -9,3 +9,5 @@ gradlew
 gradlew.bat
 openimgur.keystore
 /libraries/EventBus/build
+/app
+OpenImgur.iml

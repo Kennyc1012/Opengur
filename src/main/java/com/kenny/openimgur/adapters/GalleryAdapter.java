@@ -20,6 +20,8 @@ import org.apache.commons.collections15.list.SetUniqueList;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.InjectView;
+
 /**
  * Created by kcampagna on 7/27/14.
  */
@@ -70,15 +72,15 @@ public class GalleryAdapter extends ImgurBaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        GalleryHolder holder;
         ImgurBaseObject obj = getItem(position);
         String photoUrl;
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.gallery_item, parent, false);
-            holder = new ViewHolder(convertView);
+            holder = new GalleryHolder(convertView);
         } else {
-            holder = (ViewHolder) convertView.getTag();
+            holder = (GalleryHolder) convertView.getTag();
         }
 
         // Get the appropriate photo to display
@@ -96,19 +98,18 @@ public class GalleryAdapter extends ImgurBaseAdapter {
         }
 
         displayImage(holder.image, photoUrl);
-        holder.tv.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.tv.getContext().getString(R.string.points));
+        holder.score.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.score.getContext().getString(R.string.points));
         return convertView;
     }
 
-    private final static class ViewHolder {
+    static class GalleryHolder extends ImgurViewHolder {
+        @InjectView(R.id.image)
         ImageView image;
+        @InjectView(R.id.score)
+        TextViewRoboto score;
 
-        TextViewRoboto tv;
-
-        public ViewHolder(View view) {
-            image = (ImageView) view.findViewById(R.id.image);
-            tv = (TextViewRoboto) view.findViewById(R.id.score);
-            view.setTag(this);
+        public GalleryHolder(View view) {
+            super(view);
         }
     }
 }

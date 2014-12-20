@@ -18,14 +18,17 @@ import org.apache.commons.collections15.list.SetUniqueList;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by kcampagna on 9/27/14.
  */
-public class SideGalleryFragment extends BaseFragment {
+public class SideGalleryFragment extends BaseFragment implements AdapterView.OnItemClickListener{
+    @InjectView(R.id.list)
+    ListView mListView;
+
     private GalleryAdapter mAdapter;
-
-    private ListView mListView;
-
     private SideGalleryListener mListener;
 
     @Nullable
@@ -37,20 +40,18 @@ public class SideGalleryFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        view.setBackgroundColor(Color.WHITE);
         int padding = (int) getResources().getDimension(R.dimen.content_padding);
         view.setPadding(padding, 0, padding, 0);
         view.setBackgroundColor(Color.TRANSPARENT);
-
         mListView = (ListView) view.findViewById(R.id.list);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                if (mListener != null) {
-                    mListener.onItemSelected(position);
-                }
-            }
-        });
+        mListView.setOnItemClickListener(this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (mListener != null) {
+            mListener.onItemSelected(position);
+        }
     }
 
     @Override
@@ -63,15 +64,14 @@ public class SideGalleryFragment extends BaseFragment {
 
     @Override
     public void onDetach() {
-        super.onDetach();
         mListener = null;
+        super.onDetach();
     }
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
-        mListView = null;
         mAdapter = null;
+        super.onDestroyView();
     }
 
     public void addGalleryItems(ArrayList<ImgurBaseObject> galleryItems) {

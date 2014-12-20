@@ -34,7 +34,8 @@
             app:contentView="@layout/comment_list"
             app:loadingView="@layout/loading_view"
             app:emptyView="@layout/empty_comment_view"
-            app:errorView="@layout/error_view" />
+            app:errorView="@layout/error_view"
+            app:viewState="loading"/>
 
     </LinearLayout>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

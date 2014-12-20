@@ -15,7 +15,6 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbar_with_section_height"
             android:minHeight="?attr/actionBarSize"
-            android:background="@color/color_primary"
             android:gravity="bottom"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha">
@@ -33,11 +32,11 @@
         </android.support.v7.widget.Toolbar>
 
         <TextView
+            android:id="@+id/sortTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:text="@string/sort_by"
-            android:textColor="@color/color_primary_dark"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="8dp" />
@@ -77,11 +76,11 @@
 
 
             <TextView
+                android:id="@+id/dateTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                android:text="@string/date_range"
-                android:textColor="@color/color_primary_dark" />
+                android:text="@string/date_range" />
 
             <LinearLayout
                 android:layout_width="match_parent"

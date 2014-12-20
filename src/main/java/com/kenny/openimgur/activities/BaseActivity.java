@@ -13,10 +13,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
+
+import butterknife.ButterKnife;
 
 /**
  * Created by kcampagna on 6/21/14.
@@ -27,6 +30,8 @@ abstract public class BaseActivity extends ActionBarActivity {
     public OpenImgurApp app;
 
     public ImgurUser user;
+
+    public ImgurTheme theme;
 
     private boolean mIsActionBarShowing = true;
 
@@ -39,6 +44,9 @@ abstract public class BaseActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LogUtil.v(TAG, "onCreate");
+        app = OpenImgurApp.getInstance(getApplicationContext());
+        theme = app.getImgurTheme();
+        theme.applyTheme(getTheme());
         super.onCreate(savedInstanceState);
         ActionBar ab = getSupportActionBar();
 
@@ -54,9 +62,14 @@ abstract public class BaseActivity extends ActionBarActivity {
         }
 
         mIsLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
-        app = OpenImgurApp.getInstance(getApplicationContext());
         user = app.getUser();
         mIsTablet = getResources().getBoolean(R.bool.is_tablet);
+    }
+
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        ButterKnife.inject(this);
     }
 
     @Override

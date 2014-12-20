@@ -4,7 +4,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/color_primary_dark"
     android:paddingLeft="@dimen/content_padding"
     android:paddingRight="@dimen/content_padding"
     android:paddingBottom="8dp"
@@ -29,6 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:robotoFont="regular"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:textColor="@android:color/white" />
 
 </LinearLayout>

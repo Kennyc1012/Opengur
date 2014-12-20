@@ -13,7 +13,11 @@ import com.kenny.snackbar.SnackBar;
  * Created by kcampagna on 6/30/14.
  */
 public class SettingsActivity extends BaseActivity {
+    public static final int REQUEST_CODE = 001;
+
     public static final String NSFW_KEY = "allowNSFW";
+
+    public static final String THEME_KEY = "app_theme";
 
     public static final String CACHE_SIZE_KEY = "cacheSize";
 

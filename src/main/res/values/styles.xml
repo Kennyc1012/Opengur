@@ -21,7 +21,7 @@
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="android:textColorHint">@android:color/white</item>
-        <item name="dialogBackground">@color/color_primary</item>
+        <item name="dialogBackground">@color/background_material_dark</item>
         <item name="drawSelectorOnTop">true</item>
     </style>
 

@@ -15,7 +15,6 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbar_with_section_height"
             android:minHeight="?attr/actionBarSize"
-            android:background="@color/color_primary"
             android:gravity="bottom"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha">
@@ -34,11 +33,11 @@
 
 
         <TextView
+            android:id="@+id/sectionTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:text="@string/section"
-            android:textColor="@color/color_primary_dark"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="8dp" />
@@ -68,12 +67,12 @@
         </RadioGroup>
 
         <TextView
+            android:id="@+id/sortTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:text="@string/sort_by"
-            android:textColor="@color/color_primary_dark"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin" />
 

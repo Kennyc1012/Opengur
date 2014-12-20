@@ -17,6 +17,7 @@ import android.webkit.WebView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
+import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -26,6 +27,8 @@ import java.lang.ref.WeakReference;
 
 public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private OpenImgurApp mApp;
+
+    private boolean mRestartForTheme = false;
 
     public static SettingsFragment createInstance() {
         return new SettingsFragment();
@@ -37,6 +40,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         mApp = OpenImgurApp.getInstance(getActivity());
         addPreferencesFromResource(R.xml.settings);
         bindPreference(findPreference(SettingsActivity.CACHE_SIZE_KEY));
+        bindPreference(findPreference(SettingsActivity.THEME_KEY));
         findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
@@ -68,6 +72,18 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             int prefIndex = listPreference.findIndexOfValue(o.toString());
             if (prefIndex >= 0) {
                 preference.setSummary(listPreference.getEntries()[prefIndex]);
+            }
+
+            if (preference.getKey().equals(SettingsActivity.THEME_KEY)) {
+                ImgurTheme theme = ImgurTheme.getThemeFromString(listPreference.getEntries()[prefIndex].toString());
+                mApp.setImgurTheme(theme);
+
+                if (mRestartForTheme) {
+                    startActivity(SettingsActivity.createIntent(getActivity()));
+                    getActivity().finish();
+                } else {
+                    mRestartForTheme = true;
+                }
             }
 
             return true;

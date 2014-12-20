@@ -68,6 +68,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.InjectView;
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
@@ -141,27 +143,36 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private static final String KEY_LOAD_COMMENTS = "autoLoadComments";
 
-    private ViewPager mViewPager;
+    @InjectView(R.id.pager)
+    ViewPager mViewPager;
 
-    private SlidingUpPanelLayout mSlidingPane;
+    @InjectView(R.id.sliding_layout)
+    SlidingUpPanelLayout mSlidingPane;
 
-    private MultiStateView mMultiView;
+    @InjectView(R.id.multiView)
+    MultiStateView mMultiView;
 
-    private ListView mCommentList;
+    @InjectView(R.id.commentList)
+    ListView mCommentList;
 
-    private ImageButton mPanelButton;
+    @InjectView(R.id.panelUpBtn)
+    ImageButton mPanelButton;
 
-    private ImageButton mUpVoteBtn;
+    @InjectView(R.id.upVoteBtn)
+    ImageButton mUpVoteBtn;
 
-    private ImageButton mDownVoteBtn;
+    @InjectView(R.id.downVoteBtn)
+    ImageButton mDownVoteBtn;
 
     private CommentAdapter mCommentAdapter;
 
+    private View mCommentListHeader;
+
     // Keeps track of the previous list of comments as we progress in the stack
-    private LongSparseArray<ArrayList<ImgurComment>> mCommentArray = new LongSparseArray<ArrayList<ImgurComment>>();
+    private LongSparseArray<ArrayList<ImgurComment>> mCommentArray = new LongSparseArray<>();
 
     // Keeps track of the position of the comment list when navigating in the stack
-    private LongSparseArray<Integer> mPreviousCommentPositionArray = new LongSparseArray<Integer>();
+    private LongSparseArray<Integer> mPreviousCommentPositionArray = new LongSparseArray<>();
 
     private int mCurrentPosition = 0;
 
@@ -173,13 +184,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private String mGalleryId = null;
 
-    private View mCommentListHeader;
-
     private boolean mIsResuming = false;
 
     private boolean mLoadComments;
-
-    private boolean mIsTablet;
 
     private boolean mIsCommentsAnimating = false;
 
@@ -203,32 +210,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIsTablet = getResources().getBoolean(R.bool.is_tablet);
         setContentView(R.layout.activity_view);
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
-        mSlidingPane = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-        mMultiView = (MultiStateView) findViewById(R.id.multiView);
-        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         mMultiView.setErrorButtonText(R.id.errorButton, R.string.load_comments);
-
-        mMultiView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Set load comments to true, load comments, then set it back to its original value to persist its state
-                boolean loadComments = mLoadComments;
-                mLoadComments = true;
-                loadComments();
-                mLoadComments = loadComments;
-            }
-        });
-
+        findViewById(R.id.topContainer).setBackgroundColor(getResources().getColor(theme.primaryColor));
         mCommentListHeader = View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
-        mCommentList = (ListView) mMultiView.findViewById(R.id.commentList);
         // Header needs to be added before adapter is set for pre 4.4 devices
         mCommentList.addHeaderView(mCommentListHeader);
         mCommentList.removeHeaderView(mCommentListHeader);
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setOffscreenPageLimit(1);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -263,19 +252,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
 
-        mUpVoteBtn = (ImageButton) findViewById(R.id.upVoteBtn);
-        mUpVoteBtn.setOnClickListener(this);
-        mDownVoteBtn = (ImageButton) findViewById(R.id.downVoteBtn);
-        mDownVoteBtn.setOnClickListener(this);
-        findViewById(R.id.commentBtn).setOnClickListener(this);
-        findViewById(R.id.sortComments).setOnClickListener(this);
         initSlidingView();
         handleIntent(getIntent(), savedInstanceState);
     }
 
     private void initSlidingView() {
-        mPanelButton = (ImageButton) findViewById(R.id.panelUpBtn);
-        mPanelButton.setOnClickListener(this);
         mSlidingPane.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View view, float v) {
@@ -556,6 +537,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         super.onDestroy();
     }
 
+    @OnClick({R.id.panelUpBtn, R.id.upVoteBtn, R.id.downVoteBtn, R.id.commentBtn, R.id.sortComments, R.id.errorButton})
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -597,6 +579,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             case R.id.sortComments:
                 showDialogFragment(PopupItemChooserDialog.createInstance(CommentSort.getItemsForArray(getApplicationContext())), "yes");
+                break;
+
+            case R.id.errorButton:
+                // Set load comments to true, load comments, then set it back to its original value to persist its state
+                boolean loadComments = mLoadComments;
+                mLoadComments = true;
+                loadComments();
+                mLoadComments = loadComments;
                 break;
         }
     }
@@ -1164,7 +1154,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         public ArrayList<ImgurBaseObject> retainItems() {
-            return new ArrayList<ImgurBaseObject>(objects);
+            return new ArrayList<>(objects);
         }
     }
 }

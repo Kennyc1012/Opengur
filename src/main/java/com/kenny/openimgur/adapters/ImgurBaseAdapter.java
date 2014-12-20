@@ -1,6 +1,7 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
@@ -10,6 +11,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.ButterKnife;
 
 /**
  * Created by kcampagna on 11/15/14.
@@ -24,6 +27,10 @@ public abstract class ImgurBaseAdapter extends BaseAdapter {
     public ImgurBaseAdapter(Context context, List collection, boolean hasImageLoader) {
         if (hasImageLoader) mImageLoader = OpenImgurApp.getInstance(context).getImageLoader();
         mItems = collection;
+    }
+
+    public ImgurBaseAdapter(Context context, List collection) {
+        this(context, collection, false);
     }
 
     /**
@@ -141,4 +148,11 @@ public abstract class ImgurBaseAdapter extends BaseAdapter {
      * @return
      */
     public abstract ArrayList<?> retainItems();
+
+    public abstract static class ImgurViewHolder {
+        public ImgurViewHolder(View view) {
+            ButterKnife.inject(this, view);
+            view.setTag(this);
+        }
+    }
 }

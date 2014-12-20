@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.widget.RelativeLayout;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.NavFragment;
@@ -32,6 +34,9 @@ import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
+
+import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Created by kcampagna on 10/19/14.
@@ -49,23 +54,30 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
     private static final int PAGE_FEEDBACK = 5;
 
-    private int mCurrentPage = -1;
+    @InjectView(R.id.drawerLayout)
+    DrawerLayout mDrawer;
+
+    @InjectView(R.id.uploadMenu)
+    View mUploadMenu;
+
+    @InjectView(R.id.cameraUpload)
+    FloatingActionButton mCameraUpload;
+
+    @InjectView(R.id.galleryUpload)
+    FloatingActionButton mGalleryUpload;
+
+    @InjectView(R.id.linkUpload)
+    FloatingActionButton mLinkUpload;
+
+    @InjectView(R.id.uploadButton)
+    FloatingActionButton mUploadButton;
+
+    @InjectView(R.id.toolBar)
+    Toolbar mToolBar;
 
     private NavFragment mNavFragment;
 
-    private DrawerLayout mDrawer;
-
-    private View mUploadMenu;
-
-    private FloatingActionButton mCameraUpload;
-
-    private FloatingActionButton mGalleryUpload;
-
-    private FloatingActionButton mLinkUpload;
-
-    private FloatingActionButton mUploadButton;
-
-    private Toolbar mToolBar;
+    private int mCurrentPage = -1;
 
     private float mUploadButtonHeight;
 
@@ -81,20 +93,13 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mToolBar = (Toolbar) findViewById(R.id.toolBar);
         setupToolBar();
         mNavFragment = (NavFragment) getFragmentManager().findFragmentById(R.id.navDrawer);
-        mDrawer = (DrawerLayout) findViewById(R.id.drawerLayout);
         mNavFragment.configDrawerLayout(mDrawer);
-        mUploadMenu = findViewById(R.id.uploadMenu);
-        mUploadButton = (FloatingActionButton) mUploadMenu.findViewById(R.id.uploadButton);
-        mLinkUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.linkUpload);
-        mCameraUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.cameraUpload);
-        mGalleryUpload = (FloatingActionButton) mUploadMenu.findViewById(R.id.galleryUpload);
-        mUploadButton.setOnClickListener(this);
-        mLinkUpload.setOnClickListener(this);
-        mCameraUpload.setOnClickListener(this);
-        mGalleryUpload.setOnClickListener(this);
+        mUploadButton.setColor(getResources().getColor(theme.accentColor));
+        mLinkUpload.setColor(getResources().getColor(theme.accentColor));
+        mCameraUpload.setColor(getResources().getColor(theme.accentColor));
+        mGalleryUpload.setColor(getResources().getColor(theme.accentColor));
         mUploadButtonHeight = getResources().getDimension(R.dimen.fab_button_radius);
         mUploadMenuButtonHeight = getResources().getDimension(R.dimen.fab_button_radius_smaller);
     }
@@ -111,6 +116,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             mToolBar.setLayoutParams(lp);
         }
 
+        mToolBar.setBackgroundColor(getResources().getColor(app.getImgurTheme().primaryColor));
         setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -173,7 +179,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 break;
 
             case PAGE_SETTINGS:
-                startActivity(SettingsActivity.createIntent(getApplicationContext()));
+                startActivityForResult(SettingsActivity.createIntent(getApplicationContext()), SettingsActivity.REQUEST_CODE);
                 break;
 
             case PAGE_FEEDBACK:
@@ -262,6 +268,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         // NOOP
     }
 
+    @OnClick({R.id.uploadButton, R.id.linkUpload, R.id.cameraUpload, R.id.galleryUpload})
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -369,7 +376,8 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             hideDistance = mUploadButtonHeight + (mUploadButtonHeight / 2);
             // Add extra distance to the hiding of the button if on KitKat due to the translucent nav bar
             if (app.sdkVersion >= Build.VERSION_CODES.KITKAT) {
-                if (mNavBarHeight == -1) mNavBarHeight = ViewUtils.getNavigationBarHeight(getApplicationContext());
+                if (mNavBarHeight == -1)
+                    mNavBarHeight = ViewUtils.getNavigationBarHeight(getApplicationContext());
                 hideDistance += mNavBarHeight;
             }
 
@@ -401,5 +409,26 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         }
 
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            // Set the theme if coming from the settings activity
+            case SettingsActivity.REQUEST_CODE:
+                app = OpenImgurApp.getInstance(getApplicationContext());
+                theme = app.getImgurTheme();
+                Resources res = getResources();
+                mToolBar.setBackgroundColor(res.getColor(theme.primaryColor));
+                mUploadButton.setColor(res.getColor(theme.accentColor));
+                mLinkUpload.setColor(res.getColor(theme.accentColor));
+                mCameraUpload.setColor(res.getColor(theme.accentColor));
+                mGalleryUpload.setColor(res.getColor(theme.accentColor));
+                setStatusBarColor(res.getColor(theme.darkColor));
+                mNavFragment.onUpdateTheme(theme);
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

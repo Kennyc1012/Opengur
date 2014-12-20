@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 import pl.droidsonroids.gif.GifDrawable;
@@ -65,9 +66,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     private static final String KEY_ITEMS = "items";
 
-    private MultiStateView mMultiView;
+    @InjectView(R.id.multiView)
+    MultiStateView mMultiView;
 
-    private ListView mListView;
+    @InjectView(R.id.list)
+    ListView mListView;
 
     private ImgurBaseObject mImgurObject;
 
@@ -92,9 +95,6 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mMultiView = (MultiStateView) view.findViewById(R.id.multiStateView);
-        mListView = (ListView) mMultiView.findViewById(R.id.list);
-        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
         handleArguments(getArguments(), savedInstanceState);
     }
 
@@ -180,8 +180,6 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             mPhotoAdapter = null;
         }
 
-        mListView = null;
-        mMultiView = null;
         mHandler.removeCallbacksAndMessages(null);
         super.onDestroyView();
     }
