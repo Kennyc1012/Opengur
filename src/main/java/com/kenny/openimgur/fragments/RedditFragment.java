@@ -143,6 +143,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
                     mQuery = text;
                     mCurrentPage = 0;
+                    mHasMore = true;
                     mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
 
                     if (mListener != null) {

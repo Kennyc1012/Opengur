@@ -70,7 +70,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
     private boolean mAllowNSFW;
 
-    private boolean mHasMore = true;
+    protected boolean mHasMore = true;
 
     private GalleryAdapter mAdapter;
 
@@ -180,6 +180,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     }
 
     public void refresh() {
+        mHasMore = true;
         mCurrentPage = 0;
         mIsLoading = true;
 
@@ -259,6 +260,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
                         mHasMore = false;
                         mIsLoading = false;
                         LogUtil.v(TAG, "Did not receive any items in the json array");
+                        getHandler().sendEmptyMessage(ImgurHandler.MESSAGE_EMPTY_RESULT);
                         return;
                     }
 

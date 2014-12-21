@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/commentList"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollingCache="false"
     android:animationCache="false"
-    android:drawSelectorOnTop="true"/>
+    android:drawSelectorOnTop="true"
+    android:cacheColorHint="@null"
+    android:divider="@drawable/divider"
+    tools:listitem="@layout/comment_item_v2" />

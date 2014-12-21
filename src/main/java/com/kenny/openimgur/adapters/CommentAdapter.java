@@ -10,7 +10,7 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.CustomLinkMovement;
@@ -87,17 +87,13 @@ public class CommentAdapter extends ImgurBaseAdapter {
         holder.comment.setText(comment.getComment());
         holder.author.setText(constructSpan(comment, holder.author.getContext()));
         Linkify.addLinks(holder.comment, Linkify.WEB_URLS);
-
-        if (comment.getReplyCount() <= 0) {
-            holder.replies.setVisibility(View.GONE);
-        } else {
-            holder.replies.setVisibility(View.VISIBLE);
-            holder.replies.setText(convertView.getContext().getString(R.string.comment_replies, comment.getReplyCount()));
-        }
+        holder.replies.setVisibility(comment.getReplyCount() > 0 ? View.VISIBLE : View.GONE);
+        holder.score.setText(String.valueOf(comment.getPoints()));
+        holder.score.setBackgroundResource(comment.getPoints() >= 0 ? R.drawable.positive_circle : R.drawable.negative_circle);
 
         convertView.setBackgroundColor(position == mSelectedIndex ?
                 convertView.getResources().getColor(R.color.comment_bg_selected) :
-                convertView.getResources().getColor(R.color.comment_bg_default));
+                convertView.getResources().getColor(android.R.color.transparent));
 
         return convertView;
     }
@@ -136,21 +132,14 @@ public class CommentAdapter extends ImgurBaseAdapter {
             spanLength += 3;
         }
 
-        sb.append(" ").append(comment.getPoints()).append(" ").append(context.getString(R.string.points))
-                .append(" : ").append(date);
+        sb.append(" : ").append(date);
         Spannable span = new SpannableString(sb.toString());
 
-        int color = context.getResources().getColor(R.color.notoriety_positive);
-        if (comment.getPoints() < 0) {
-            color = context.getResources().getColor(R.color.notoriety_negative);
-        }
+        int green = context.getResources().getColor(R.color.notoriety_positive);
 
         if (isOp) {
-            span.setSpan(new ForegroundColorSpan(color), author.length() + 1, spanLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            span.setSpan(new ForegroundColorSpan(green), author.length() + 1, spanLength, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-
-        span.setSpan(new ForegroundColorSpan(color), spanLength, sb.length() - date.length() - 2,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         return span;
     }
@@ -183,10 +172,15 @@ public class CommentAdapter extends ImgurBaseAdapter {
     static class CommentViewHolder extends ImgurViewHolder {
         @InjectView(R.id.author)
         TextViewRoboto author;
+
         @InjectView(R.id.comment)
         TextViewRoboto comment;
+
+        @InjectView(R.id.score)
+        TextViewRoboto score;
+
         @InjectView(R.id.replies)
-        Button replies;
+        ImageView replies;
 
         public CommentViewHolder(View view) {
             super(view);
