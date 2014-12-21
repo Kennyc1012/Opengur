@@ -962,7 +962,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         }
                     }
                 })
-                .dismissListener(new DialogInterface.OnDismissListener() {
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialogInterface) {
                         mSelectedComment = null;

@@ -3,11 +3,11 @@
 
     <color name="black_circle_button_pressed">#50000000</color>
     <color name="black_circle_button_default">#80000000</color>
-    <color name="comment_bg_default">#ffffff</color>
-    <color name="comment_bg_selected">#e5e5e5</color>
+    <color name="comment_bg_selected">#b6b6b6</color>
     <color name="dialog_accept">@color/material_deep_teal_500</color>
     <color name="notoriety_positive">#81C784</color>
     <color name="notoriety_negative">#FF1744</color>
+    <color name="state_pressed">#b6b6b6</color>
 
     <!-- Theme Colors -->
     <color name="theme_blue_primary">#2196F3</color>

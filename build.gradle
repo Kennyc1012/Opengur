@@ -25,8 +25,8 @@ android {
         applicationId "com.kennyc.openimgur"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
     }
     buildTypes {
         release {
@@ -41,7 +41,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.sothree.slidinguppanel:library:+'
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.0.+'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile 'com.android.support:support-annotations:+'
     compile 'com.android.support:support-v13:21.0.3'
@@ -51,6 +51,6 @@ dependencies {
     compile 'com.github.kennyc1012:snackbar:1.0.3-SNAPSHOT:api11Release@aar'
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.jakewharton:butterknife:6.0.0'
-    compile(name: 'bottom_sheet', ext: 'aar')
+    compile 'com.cocosw:bottomsheet:0.6@aar'
     compile project(':libraries:EventBus')
 }
