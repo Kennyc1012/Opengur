@@ -6,6 +6,7 @@
     <dimen name="gallery_item_text_size">16sp</dimen>
     <dimen name="fab_button_radius">72dp</dimen>
     <dimen name="fab_button_radius_smaller">64dp</dimen>
+    <dimen name="fab_button_half">36dp</dimen>
     <dimen name="profile_username_textsize">24sp</dimen>
     <dimen name="notoriety_text_size">22sp</dimen>
     <dimen name="profile_rep_text_size">18sp</dimen>
@@ -25,5 +26,7 @@
     <dimen name="drawer_max_width">320dp</dimen>
     <dimen name="toolbar_with_section_height">128dp</dimen>
     <dimen name="avatar_size">48dp</dimen>
+    <dimen name="flexible_space">96dp</dimen>
+    <dimen name="tab_bar_height">48dp</dimen>
 
 </resources>

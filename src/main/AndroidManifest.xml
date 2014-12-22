@@ -33,8 +33,8 @@
             android:label="@string/action_settings"
             android:theme="@style/Settings_Theme" />
         <activity
-            android:name=".activities.ProfileActivity"
-            android:theme="@style/Theme_Translucent" />
+            android:name=".activities.ProfileActivityV2"
+            android:theme="@style/Imgur_Theme_Base" />
         <activity
             android:name=".activities.UploadActivity"
             android:theme="@style/Theme_Not_Translucent"

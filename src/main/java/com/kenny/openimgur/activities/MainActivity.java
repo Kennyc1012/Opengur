@@ -29,7 +29,6 @@ import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.NavFragment;
-import com.kenny.openimgur.fragments.ProfileFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.util.ViewUtils;
@@ -169,8 +168,9 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 break;
 
             case PAGE_PROFILE:
-                fragment = ProfileFragment.createInstance(null);
-                mCurrentPage = position;
+                //fragment = ProfileFragment.createInstance(null);
+                //mCurrentPage = position;
+                startActivity(ProfileActivityV2.createIntent(getApplicationContext(), "DrButtersMD"));
                 break;
 
             case PAGE_SUBREDDIT:

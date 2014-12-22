@@ -6,6 +6,6 @@
     android:layout_height="match_parent"
     app:loadingView="@layout/loading_view"
     app:errorView="@layout/profile_error"
-    app:contentView="@layout/grid_view"
+    app:contentView="@layout/profile_main"
     app:emptyView="@layout/login_view"
     app:viewState="loading" />
