@@ -78,8 +78,9 @@
     <string name="view_reddit">View on Reddit</string>
     <string name="accept">Accept</string>
     <string name="previous_comments">Previous Comments</string>
-    <string name="profile_no_favorites">%s has no favorite galleries. Boo</string>
-    <string name="profile_no_submissions">%s has not shared any images with Imgur. Boo</string>
+    <string name="profile_no_favorites">%s has no favorite galleries</string>
+    <string name="profile_no_submissions">%s has not shared any images with Imgur</string>
+    <string name="profile_no_comments">%s has not posted any comments to Imgur</string>
     <string name="sort_by">Sort By</string>
     <string name="developer">Developer</string>
     <string name="version">Version</string>
@@ -140,7 +141,6 @@
     <string name="reddit_filter">Subreddit Filter</string>
     <string name="pref_category_title">Theme</string>
     <string name="pref_theme_title">App Color Theme</string>
-
 
 
 </resources>

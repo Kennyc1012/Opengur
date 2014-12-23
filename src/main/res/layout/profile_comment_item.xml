@@ -6,21 +6,16 @@
     android:layout_height="wrap_content"
     android:paddingRight="@dimen/content_padding"
     android:minHeight="?android:listPreferredItemHeight"
-    android:descendantFocusability="blocksDescendants"
-    tools:layout_height="120dp">
+    android:descendantFocusability="blocksDescendants">
 
-    <com.kenny.openimgur.ui.TextViewRoboto
-        android:id="@+id/score"
+    <ImageView
+        android:id="@+id/image"
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
         android:layout_marginLeft="@dimen/content_padding"
-        android:background="@drawable/positive_circle"
         android:layout_gravity="center_vertical"
-        android:gravity="center"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        app:robotoFont="regular"
-        tools:text="4000" />
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_launcher"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,27 +23,10 @@
         android:layout_marginLeft="@dimen/keyline_margin"
         android:layout_gravity="center_vertical">
 
-        <com.kenny.openimgur.ui.TextViewRoboto
-            android:id="@+id/replies"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/pressed_drawable"
-            android:drawableLeft="@drawable/ic_action_replies"
-            android:textColor="@android:color/black"
-            android:gravity="bottom"
-            android:clickable="true"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            app:robotoFont="regular"
-            tools:text="9+"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_toLeftOf="@id/replies"
-            android:layout_centerVertical="true">
+            android:orientation="vertical">
 
             <com.kenny.openimgur.ui.TextViewRoboto
                 android:id="@+id/author"

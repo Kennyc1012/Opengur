@@ -24,6 +24,7 @@ import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.fragments.ProfileCommentsFragment;
 import com.kenny.openimgur.fragments.ProfileInfoFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
@@ -41,6 +42,8 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  */
 public class ProfileActivityV2 extends BaseActivity {
     private static final String KEY_USERNAME = "username";
+
+    private static final String KEY_USER = "user";
 
     @InjectView(R.id.slidingTabs)
     PagerSlidingTabStrip mSlidingTabs;
@@ -86,27 +89,24 @@ public class ProfileActivityV2 extends BaseActivity {
         super.onPause();
     }
 
-    private void handleArguments(Intent args) {
-        if (args.hasExtra(KEY_USERNAME)) {
-            LogUtil.v(TAG, "User present in Bundle extras");
-            String username = args.getStringExtra(KEY_USERNAME);
-            mSelectedUser = app.getSql().getUser(username);
-            configUser(username);
-        } else if (app.getUser() != null) {
-            LogUtil.v(TAG, "User already logged in");
-            mSelectedUser = app.getUser();
-            configUser(null);
-        } else {
-            LogUtil.v(TAG, "No user present. Showing Login screen");
-            configWebView();
-        }
-    }
-
     private void handleData(Bundle savedInstanceState, Intent args) {
         if (savedInstanceState == null) {
-            handleArguments(args);
-        } else {
-
+            if (args.hasExtra(KEY_USERNAME)) {
+                LogUtil.v(TAG, "User present in Bundle extras");
+                String username = args.getStringExtra(KEY_USERNAME);
+                mSelectedUser = app.getSql().getUser(username);
+                configUser(username);
+            } else if (app.getUser() != null) {
+                LogUtil.v(TAG, "User already logged in");
+                mSelectedUser = app.getUser();
+                configUser(null);
+            } else {
+                LogUtil.v(TAG, "No user present. Showing Login screen");
+                configWebView();
+            }
+        } else if (savedInstanceState.containsKey(KEY_USER)) {
+            mSelectedUser = savedInstanceState.getParcelable(KEY_USER);
+            configUser(null);
         }
     }
 
@@ -255,6 +255,14 @@ public class ProfileActivityV2 extends BaseActivity {
 
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mSelectedUser != null) {
+            outState.putParcelable(KEY_USER, mSelectedUser);
+        }
+    }
+
     private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
@@ -306,7 +314,7 @@ public class ProfileActivityV2 extends BaseActivity {
 
                 // Comments
                 case 2:
-                    return ProfileInfoFragment.createInstance(mUser);
+                    return ProfileCommentsFragment.createInstance(mUser);
 
                 // Favorites
                 case 3:

@@ -10,6 +10,9 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
@@ -51,6 +54,7 @@ import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.fragments.PopupItemChooserDialog;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
@@ -166,7 +170,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private CommentAdapter mCommentAdapter;
 
-    private View mCommentListHeader;
+    private TextViewRoboto mCommentListHeader;
 
     // Keeps track of the previous list of comments as we progress in the stack
     private LongSparseArray<ArrayList<ImgurComment>> mCommentArray = new LongSparseArray<>();
@@ -214,7 +218,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
         mMultiView.setErrorButtonText(R.id.errorButton, R.string.load_comments);
         findViewById(R.id.topContainer).setBackgroundColor(getResources().getColor(theme.primaryColor));
-        mCommentListHeader = View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
+        mCommentListHeader = (TextViewRoboto) View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
+        Drawable[] drawables = mCommentListHeader.getCompoundDrawables();
+
+        // Sets the previous comment button color to the themes color
+        if (drawables.length > 0 && drawables[0] instanceof LayerDrawable) {
+            GradientDrawable drawable = (GradientDrawable) ((LayerDrawable) drawables[0]).getDrawable(0);
+            drawable.setColor(getResources().getColor(theme.accentColor));
+        }
         // Header needs to be added before adapter is set for pre 4.4 devices
         mCommentList.addHeaderView(mCommentListHeader);
         mCommentList.removeHeaderView(mCommentListHeader);

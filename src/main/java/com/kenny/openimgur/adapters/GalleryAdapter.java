@@ -1,7 +1,6 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -28,11 +27,8 @@ import butterknife.InjectView;
 public class GalleryAdapter extends ImgurBaseAdapter {
     public static final int MAX_ITEMS = 200;
 
-    private LayoutInflater mInflater;
-
     public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects) {
         super(context, objects, true);
-        mInflater = LayoutInflater.from(context);
     }
 
     @Override
@@ -62,7 +58,7 @@ public class GalleryAdapter extends ImgurBaseAdapter {
             objects = getAllItems().subList(position - (MAX_ITEMS / 2), position + (MAX_ITEMS / 2) <= size ? position + (MAX_ITEMS / 2) : size);
         }
 
-        return new ArrayList<ImgurBaseObject>(objects);
+        return new ArrayList<>(objects);
     }
 
     @Override

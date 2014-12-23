@@ -30,11 +30,23 @@ public class ImgurComment extends ImgurBaseObject {
 
     private static final String KEY_POINTS = "points";
 
+    private static final String KEY_IMAGE_ID = "image_id";
+
+    private static final String KEY_ON_ALBUM = "on_album";
+
+    private static final String KEY_ALBUM_COVER_ID = "album_cover";
+
     private String mAuthor;
 
     private String mAuthorId;
 
     private String mComment;
+
+    private String mImageId;
+
+    private String mAlbumCoverId;
+
+    private boolean mIsAlbumComment;
 
     private boolean mIsDeleted;
 
@@ -65,7 +77,7 @@ public class ImgurComment extends ImgurBaseObject {
 
             if (json.has(KEY_CHILDREN) && !json.get(KEY_CHILDREN).equals(null)) {
                 JSONArray arr = json.getJSONArray(KEY_CHILDREN);
-                mChildrenComments = new ArrayList<ImgurComment>(arr.length());
+                mChildrenComments = new ArrayList<>(arr.length());
                 for (int i = 0; i < arr.length(); i++) {
                     ImgurComment comment = new ImgurComment(arr.getJSONObject(i));
                     mChildrenComments.add(comment);
@@ -84,6 +96,18 @@ public class ImgurComment extends ImgurBaseObject {
                 mPoints = json.getLong(KEY_POINTS);
             }
 
+            if (json.has(KEY_IMAGE_ID) && !json.get(KEY_IMAGE_ID).equals(null)) {
+                mImageId = json.getString(KEY_IMAGE_ID);
+            }
+
+            if (json.has(KEY_ALBUM_COVER_ID) && !json.get(KEY_ALBUM_COVER_ID).equals(null)) {
+                mAlbumCoverId = json.getString(KEY_ALBUM_COVER_ID);
+            }
+
+            if (json.has(KEY_ON_ALBUM) && !json.get(KEY_ON_ALBUM).equals(null)) {
+                mIsAlbumComment = json.getBoolean(KEY_ON_ALBUM);
+            }
+
         } catch (JSONException ex) {
             LogUtil.e("ImgurComment", "Error Decoding JSON", ex);
         }
@@ -94,8 +118,11 @@ public class ImgurComment extends ImgurBaseObject {
         mAuthor = in.readString();
         mAuthorId = in.readString();
         mComment = in.readString();
+        mImageId = in.readString();
+        mAlbumCoverId = in.readString();
         mIsDeleted = in.readInt() == 1;
-        mChildrenComments = new ArrayList<ImgurComment>();
+        mIsAlbumComment = in.readInt() == 1;
+        mChildrenComments = new ArrayList<>();
         in.readList(mChildrenComments, null);
         mParentId = in.readLong();
         mPoints = in.readLong();
@@ -106,7 +133,10 @@ public class ImgurComment extends ImgurBaseObject {
         out.writeString(mAuthor);
         out.writeString(mAuthorId);
         out.writeString(mComment);
+        out.writeString(mImageId);
+        out.writeString(mAlbumCoverId);
         out.writeInt(mIsDeleted ? 1 : 0);
+        out.writeInt(mIsAlbumComment ? 1 : 0);
         out.writeTypedList(mChildrenComments);
         out.writeLong(mParentId);
         out.writeLong(mPoints);
@@ -161,5 +191,17 @@ public class ImgurComment extends ImgurBaseObject {
 
     public long getParentId() {
         return mParentId;
+    }
+
+    public boolean isAlbumComment() {
+        return mIsAlbumComment;
+    }
+
+    public String getImageId() {
+        return mImageId;
+    }
+
+    public String getAlbumCoverId() {
+        return mAlbumCoverId;
     }
 }
