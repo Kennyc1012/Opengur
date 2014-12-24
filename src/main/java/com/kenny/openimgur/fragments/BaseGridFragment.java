@@ -50,6 +50,8 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
     private static final String KEY_REQUEST_ID = "requestId";
 
+    private static final String KEY_HAS_MORE = "hasMore";
+
     @InjectView(R.id.multiView)
     protected MultiStateView mMultiStateView;
 
@@ -200,6 +202,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         if (savedInstanceState != null) {
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
             mRequestId = savedInstanceState.getString(KEY_REQUEST_ID, null);
+            mHasMore = savedInstanceState.getBoolean(KEY_HAS_MORE, true);
 
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
@@ -222,6 +225,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
         outState.putString(KEY_REQUEST_ID, mRequestId);
+        outState.putBoolean(KEY_HAS_MORE, mHasMore);
 
         if (getAdapter() != null && !getAdapter().isEmpty()) {
             outState.putParcelableArrayList(KEY_ITEMS, getAdapter().retainItems());
@@ -258,7 +262,6 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
                     if (arr == null || arr.length() <= 0) {
                         mHasMore = false;
-                        mIsLoading = false;
                         LogUtil.v(TAG, "Did not receive any items in the json array");
                         getHandler().sendEmptyMessage(ImgurHandler.MESSAGE_EMPTY_RESULT);
                         return;
@@ -315,6 +318,17 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         }
 
         LogUtil.e(TAG, "Error received from Event Bus", e);
+    }
+
+    protected void makeRequest(String url) {
+        if (mApiClient == null) {
+            mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
+        } else {
+            mApiClient.setUrl(url);
+        }
+
+        mRequestId = url;
+        mApiClient.doWork(getEventType(), mRequestId, null);
     }
 
     /**

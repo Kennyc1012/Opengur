@@ -25,7 +25,9 @@ import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.fragments.ProfileCommentsFragment;
+import com.kenny.openimgur.fragments.ProfileFavoritesFragment;
 import com.kenny.openimgur.fragments.ProfileInfoFragment;
+import com.kenny.openimgur.fragments.ProfileSubmissionsFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
 
@@ -72,6 +74,7 @@ public class ProfileActivityV2 extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        getSupportActionBar().hide();
         mSlidingTabs.setBackgroundColor(getResources().getColor(theme.primaryColor));
         mSlidingTabs.setTextColor(Color.WHITE);
         handleData(savedInstanceState, getIntent());
@@ -310,15 +313,15 @@ public class ProfileActivityV2 extends BaseActivity {
 
                 // Submissions
                 case 1:
-                    return ProfileInfoFragment.createInstance(mUser);
-
-                // Comments
-                case 2:
-                    return ProfileCommentsFragment.createInstance(mUser);
+                    return ProfileSubmissionsFragment.createInstance(mUser);
 
                 // Favorites
+                case 2:
+                    return ProfileFavoritesFragment.createInstance(mUser);
+
+                // Comments
                 case 3:
-                    return ProfileInfoFragment.createInstance(mUser);
+                    return ProfileCommentsFragment.createInstance(mUser);
 
                 // Uploads
                 case 4:

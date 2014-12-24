@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
-import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurBaseObject;
@@ -345,16 +344,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
     @Override
     protected void fetchGallery() {
-        if (!TextUtils.isEmpty(mQuery)) {
-            if (mApiClient == null) {
-                mApiClient = new ApiClient(getUrl(), ApiClient.HttpRequest.GET);
-            } else {
-                mApiClient.setUrl(getUrl());
-            }
-
-            mRequestId = mQuery + "." + mCurrentPage;
-            mApiClient.doWork(getEventType(), mRequestId, null);
-        }
+        if (!TextUtils.isEmpty(mQuery)) makeRequest(getUrl());
     }
 
     @Override

@@ -113,7 +113,8 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter {
                         commentDate,
                         now,
                         DateUtils.MINUTE_IN_MILLIS,
-                        DateUtils.FORMAT_NUMERIC_DATE);
+                        DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_RELATIVE
+                                | DateUtils.FORMAT_ABBREV_ALL);
     }
 
     static class CommentViewHolder {

@@ -32,8 +32,8 @@
     <string-array name="profile_tabs">
         <item>Info</item>
         <item>Submissions</item>
-        <item>Comments</item>
         <item>Favorites</item>
+        <item>Comments</item>
         <item>Uploads</item>
         <item>Messages</item>
     </string-array>

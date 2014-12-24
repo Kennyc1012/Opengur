@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
-import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurBaseObject;
@@ -320,14 +319,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
 
     @Override
     protected void fetchGallery() {
-        if (mApiClient == null) {
-            mApiClient = new ApiClient(getGalleryUrl(), ApiClient.HttpRequest.GET);
-        } else {
-            mApiClient.setUrl(getGalleryUrl());
-        }
-
-        mRequestId = mSection.getSection() + "." + mCurrentPage;
-        mApiClient.doWork(getEventType(), mRequestId, null);
+        makeRequest(getGalleryUrl());
     }
 
     @Override

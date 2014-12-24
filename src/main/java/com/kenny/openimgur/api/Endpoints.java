@@ -30,8 +30,8 @@ public enum Endpoints {
     // Username
     PROFILE("https://api.imgur.com/3/account/%s"),
 
-    // Username
-    ACCOUNT_GALLERY_FAVORITES("https://api.imgur.com/3/account/%s/gallery_favorites"),
+    // Username/page
+    ACCOUNT_GALLERY_FAVORITES("https://api.imgur.com/3/account/%s/gallery_favorites/%d/newest"),
 
     // Username/Page
     ACCOUNT_SUBMISSIONS("https://api.imgur.com/3/account/%s/submissions/%d"),

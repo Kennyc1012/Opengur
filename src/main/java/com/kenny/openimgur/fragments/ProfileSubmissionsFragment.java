@@ -24,15 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by kcampagna on 12/20/14.
+ * Created by kcampagna on 12/23/14.
  */
-public class ProfileFavoritesFragment extends BaseGridFragment {
+public class ProfileSubmissionsFragment extends BaseGridFragment {
     private static final String KEY_USER = "user";
 
     private ImgurUser mSelectedUser;
 
-    public static ProfileFavoritesFragment createInstance(@NonNull ImgurUser user) {
-        ProfileFavoritesFragment fragment = new ProfileFavoritesFragment();
+    public static ProfileSubmissionsFragment createInstance(@NonNull ImgurUser user) {
+        ProfileSubmissionsFragment fragment = new ProfileSubmissionsFragment();
         Bundle args = new Bundle(1);
         args.putParcelable(KEY_USER, user);
         fragment.setArguments(args);
@@ -52,12 +52,12 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
 
     @Override
     public ImgurBusEvent.EventType getEventType() {
-        return ImgurBusEvent.EventType.ACCOUNT_GALLERY_FAVORITES;
+        return ImgurBusEvent.EventType.ACCOUNT_SUBMISSIONS;
     }
 
     @Override
     protected void fetchGallery() {
-        String url = String.format(Endpoints.ACCOUNT_GALLERY_FAVORITES.getUrl(), mSelectedUser.getUsername(), mCurrentPage);
+        String url = String.format(Endpoints.ACCOUNT_SUBMISSIONS.getUrl(), mSelectedUser.getUsername(), mCurrentPage);
         makeRequest(url);
     }
 
@@ -97,7 +97,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
 
                 case MESSAGE_EMPTY_RESULT:
                     if (getAdapter() == null || getAdapter().isEmpty()) {
-                        String errorMessage = getString(R.string.profile_no_favorites, mSelectedUser.getUsername());
+                        String errorMessage = getString(R.string.profile_no_submissions, mSelectedUser.getUsername());
                         mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
                         mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                     }
