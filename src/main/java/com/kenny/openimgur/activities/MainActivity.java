@@ -170,7 +170,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             case PAGE_PROFILE:
                 //fragment = ProfileFragment.createInstance(null);
                 //mCurrentPage = position;
-                startActivity(ProfileActivityV2.createIntent(getApplicationContext(), "OpenImgur"));
+                startActivity(ProfileActivityV2.createIntent(getApplicationContext(), null));
                 break;
 
             case PAGE_SUBREDDIT:

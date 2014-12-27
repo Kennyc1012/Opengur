@@ -63,19 +63,19 @@ public class ImgurComment extends ImgurBaseObject {
 
     private void parseJson(JSONObject json) {
         try {
-            if (json.has(KEY_AUTHOR) && !json.get(KEY_AUTHOR).equals(null)) {
+            if (!json.isNull(KEY_AUTHOR)) {
                 mAuthor = json.getString(KEY_AUTHOR);
             }
 
-            if (json.has(KEY_AUTHOR_ID) && !json.get(KEY_AUTHOR_ID).equals(null)) {
+            if (!json.isNull(KEY_AUTHOR_ID)) {
                 mAuthorId = json.getString(KEY_AUTHOR_ID);
             }
 
-            if (json.has(KEY_DELETED) && !json.get(KEY_DELETED).equals(null)) {
+            if (!json.isNull(KEY_DELETED)) {
                 mIsDeleted = json.getBoolean(KEY_DELETED);
             }
 
-            if (json.has(KEY_CHILDREN) && !json.get(KEY_CHILDREN).equals(null)) {
+            if (!json.isNull(KEY_CHILDREN)) {
                 JSONArray arr = json.getJSONArray(KEY_CHILDREN);
                 mChildrenComments = new ArrayList<>(arr.length());
                 for (int i = 0; i < arr.length(); i++) {
@@ -84,27 +84,27 @@ public class ImgurComment extends ImgurBaseObject {
                 }
             }
 
-            if (json.has(KEY_PARENT_ID) && !json.get(KEY_PARENT_ID).equals(null)) {
+            if (!json.isNull(KEY_PARENT_ID)) {
                 mParentId = json.getLong(KEY_PARENT_ID);
             }
 
-            if (json.has(KEY_COMMENT) && !json.get(KEY_COMMENT).equals(null)) {
+            if (!json.isNull(KEY_COMMENT)) {
                 mComment = json.getString(KEY_COMMENT);
             }
 
-            if (json.has(KEY_POINTS) && !json.get(KEY_POINTS).equals(null)) {
+            if (!json.isNull(KEY_POINTS)) {
                 mPoints = json.getLong(KEY_POINTS);
             }
 
-            if (json.has(KEY_IMAGE_ID) && !json.get(KEY_IMAGE_ID).equals(null)) {
+            if (!json.isNull(KEY_IMAGE_ID)) {
                 mImageId = json.getString(KEY_IMAGE_ID);
             }
 
-            if (json.has(KEY_ALBUM_COVER_ID) && !json.get(KEY_ALBUM_COVER_ID).equals(null)) {
+            if (!json.isNull(KEY_ALBUM_COVER_ID)) {
                 mAlbumCoverId = json.getString(KEY_ALBUM_COVER_ID);
             }
 
-            if (json.has(KEY_ON_ALBUM) && !json.get(KEY_ON_ALBUM).equals(null)) {
+            if (!json.isNull(KEY_ON_ALBUM)) {
                 mIsAlbumComment = json.getBoolean(KEY_ON_ALBUM);
             }
 

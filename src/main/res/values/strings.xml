@@ -81,6 +81,7 @@
     <string name="profile_no_favorites">%s has no favorite galleries</string>
     <string name="profile_no_submissions">%s has not shared any images with Imgur</string>
     <string name="profile_no_comments">%s has not posted any comments to Imgur</string>
+    <string name="profile_no_convos">You do not have any active conversations</string>
     <string name="sort_by">Sort By</string>
     <string name="developer">Developer</string>
     <string name="version">Version</string>
@@ -141,6 +142,11 @@
     <string name="reddit_filter">Subreddit Filter</string>
     <string name="pref_category_title">Theme</string>
     <string name="pref_theme_title">App Color Theme</string>
-
+    <string name="convo_message_hint">Enter a message</string>
+    <string name="convo_check_for_messages">Check for messages</string>
+    <string name="convo_block">Block</string>
+    <string name="convo_report">Report</string>
+    <string name="convo_message_sending">Sending&#8230;</string>
+    <string name="convo_message_failed">Unable to deliver message</string>
 
 </resources>

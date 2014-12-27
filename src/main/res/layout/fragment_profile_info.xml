@@ -91,7 +91,6 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        app:drawable="@drawable/ic_action_message"
         app:fabColor="@color/theme_cyan_accent" />
 
 </RelativeLayout>

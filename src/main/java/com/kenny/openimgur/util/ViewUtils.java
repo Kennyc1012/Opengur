@@ -11,6 +11,7 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.CustomLinkMovement;
@@ -138,5 +139,23 @@ public class ViewUtils {
         }
 
         return height;
+    }
+
+    /**
+     * Returns if a SwipeRefreshLayout should be able to refresh given a ListView
+     *
+     * @param view
+     * @return
+     */
+    public static boolean canRefreshInListView(AbsListView view) {
+        boolean canRefresh = false;
+
+        if (view != null && view.getChildCount() > 0) {
+            boolean firstItemVisible = view.getFirstVisiblePosition() == 0;
+            boolean topOfFirstItemVisible = view.getChildAt(0).getTop() == 0;
+            canRefresh = firstItemVisible && topOfFirstItemVisible;
+        }
+
+        return canRefresh;
     }
 }

@@ -11,6 +11,7 @@ apply plugin: 'com.android.application'
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "http://dl.bintray.com/amulyakhare/maven" }
     mavenCentral()
     flatDir {
         dirs 'libs'
@@ -53,5 +54,6 @@ dependencies {
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.cocosw:bottomsheet:0.6@aar'
     compile 'com.jpardogo.materialtabstrip:library:1.0.6'
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.0'
     compile project(':libraries:EventBus')
 }

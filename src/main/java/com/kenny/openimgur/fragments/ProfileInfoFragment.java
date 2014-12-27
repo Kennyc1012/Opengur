@@ -1,5 +1,6 @@
 package com.kenny.openimgur.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +12,8 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.activities.ConvoThreadActivity;
+import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.ui.TextViewRoboto;
@@ -45,7 +48,7 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
     @InjectView(R.id.messageBtn)
     FloatingActionButton mMessageBtn;
 
-    private ImgurUser mUser;
+    private ImgurUser mSelectedUser;
 
     public static ProfileInfoFragment createInstance(@NonNull ImgurUser user) {
         ProfileInfoFragment fragment = new ProfileInfoFragment();
@@ -70,7 +73,7 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
             throw new IllegalArgumentException("Bundle can not be null and must contain a user");
         }
 
-        mUser = bundle.getParcelable(KEY_USER);
+        mSelectedUser = bundle.getParcelable(KEY_USER);
         setupInfo();
     }
 
@@ -81,25 +84,24 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
         mFlexibleSpace.setBackgroundColor(getResources().getColor(theme.primaryColor));
         mMessageBtn.setColor(getResources().getColor(theme.accentColor));
 
-        String date = new SimpleDateFormat("MMM yyyy").format(new Date(mUser.getCreated()));
-        String reputationText = mUser.getReputation() + " " + getString(R.string.profile_rep_date, date);
-        mNotoriety.setText(mUser.getNotoriety().getStringId());
-        mNotoriety.setTextColor(getResources().getColor(mUser.getNotoriety().getNotorietyColor()));
+        String date = new SimpleDateFormat("MMM yyyy").format(new Date(mSelectedUser.getCreated()));
+        String reputationText = mSelectedUser.getReputation() + " " + getString(R.string.profile_rep_date, date);
+        mNotoriety.setText(mSelectedUser.getNotoriety().getStringId());
+        mNotoriety.setTextColor(getResources().getColor(mSelectedUser.getNotoriety().getNotorietyColor()));
         mRep.setText(reputationText);
-        mUserName.setText(mUser.getUsername());
+        mUserName.setText(mSelectedUser.getUsername());
 
-        if (!TextUtils.isEmpty(mUser.getBio())) {
-            mBio.setText(mUser.getBio());
+        if (!TextUtils.isEmpty(mSelectedUser.getBio())) {
+            mBio.setText(mSelectedUser.getBio());
             /* TODO
             mBio.setMovementMethod(CustomLinkMovement.getInstance(listener));
             Linkify.addLinks(mBio, Linkify.WEB_URLS);*/
         }
 
-        if (mUser.isSelf()) {
-            mMessageBtn.setVisibility(View.GONE);
-        } else {
-            mMessageBtn.setColor(getResources().getColor(theme.accentColor));
-        }
+        Drawable icon = mSelectedUser.isSelf() ? getResources().getDrawable(R.drawable.ic_logout) :
+                getResources().getDrawable(R.drawable.ic_action_message);
+        mMessageBtn.setDrawable(icon);
+        mMessageBtn.setColor(getResources().getColor(theme.accentColor));
     }
 
     @OnClick({R.id.messageBtn})
@@ -107,7 +109,21 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.messageBtn:
-                // TODO
+                if (mSelectedUser.isSelf(app)) {
+                    new PopupDialogViewBuilder(getActivity())
+                            .setTitle(R.string.logout)
+                            .setMessage(R.string.logout_confirm)
+                            .setNegativeButton(R.string.cancel, null)
+                            .setPositiveButton(R.string.yes, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // TODO Notify parent fragment
+                                }
+                            }).show();
+                } else {
+                    ImgurConvo convo = ImgurConvo.createConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
+                    startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
+                }
                 break;
         }
     }

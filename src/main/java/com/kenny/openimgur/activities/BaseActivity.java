@@ -93,8 +93,8 @@ abstract public class BaseActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         LogUtil.v(TAG, "onPause");
-        super.onPause();
         SnackBar.cancelSnackBars(this);
+        super.onPause();
     }
 
     @Override

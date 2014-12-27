@@ -41,6 +41,7 @@
             android:label="@string/upload" />
 
         <service android:name=".DownloaderService" />
+
         <activity
             android:name=".activities.RoutingActivity"
             android:exported="true"
@@ -142,6 +143,10 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activities.ConvoThreadActivity"
+            android:theme="@style/Imgur_Theme_Base" />
     </application>
 
 </manifest>

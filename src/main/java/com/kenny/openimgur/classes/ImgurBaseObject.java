@@ -18,7 +18,7 @@ public class ImgurBaseObject implements Parcelable {
 
     public static final String VOTE_DOWN = "down";
 
-    private static final String KEY_ID = "id";
+    public static final String KEY_ID = "id";
 
     private static final String KEY_UP_VOTES = "ups";
 
@@ -34,7 +34,7 @@ public class ImgurBaseObject implements Parcelable {
 
     private static final String KEY_ACCOUNT_ID = "account_id";
 
-    private static final String KEY_DATE = "datetime";
+    public static final String KEY_DATE = "datetime";
 
     private static final String KEY_BANDWIDTH = "bandwidth";
 
@@ -105,79 +105,79 @@ public class ImgurBaseObject implements Parcelable {
      */
     private void parseJson(JSONObject json) {
         try {
-            if (json.has(KEY_ID) && !json.get(KEY_ID).equals(null)) {
+            if (!json.isNull(KEY_ID)) {
                 mId = json.getString(KEY_ID);
             }
 
-            if (json.has(KEY_UP_VOTES) && !json.get(KEY_UP_VOTES).equals(null)) {
+            if (!json.isNull(KEY_UP_VOTES)) {
                 mUpVotes = json.getInt(KEY_UP_VOTES);
             }
 
-            if (json.has(KEY_DOWN_VOTES) && !json.get(KEY_DOWN_VOTES).equals(null)) {
+            if (!json.isNull(KEY_DOWN_VOTES)) {
                 mDownVotes = json.getInt(KEY_DOWN_VOTES);
             }
 
-            if (json.has(KEY_VIEWS) && !json.get(KEY_VIEWS).equals(null)) {
+            if (!json.isNull(KEY_VIEWS)) {
                 mViews = json.getInt(KEY_VIEWS);
             }
 
-            if (json.has(KEY_TITLE) && !json.get(KEY_TITLE).equals(null)) {
+            if (!json.isNull(KEY_TITLE)) {
                 mTitle = json.getString(KEY_TITLE);
             }
 
-            if (json.has(KEY_DESCRIPTION) && !json.get(KEY_DESCRIPTION).equals(null)) {
+            if (!json.isNull(KEY_DESCRIPTION)) {
                 mDescription = json.getString(KEY_DESCRIPTION);
             }
 
-            if (json.has(KEY_DATE) && !json.get(KEY_DATE).equals(null)) {
+            if (!json.isNull(KEY_DATE)) {
                 mDate = json.getLong(KEY_DATE);
             }
 
-            if (json.has(KEY_BANDWIDTH) && !json.get(KEY_BANDWIDTH).equals(null)) {
+            if (!json.isNull(KEY_BANDWIDTH)) {
                 mBandwidth = json.getLong(KEY_BANDWIDTH);
             }
 
-            if (json.has(KEY_ACCOUNT) && !json.get(KEY_ACCOUNT).equals(null)) {
+            if (!json.isNull(KEY_ACCOUNT)) {
                 mAccount = json.getString(KEY_ACCOUNT);
             }
 
-            if (json.has(KEY_ACCOUNT_ID) && !json.get(KEY_ACCOUNT_ID).equals(null)) {
+            if (!json.isNull(KEY_ACCOUNT_ID)) {
                 mAccountId = json.getString(KEY_ACCOUNT_ID);
             }
 
-            if (json.has(KEY_LINK) && !json.get(KEY_LINK).equals(null)) {
+            if (!json.isNull(KEY_LINK)) {
                 mLink = json.getString(KEY_LINK);
             }
 
-            if (json.has(KEY_SCORE) && !json.get(KEY_SCORE).equals(null)) {
+            if (!json.isNull(KEY_SCORE)) {
                 mScore = json.getInt(KEY_SCORE);
             }
 
-            if (json.has(KEY_REDDIT_LINK) && !json.get(KEY_REDDIT_LINK).equals(null)) {
+            if (!json.isNull(KEY_REDDIT_LINK)) {
                 mRedditLink = json.getString(KEY_REDDIT_LINK);
             }
 
-            if (json.has(KEY_FAVORITE) && !json.get(KEY_FAVORITE).equals(null)) {
+            if (!json.isNull(KEY_FAVORITE)) {
                 mIsFavorited = json.getBoolean(KEY_FAVORITE);
             }
 
-            if (json.has(KEY_VOTE) && !json.get(KEY_VOTE).equals(null)) {
+            if (!json.isNull(KEY_VOTE)) {
                 mVote = json.getString(KEY_VOTE);
             }
 
-            if (json.has(KEY_DELETE_HASH) && !json.get(KEY_DELETE_HASH).equals(null)) {
+            if (!json.isNull(KEY_DELETE_HASH)) {
                 mDeleteHash = json.getString(KEY_DELETE_HASH);
             }
 
-            if (json.has(KEY_NSFW) && !json.get(KEY_NSFW).equals(null)) {
+            if (!json.isNull(KEY_NSFW)) {
                 mIsNSFW = json.getBoolean(KEY_NSFW);
             }
 
-            if (json.has(KEY_GIFV) && !json.get(KEY_GIFV).equals(null)) {
+            if (!json.isNull(KEY_GIFV)) {
                 mGifVLink = json.getString(KEY_GIFV);
             }
 
-            if (json.has(KEY_MP4) && !json.get(KEY_MP4).equals(null)) {
+            if (!json.isNull(KEY_MP4)) {
                 mMP4Link = json.getString(KEY_MP4);
             }
 
@@ -272,6 +272,10 @@ public class ImgurBaseObject implements Parcelable {
 
     public String getGifVLink() {
         return mGifVLink;
+    }
+
+    public void setDate(long date) {
+        mDate = date;
     }
 
     /**

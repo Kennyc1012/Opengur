@@ -47,16 +47,16 @@ public class ImgurAlbum extends ImgurBaseObject {
     private void parseJson(JSONObject json) {
 
         try {
-            if (json.has(KEY_COVER_ID) && !json.get(KEY_COVER_ID).equals(null)) {
+            if (!json.isNull(KEY_COVER_ID)) {
                 mCoverId = json.getString(KEY_COVER_ID);
                 mCoverUrl = String.format(Endpoints.ALBUM_COVER.getUrl(), mCoverId + ImgurPhoto.THUMBNAIL_MEDIUM);
             }
 
-            if (json.has(KEY_COVER_HEIGHT) && !json.get(KEY_COVER_HEIGHT).equals(null)) {
+            if (!json.isNull(KEY_COVER_HEIGHT)) {
                 mCoverHeight = json.getInt(KEY_COVER_HEIGHT);
             }
 
-            if (json.has(KEY_COVER_WIDTH) && !json.get(KEY_COVER_WIDTH).equals(null)) {
+            if (!json.isNull(KEY_COVER_WIDTH)) {
                 mCoverWidth = json.getInt(KEY_COVER_WIDTH);
             }
 
@@ -71,7 +71,7 @@ public class ImgurAlbum extends ImgurBaseObject {
         mCoverUrl = in.readString();
         mCoverWidth = in.readInt();
         mCoverHeight = in.readInt();
-        mAlbumPhotos = new ArrayList<ImgurPhoto>();
+        mAlbumPhotos = new ArrayList<>();
         in.readList(mAlbumPhotos, null);
     }
 

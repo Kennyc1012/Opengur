@@ -27,6 +27,7 @@ import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.fragments.ProfileCommentsFragment;
 import com.kenny.openimgur.fragments.ProfileFavoritesFragment;
 import com.kenny.openimgur.fragments.ProfileInfoFragment;
+import com.kenny.openimgur.fragments.ProfileMessagesFragment;
 import com.kenny.openimgur.fragments.ProfileSubmissionsFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
@@ -135,7 +136,7 @@ public class ProfileActivityV2 extends BaseActivity {
     private void configWebView() {
         getSupportActionBar().show();
         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-        WebView webView = (WebView) mMultiView.getView(MultiStateView.ViewState.LOADING).findViewById(R.id.loginWebView);
+        WebView webView = (WebView) mMultiView.getView(MultiStateView.ViewState.EMPTY).findViewById(R.id.loginWebView);
         webView.loadUrl(Endpoints.LOGIN.getUrl());
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -329,7 +330,7 @@ public class ProfileActivityV2 extends BaseActivity {
 
                 // Messages
                 case 5:
-                    return ProfileInfoFragment.createInstance(mUser);
+                    return new ProfileMessagesFragment();
 
                 default:
                     throw new IndexOutOfBoundsException("How did this happen?");

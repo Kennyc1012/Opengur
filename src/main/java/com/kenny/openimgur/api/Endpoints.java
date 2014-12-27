@@ -39,6 +39,8 @@ public enum Endpoints {
     // Username/Page
     ACCOUNT_COMMENTS("https://api.imgur.com/3/account/%s/comments/newest/%s"),
 
+    ACCOUNT_CONVOS("https://api.imgur.com/3/conversations"),
+
     // comment id/vote
     COMMENT_VOTE("https://api.imgur.com/3/comment/%s/vote/%s"),
 
@@ -63,7 +65,13 @@ public enum Endpoints {
     UPLOAD("https://api.imgur.com/3/upload"),
 
     // Image id
-    GALLERY_UPLOAD("https://api.imgur.com/3/gallery/%s");
+    GALLERY_UPLOAD("https://api.imgur.com/3/gallery/%s"),
+
+    // ConvoId, page
+    MESSAGES("https://api.imgur.com/3/conversations/%s/%d/0"),
+
+    // recipient
+    SEND_MESSAGE("https://api.imgur.com/3/conversations/%s");
 
     private final String mUrl;
 
