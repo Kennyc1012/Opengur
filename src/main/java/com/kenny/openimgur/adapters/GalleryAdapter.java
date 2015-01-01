@@ -1,6 +1,7 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +30,14 @@ public class GalleryAdapter extends ImgurBaseAdapter {
     public static final int MAX_ITEMS = 200;
 
     private LayoutInflater mInflater;
+    private int mUpvoteColor;
+    private int mDownVoteColor;
 
     public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects) {
         super(context, objects, true);
         mInflater = LayoutInflater.from(context);
+        mUpvoteColor = context.getResources().getColor(R.color.notoriety_positive);
+        mDownVoteColor = context.getResources().getColor(R.color.notoriety_negative);
     }
 
     @Override
@@ -99,6 +104,15 @@ public class GalleryAdapter extends ImgurBaseAdapter {
 
         displayImage(holder.image, photoUrl);
         holder.score.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.score.getContext().getString(R.string.points));
+
+        if (obj.isFavorited() || ImgurBaseObject.VOTE_UP.equals(obj.getVote())) {
+            holder.score.setTextColor(mUpvoteColor);
+        } else if (ImgurBaseObject.VOTE_DOWN.equals(obj.getVote())) {
+            holder.score.setTextColor(mDownVoteColor);
+        } else {
+            holder.score.setTextColor(Color.WHITE);
+        }
+
         return convertView;
     }
 

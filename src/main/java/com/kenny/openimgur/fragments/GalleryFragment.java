@@ -299,6 +299,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                         mMultiStateView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
                                 fetchGallery();
                             }
                         });

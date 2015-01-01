@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 
+import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.classes.ImgurTheme;
@@ -44,6 +46,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
+        findPreference(SettingsActivity.KEY_ADB).setOnPreferenceChangeListener(this);
     }
 
     private void bindPreference(Preference preference) {
@@ -66,10 +69,10 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     }
 
     @Override
-    public boolean onPreferenceChange(Preference preference, Object o) {
+    public boolean onPreferenceChange(Preference preference, Object object) {
         if (preference instanceof ListPreference) {
             ListPreference listPreference = (ListPreference) preference;
-            int prefIndex = listPreference.findIndexOfValue(o.toString());
+            int prefIndex = listPreference.findIndexOfValue(object.toString());
             if (prefIndex >= 0) {
                 preference.setSummary(listPreference.getEntries()[prefIndex]);
             }
@@ -87,8 +90,14 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             }
 
             return true;
-        } else {
-            // Only have list preferences so far
+        } else if (preference instanceof CheckBoxPreference) {
+            // Ignore if its a debug build
+            if (!BuildConfig.DEBUG) {
+                LogUtil.SHOULD_WRITE_LOGS = (Boolean) object;
+                mApp.setAllowLogs((Boolean) object);
+            }
+
+            return true;
         }
 
         return false;
@@ -146,8 +155,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         protected Long doInBackground(Void... voids) {
             SettingsFragment frag = mFragment.get();
             frag.mApp.deleteAllCache();
-            long cacheSize = FileUtil.getDirectorySize(frag.mApp.getCacheDir());
-            return cacheSize;
+            return FileUtil.getDirectorySize(frag.mApp.getCacheDir());
         }
 
         @Override

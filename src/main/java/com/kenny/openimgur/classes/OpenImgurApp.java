@@ -3,8 +3,6 @@ package com.kenny.openimgur.classes;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.StrictMode;
@@ -32,7 +30,7 @@ import org.json.JSONObject;
 public class OpenImgurApp extends Application {
     private static final String TAG = "OpenImgur";
 
-    private static final boolean USE_STRICT_MODE = BuildConfig.DEBUG;
+    private static boolean USE_STRICT_MODE = BuildConfig.DEBUG;
 
     private static OpenImgurApp instance;
 
@@ -59,6 +57,13 @@ public class OpenImgurApp extends Application {
         mUser = mSql.getUser();
         mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, "blue"));
 
+        // Check if for ADB logging on a non debug build
+        if (!BuildConfig.DEBUG) {
+            boolean allowLog = mPref.getBoolean(SettingsActivity.KEY_ADB, false);
+            USE_STRICT_MODE = allowLog;
+            LogUtil.onCreateApplication(allowLog);
+        }
+
         if (USE_STRICT_MODE) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectAll()
@@ -78,19 +83,6 @@ public class OpenImgurApp extends Application {
         }
 
         return mImageLoader;
-    }
-
-    /**
-     * Returns the type of active internet connection. Null if not connected
-     *
-     * @return
-     */
-    public Integer getConnectionType() {
-        ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo info = cm.getActiveNetworkInfo();
-        return info != null && info.isConnected() ? info.getType() : null;
     }
 
     public static OpenImgurApp getInstance() {
@@ -158,6 +150,21 @@ public class OpenImgurApp extends Application {
 
     public void setImgurTheme(@NonNull ImgurTheme theme) {
         mTheme = theme;
+    }
+
+    public void setAllowLogs(boolean allowLogs) {
+        USE_STRICT_MODE = allowLogs;
+
+        if (USE_STRICT_MODE) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
+        }
     }
 
     /**

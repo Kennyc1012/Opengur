@@ -50,7 +50,11 @@ public class VideoCache {
      */
     public void putVideo(String url, @Nullable VideoCacheListener listener) {
         if (TextUtils.isEmpty(url)) {
-            if (listener != null) listener.onVideoDownloadFailed(new NullPointerException("Url is null"), url);
+            Exception e = new NullPointerException("Url is null");
+            LogUtil.e(TAG, "Invalid url", e);
+
+            if (listener != null)
+                listener.onVideoDownloadFailed(e, url);
             return;
         }
 
@@ -76,7 +80,9 @@ public class VideoCache {
         if (FileUtil.isFileValid(file)) {
             new DownloadVideo(key, url, listener).execute(file);
         } else if (listener != null) {
-            listener.onVideoDownloadFailed(new FileNotFoundException("Unable to create file for download"), url);
+            Exception e = new FileNotFoundException("Unable to create file for download");
+            LogUtil.e(TAG, "Error creating file", e);
+            listener.onVideoDownloadFailed(e, url);
         }
     }
 

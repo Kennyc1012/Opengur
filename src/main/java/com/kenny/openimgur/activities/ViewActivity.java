@@ -335,7 +335,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-            mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, null);
+            mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, imgurBaseObject.getId(), null);
         } else if (mMultiView.getViewState() != MultiStateView.ViewState.ERROR) {
             mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
             mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -552,8 +552,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.upVoteBtn:
             case R.id.downVoteBtn:
                 if (user != null) {
+                    ImgurBaseObject obj = mPagerAdapter.getImgurItem(mCurrentPosition);
                     String vote = view.getId() == R.id.upVoteBtn ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
-                    String upVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(), mPagerAdapter.getImgurItem(mCurrentPosition).getId(), vote);
+                    String upVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(), obj.getId(), vote);
+                    obj.setVote(vote);
 
                     if (mApiClient == null) {
                         mApiClient = new ApiClient(upVoteUrl, ApiClient.HttpRequest.POST);
@@ -563,6 +565,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     }
 
                     mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, vote, new FormEncodingBuilder().add("vote", vote).build());
+                    ImgurViewFragment fragment = (ImgurViewFragment) mPagerAdapter.instantiateItem(mViewPager, mCurrentPosition);
+
+                    if (fragment != null && fragment.isAdded() && fragment.getUserVisibleHint()) {
+                        fragment.setVote(vote);
+                    }
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
@@ -607,7 +614,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
             switch (event.eventType) {
                 case COMMENTS:
-                    if (statusCode == ApiClient.STATUS_OK) {
+                    ImgurBaseObject imgurItem = mPagerAdapter.getImgurItem(mCurrentPosition);
+
+                    if (statusCode == ApiClient.STATUS_OK && imgurItem.getId().equals(event.id)) {
                         if (event.httpRequest == ApiClient.HttpRequest.GET) {
                             JSONArray data = event.json.getJSONArray(ApiClient.KEY_DATA);
                             List<ImgurComment> comments = new ArrayList<ImgurComment>(data.length());
@@ -894,6 +903,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_COMMENT, mCommentAdapter.retainItems());
         }
@@ -902,7 +912,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         outState.putString(KEY_SORT, mCommentSort.getSort());
         outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
         outState.putParcelableArrayList(KEY_OBJECTS, mPagerAdapter.retainItems());
-        super.onSaveInstanceState(outState);
     }
 
     private void onListItemClick(int position) {

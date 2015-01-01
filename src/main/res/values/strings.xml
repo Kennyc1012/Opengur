@@ -7,7 +7,6 @@
     <string name="viral">Most Viral</string>
     <string name="user_sub">User Submitted</string>
     <string name="filter">Filter</string>
-    <string name="comment_replies">View %d Replies</string>
     <string name="pref_cache_title">Cache</string>
     <string name="refresh">Refresh</string>
     <string name="pref_current_cache_size">Current Cache Size</string>
@@ -140,6 +139,9 @@
     <string name="reddit_filter">Subreddit Filter</string>
     <string name="pref_category_title">Theme</string>
     <string name="pref_theme_title">App Color Theme</string>
+    <string name="pref_adb_title">ADB Logs</string>
+    <string name="pref_adb_disabled">ADB Logs disabled</string>
+    <string name="pref_adb_enabled">ADB Logs enabled</string>
 
     <string-array name="pref_cache_size_items">
         <item>256MB</item>

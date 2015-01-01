@@ -23,6 +23,8 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String CURRENT_CACHE_SIZE_KEY = "currentCacheSize";
 
+    public static final String KEY_ADB="adb";
+
     public static final String CACHE_SIZE_UNLIMITED = "unlimited";
 
     public static final String CACHE_SIZE_256MB = "256";

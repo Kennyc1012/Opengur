@@ -72,6 +72,8 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     @InjectView(R.id.list)
     ListView mListView;
 
+    private View mHeaderView;
+
     private ImgurBaseObject mImgurObject;
 
     private PhotoAdapter mPhotoAdapter;
@@ -149,11 +151,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
      * Creates the header for the photo/album. This MUST be called before settings the adapter for pre 4.4 devices
      */
     private void createHeader() {
-        View headerView = View.inflate(getActivity(), R.layout.image_header, null);
-        TextViewRoboto title = (TextViewRoboto) headerView.findViewById(R.id.title);
-        TextViewRoboto author = (TextViewRoboto) headerView.findViewById(R.id.author);
-        PointsBar pointsBar = (PointsBar) headerView.findViewById(R.id.pointsBar);
-        TextViewRoboto pointText = (TextViewRoboto) headerView.findViewById(R.id.pointText);
+        mHeaderView = View.inflate(getActivity(), R.layout.image_header, null);
+        TextViewRoboto title = (TextViewRoboto) mHeaderView.findViewById(R.id.title);
+        TextViewRoboto author = (TextViewRoboto) mHeaderView.findViewById(R.id.author);
+        PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
+        TextViewRoboto pointText = (TextViewRoboto) mHeaderView.findViewById(R.id.pointText);
 
         if (!TextUtils.isEmpty(mImgurObject.getTitle())) {
             title.setText(mImgurObject.getTitle());
@@ -170,7 +172,34 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         pointText.setText((mImgurObject.getUpVotes() - mImgurObject.getDownVotes()) + " " + getString(R.string.points));
         pointsBar.setUpVotes(mImgurObject.getUpVotes());
         pointsBar.setTotalPoints(totalPoints);
-        mListView.addHeaderView(headerView);
+
+        if (mImgurObject.isFavorited() || ImgurBaseObject.VOTE_UP.equals(mImgurObject.getVote())) {
+            pointText.setTextColor(getResources().getColor(R.color.notoriety_positive));
+        } else if (ImgurBaseObject.VOTE_DOWN.equals(mImgurObject.getVote())) {
+            pointText.setTextColor(getResources().getColor(R.color.notoriety_negative));
+        }
+
+        mListView.addHeaderView(mHeaderView);
+    }
+
+    public void setVote(String vote) {
+        mImgurObject.setVote(vote);
+
+        if (mHeaderView != null) {
+            TextViewRoboto pointText = (TextViewRoboto) mHeaderView.findViewById(R.id.pointText);
+            PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
+
+            int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
+            pointText.setText((mImgurObject.getUpVotes() - mImgurObject.getDownVotes()) + " " + getString(R.string.points));
+            pointsBar.setUpVotes(mImgurObject.getUpVotes());
+            pointsBar.setTotalPoints(totalPoints);
+
+            if (mImgurObject.isFavorited() || ImgurBaseObject.VOTE_UP.equals(mImgurObject.getVote())) {
+                pointText.setTextColor(getResources().getColor(R.color.notoriety_positive));
+            } else if (ImgurBaseObject.VOTE_DOWN.equals(mImgurObject.getVote())) {
+                pointText.setTextColor(getResources().getColor(R.color.notoriety_negative));
+            }
+        }
     }
 
     @Override
@@ -228,7 +257,6 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                         } else {
                             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
                         }
-
                     }
                     break;
             }

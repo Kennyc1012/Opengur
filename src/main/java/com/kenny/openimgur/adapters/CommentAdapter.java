@@ -162,11 +162,7 @@ public class CommentAdapter extends ImgurBaseAdapter {
     }
 
     private boolean isOP(String user) {
-        if (!TextUtils.isEmpty(mOP)) {
-            return mOP.equals(user);
-        }
-
-        return false;
+        return !TextUtils.isEmpty(mOP) && mOP.equals(user);
     }
 
     static class CommentViewHolder extends ImgurViewHolder {

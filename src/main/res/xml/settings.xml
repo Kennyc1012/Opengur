@@ -47,6 +47,13 @@
 
     <PreferenceCategory android:title="@string/developer">
 
+        <CheckBoxPreference
+            android:key="adb"
+            android:title="@string/pref_adb_title"
+            android:summaryOn="@string/pref_adb_enabled"
+            android:summaryOff="@string/pref_adb_disabled"
+            android:defaultValue="false" />
+
         <Preference
             android:key="licenses"
             android:title="@string/open_src_licenses"
