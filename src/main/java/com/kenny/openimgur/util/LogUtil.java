@@ -9,7 +9,11 @@ import com.kenny.openimgur.BuildConfig;
  */
 public class LogUtil {
 
-    private static final boolean SHOULD_WRITE_LOGS = BuildConfig.DEBUG;
+    public static boolean SHOULD_WRITE_LOGS = BuildConfig.DEBUG;
+
+    public static void onCreateApplication(boolean writeLogs) {
+        SHOULD_WRITE_LOGS = writeLogs;
+    }
 
     public static void v(String tag, String msg, Throwable tr) {
         if (SHOULD_WRITE_LOGS) Log.v(tag, msg, tr);

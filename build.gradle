@@ -12,9 +12,6 @@ apply plugin: 'com.android.application'
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     mavenCentral()
-    flatDir {
-        dirs 'libs'
-    }
 }
 
 android {
@@ -25,8 +22,8 @@ android {
         applicationId "com.kennyc.openimgur"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.3"
     }
     buildTypes {
         release {
@@ -41,9 +38,9 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.sothree.slidinguppanel:library:+'
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.0'
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
-    compile 'com.android.support:support-annotations:+'
+    compile 'com.android.support:support-annotations:21.0.3'
     compile 'com.android.support:support-v13:21.0.3'
     compile 'com.android.support:cardview-v7:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'

@@ -1,5 +1,6 @@
 package com.kenny.openimgur.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +24,10 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String CURRENT_CACHE_SIZE_KEY = "currentCacheSize";
 
+    public static final String KEY_ADB = "adb";
+
+    public static final String KEY_CACHE_LOC = "cacheLoc";
+
     public static final String CACHE_SIZE_UNLIMITED = "unlimited";
 
     public static final String CACHE_SIZE_256MB = "256";
@@ -32,6 +37,12 @@ public class SettingsActivity extends BaseActivity {
     public static final String CACHE_SIZE_1GB = "1024";
 
     public static final String CACHE_SIZE_2GB = "2048";
+
+    public static final String CACHE_LOC_INTERNAL = "internal";
+
+    public static final String CACHE_LOC_EXTERNAL = "external";
+
+    private Intent returnIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

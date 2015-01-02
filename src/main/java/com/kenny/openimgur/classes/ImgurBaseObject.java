@@ -8,6 +8,7 @@ import com.kenny.openimgur.util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 /**
  * Base class to hold common values between Imgur Api responses
@@ -274,13 +275,32 @@ public class ImgurBaseObject implements Parcelable {
         return mGifVLink;
     }
 
+    public void setVote(String vote) {
+        // If the user had previously voted on the item, we need to update the score
+        if(!TextUtils.isEmpty(mVote)){
+            if(vote.equals(VOTE_UP) && mVote.equals(VOTE_DOWN)){
+                mDownVotes--;
+                mUpVotes++;
+            }else if(vote.equals(VOTE_DOWN) && mVote.equals(VOTE_UP)){
+                mDownVotes++;
+                mUpVotes--;
+            }
+        }else if(vote.equals(VOTE_DOWN)){
+            mDownVotes++;
+        }else{
+            mUpVotes++;
+        }
+
+        mVote = vote;
+    }
+
     /**
      * Returns the gallery link
      *
      * @return
      */
     public String getGalleryLink() {
-        return new StringBuilder("http://imgur.com/gallery/").append(getId()).toString();
+        return "http://imgur.com/gallery/" + getId();
     }
 
     @Override

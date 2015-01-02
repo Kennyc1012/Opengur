@@ -285,6 +285,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                         mMultiStateView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
                                 fetchGallery();
                             }
                         });
