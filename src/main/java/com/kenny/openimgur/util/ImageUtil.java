@@ -8,6 +8,7 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.media.ExifInterface;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.widget.ImageView;
@@ -120,8 +121,11 @@ public class ImageUtil {
 
     /**
      * Initializes the ImageLoader
+     *
+     * @param context App context
+     * @param dir     Directory for cache
      */
-    public static void initImageLoader(Context context) {
+    public static void initImageLoader(Context context, File dir) {
         long discCacheSize = 1024 * 1024;
         DiskCache discCache;
         String discCacheAllowance = PreferenceManager.getDefaultSharedPreferences(context)
@@ -140,11 +144,11 @@ public class ImageUtil {
         }
 
         try {
-            discCache = new LruDiscCache(context.getCacheDir(), new Md5FileNameGenerator(), discCacheSize);
+            discCache = new LruDiscCache(dir, new Md5FileNameGenerator(), discCacheSize);
             LogUtil.v(TAG, "Disc cache set to " + FileUtil.humanReadableByteCount(discCacheSize, false));
         } catch (IOException e) {
             LogUtil.e(TAG, "Unable to set the disc cache, falling back to unlimited", e);
-            discCache = new UnlimitedDiscCache(context.getCacheDir());
+            discCache = new UnlimitedDiscCache(dir);
         }
 
         final int memory = (int) (Runtime.getRuntime().maxMemory() / 8);
@@ -157,6 +161,10 @@ public class ImageUtil {
                 .defaultDisplayImageOptions(getDefaultDisplayOptions().build())
                 .memoryCacheSize(memory)
                 .build();
+
+        if (ImageLoader.getInstance().isInited()) {
+            ImageLoader.getInstance().destroy();
+        }
 
         ImageLoader.getInstance().init(config);
     }
@@ -216,5 +224,21 @@ public class ImageUtil {
         }
 
         return ExifInterface.ORIENTATION_UNDEFINED;
+    }
+
+    /**
+     * Returns the directory to be used for caching
+     *
+     * @param context
+     * @param key
+     * @return
+     */
+    public static File getCacheDirectory(Context context, String key) {
+        if (SettingsActivity.CACHE_LOC_EXTERNAL.equals(key) &&
+                Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            return context.getExternalCacheDir();
+        }
+
+        return context.getCacheDir();
     }
 }

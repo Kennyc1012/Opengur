@@ -268,4 +268,19 @@ public class FileUtil {
 
         return success;
     }
+
+    /**
+     * Deletes all the files in a given directory
+     *
+     * @param dir
+     */
+    public static void deleteDirectory(File dir) {
+        if (isFileValid(dir) && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+
+            for (File f : files) {
+                f.delete();
+            }
+        }
+    }
 }

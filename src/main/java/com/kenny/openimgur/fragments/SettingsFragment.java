@@ -12,6 +12,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
@@ -21,16 +22,19 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.util.FileUtil;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private OpenImgurApp mApp;
 
-    private boolean mRestartForTheme = false;
+    private boolean mFirstLaunch = true;
 
     public static SettingsFragment createInstance() {
         return new SettingsFragment();
@@ -43,10 +47,17 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         addPreferencesFromResource(R.xml.settings);
         bindPreference(findPreference(SettingsActivity.CACHE_SIZE_KEY));
         bindPreference(findPreference(SettingsActivity.THEME_KEY));
+        bindPreference(findPreference(SettingsActivity.KEY_CACHE_LOC));
         findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
         findPreference(SettingsActivity.KEY_ADB).setOnPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mFirstLaunch = false;
     }
 
     private void bindPreference(Preference preference) {
@@ -81,11 +92,13 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 ImgurTheme theme = ImgurTheme.getThemeFromString(listPreference.getEntries()[prefIndex].toString());
                 mApp.setImgurTheme(theme);
 
-                if (mRestartForTheme) {
+                if (!mFirstLaunch) {
                     startActivity(SettingsActivity.createIntent(getActivity()));
                     getActivity().finish();
-                } else {
-                    mRestartForTheme = true;
+                }
+            } else if (preference.getKey().equals(SettingsActivity.KEY_CACHE_LOC)) {
+                if (!mFirstLaunch) {
+                    new DeleteCacheTask(SettingsFragment.this, object.toString()).execute();
                 }
             }
 
@@ -113,7 +126,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                     .setPositiveButton(R.string.yes, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            new DeleteCacheTask(SettingsFragment.this).execute();
+                            new DeleteCacheTask(SettingsFragment.this, null).execute();
                         }
                     }).show();
             return true;
@@ -140,9 +153,11 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     private static class DeleteCacheTask extends AsyncTask<Void, Void, Long> {
         private WeakReference<SettingsFragment> mFragment;
+        private String mCacheDirKey;
 
-        public DeleteCacheTask(SettingsFragment fragment) {
-            mFragment = new WeakReference<SettingsFragment>(fragment);
+        public DeleteCacheTask(SettingsFragment fragment, String cacheDirKey) {
+            mFragment = new WeakReference<>(fragment);
+            mCacheDirKey = cacheDirKey;
         }
 
         @Override
@@ -155,6 +170,14 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         protected Long doInBackground(Void... voids) {
             SettingsFragment frag = mFragment.get();
             frag.mApp.deleteAllCache();
+
+            if (!TextUtils.isEmpty(mCacheDirKey)) {
+                File dir = ImageUtil.getCacheDirectory(frag.getActivity(), mCacheDirKey);
+                ImageUtil.initImageLoader(frag.getActivity(), dir);
+                VideoCache.getInstance().setCacheDirectory(dir);
+            }
+
+
             return FileUtil.getDirectorySize(frag.mApp.getCacheDir());
         }
 

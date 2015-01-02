@@ -4,7 +4,9 @@ import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.util.FileUtil;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 
@@ -37,9 +39,17 @@ public class VideoCache {
     }
 
     private VideoCache() {
-        mCacheDir = new File(OpenImgurApp.getInstance().getApplicationContext().getCacheDir(), "video_cache");
+        OpenImgurApp app = OpenImgurApp.getInstance();
+        String cacheKey = app.getPreferences().getString(SettingsActivity.KEY_CACHE_LOC, SettingsActivity.CACHE_LOC_INTERNAL);
+        File dir = ImageUtil.getCacheDirectory(app.getApplicationContext(), cacheKey);
+        mCacheDir = new File(dir, "video_cache");
         mCacheDir.mkdirs();
         mKeyGenerator = new Md5FileNameGenerator();
+    }
+
+    public void setCacheDirectory(File dir){
+        mCacheDir = new File(dir, "video_cache");
+        mCacheDir.mkdirs();
     }
 
     /**
@@ -52,9 +62,7 @@ public class VideoCache {
         if (TextUtils.isEmpty(url)) {
             Exception e = new NullPointerException("Url is null");
             LogUtil.e(TAG, "Invalid url", e);
-
-            if (listener != null)
-                listener.onVideoDownloadFailed(e, url);
+            if (listener != null) listener.onVideoDownloadFailed(e, url);
             return;
         }
 
@@ -101,9 +109,7 @@ public class VideoCache {
     }
 
     public void deleteCache() {
-        if (FileUtil.isFileValid(mCacheDir)) {
-            for (File f : mCacheDir.listFiles()) f.delete();
-        }
+        FileUtil.deleteDirectory(mCacheDir);
     }
 
     public static interface VideoCacheListener {

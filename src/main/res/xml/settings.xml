@@ -32,6 +32,13 @@
 
     <PreferenceCategory android:title="@string/pref_cache_title">
 
+        <ListPreference
+            android:key="cacheLoc"
+            android:title="@string/pref_cache_loc_title"
+            android:entries="@array/pref_cache_loc_items"
+            android:entryValues="@array/pref_cache_loc_keys"
+            android:defaultValue="internal" />
+
         <Preference
             android:key="currentCacheSize"
             android:title="@string/pref_current_cache_size" />

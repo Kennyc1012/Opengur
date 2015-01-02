@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
+import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
@@ -23,6 +25,8 @@ import com.squareup.okhttp.RequestBody;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
 
 /**
  * Created by kcampagna on 6/14/14.
@@ -78,7 +82,9 @@ public class OpenImgurApp extends Application {
 
     public ImageLoader getImageLoader() {
         if (mImageLoader == null || !mImageLoader.isInited()) {
-            ImageUtil.initImageLoader(getApplicationContext());
+            String cacheKey = mPref.getString(SettingsActivity.KEY_CACHE_LOC, SettingsActivity.CACHE_LOC_INTERNAL);
+            File dir = ImageUtil.getCacheDirectory(getApplicationContext(), cacheKey);
+            ImageUtil.initImageLoader(getApplicationContext(), dir);
             mImageLoader = ImageLoader.getInstance();
         }
 
@@ -111,12 +117,28 @@ public class OpenImgurApp extends Application {
     }
 
     /**
-     * Deletes all of the caches
+     * Deletes all of the cache, including the unused partition (external/internal)
      */
     public void deleteAllCache() {
         mImageLoader.clearDiskCache();
         mImageLoader.clearMemoryCache();
         VideoCache.getInstance().deleteCache();
+        String cacheKey = mPref.getString(SettingsActivity.KEY_CACHE_LOC, SettingsActivity.CACHE_LOC_INTERNAL);
+
+        if (SettingsActivity.CACHE_LOC_EXTERNAL.equals(cacheKey)) {
+            // Current cache is external, delete internal
+            FileUtil.deleteDirectory(getCacheDir());
+            File videoCache = new File(getCacheDir(), "video_cache");
+            FileUtil.deleteDirectory(videoCache);
+        } else if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            // Current cache is internal, delete external
+            if (FileUtil.isFileValid(getExternalCacheDir())) {
+                File cache = getExternalCacheDir();
+                FileUtil.deleteDirectory(cache);
+                File videoCache = new File(cache, "video_cache");
+                FileUtil.deleteDirectory(videoCache);
+            }
+        }
     }
 
     /**

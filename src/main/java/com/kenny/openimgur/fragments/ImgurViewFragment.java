@@ -225,9 +225,9 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     @Override
     public void onPause() {
-        super.onPause();
         EventBus.getDefault().unregister(this);
         CustomLinkMovement.getInstance().removeListener(this);
+        super.onPause();
     }
 
     @Override
