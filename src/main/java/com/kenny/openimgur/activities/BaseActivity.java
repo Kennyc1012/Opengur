@@ -198,7 +198,7 @@ abstract public class BaseActivity extends ActionBarActivity {
      * @param color
      */
     @SuppressLint("NewApi")
-    public void setStatusBarColor(@ColorRes int color) {
+    public void setStatusBarColor(int color) {
         if (app.sdkVersion >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(color);
         }
