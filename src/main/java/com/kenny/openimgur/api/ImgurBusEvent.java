@@ -23,7 +23,8 @@ public class ImgurBusEvent {
         GALLERY_ITEM_INFO,
         UPLOAD,
         GALLERY_SUBMISSION,
-        REDDIT_SEARCH
+        REDDIT_SEARCH,
+        COMMENT_POSTED
     }
 
     public JSONObject json;

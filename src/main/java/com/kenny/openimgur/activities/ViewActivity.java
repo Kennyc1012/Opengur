@@ -617,25 +617,26 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     ImgurBaseObject imgurItem = mPagerAdapter.getImgurItem(mCurrentPosition);
 
                     if (statusCode == ApiClient.STATUS_OK && imgurItem.getId().equals(event.id)) {
-                        if (event.httpRequest == ApiClient.HttpRequest.GET) {
-                            JSONArray data = event.json.getJSONArray(ApiClient.KEY_DATA);
-                            List<ImgurComment> comments = new ArrayList<ImgurComment>(data.length());
-                            for (int i = 0; i < data.length(); i++) {
-                                comments.add(new ImgurComment(data.getJSONObject(i)));
-                            }
-
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, comments);
-                        } else if (event.httpRequest == ApiClient.HttpRequest.POST) {
-                            JSONObject json = event.json.getJSONObject(ApiClient.KEY_DATA);
-                            // A successful comment post will return its id
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_POSTED, json.has("id"));
+                        JSONArray data = event.json.getJSONArray(ApiClient.KEY_DATA);
+                        List<ImgurComment> comments = new ArrayList<>(data.length());
+                        for (int i = 0; i < data.length(); i++) {
+                            comments.add(new ImgurComment(data.getJSONObject(i)));
                         }
-                    } else {
-                        int message = event.httpRequest == ApiClient.HttpRequest.GET ?
-                                ImgurHandler.MESSAGE_ACTION_FAILED : ImgurHandler.MESSAGE_COMMENT_POSTED;
-                        mHandler.sendMessage(message, statusCode);
-                    }
 
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, comments);
+                    } else if (imgurItem.getId().equals(event.id)) {
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
+                    }
+                    break;
+
+                case COMMENT_POSTED:
+                    if (statusCode == ApiClient.STATUS_OK) {
+                        JSONObject json = event.json.getJSONObject(ApiClient.KEY_DATA);
+                        // A successful comment post will return its id
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_POSTED, json.has("id"));
+                    } else {
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
+                    }
                     break;
 
                 case COMMENT_VOTE:
@@ -643,7 +644,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         boolean success = event.json.getBoolean(ApiClient.KEY_SUCCESS);
                         mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_VOTED, success);
                     } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_VOTED, statusCode);
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_VOTED, ApiClient.getErrorCodeStringResource(statusCode));
                     }
 
                     break;
@@ -681,7 +682,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ITEM_DETAILS, imgurObject);
                     } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
                     }
                     break;
 
@@ -691,12 +692,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         obj.setIsFavorite(!obj.isFavorited());
                         invalidateOptionsMenu();
                     }
-
                     break;
             }
         } catch (JSONException e) {
             LogUtil.e(TAG, "Error Decoding JSON", e);
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_JSON_EXCEPTION);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
         }
     }
 
@@ -999,7 +999,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         set.setDuration(1500L).setInterpolator(new OvershootInterpolator());
                         set.start();
                     } else {
-                        SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString((Integer) msg.obj)).build());
+                        SnackBar.show(ViewActivity.this, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
                     }
                     break;
 
@@ -1043,7 +1043,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     break;
 
                 case MESSAGE_ACTION_FAILED:
-                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCodeStringResource((Integer) msg.obj));
+                    mMultiView.setErrorText(R.id.errorMessage, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     mMultiView.setErrorButtonText(R.id.errorButton, R.string.retry);
                     mMultiView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
@@ -1059,27 +1059,25 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                     if (msg.obj instanceof Boolean) {
                         int messageResId = (Boolean) msg.obj ? R.string.comment_post_successful : R.string.comment_post_unsuccessful;
-                        SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString(messageResId)).build());
+                        SnackBar.show(ViewActivity.this, messageResId);
                         // Manually refresh the comments when we successfully post a comment
                         loadComments();
                     } else {
-                        SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString((Integer) msg.obj)).build());
+                        SnackBar.show(ViewActivity.this, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
                     }
-
                     break;
 
                 case MESSAGE_COMMENT_VOTED:
                     if (msg.obj instanceof Boolean) {
                         int stringId = (Boolean) msg.obj ? R.string.vote_cast : R.string.error_generic;
-                        SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString(stringId)).build());
+                        SnackBar.show(ViewActivity.this, stringId);
                     } else {
-                        SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString((Integer) msg.obj)).build());
+                        SnackBar.show(ViewActivity.this, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
                     }
-
                     break;
 
                 case MESSAGE_ITEM_DETAILS:
-                    final ArrayList<ImgurBaseObject> objects = new ArrayList<ImgurBaseObject>(1);
+                    final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
                     objects.add((ImgurBaseObject) msg.obj);
                     mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
                     mViewPager.setAdapter(mPagerAdapter);

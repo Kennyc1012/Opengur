@@ -143,7 +143,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
                     String url = TextUtils.isEmpty(mParentId) ? String.format(Endpoints.COMMENT.getUrl(), mGalleryId) :
                             String.format(Endpoints.COMMENT_REPLY.getUrl(), mGalleryId, mParentId);
                     ApiClient client = new ApiClient(url, ApiClient.HttpRequest.POST);
-                    client.doWork(ImgurBusEvent.EventType.COMMENTS, null, new FormEncodingBuilder().add("comment", comment).build());
+                    client.doWork(ImgurBusEvent.EventType.COMMENT_POSTED, null, new FormEncodingBuilder().add("comment", comment).build());
                     dismiss();
                 } else {
                     // Shake the edit text to show that they have not enetered any text
