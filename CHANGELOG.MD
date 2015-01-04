@@ -1,5 +1,9 @@
 #Open Imgur Changelog
 
+<b>1.3.1</b>
+- Fixed a crash when posting comments
+- Organized strings.xml file
+
 <b>1.3</b>
 - Up/Down vote made apparent
 - ADB Logging can now be enabled from settings
