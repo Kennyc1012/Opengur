@@ -23,9 +23,9 @@
 
         <CheckBoxPreference
             android:key="allowNSFW"
-            android:title="@string/nsfw_title"
-            android:summaryOn="@string/nsfw_summary_on"
-            android:summaryOff="@string/nsfw_summary_off"
+            android:title="@string/pref_nsfw_title"
+            android:summaryOn="@string/pref_nsfw_on"
+            android:summaryOff="@string/pref_nsfw_off"
             android:defaultValue="false" />
 
     </PreferenceCategory>
