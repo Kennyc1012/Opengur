@@ -616,16 +616,18 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 case COMMENTS:
                     ImgurBaseObject imgurItem = mPagerAdapter.getImgurItem(mCurrentPosition);
 
-                    if (statusCode == ApiClient.STATUS_OK && imgurItem.getId().equals(event.id)) {
-                        JSONArray data = event.json.getJSONArray(ApiClient.KEY_DATA);
-                        List<ImgurComment> comments = new ArrayList<>(data.length());
-                        for (int i = 0; i < data.length(); i++) {
-                            comments.add(new ImgurComment(data.getJSONObject(i)));
-                        }
+                    if (imgurItem.getId().equals(event.id)) {
+                        if (statusCode == ApiClient.STATUS_OK) {
+                            JSONArray data = event.json.getJSONArray(ApiClient.KEY_DATA);
+                            List<ImgurComment> comments = new ArrayList<>(data.length());
+                            for (int i = 0; i < data.length(); i++) {
+                                comments.add(new ImgurComment(data.getJSONObject(i)));
+                            }
 
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, comments);
-                    } else if (imgurItem.getId().equals(event.id)) {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, comments);
+                        } else {
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
+                        }
                     }
                     break;
 
@@ -709,11 +711,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         Throwable e = event.getThrowable();
 
         if (e instanceof IOException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_IO_EXCEPTION);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
         } else if (e instanceof JSONException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_JSON_EXCEPTION);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
         } else {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_INTERNAL_ERROR);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
 
         LogUtil.e(TAG, "Error received from Event Bus", e);
