@@ -64,6 +64,11 @@
         <item name="colorPrimaryDark">@color/theme_purple_dark</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
     </style>
+    <style name="Theme_Grey">
+        <item name="colorPrimary">@color/theme_grey_primary</item>
+        <item name="colorPrimaryDark">@color/theme_grey_dark</item>
+        <item name="colorAccent">@color/theme_grey_accent</item>
+    </style>
 
 </resources>
 

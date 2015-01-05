@@ -41,4 +41,8 @@
     <color name="theme_purple_primary">#673AB7</color>
     <color name="theme_purple_dark">#512DA8</color>
     <color name="theme_purple_accent">#FF4081</color>
+
+    <color name="theme_grey_primary">#616161</color>
+    <color name="theme_grey_dark">#424242</color>
+    <color name="theme_grey_accent">#00E676</color>
 </resources>
