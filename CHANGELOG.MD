@@ -1,5 +1,13 @@
 #Open Imgur Changelog
 
+<b>1.4</b>
+- Better Image Zooming. Full screen images will now render with Tile Bitmap to support zooming in on sections of the images
+to better render large(tall) images
+- Comments crash fix
+- Fixed bug in cache clearing that would cause the video cache to fail until app is restarted
+- Share Intent added
+- Grey Theme added
+
 <b>1.3.1</b>
 - Fixed a crash when posting comments
 - Organized strings.xml file
