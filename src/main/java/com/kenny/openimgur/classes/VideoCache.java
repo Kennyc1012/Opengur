@@ -110,6 +110,7 @@ public class VideoCache {
 
     public void deleteCache() {
         FileUtil.deleteDirectory(mCacheDir);
+        mCacheDir.mkdirs();
     }
 
     public static interface VideoCacheListener {
