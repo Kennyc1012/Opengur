@@ -14,7 +14,7 @@
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbar_with_section_height"
-            android:minHeight="?attr/actionBarSize"
+            android:minHeight="?actionBarSize"
             android:gravity="bottom"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha">
@@ -30,7 +30,6 @@
                 app:robotoFont="regular" />
 
         </android.support.v7.widget.Toolbar>
-
 
         <TextView
             android:id="@+id/sectionTitle"
@@ -90,7 +89,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                android:text="@string/filter_time" />
+                android:text="@string/filter_time"
+                android:textColor="@android:color/black"/>
 
             <TextView
                 android:id="@+id/rising"
@@ -99,6 +99,7 @@
                 android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:text="@string/filter_rising"
+                android:textColor="@android:color/black"
                 android:gravity="center" />
 
             <TextView
@@ -108,6 +109,7 @@
                 android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:text="@string/filter_popular"
+                android:textColor="@android:color/black"
                 android:gravity="right" />
 
         </LinearLayout>

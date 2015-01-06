@@ -40,6 +40,7 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
@@ -130,7 +131,26 @@ public class UploadActivity extends BaseActivity {
         int uploadType = UPLOAD_TYPE_LINK;
         if (savedInstanceState == null) {
             if (getIntent().getExtras() != null) {
-                uploadType = getIntent().getExtras().getInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
+                Intent intent = getIntent();
+
+                // Image sent via share intent
+                if (Intent.ACTION_SEND.equals(intent.getAction())) {
+                    String type = intent.getType();
+                    LogUtil.v(TAG, "Received an image via Share intent, type " + type);
+
+                    if ("text/plain".equals(type)) {
+                        String link = intent.getStringExtra(Intent.EXTRA_TEXT);
+                        init(true);
+                        mLink.setText(link);
+                    } else {
+                        Uri photoUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                        init(false);
+                        decodeUri(photoUri);
+                    }
+                    return;
+                } else {
+                    uploadType = getIntent().getExtras().getInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
+                }
             }
 
             if (uploadType != UPLOAD_TYPE_LINK) {
@@ -167,6 +187,34 @@ public class UploadActivity extends BaseActivity {
         init(uploadType == UPLOAD_TYPE_LINK);
     }
 
+    private void decodeUri(Uri uri) {
+        DialogFragment fragment = LoadingDialogFragment.createInstance(R.string.decoding_image, true);
+        showDialogFragment(fragment, DFRAGMENT_DECODING);
+        mTempFile = FileUtil.createFile(uri, getContentResolver());
+
+        if (FileUtil.isFileValid(mTempFile)) {
+            if (mTempFile.getAbsolutePath().endsWith(".gif")) {
+                try {
+                    mPreviewImage.setImageDrawable(new GifDrawable(mTempFile));
+                    // Not using dismissDialogFragment due to fast gif decoding before the fragment
+                    // gets added to the view
+                    fragment.dismiss();
+                    mLink.setVisibility(View.GONE);
+                } catch (IOException ex) {
+                    LogUtil.e(TAG, "Unable to play gif, falling back to still image", ex);
+                    // Load the image without playing it if the gif fails
+                    new LoadImageTask(this).execute(mTempFile);
+                }
+            } else {
+                new LoadImageTask(this).execute(mTempFile);
+            }
+
+        } else {
+            SnackBar.show(this, R.string.upload_gallery_error);
+            dismissDialogFragment(DFRAGMENT_DECODING);
+        }
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -181,8 +229,8 @@ public class UploadActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
-        super.onPause();
         EventBus.getDefault().unregister(this);
+        super.onPause();
     }
 
     public void onEventAsync(@NonNull ImgurBusEvent event) {
@@ -421,32 +469,7 @@ public class UploadActivity extends BaseActivity {
                     break;
 
                 case REQUEST_CODE_GALLERY:
-                    DialogFragment fragment = LoadingDialogFragment.createInstance(R.string.decoding_image, true);
-                    showDialogFragment(fragment, DFRAGMENT_DECODING);
-                    mTempFile = FileUtil.createFile(data.getData(), getContentResolver());
-
-                    if (FileUtil.isFileValid(mTempFile)) {
-                        if (mTempFile.getAbsolutePath().endsWith(".gif")) {
-                            try {
-                                mPreviewImage.setImageDrawable(new GifDrawable(mTempFile));
-                                // Not using dismissDialogFragment due to fast gif decoding before the fragment
-                                // gets added to the view
-                                fragment.dismiss();
-                                mLink.setVisibility(View.GONE);
-                            } catch (IOException ex) {
-                                LogUtil.e(TAG, "Unable to play gif, falling back to still image", ex);
-                                // Load the image without playing it if the gif fails
-                                new LoadImageTask(this).execute(mTempFile);
-                            }
-                        } else {
-                            new LoadImageTask(this).execute(mTempFile);
-                        }
-
-                    } else {
-                        SnackBar.show(this, R.string.upload_gallery_error);
-                        dismissDialogFragment(DFRAGMENT_DECODING);
-                    }
-
+                    decodeUri(data.getData());
                     break;
             }
         } else {
@@ -517,12 +540,7 @@ public class UploadActivity extends BaseActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_SEARCH_URL:
-                    app.getImageLoader().loadImage((String) msg.obj, new ImageLoadingListener() {
-                        @Override
-                        public void onLoadingStarted(String s, View view) {
-
-                        }
-
+                    app.getImageLoader().loadImage((String) msg.obj, new SimpleImageLoadingListener() {
                         @Override
                         public void onLoadingFailed(String s, View view, FailReason failReason) {
                             mIsValidLink = false;

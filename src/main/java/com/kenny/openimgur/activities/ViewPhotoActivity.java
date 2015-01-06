@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.diegocarloslima.byakugallery.lib.TileBitmapDrawable;
+import com.diegocarloslima.byakugallery.lib.TouchImageView;
 import com.kenny.openimgur.DownloaderService;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -23,8 +25,10 @@ import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.io.File;
 
@@ -44,13 +48,16 @@ public class ViewPhotoActivity extends BaseActivity {
     private static final String KEY_IS_VIDEO = "is_video";
 
     @InjectView(R.id.image)
-    ImageView mImageView;
+    TouchImageView mImageView;
 
     @InjectView(R.id.multiView)
     MultiStateView mMultiView;
 
     @InjectView(R.id.video)
     VideoView mVideoView;
+
+    @InjectView(R.id.gifImage)
+    ImageView mGifImageView;
 
     private ImgurPhoto photo;
 
@@ -69,7 +76,7 @@ public class ViewPhotoActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarColor(Color.TRANSPARENT);
+        setStatusBarColor(Color.BLACK);
         Intent intent = getIntent();
 
         if (intent == null || (!intent.hasExtra(KEY_IMAGE) && !intent.hasExtra(KEY_URL))) {
@@ -78,7 +85,7 @@ public class ViewPhotoActivity extends BaseActivity {
             return;
         }
 
-        setContentView(R.layout.image_popup_fragment);
+        setContentView(R.layout.activity_view_image);
         photo = getIntent().getParcelableExtra(KEY_IMAGE);
         mUrl = intent.getStringExtra(KEY_URL);
         boolean isVideo = intent.getBooleanExtra(KEY_IS_VIDEO, false);
@@ -111,11 +118,7 @@ public class ViewPhotoActivity extends BaseActivity {
      */
     private void displayImage() {
         mIsVideo = false;
-        app.getImageLoader().displayImage(mUrl, mImageView, ImageUtil.getDisplayOptionsForView().build(), new ImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String s, View view) {
-            }
-
+        app.getImageLoader().loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForView().build(), new SimpleImageLoadingListener() {
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
                 finish();
@@ -124,24 +127,39 @@ public class ViewPhotoActivity extends BaseActivity {
 
             @Override
             public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                PhotoViewAttacher photoView = new PhotoViewAttacher(mImageView);
-                photoView.setMaximumScale(10f);
+                bitmap.recycle();
 
                 if ((photo != null && photo.isAnimated()) || (!TextUtils.isEmpty(mUrl) && mUrl.endsWith(".gif"))) {
-                    // The file SHOULD be in our cache if the image has successfully loaded
-                    if (!ImageUtil.loadAndDisplayGif(mImageView, photo != null ? photo.getLink() : mUrl, app.getImageLoader())) {
+                    // Display our gif in a standard image view
+                    if (!ImageUtil.loadAndDisplayGif(mGifImageView, photo != null ? photo.getLink() : mUrl, app.getImageLoader())) {
                         finish();
                         Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
-                        return;
+                    } else {
+                        PhotoViewAttacher photoView = new PhotoViewAttacher(mGifImageView);
+                        photoView.setMaximumScale(10.0f);
+                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                        photoView.update();
                     }
+
+                    return;
                 }
 
-                photoView.update();
-                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-            }
-
-            @Override
-            public void onLoadingCancelled(String s, View view) {
+                // Static images will use the TouchImageView to render the image. This allows large(tall) images to render better and be better legible
+                try {
+                    File file = app.getImageLoader().getDiskCache().get(s);
+                    if (FileUtil.isFileValid(file)) {
+                        TileBitmapDrawable.attachTileBitmapDrawable(mImageView, file.getAbsolutePath(), null, null);
+                        mImageView.setMaxScale(10.0f);
+                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    } else {
+                        finish();
+                        Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    LogUtil.e(TAG, "Error creating tile bitmap", e);
+                    finish();
+                    Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

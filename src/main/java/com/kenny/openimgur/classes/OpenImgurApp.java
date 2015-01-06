@@ -50,7 +50,7 @@ public class OpenImgurApp extends Application {
 
     private boolean mIsFetchingAccessToken = false;
 
-    private ImgurTheme mTheme = ImgurTheme.BLUE;
+    private ImgurTheme mTheme = ImgurTheme.GREY;
 
     @Override
     public void onCreate() {
@@ -59,7 +59,8 @@ public class OpenImgurApp extends Application {
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
-        mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, "blue"));
+        checkRefreshToken();
+        mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, "grey"));
 
         // Check if for ADB logging on a non debug build
         if (!BuildConfig.DEBUG) {
@@ -209,7 +210,6 @@ public class OpenImgurApp extends Application {
             mIsFetchingAccessToken = false;
             return false;
         }
-
     }
 
     private class RefreshTokenTask extends AsyncTask<ImgurUser, Void, Boolean> {

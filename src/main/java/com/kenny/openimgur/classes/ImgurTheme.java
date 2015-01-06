@@ -17,7 +17,8 @@ public enum ImgurTheme {
     TEAL("teal", R.style.Theme_Teal, R.color.theme_teal_primary, R.color.theme_teal_dark, R.color.theme_teal_accent),
     RED("red", R.style.Theme_Red, R.color.theme_red_primary, R.color.theme_red_dark, R.color.theme_red_accent),
     PINK("pink", R.style.Theme_Pink, R.color.theme_pink_primary, R.color.theme_pink_dark, R.color.theme_pink_accent),
-    PURPLE("purple", R.style.Theme_Purple, R.color.theme_purple_primary, R.color.theme_purple_dark, R.color.theme_purple_accent);
+    PURPLE("purple", R.style.Theme_Purple, R.color.theme_purple_primary, R.color.theme_purple_dark, R.color.theme_purple_accent),
+    GREY("gray", R.style.Theme_Grey, R.color.theme_grey_primary, R.color.theme_grey_dark, R.color.theme_grey_accent);
 
     public final String themeName;
 
@@ -48,7 +49,7 @@ public enum ImgurTheme {
      * @return
      */
     public static ImgurTheme getThemeFromString(String themeName) {
-        ImgurTheme theme = BLUE;
+        ImgurTheme theme = GREY;
 
         if (ORANGE.themeName.equalsIgnoreCase(themeName)) {
             theme = ORANGE;
@@ -64,7 +65,10 @@ public enum ImgurTheme {
             theme = PINK;
         } else if (PURPLE.themeName.equalsIgnoreCase(themeName)) {
             theme = PURPLE;
+        } else if (BLUE.themeName.equalsIgnoreCase(themeName)) {
+            theme = BLUE;
         }
+
         return theme;
     }
 }
