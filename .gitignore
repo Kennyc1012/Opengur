@@ -11,3 +11,5 @@ openimgur.keystore
 /libraries/EventBus/build
 /app
 OpenImgur.iml
+crashlytics.properties
+/src/main/assets/crashlytics-build.properties

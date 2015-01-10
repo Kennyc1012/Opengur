@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.format.DateUtils;
 
+import com.crashlytics.android.Crashlytics;
 import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
@@ -27,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by kcampagna on 6/14/14.
@@ -61,6 +64,11 @@ public class OpenImgurApp extends Application {
         mUser = mSql.getUser();
         checkRefreshToken();
         mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, "grey"));
+
+        // Start crashlytics if enabled
+        if (mPref.getBoolean(SettingsActivity.KEY_CRASHLYTICS, true)) {
+            Fabric.with(this, new Crashlytics());
+        }
 
         // Check if for ADB logging on a non debug build
         if (!BuildConfig.DEBUG) {

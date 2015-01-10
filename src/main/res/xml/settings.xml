@@ -28,6 +28,13 @@
             android:summaryOff="@string/pref_nsfw_off"
             android:defaultValue="false" />
 
+        <CheckBoxPreference
+            android:key="NSFWThumbnails"
+            android:title="@string/pref_nsfw_thumb_title"
+            android:summaryOn="@string/pref_nsfw_thumb_on"
+            android:summaryOff="@string/pref_nsfw_thumb_off"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_cache_title">
@@ -53,6 +60,13 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/developer">
+
+        <CheckBoxPreference
+            android:key="crashlytics"
+            android:title="@string/pref_crashlytics_title"
+            android:summaryOn="@string/pref_crashlytics_on"
+            android:summaryOff="@string/pref_crashlytics_off"
+            android:defaultValue="true" />
 
         <CheckBoxPreference
             android:key="adb"

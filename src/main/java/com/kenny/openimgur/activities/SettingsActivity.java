@@ -1,6 +1,5 @@
 package com.kenny.openimgur.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,6 +40,10 @@ public class SettingsActivity extends BaseActivity {
     public static final String CACHE_LOC_INTERNAL = "internal";
 
     public static final String CACHE_LOC_EXTERNAL = "external";
+
+    public static final String KEY_CRASHLYTICS = "crashlytics";
+
+    public static final String KEY_NSFW_THUMBNAILS = "NSFWThumbnails";
 
     private Intent returnIntent;
 
