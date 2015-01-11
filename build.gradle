@@ -1,17 +1,21 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     mavenCentral()
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 android {
@@ -19,11 +23,11 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.kennyc.openimgur"
+        applicationId "com.kennyc.open.imgur"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 6
-        versionName "1.4"
+        versionCode 7
+        versionName "1.5"
     }
     buildTypes {
         release {
@@ -51,4 +55,7 @@ dependencies {
     compile 'com.cocosw:bottomsheet:0.6@aar'
     compile 'com.diegocarloslima:byakugallery:0.1.+@aar'
     compile project(':libraries:EventBus')
+    compile('com.crashlytics.sdk.android:crashlytics:2.2.0@aar') {
+        transitive = true;
+    }
 }
