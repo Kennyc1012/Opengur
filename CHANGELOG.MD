@@ -1,5 +1,10 @@
 #Open Imgur Changelog
 
+<b>1.5>
+- Application id change due to being removed from Google Play
+- Crashlytics added
+- NSFW thumbnails can now be blocked 
+
 <b>1.4</b>
 - Better Image Zooming. Full screen images will now render with Tile Bitmap to support zooming in on sections of the images
 to better render large(tall) images
