@@ -72,7 +72,7 @@ public class ImgurAlbum extends ImgurBaseObject {
         mCoverWidth = in.readInt();
         mCoverHeight = in.readInt();
         mAlbumPhotos = new ArrayList<ImgurPhoto>();
-        in.readList(mAlbumPhotos, null);
+        in.readList(mAlbumPhotos, ImgurPhoto.class.getClassLoader());
     }
 
     public String getCoverId() {
