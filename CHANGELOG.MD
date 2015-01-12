@@ -1,6 +1,10 @@
 #Open Imgur Changelog
 
-<b>1.5>
+<b>1.5.1</b>
+- Bug fixes with parceling objects
+- Previous comments layout updated
+
+<b>1.5</b>
 - Application id change due to being removed from Google Play
 - Crashlytics added
 - NSFW thumbnails can now be blocked 
