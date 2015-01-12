@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:left="@dimen/content_padding">
+        <shape android:shape="oval">
+            <size
+                android:height="@dimen/avatar_size"
+                android:width="@dimen/avatar_size" />
+            <solid android:color="@color/theme_grey_accent" />
+            <padding
+                android:left="8dp"
+                android:right="8dp"
+                android:top="8dp"
+                android:bottom="8dp" />
+        </shape>
+    </item>
+
+    <item android:left="@dimen/content_padding">
+        <bitmap android:src="@drawable/abc_ic_ab_back_mtrl_am_alpha" />
+    </item>
+
+</layer-list>

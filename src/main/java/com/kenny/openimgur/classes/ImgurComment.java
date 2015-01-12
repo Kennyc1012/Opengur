@@ -95,8 +95,8 @@ public class ImgurComment extends ImgurBaseObject {
         mAuthorId = in.readString();
         mComment = in.readString();
         mIsDeleted = in.readInt() == 1;
-        mChildrenComments = new ArrayList<ImgurComment>();
-        in.readList(mChildrenComments, null);
+        mChildrenComments = new ArrayList<>();
+        in.readList(mChildrenComments, ImgurComment.class.getClassLoader());
         mParentId = in.readLong();
         mPoints = in.readLong();
     }
