@@ -13,7 +13,7 @@ import com.kenny.snackbar.SnackBar;
  * Created by kcampagna on 6/30/14.
  */
 public class SettingsActivity extends BaseActivity {
-    public static final int REQUEST_CODE = 001;
+    public static final int REQUEST_CODE = 200;
 
     public static final String NSFW_KEY = "allowNSFW";
 
@@ -44,8 +44,6 @@ public class SettingsActivity extends BaseActivity {
     public static final String KEY_CRASHLYTICS = "crashlytics";
 
     public static final String KEY_NSFW_THUMBNAILS = "NSFWThumbnails";
-
-    private Intent returnIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

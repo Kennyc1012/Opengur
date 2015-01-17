@@ -1,9 +1,13 @@
 package com.kenny.openimgur.activities;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -19,6 +23,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -33,13 +38,11 @@ import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
-import com.kenny.openimgur.fragments.PopupDialogViewBuilder;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
@@ -62,6 +65,8 @@ import pl.droidsonroids.gif.GifDrawable;
  * Created by kcampagna on 8/2/14.
  */
 public class UploadActivity extends BaseActivity {
+    public static final int REQUEST_CODE = 100;
+    private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
     private static final String KEY_FILE_PATH = "filePath";
 
     private static final String KEY_IS_UPLOADING = "isuploading";
@@ -110,6 +115,8 @@ public class UploadActivity extends BaseActivity {
 
     private boolean mIsUploading = false;
 
+    private boolean mNotifyNoUser;
+
     public static Intent createIntent(Context context, int uploadType) {
         return new Intent(context, UploadActivity.class).putExtra(KEY_UPLOAD_TYPE, uploadType);
     }
@@ -120,6 +127,7 @@ public class UploadActivity extends BaseActivity {
         getSupportActionBar().setTitle(getString(R.string.upload));
         setContentView(R.layout.activity_upload);
         mUploadButton.setTextColor(getResources().getColor(theme.accentColor));
+        mNotifyNoUser = app.getPreferences().getBoolean(PREF_NOTIFY_NO_USER, true);
     }
 
     /**
@@ -241,7 +249,7 @@ public class UploadActivity extends BaseActivity {
                     if (status == ApiClient.STATUS_OK) {
                         ImgurPhoto photo = new ImgurPhoto(event.json.getJSONObject(ApiClient.KEY_DATA));
                         // If our id is true, that means we need to upload the resulting id to the gallery
-                        if (event.id.equals(String.valueOf(true))) {
+                        if (String.valueOf(true).equals(event.id)) {
                             // If the image was to be uploaded to the gallery, send it there
                             ApiClient client = new ApiClient(String.format(Endpoints.GALLERY_UPLOAD.getUrl(), photo.getId()),
                                     ApiClient.HttpRequest.POST);
@@ -252,7 +260,8 @@ public class UploadActivity extends BaseActivity {
                             client.doWork(ImgurBusEvent.EventType.GALLERY_SUBMISSION, photo.getLink(), body);
                             mIsUploading = true;
                         } else {
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photo.getLink());
+                            setResult(Activity.RESULT_OK);
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photo);
                         }
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
@@ -416,13 +425,20 @@ public class UploadActivity extends BaseActivity {
                     // Nothing selected yet
                     SnackBar.show(UploadActivity.this, R.string.empty_upload);
                 } else {
-                    if (user == null) {
-                        new PopupDialogViewBuilder(UploadActivity.this).setTitle(R.string.not_logged_in)
-                                .setMessage(R.string.not_logged_in_msg)
+                    if (user == null && mNotifyNoUser) {
+                        View nagView = LayoutInflater.from(UploadActivity.this).inflate(R.layout.no_user_nag, null);
+                        final CheckBox cb = (CheckBox) nagView.findViewById(R.id.dontNotify);
+
+                        new AlertDialog.Builder(UploadActivity.this)
+                                .setTitle(R.string.not_logged_in)
                                 .setNegativeButton(R.string.cancel, null)
-                                .setPositiveButton(R.string.yes, new View.OnClickListener() {
+                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                     @Override
-                                    public void onClick(View view) {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (cb.isChecked()) {
+                                            app.getPreferences().edit().putBoolean(PREF_NOTIFY_NO_USER, false).apply();
+                                        }
+
                                         if (mIsValidLink) {
                                             upload(mTitle.getText().toString(), mDesc.getText().toString(), mLink.getText().toString(), false);
                                         } else {
@@ -430,7 +446,7 @@ public class UploadActivity extends BaseActivity {
                                                     mTempFile : mCameraFile, false);
                                         }
                                     }
-                                }).show();
+                                }).setView(nagView).show();
                     } else {
                         String title = mTitle.getText().toString();
                         String desc = mDesc.getText().toString();
@@ -571,19 +587,28 @@ public class UploadActivity extends BaseActivity {
 
                 case MESSAGE_ACTION_COMPLETE:
                     dismissDialogFragment(DFRAGMENT_UPLOADING);
-                    final String url = (String) msg.obj;
-                    String message = getString(R.string.upload_success, url);
-                    new PopupDialogViewBuilder(UploadActivity.this)
+                    final ImgurPhoto photo = (ImgurPhoto) msg.obj;
+                    app.getSql().insertUploadedPhoto(photo);
+                    String message = getString(R.string.upload_success, photo.getLink());
+                    Dialog dialog = new AlertDialog.Builder(UploadActivity.this)
                             .setTitle(R.string.upload_complete)
                             .setMessage(message).setNegativeButton(R.string.dismiss, null)
-                            .setPositiveButton(R.string.copy_link, new View.OnClickListener() {
+                            .setPositiveButton(R.string.copy_link, new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(View view) {
+                                public void onClick(DialogInterface dialog, int which) {
                                     ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", url));
-                                    finish();
+                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", photo.getLink()));
                                 }
-                            }).show();
+                            }).create();
+
+                    dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            finish();
+                        }
+                    });
+
+                    dialog.show();
                     break;
 
                 case MESSAGE_ACTION_FAILED:

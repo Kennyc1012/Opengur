@@ -23,6 +23,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.RelativeLayout;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.adapters.NavAdapter;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
@@ -31,6 +32,7 @@ import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.NavFragment;
 import com.kenny.openimgur.fragments.ProfileFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
+import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
@@ -43,16 +45,6 @@ import butterknife.OnClick;
  */
 public class MainActivity extends BaseActivity implements NavFragment.NavigationListener, FragmentListener, View.OnClickListener {
     private static final String KEY_CURRENT_PAGE = "current_page";
-
-    private static final int PAGE_PROFILE = 0;
-
-    private static final int PAGE_GALLERY = 1;
-
-    private static final int PAGE_SUBREDDIT = 2;
-
-    private static final int PAGE_SETTINGS = 4;
-
-    private static final int PAGE_FEEDBACK = 5;
 
     @InjectView(R.id.drawerLayout)
     DrawerLayout mDrawer;
@@ -96,10 +88,12 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         setupToolBar();
         mNavFragment = (NavFragment) getFragmentManager().findFragmentById(R.id.navDrawer);
         mNavFragment.configDrawerLayout(mDrawer);
-        mUploadButton.setColor(getResources().getColor(theme.accentColor));
-        mLinkUpload.setColor(getResources().getColor(theme.accentColor));
-        mCameraUpload.setColor(getResources().getColor(theme.accentColor));
-        mGalleryUpload.setColor(getResources().getColor(theme.accentColor));
+        Resources res = getResources();
+        int accentColor = res.getColor(theme.accentColor);
+        mUploadButton.setColor(accentColor);
+        mLinkUpload.setColor(accentColor);
+        mCameraUpload.setColor(accentColor);
+        mGalleryUpload.setColor(accentColor);
         mUploadButtonHeight = getResources().getDimension(R.dimen.fab_button_radius);
         mUploadMenuButtonHeight = getResources().getDimension(R.dimen.fab_button_radius_smaller);
     }
@@ -146,9 +140,9 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         }
 
         if (savedInstanceState == null) {
-            changePage(app.getPreferences().getInt(KEY_CURRENT_PAGE, PAGE_GALLERY));
+            changePage(app.getPreferences().getInt(KEY_CURRENT_PAGE, NavAdapter.PAGE_GALLERY));
         } else {
-            mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, PAGE_GALLERY);
+            mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, NavAdapter.PAGE_GALLERY);
         }
 
         mNavFragment.setSelectedPage(mCurrentPage);
@@ -163,26 +157,31 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         Fragment fragment = null;
 
         switch (position) {
-            case PAGE_GALLERY:
+            case NavAdapter.PAGE_GALLERY:
                 fragment = GalleryFragment.createInstance();
                 mCurrentPage = position;
                 break;
 
-            case PAGE_PROFILE:
+            case NavAdapter.PAGE_PROFILE:
                 fragment = ProfileFragment.createInstance(null);
                 mCurrentPage = position;
                 break;
 
-            case PAGE_SUBREDDIT:
+            case NavAdapter.PAGE_SUBREDDIT:
                 fragment = RedditFragment.createInstance();
                 mCurrentPage = position;
                 break;
 
-            case PAGE_SETTINGS:
+            case NavAdapter.PAGE_UPLOADS:
+                fragment = UploadedPhotosFragment.createInstance();
+                mCurrentPage = position;
+                break;
+
+            case NavAdapter.PAGE_SETTINGS:
                 startActivityForResult(SettingsActivity.createIntent(getApplicationContext()), SettingsActivity.REQUEST_CODE);
                 break;
 
-            case PAGE_FEEDBACK:
+            case NavAdapter.PAGE_FEEDBACK:
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                         "mailto", "kennyc.developer@gmail.com", null));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Open Imgur Feedback");
@@ -277,17 +276,17 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 break;
 
             case R.id.cameraUpload:
-                startActivity(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_CAMERA));
+                startActivityForResult(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_CAMERA), UploadActivity.REQUEST_CODE);
                 animateUploadMenu();
                 break;
 
             case R.id.galleryUpload:
-                startActivity(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_GALLERY));
+                startActivityForResult(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_GALLERY), UploadActivity.REQUEST_CODE);
                 animateUploadMenu();
                 break;
 
             case R.id.linkUpload:
-                startActivity(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_LINK));
+                startActivityForResult(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_LINK), UploadActivity.REQUEST_CODE);
                 animateUploadMenu();
                 break;
         }
@@ -419,13 +418,19 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 app = OpenImgurApp.getInstance(getApplicationContext());
                 theme = app.getImgurTheme();
                 Resources res = getResources();
+                int accentColor = res.getColor(theme.accentColor);
                 mToolBar.setBackgroundColor(res.getColor(theme.primaryColor));
-                mUploadButton.setColor(res.getColor(theme.accentColor));
-                mLinkUpload.setColor(res.getColor(theme.accentColor));
-                mCameraUpload.setColor(res.getColor(theme.accentColor));
-                mGalleryUpload.setColor(res.getColor(theme.accentColor));
+                mUploadButton.setColor(accentColor);
+                mLinkUpload.setColor(accentColor);
+                mCameraUpload.setColor(accentColor);
+                mGalleryUpload.setColor(accentColor);
                 setStatusBarColor(res.getColor(theme.darkColor));
                 mNavFragment.onUpdateTheme(theme);
+                break;
+
+            case UploadActivity.REQUEST_CODE:
+                Fragment current = getFragmentManager().findFragmentById(R.id.container);
+                if (current != null) current.onActivityResult(requestCode, resultCode, data);
                 break;
         }
 

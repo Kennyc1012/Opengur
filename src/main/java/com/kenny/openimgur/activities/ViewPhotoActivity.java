@@ -8,6 +8,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,7 +41,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 /**
  * Created by kcampagna on 6/22/14.
  */
-public class ViewPhotoActivity extends BaseActivity {
+public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawable.OnInitializeListener {
     private static final String KEY_VIDEO_POSITION = "position";
 
     private static final String KEY_URL = "url";
@@ -59,11 +62,15 @@ public class ViewPhotoActivity extends BaseActivity {
     @InjectView(R.id.gifImage)
     ImageView mGifImageView;
 
+    @Nullable
     private ImgurPhoto photo;
 
+    @Nullable
     private String mUrl;
 
     private boolean mIsVideo = false;
+
+    private boolean mDidDecoderFail = false;
 
     public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {
         return new Intent(context, ViewPhotoActivity.class).putExtra(KEY_IMAGE, photo);
@@ -140,25 +147,37 @@ public class ViewPhotoActivity extends BaseActivity {
                         mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                         photoView.update();
                     }
+                } else if (mDidDecoderFail) {
+                    // When our image fails, display it with the PhotoViewAttacher
+                    PhotoViewAttacher photoView = new PhotoViewAttacher(mGifImageView);
+                    mGifImageView.setImageBitmap(bitmap);
+                    photoView.setMaximumScale(10.0f);
+                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    photoView.update();
+                } else {
 
-                    return;
-                }
-
-                // Static images will use the TouchImageView to render the image. This allows large(tall) images to render better and be better legible
-                try {
-                    File file = app.getImageLoader().getDiskCache().get(s);
-                    if (FileUtil.isFileValid(file)) {
-                        TileBitmapDrawable.attachTileBitmapDrawable(mImageView, file.getAbsolutePath(), null, null);
-                        mImageView.setMaxScale(10.0f);
+                    // Static images will use the TouchImageView to render the image. This allows large(tall) images to render better and be better legible
+                    try {
+                        File file = app.getImageLoader().getDiskCache().get(s);
+                        if (FileUtil.isFileValid(file)) {
+                            // Clear any memory cache to free up some resources
+                            app.getImageLoader().clearMemoryCache();
+                            TileBitmapDrawable.attachTileBitmapDrawable(mImageView, file.getAbsolutePath(), null, ViewPhotoActivity.this);
+                            mImageView.setMaxScale(10.0f);
+                            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                        } else {
+                            finish();
+                            Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e) {
+                        LogUtil.e(TAG, "Error creating tile bitmap", e);
+                        // When our image fails, display it with the PhotoViewAttacher
+                        PhotoViewAttacher photoView = new PhotoViewAttacher(mGifImageView);
+                        mGifImageView.setImageBitmap(bitmap);
+                        photoView.setMaximumScale(10.0f);
                         mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                    } else {
-                        finish();
-                        Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                        photoView.update();
                     }
-                } catch (Exception e) {
-                    LogUtil.e(TAG, "Error creating tile bitmap", e);
-                    finish();
-                    Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -228,6 +247,26 @@ public class ViewPhotoActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.view_photo, menu);
+        ShareActionProvider share = (ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.share));
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
+        String link;
+
+        if (photo != null) {
+            link = photo.getTitle() + " ";
+            if (TextUtils.isEmpty(photo.getRedditLink())) {
+                link += photo.getGalleryLink();
+            } else {
+                link += String.format("http://reddit.com%s", photo.getRedditLink());
+            }
+        } else {
+            link = mUrl;
+        }
+
+        shareIntent.putExtra(Intent.EXTRA_TEXT, link);
+        share.setShareIntent(shareIntent);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -235,20 +274,15 @@ public class ViewPhotoActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.download:
-                startService(DownloaderService.createIntent(getApplicationContext(), photo));
+                if (photo != null) {
+                    startService(DownloaderService.createIntent(getApplicationContext(), photo));
+                } else {
+                    startService(DownloaderService.createIntent(getApplicationContext(), mUrl));
+                }
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (photo == null) {
-            menu.removeItem(R.id.download);
-        }
-
-        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -258,5 +292,29 @@ public class ViewPhotoActivity extends BaseActivity {
         }
 
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onStartInitialization() {
+        LogUtil.v(TAG, "Decoding Image with BitmapRegionDecoder");
+    }
+
+    @Override
+    public void onEndInitialization() {
+        LogUtil.v(TAG, "Successfully decoded image with BitmapRegionDecoder");
+    }
+
+    @Override
+    public void onError(Exception e) {
+        LogUtil.e(TAG, "Error decoding image with BitmapRegionDecoder", e);
+        mDidDecoderFail = true;
+        // We will display the image with the PhotoView when a failure occurs.
+        displayImage();
+    }
+
+    @Override
+    protected void onDestroy() {
+        TileBitmapDrawable.clearCache();
+        super.onDestroy();
     }
 }

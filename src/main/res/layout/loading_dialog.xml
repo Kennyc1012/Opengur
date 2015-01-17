@@ -7,15 +7,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <com.kenny.openimgur.ui.TextViewRoboto
             android:id="@+id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_marginTop="16dp"
-            app:robotoFont="thin"
+            app:robotoFont="medium"
             android:textSize="18sp" />
 
         <LinearLayout

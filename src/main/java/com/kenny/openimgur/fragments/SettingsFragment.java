@@ -3,6 +3,7 @@ package com.kenny.openimgur.fragments;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -93,8 +94,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 mApp.setImgurTheme(theme);
 
                 if (!mFirstLaunch) {
-                    startActivity(SettingsActivity.createIntent(getActivity()));
-                    getActivity().finish();
+                    getActivity().recreate();
                 }
             } else if (preference.getKey().equals(SettingsActivity.KEY_CACHE_LOC)) {
                 if (!mFirstLaunch) {
@@ -119,13 +119,13 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     @Override
     public boolean onPreferenceClick(final Preference preference) {
         if (preference.getKey().equals(SettingsActivity.CURRENT_CACHE_SIZE_KEY)) {
-            new PopupDialogViewBuilder(getActivity())
+            new AlertDialog.Builder(getActivity())
                     .setTitle(R.string.clear_cache)
                     .setMessage(R.string.clear_cache_message)
                     .setNegativeButton(R.string.cancel, null)
-                    .setPositiveButton(R.string.yes, new View.OnClickListener() {
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(View view) {
+                        public void onClick(DialogInterface dialog, int which) {
                             new DeleteCacheTask(SettingsFragment.this, null).execute();
                         }
                     }).show();
