@@ -1,5 +1,25 @@
 #Open Imgur Changelog
 
+<b>1.6</b>
+- All uploads done within the app will now appear in the Uploads tab
+which can be accessed via the Navigation Drawer.
+
+- Fix Issues with parceling.
+
+- Fork the byakugallery library and fix the issue of it throwing an
+exception if decoding fails. If failure occurs, photos will use the
+PhotoViewAttacher for zooming the image.
+
+- Turn off crashlytics logging for caught exceptions, most were just
+network issues.
+
+- Allows users to not get prompted when uploading an image when they are
+not logged in.
+
+- Allow the DownloadService to accept URLs for downloads.
+
+- Removed stylized dialogs in favor of the system dialogs.
+
 <b>1.5.1</b>
 - Bug fixes with parceling objects
 - Previous comments layout updated
