@@ -8,6 +8,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,8 +62,10 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
     @InjectView(R.id.gifImage)
     ImageView mGifImageView;
 
+    @Nullable
     private ImgurPhoto photo;
 
+    @Nullable
     private String mUrl;
 
     private boolean mIsVideo = false;
@@ -242,6 +247,26 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.view_photo, menu);
+        ShareActionProvider share = (ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.share));
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
+        String link;
+
+        if (photo != null) {
+            link = photo.getTitle() + " ";
+            if (TextUtils.isEmpty(photo.getRedditLink())) {
+                link += photo.getGalleryLink();
+            } else {
+                link += String.format("http://reddit.com%s", photo.getRedditLink());
+            }
+        } else {
+            link = mUrl;
+        }
+
+        shareIntent.putExtra(Intent.EXTRA_TEXT, link);
+        share.setShareIntent(shareIntent);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -249,20 +274,15 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.download:
-                startService(DownloaderService.createIntent(getApplicationContext(), photo));
+                if (photo != null) {
+                    startService(DownloaderService.createIntent(getApplicationContext(), photo));
+                } else {
+                    startService(DownloaderService.createIntent(getApplicationContext(), mUrl));
+                }
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (photo == null) {
-            menu.removeItem(R.id.download);
-        }
-
-        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

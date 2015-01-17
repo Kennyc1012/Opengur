@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -51,7 +52,6 @@ import com.kenny.openimgur.fragments.CommentPopupFragment;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
-import com.kenny.openimgur.fragments.PopupItemChooserDialog;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.TextViewRoboto;
@@ -80,8 +80,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 7/12/14.
  */
-public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener,
-        PopupItemChooserDialog.ChooserListener, SideGalleryFragment.SideGalleryListener {
+public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener, SideGalleryFragment.SideGalleryListener {
     private enum CommentSort {
         BEST("best"),
         NEW("new"),
@@ -596,7 +595,23 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case R.id.sortComments:
-                showDialogFragment(PopupItemChooserDialog.createInstance(CommentSort.getItemsForArray(getApplicationContext())), "yes");
+                new AlertDialog.Builder(ViewActivity.this)
+                        .setTitle(R.string.sort_by)
+                        .setItems(CommentSort.getItemsForArray(getApplicationContext()), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                CommentSort sort = CommentSort.getSortFromPosition(which);
+
+                                if (sort != mCommentSort) {
+                                    mCommentSort = sort;
+
+                                    // Don't bother making an Api call if the item has no comments
+                                    if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
+                                        loadComments();
+                                    }
+                                }
+                            }
+                        }).show();
                 break;
 
             case R.id.errorButton:
@@ -794,20 +809,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
         if (comment.getReplyCount() > 0) {
             nextComments(comment);
-        }
-    }
-
-    @Override
-    public void onItemSelected(int position, String item) {
-        CommentSort sort = CommentSort.getSortFromPosition(position);
-
-        if (sort != mCommentSort) {
-            mCommentSort = sort;
-
-            // Don't bother making an Api call if the item has no comments
-            if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
-                loadComments();
-            }
         }
     }
 
