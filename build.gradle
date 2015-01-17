@@ -30,8 +30,8 @@ android {
         applicationId "com.kennyc.open.imgur"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 8
-        versionName "development"
+        versionCode 9
+        versionName "1.6"
     }
     buildTypes {
         release {

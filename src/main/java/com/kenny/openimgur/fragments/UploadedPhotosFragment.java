@@ -96,6 +96,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                 mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
             } else {
                 mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+                if(mListener!=null) mListener.onUpdateActionBar(true);
             }
         }
     }
@@ -165,6 +166,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
 
                                                     if (mAdapter.isEmpty()) {
                                                         mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+                                                        if(mListener!=null) mListener.onUpdateActionBar(true);
                                                     }
                                                 }
                                             }).setView(deleteView).show();

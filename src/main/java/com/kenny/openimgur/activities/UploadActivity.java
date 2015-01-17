@@ -430,6 +430,7 @@ public class UploadActivity extends BaseActivity {
                         final CheckBox cb = (CheckBox) nagView.findViewById(R.id.dontNotify);
 
                         new AlertDialog.Builder(UploadActivity.this)
+                                .setTitle(R.string.not_logged_in)
                                 .setNegativeButton(R.string.cancel, null)
                                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                     @Override

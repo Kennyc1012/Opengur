@@ -11,8 +11,8 @@
         android:layout_height="wrap_content"
         android:text="@string/not_logged_in_msg"
         android:textColor="@android:color/black"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        app:robotoFont="medium" />
+        android:textSize="18sp"
+        app:robotoFont="regular" />
 
     <CheckBox
         android:id="@+id/dontNotify"
