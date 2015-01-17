@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:text="@string/subreddit_desc"
     android:textColor="@android:color/black"
+    android:textSize="16sp"
     android:drawableTop="@drawable/reddit_large"
     android:layout_gravity="center"
     android:drawablePadding="16dp"
-    app:robotoFont="light" />
+    app:robotoFont="regular" />

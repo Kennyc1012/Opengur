@@ -144,7 +144,7 @@
     <string name="sort_top">Top</string>
 
     <!-- Uploaded Photos-->
-    <string name="uploaded_photos_empty">You have not uploaded any photos from this devices</string>
+    <string name="uploaded_photos_empty">You have not uploaded any photos from this device</string>
     <string name="uploaded_photos_title">Uploads</string>
     <string name="uploaded_remove_message">Are you sure you want to remove this photo?</string>
     <string name="uploaded_remove_imgur">Remove from Imgur</string>
