@@ -26,6 +26,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NavAdapter;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.NavFragment;
@@ -87,10 +88,12 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         setupToolBar();
         mNavFragment = (NavFragment) getFragmentManager().findFragmentById(R.id.navDrawer);
         mNavFragment.configDrawerLayout(mDrawer);
-        mUploadButton.setColor(getResources().getColor(theme.accentColor));
-        mLinkUpload.setColor(getResources().getColor(theme.accentColor));
-        mCameraUpload.setColor(getResources().getColor(theme.accentColor));
-        mGalleryUpload.setColor(getResources().getColor(theme.accentColor));
+        Resources res = getResources();
+        int accentColor = res.getColor(theme.accentColor);
+        mUploadButton.setColor(accentColor);
+        mLinkUpload.setColor(accentColor);
+        mCameraUpload.setColor(accentColor);
+        mGalleryUpload.setColor(accentColor);
         mUploadButtonHeight = getResources().getDimension(R.dimen.fab_button_radius);
         mUploadMenuButtonHeight = getResources().getDimension(R.dimen.fab_button_radius_smaller);
     }
@@ -412,6 +415,8 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         switch (requestCode) {
             // Set the theme if coming from the settings activity
             case SettingsActivity.REQUEST_CODE:
+                app = OpenImgurApp.getInstance(getApplicationContext());
+                theme = app.getImgurTheme();
                 Resources res = getResources();
                 int accentColor = res.getColor(theme.accentColor);
                 mToolBar.setBackgroundColor(res.getColor(theme.primaryColor));
