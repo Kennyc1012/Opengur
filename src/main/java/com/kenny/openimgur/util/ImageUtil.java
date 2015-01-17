@@ -11,6 +11,8 @@ import android.media.ExifInterface;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
@@ -240,5 +242,28 @@ public class ImageUtil {
         }
 
         return context.getCacheDir();
+    }
+
+    /**
+     * Returns the thumbnail for the given image url
+     *
+     * @param url
+     * @param thumbnailSize
+     * @return
+     */
+    public static String getThumbnail(String url, String thumbnailSize) {
+        if (TextUtils.isEmpty(url) || TextUtils.isEmpty(thumbnailSize)) {
+            Log.w(TAG, "Url or thumbnailSize is empty");
+            return null;
+        }
+
+        String[] fileExtension = url.split("^(.*[\\.])");
+        String[] imageUrl = url.split("\\.\\w+$");
+
+        if (fileExtension.length > 0 && imageUrl.length > 0) {
+            return imageUrl[imageUrl.length - 1] + thumbnailSize + "." + fileExtension[fileExtension.length - 1];
+        }
+
+        return null;
     }
 }

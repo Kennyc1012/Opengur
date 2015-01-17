@@ -87,4 +87,30 @@ public class DBContracts {
         public static final String SEARCH_USER_SQL = "SELECT * FROM " + TABLE_NAME +
                 " WHERE " + COLUMN_USERNAME + " = '%s' LIMIT 0,1";
     }
+
+    public static class UploadContract implements BaseColumns {
+        public static final String TABLE_NAME = "uploads";
+        public static final String COLUMN_URL = "url";
+        public static final String COLUMN_DATE = "date";
+        public static final String COLUMN_DELETE_HASH = "delete_hash";
+        public static final int COLUMN_INDEX_ID = 0;
+
+        public static final int COLUMN_INDEX_URL = 1;
+
+        public static final int COLUMN_INDEX_DATE = 2;
+
+        public static final int COLUMN_INDEX_DELETE_HASH = 3;
+
+        public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
+                " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
+                COLUMN_URL + " TEXT NOT NULL, " +
+                COLUMN_DATE + " INTEGER, " +
+                COLUMN_DELETE_HASH + " TEXT);";
+
+        public static final String GET_UPLOADS_SQL = "SELECT * FROM " + TABLE_NAME +
+                " ORDER BY " + COLUMN_DATE + " %s";
+
+        public static final String DELETE_PHOTO_SQL = " DELETE FROM " + TABLE_NAME +
+                " WHERE " + _ID + "=%d";
+    }
 }

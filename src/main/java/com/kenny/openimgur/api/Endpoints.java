@@ -60,7 +60,10 @@ public enum Endpoints {
     UPLOAD("https://api.imgur.com/3/upload"),
 
     // Image id
-    GALLERY_UPLOAD("https://api.imgur.com/3/gallery/%s");
+    GALLERY_UPLOAD("https://api.imgur.com/3/gallery/%s"),
+
+    // Delete hash or image id if owned by account
+    IMAGE_DELETE("https://api.imgur.com/3/image/%s");
 
     private final String mUrl;
 

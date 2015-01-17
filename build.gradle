@@ -2,9 +2,10 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url 'https://maven.fabric.io/public' }
+
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.0.1'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -16,6 +17,9 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 android {
@@ -27,10 +31,15 @@ android {
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 8
-        versionName "1.5.1"
+        versionName "development"
     }
     buildTypes {
         release {
+            minifyEnabled false
+        }
+
+        debug{
+            minifyEnabled false
         }
     }
     compileOptions {
@@ -53,7 +62,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.cocosw:bottomsheet:0.6@aar'
-    compile 'com.diegocarloslima:byakugallery:0.1.+@aar'
+    compile(name: 'photo_zoom', ext:'aar')
     compile project(':libraries:EventBus')
     compile('com.crashlytics.sdk.android:crashlytics:2.2.0@aar') {
         transitive = true;

@@ -128,6 +128,23 @@ public class ApiClient {
     }
 
     /**
+     * Executes a DELETE HTTP Request
+     *
+     * @return
+     * @throws IOException
+     * @throws JSONException
+     */
+    private JSONObject delete() throws IOException, JSONException {
+        Request request = new Request.Builder()
+                .addHeader(AUTHORIZATION_HEADER, getAuthorizationHeader())
+                .delete()
+                .url(mUrl)
+                .build();
+
+        return makeRequest(request);
+    }
+
+    /**
      * Makes the request and returns the result
      *
      * @param request
@@ -201,6 +218,12 @@ public class ApiClient {
                 break;
 
             case DELETE:
+                AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
+                    @Override
+                    public void run() throws Exception {
+                        EventBus.getDefault().post(new ImgurBusEvent(delete(), type, HttpRequest.DELETE, id));
+                    }
+                });
                 break;
 
             case GET:
@@ -241,7 +264,7 @@ public class ApiClient {
                 return post(postParams);
 
             case DELETE:
-                return null;
+                return delete();
 
             case GET:
             default:

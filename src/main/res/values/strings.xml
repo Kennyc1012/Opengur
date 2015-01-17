@@ -88,6 +88,17 @@
     <string name="date_range">Date Range</string>
     <string name="options">Options</string>
     <string name="login_msg">Tap to login</string>
+    <string name="dont_ask_again">Don\'t ask me again.</string>
+
+    <string-array name="nav_items">
+        <item>Profile</item>
+        <item>Gallery</item>
+        <item>Subreddit</item>
+        <item>Uploads</item>
+        <item>Divider</item>
+        <item>Settings</item>
+        <item>Feedback</item>
+    </string-array>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -132,6 +143,17 @@
     <string name="sort_best">Best</string>
     <string name="sort_top">Top</string>
 
+    <!-- Uploaded Photos-->
+    <string name="uploaded_photos_empty">You have not uploaded any photos!</string>
+    <string name="uploaded_photos_title">Uploads</string>
+    <string name="uploaded_remove_message">Are you sure you want to remove this photo?</string>
+    <string name="uploaded_remove_imgur">Remove from Imgur</string>
+    <string-array name="uploaded_photos_options">
+        <item>Share Link</item>
+        <item>Copy Link</item>
+        <item>Remove Photo</item>
+    </string-array>
+
     <!-- Preferences -->
     <string name="pref_cache_title">Cache</string>
     <string name="pref_current_cache_size">Current Cache Size</string>
@@ -160,14 +182,6 @@
         <item>1GB</item>
         <item>2GB</item>
         <item>Unlimited</item>
-    </string-array>
-    <string-array name="nav_items">
-        <item>Profile</item>
-        <item>Gallery</item>
-        <item>Subreddit</item>
-        <item>Divider</item>
-        <item>Settings</item>
-        <item>Feedback</item>
     </string-array>
     <string-array name="pref_themes_items">
         <item>Blue</item>

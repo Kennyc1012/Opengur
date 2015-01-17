@@ -33,7 +33,6 @@ public class LogUtil {
     }
 
     public static void e(String tag, String msg, Throwable tr) {
-        Crashlytics.logException(tr);
         if (SHOULD_WRITE_LOGS) Log.e(tag, msg, tr);
     }
 

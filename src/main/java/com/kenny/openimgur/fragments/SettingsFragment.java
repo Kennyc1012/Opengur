@@ -93,8 +93,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 mApp.setImgurTheme(theme);
 
                 if (!mFirstLaunch) {
-                    startActivity(SettingsActivity.createIntent(getActivity()));
-                    getActivity().finish();
+                    getActivity().recreate();
                 }
             } else if (preference.getKey().equals(SettingsActivity.KEY_CACHE_LOC)) {
                 if (!mFirstLaunch) {
