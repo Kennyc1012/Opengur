@@ -22,11 +22,8 @@ import butterknife.InjectView;
  * Created by Kenny-PC on 1/14/2015.
  */
 public class UploadAdapter extends ImgurBaseAdapter {
-    private LayoutInflater mInflater;
-
     public UploadAdapter(Context context, List<UploadedPhoto> photos) {
         super(context, photos, true);
-        mInflater = LayoutInflater.from(context);
     }
 
     @Override

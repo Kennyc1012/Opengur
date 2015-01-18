@@ -24,8 +24,6 @@ import java.util.List;
 import butterknife.InjectView;
 
 public class CommentAdapter extends ImgurBaseAdapter {
-    private LayoutInflater mInflater;
-
     private ImgurListener mListener;
 
     private int mSelectedIndex = -1;
@@ -34,7 +32,6 @@ public class CommentAdapter extends ImgurBaseAdapter {
 
     public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
         super(context, comments);
-        mInflater = LayoutInflater.from(context);
         mListener = listener;
     }
 

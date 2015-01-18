@@ -78,7 +78,7 @@ public class ProfileUploadsFragment extends BaseGridFragment {
                     if (adapter == null) {
                         setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items)));
                     } else {
-                        adapter.addItem(items);
+                        adapter.addItems(items);
                     }
 
                     mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);

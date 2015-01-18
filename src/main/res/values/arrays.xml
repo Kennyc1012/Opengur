@@ -13,6 +13,7 @@
         <item>Profile</item>
         <item>Gallery</item>
         <item>Subreddit</item>
+        <item>Uploads</item>
         <item>Divider</item>
         <item>Settings</item>
         <item>Feedback</item>
@@ -22,6 +23,7 @@
         <item>Blue</item>
         <item>Cyan</item>
         <item>Green</item>
+        <item>Grey</item>
         <item>Orange</item>
         <item>Pink</item>
         <item>Purple</item>
@@ -62,6 +64,7 @@
         <item>blue</item>
         <item>cyan</item>
         <item>green</item>
+        <item>grey</item>
         <item>orange</item>
         <item>pink</item>
         <item>purple</item>

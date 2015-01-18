@@ -32,7 +32,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 21
         versionCode 9
-        versionName "1.6"
+        versionName "development"
     }
     buildTypes {
         release {
@@ -63,7 +63,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.cocosw:bottomsheet:0.6@aar'
-    compile 'com.jpardogo.materialtabstrip:library:1.0.6'
+    compile 'com.jpardogo.materialtabstrip:library:1.0.8'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.0'
     compile(name: 'photo_zoom', ext:'aar')
     compile project(':libraries:EventBus')

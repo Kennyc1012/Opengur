@@ -66,7 +66,7 @@ public class OpenImgurApp extends Application {
         mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, "grey"));
 
         // Start crashlytics if enabled
-        if (mPref.getBoolean(SettingsActivity.KEY_CRASHLYTICS, true)) {
+        if (!BuildConfig.DEBUG && mPref.getBoolean(SettingsActivity.KEY_CRASHLYTICS, true)) {
             Fabric.with(this, new Crashlytics());
         }
 

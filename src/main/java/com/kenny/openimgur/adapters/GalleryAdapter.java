@@ -2,7 +2,6 @@ package com.kenny.openimgur.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -31,8 +30,6 @@ import butterknife.InjectView;
 public class GalleryAdapter extends ImgurBaseAdapter {
     public static final int MAX_ITEMS = 200;
 
-    private LayoutInflater mInflater;
-
     private int mUpvoteColor;
 
     private int mDownVoteColor;
@@ -41,7 +38,6 @@ public class GalleryAdapter extends ImgurBaseAdapter {
 
     public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects) {
         super(context, objects, true);
-        mInflater = LayoutInflater.from(context);
         mUpvoteColor = context.getResources().getColor(R.color.notoriety_positive);
         mDownVoteColor = context.getResources().getColor(R.color.notoriety_negative);
         mAllowNSFWThumb = OpenImgurApp.getInstance(context).getPreferences().getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);

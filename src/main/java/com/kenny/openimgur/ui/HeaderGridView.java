@@ -44,15 +44,21 @@ public class HeaderGridView extends GridView {
      * or a footer at the bottom.
      */
     private static class FixedViewInfo {
-        /** The view to add to the grid */
+        /**
+         * The view to add to the grid
+         */
         public View view;
 
         public ViewGroup viewContainer;
 
-        /** The data backing the view. This is returned from {@link ListAdapter#getItem(int)}. */
+        /**
+         * The data backing the view. This is returned from {@link ListAdapter#getItem(int)}.
+         */
         public Object data;
 
-        /** <code>true</code> if the fixed view should be selectable in the grid */
+        /**
+         * <code>true</code> if the fixed view should be selectable in the grid
+         */
         public boolean isSelectable;
     }
 
