@@ -41,6 +41,9 @@ public enum Endpoints {
 
     ACCOUNT_CONVOS("https://api.imgur.com/3/conversations"),
 
+    // Username/Page
+    ACCOUNT_IMAGES("https://api.imgur.com/3/account/%s/images/%d"),
+
     // comment id/vote
     COMMENT_VOTE("https://api.imgur.com/3/comment/%s/vote/%s"),
 

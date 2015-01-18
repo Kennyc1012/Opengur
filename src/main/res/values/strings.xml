@@ -148,5 +148,6 @@
     <string name="convo_report">Report</string>
     <string name="convo_message_sending">Sending&#8230;</string>
     <string name="convo_message_failed">Unable to deliver message</string>
+    <string name="profile_no_uploads">You haven\'t uploaded any images</string>
 
 </resources>

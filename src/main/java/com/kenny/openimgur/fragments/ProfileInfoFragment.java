@@ -13,10 +13,12 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
+import com.kenny.openimgur.activities.ProfileActivity;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.ui.TextViewRoboto;
+import com.kenny.snackbar.SnackBar;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -117,12 +119,17 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
                             .setPositiveButton(R.string.yes, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    // TODO Notify parent fragment
+                                    ((ProfileActivity) getActivity()).onUserLogout();
                                 }
                             }).show();
                 } else {
-                    ImgurConvo convo = ImgurConvo.createConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
-                    startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
+                    if (app.getUser() != null) {
+
+                        ImgurConvo convo = ImgurConvo.createConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
+                        startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
+                    } else {
+                        SnackBar.show(getActivity(), R.string.user_not_logged_in);
+                    }
                 }
                 break;
         }

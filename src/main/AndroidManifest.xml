@@ -33,7 +33,7 @@
             android:label="@string/action_settings"
             android:theme="@style/Settings_Theme" />
         <activity
-            android:name=".activities.ProfileActivityV2"
+            android:name=".activities.ProfileActivity"
             android:theme="@style/Imgur_Theme_Base" />
         <activity
             android:name=".activities.UploadActivity"

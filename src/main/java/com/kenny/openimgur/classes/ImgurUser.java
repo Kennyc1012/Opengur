@@ -205,29 +205,29 @@ public class ImgurUser implements Parcelable {
             if (!json.isNull(KEY_DATA)) {
                 JSONObject data = json.getJSONObject(KEY_DATA);
 
-                if (!json.isNull(KEY_ID)) {
+                if (!data.isNull(KEY_ID)) {
                     mId = data.getInt(KEY_ID);
                 }
 
-                if (!json.isNull(KEY_USERNAME)) {
+                if (!data.isNull(KEY_USERNAME)) {
                     mUsername = data.getString(KEY_USERNAME);
                 }
 
-                if (!json.isNull(KEY_BIO)) {
+                if (!data.isNull(KEY_BIO)) {
                     mBio = data.getString(KEY_BIO);
                 }
 
-                if (!json.isNull(KEY_REPUTATION)) {
+                if (!data.isNull(KEY_REPUTATION)) {
                     mReputation = data.getLong(KEY_REPUTATION);
                     mNotoriety = Notoriety.getNotoriety(mReputation);
                 }
 
-                if (!json.isNull(KEY_CREATED)) {
+                if (!data.isNull(KEY_CREATED)) {
                     mCreated = data.getLong(KEY_CREATED) * 1000L;
                 }
 
                 // Can be a boolean if they are not a pro user
-                if (!json.isNull(KEY_PRO_EXPIRATION) && data.get(KEY_PRO_EXPIRATION) instanceof Long) {
+                if (!data.isNull(KEY_PRO_EXPIRATION) && data.get(KEY_PRO_EXPIRATION) instanceof Long) {
                     mProExpiration = data.getLong(KEY_PRO_EXPIRATION) * 1000L;
                 }
 
