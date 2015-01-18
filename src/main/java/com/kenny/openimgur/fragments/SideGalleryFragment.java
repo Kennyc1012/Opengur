@@ -18,13 +18,12 @@ import org.apache.commons.collections15.list.SetUniqueList;
 
 import java.util.ArrayList;
 
-import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 /**
  * Created by kcampagna on 9/27/14.
  */
-public class SideGalleryFragment extends BaseFragment implements AdapterView.OnItemClickListener{
+public class SideGalleryFragment extends BaseFragment implements AdapterView.OnItemClickListener {
     @InjectView(R.id.list)
     ListView mListView;
 

@@ -74,7 +74,10 @@ public enum Endpoints {
     MESSAGES("https://api.imgur.com/3/conversations/%s/%d/0"),
 
     // recipient
-    SEND_MESSAGE("https://api.imgur.com/3/conversations/%s");
+    SEND_MESSAGE("https://api.imgur.com/3/conversations/%s"),
+
+    // Delete hash or image id if owned by account
+    IMAGE_DELETE("https://api.imgur.com/3/image/%s");
 
     private final String mUrl;
 

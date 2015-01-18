@@ -1,18 +1,23 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url 'https://maven.fabric.io/public' }
+
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.0.1'
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "http://dl.bintray.com/amulyakhare/maven" }
     mavenCentral()
+    maven { url 'https://maven.fabric.io/public' }
     flatDir {
         dirs 'libs'
     }
@@ -23,14 +28,19 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.kennyc.openimgur"
+        applicationId "com.kennyc.open.imgur"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 3
-        versionName "1.2"
+        versionCode 9
+        versionName "1.6"
     }
     buildTypes {
         release {
+            minifyEnabled false
+        }
+
+        debug{
+            minifyEnabled false
         }
     }
     compileOptions {
@@ -42,9 +52,9 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.sothree.slidinguppanel:library:+'
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.0'
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
-    compile 'com.android.support:support-annotations:+'
+    compile 'com.android.support:support-annotations:21.0.3'
     compile 'com.android.support:support-v13:21.0.3'
     compile 'com.android.support:cardview-v7:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
@@ -55,5 +65,9 @@ dependencies {
     compile 'com.cocosw:bottomsheet:0.6@aar'
     compile 'com.jpardogo.materialtabstrip:library:1.0.6'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.0'
+    compile(name: 'photo_zoom', ext:'aar')
     compile project(':libraries:EventBus')
+    compile('com.crashlytics.sdk.android:crashlytics:2.2.0@aar') {
+        transitive = true;
+    }
 }

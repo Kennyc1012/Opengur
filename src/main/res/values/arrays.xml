@@ -29,6 +29,11 @@
         <item>Teal</item>
     </string-array>
 
+    <string-array name="pref_cache_loc_items">
+        <item>Internal Partition</item>
+        <item>External Partition</item>
+    </string-array>
+
     <string-array name="profile_tabs">
         <item>Info</item>
         <item>Submissions</item>
@@ -36,6 +41,12 @@
         <item>Comments</item>
         <item>Uploads</item>
         <item>Messages</item>
+    </string-array>
+
+    <string-array name="uploaded_photos_options">
+        <item>Share Link</item>
+        <item>Copy Link</item>
+        <item>Remove Photo</item>
     </string-array>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
@@ -56,6 +67,11 @@
         <item>purple</item>
         <item>red</item>
         <item>teal</item>
+    </string-array>
+
+    <string-array name="pref_cache_loc_keys">
+        <item>internal</item>
+        <item>external</item>
     </string-array>
 
 </resources>

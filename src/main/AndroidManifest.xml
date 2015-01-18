@@ -27,7 +27,7 @@
             android:theme="@style/Theme_Not_Translucent" />
         <activity
             android:name=".activities.ViewPhotoActivity"
-            android:theme="@style/Theme_Translucent" />
+            android:theme="@style/Theme_Not_Translucent" />
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/action_settings"
@@ -38,7 +38,18 @@
         <activity
             android:name=".activities.UploadActivity"
             android:theme="@style/Theme_Not_Translucent"
-            android:label="@string/upload" />
+            android:label="@string/upload">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
 
         <service android:name=".DownloaderService" />
 

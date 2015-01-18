@@ -48,7 +48,18 @@ public class FileUtil {
      * @return if successful
      */
     public static boolean savePhoto(@NonNull ImgurPhoto photo, @NonNull File file) {
-        if (TextUtils.isEmpty(photo.getLink())) {
+        return saveUrl(photo.getLink(), file);
+    }
+
+    /**
+     * Saves a url to a given file
+     *
+     * @param url  The url to save
+     * @param file The file to save to
+     * @return If successful
+     */
+    public static boolean saveUrl(String url, @NonNull File file) {
+        if (TextUtils.isEmpty(url)) {
             return false;
         }
 
@@ -58,10 +69,8 @@ public class FileUtil {
 
         InputStream in;
 
-        String link = photo.isLinkAThumbnail() && photo.hasMP4Link() ? photo.getMP4Link() : photo.getLink();
-
         try {
-            in = new URL(link).openStream();
+            in = new URL(url).openStream();
         } catch (IOException e) {
             LogUtil.e(TAG, "Unable to open stream from url", e);
             return false;
@@ -267,5 +276,20 @@ public class FileUtil {
         }
 
         return success;
+    }
+
+    /**
+     * Deletes all the files in a given directory
+     *
+     * @param dir
+     */
+    public static void deleteDirectory(File dir) {
+        if (isFileValid(dir) && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+
+            for (File f : files) {
+                f.delete();
+            }
+        }
     }
 }

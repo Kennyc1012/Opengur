@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -51,7 +52,6 @@ import com.kenny.openimgur.fragments.CommentPopupFragment;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
-import com.kenny.openimgur.fragments.PopupItemChooserDialog;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.TextViewRoboto;
@@ -80,8 +80,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 7/12/14.
  */
-public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener,
-        PopupItemChooserDialog.ChooserListener, SideGalleryFragment.SideGalleryListener {
+public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener, SideGalleryFragment.SideGalleryListener {
     private enum CommentSort {
         BEST("best"),
         NEW("new"),
@@ -221,8 +220,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         mCommentListHeader = (TextViewRoboto) View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
         Drawable[] drawables = mCommentListHeader.getCompoundDrawables();
 
-        // Sets the previous comment button color to the themes color
-        if (drawables.length > 0 && drawables[0] instanceof LayerDrawable) {
+        // Sets the previous comment button color to the themes accent color
+        if (drawables != null && drawables.length > 0 && drawables[0] instanceof LayerDrawable) {
             GradientDrawable drawable = (GradientDrawable) ((LayerDrawable) drawables[0]).getDrawable(0);
             drawable.setColor(getResources().getColor(theme.accentColor));
         }
@@ -346,7 +345,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-            mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, null, null);
+            mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, imgurBaseObject.getId(), null);
         } else if (mMultiView.getViewState() != MultiStateView.ViewState.ERROR) {
             mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
             mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -563,8 +562,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.upVoteBtn:
             case R.id.downVoteBtn:
                 if (user != null) {
+                    ImgurBaseObject obj = mPagerAdapter.getImgurItem(mCurrentPosition);
                     String vote = view.getId() == R.id.upVoteBtn ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
-                    String upVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(), mPagerAdapter.getImgurItem(mCurrentPosition).getId(), vote);
+                    String upVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(), obj.getId(), vote);
+                    obj.setVote(vote);
 
                     if (mApiClient == null) {
                         mApiClient = new ApiClient(upVoteUrl, ApiClient.HttpRequest.POST);
@@ -574,6 +575,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     }
 
                     mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, vote, new FormEncodingBuilder().add("vote", vote).build());
+                    ImgurViewFragment fragment = (ImgurViewFragment) mPagerAdapter.instantiateItem(mViewPager, mCurrentPosition);
+
+                    if (fragment != null && fragment.isAdded() && fragment.getUserVisibleHint()) {
+                        fragment.setVote(vote);
+                    }
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
@@ -589,7 +595,23 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case R.id.sortComments:
-                showDialogFragment(PopupItemChooserDialog.createInstance(CommentSort.getItemsForArray(getApplicationContext())), "yes");
+                new AlertDialog.Builder(ViewActivity.this)
+                        .setTitle(R.string.sort_by)
+                        .setItems(CommentSort.getItemsForArray(getApplicationContext()), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                CommentSort sort = CommentSort.getSortFromPosition(which);
+
+                                if (sort != mCommentSort) {
+                                    mCommentSort = sort;
+
+                                    // Don't bother making an Api call if the item has no comments
+                                    if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
+                                        loadComments();
+                                    }
+                                }
+                            }
+                        }).show();
                 break;
 
             case R.id.errorButton:
@@ -618,26 +640,31 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
             switch (event.eventType) {
                 case COMMENTS:
-                    if (statusCode == ApiClient.STATUS_OK) {
-                        if (event.httpRequest == ApiClient.HttpRequest.GET) {
+                    ImgurBaseObject imgurItem = mPagerAdapter.getImgurItem(mCurrentPosition);
+
+                    if (imgurItem.getId().equals(event.id)) {
+                        if (statusCode == ApiClient.STATUS_OK) {
                             JSONArray data = event.json.getJSONArray(ApiClient.KEY_DATA);
-                            List<ImgurComment> comments = new ArrayList<ImgurComment>(data.length());
+                            List<ImgurComment> comments = new ArrayList<>(data.length());
                             for (int i = 0; i < data.length(); i++) {
                                 comments.add(new ImgurComment(data.getJSONObject(i)));
                             }
 
                             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, comments);
-                        } else if (event.httpRequest == ApiClient.HttpRequest.POST) {
-                            JSONObject json = event.json.getJSONObject(ApiClient.KEY_DATA);
-                            // A successful comment post will return its id
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_POSTED, json.has("id"));
+                        } else {
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
                         }
-                    } else {
-                        int message = event.httpRequest == ApiClient.HttpRequest.GET ?
-                                ImgurHandler.MESSAGE_ACTION_FAILED : ImgurHandler.MESSAGE_COMMENT_POSTED;
-                        mHandler.sendMessage(message, statusCode);
                     }
+                    break;
 
+                case COMMENT_POSTED:
+                    if (statusCode == ApiClient.STATUS_OK) {
+                        JSONObject json = event.json.getJSONObject(ApiClient.KEY_DATA);
+                        // A successful comment post will return its id
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_POSTED, json.has("id"));
+                    } else {
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
+                    }
                     break;
 
                 case COMMENT_VOTE:
@@ -645,7 +672,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         boolean success = event.json.getBoolean(ApiClient.KEY_SUCCESS);
                         mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_VOTED, success);
                     } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_VOTED, statusCode);
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_VOTED, ApiClient.getErrorCodeStringResource(statusCode));
                     }
 
                     break;
@@ -683,7 +710,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ITEM_DETAILS, imgurObject);
                     } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
                     }
                     break;
 
@@ -693,12 +720,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         obj.setIsFavorite(!obj.isFavorited());
                         invalidateOptionsMenu();
                     }
-
                     break;
             }
         } catch (JSONException e) {
             LogUtil.e(TAG, "Error Decoding JSON", e);
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_JSON_EXCEPTION);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
         }
     }
 
@@ -711,11 +737,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         Throwable e = event.getThrowable();
 
         if (e instanceof IOException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_IO_EXCEPTION);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
         } else if (e instanceof JSONException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_JSON_EXCEPTION);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
         } else {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.STATUS_INTERNAL_ERROR);
+            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
         }
 
         LogUtil.e(TAG, "Error received from Event Bus", e);
@@ -783,20 +809,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
         if (comment.getReplyCount() > 0) {
             nextComments(comment);
-        }
-    }
-
-    @Override
-    public void onItemSelected(int position, String item) {
-        CommentSort sort = CommentSort.getSortFromPosition(position);
-
-        if (sort != mCommentSort) {
-            mCommentSort = sort;
-
-            // Don't bother making an Api call if the item has no comments
-            if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
-                loadComments();
-            }
         }
     }
 
@@ -905,6 +917,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_COMMENT, mCommentAdapter.retainItems());
         }
@@ -913,7 +926,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         outState.putString(KEY_SORT, mCommentSort.getSort());
         outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
         outState.putParcelableArrayList(KEY_OBJECTS, mPagerAdapter.retainItems());
-        super.onSaveInstanceState(outState);
     }
 
     private void onListItemClick(int position) {
@@ -1001,7 +1013,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         set.setDuration(1500L).setInterpolator(new OvershootInterpolator());
                         set.start();
                     } else {
-                        SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString((Integer) msg.obj)).build());
+                        SnackBar.show(ViewActivity.this, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
                     }
                     break;
 
@@ -1045,7 +1057,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     break;
 
                 case MESSAGE_ACTION_FAILED:
-                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCodeStringResource((Integer) msg.obj));
+                    mMultiView.setErrorText(R.id.errorMessage, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     mMultiView.setErrorButtonText(R.id.errorButton, R.string.retry);
                     mMultiView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
@@ -1061,27 +1073,25 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                     if (msg.obj instanceof Boolean) {
                         int messageResId = (Boolean) msg.obj ? R.string.comment_post_successful : R.string.comment_post_unsuccessful;
-                        SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString(messageResId)).build());
+                        SnackBar.show(ViewActivity.this, messageResId);
                         // Manually refresh the comments when we successfully post a comment
                         loadComments();
                     } else {
-                        SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString((Integer) msg.obj)).build());
+                        SnackBar.show(ViewActivity.this, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
                     }
-
                     break;
 
                 case MESSAGE_COMMENT_VOTED:
                     if (msg.obj instanceof Boolean) {
                         int stringId = (Boolean) msg.obj ? R.string.vote_cast : R.string.error_generic;
-                        SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString(stringId)).build());
+                        SnackBar.show(ViewActivity.this, stringId);
                     } else {
-                        SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString((Integer) msg.obj)).build());
+                        SnackBar.show(ViewActivity.this, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
                     }
-
                     break;
 
                 case MESSAGE_ITEM_DETAILS:
-                    final ArrayList<ImgurBaseObject> objects = new ArrayList<ImgurBaseObject>(1);
+                    final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
                     objects.add((ImgurBaseObject) msg.obj);
                     mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
                     mViewPager.setAdapter(mPagerAdapter);

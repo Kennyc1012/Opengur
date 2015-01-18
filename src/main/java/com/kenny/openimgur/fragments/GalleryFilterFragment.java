@@ -229,7 +229,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
                             public void onAnimationStart(Animator animation) {
                                 super.onAnimationStart(animation);
                                 animation.removeAllListeners();
-                                mShowViral.setVisibility(View.VISIBLE);
+                                if (mShowViral != null) mShowViral.setVisibility(View.VISIBLE);
                             }
                         });
                 break;
@@ -243,7 +243,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
                             public void onAnimationEnd(Animator animation) {
                                 super.onAnimationEnd(animation);
                                 animation.removeAllListeners();
-                                mShowViral.setVisibility(View.INVISIBLE);
+                                if (mShowViral != null) mShowViral.setVisibility(View.INVISIBLE);
                             }
                         });
 

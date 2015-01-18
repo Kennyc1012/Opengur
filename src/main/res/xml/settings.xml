@@ -8,7 +8,7 @@
             android:title="@string/pref_theme_title"
             android:entries="@array/pref_themes_items"
             android:entryValues="@array/pref_theme_keys"
-            android:defaultValue="blue" />
+            android:defaultValue="grey" />
 
     </PreferenceCategory>
 
@@ -23,14 +23,28 @@
 
         <CheckBoxPreference
             android:key="allowNSFW"
-            android:title="@string/nsfw_title"
-            android:summaryOn="@string/nsfw_summary_on"
-            android:summaryOff="@string/nsfw_summary_off"
+            android:title="@string/pref_nsfw_title"
+            android:summaryOn="@string/pref_nsfw_on"
+            android:summaryOff="@string/pref_nsfw_off"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="NSFWThumbnails"
+            android:title="@string/pref_nsfw_thumb_title"
+            android:summaryOn="@string/pref_nsfw_thumb_on"
+            android:summaryOff="@string/pref_nsfw_thumb_off"
             android:defaultValue="false" />
 
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_cache_title">
+
+        <ListPreference
+            android:key="cacheLoc"
+            android:title="@string/pref_cache_loc_title"
+            android:entries="@array/pref_cache_loc_items"
+            android:entryValues="@array/pref_cache_loc_keys"
+            android:defaultValue="internal" />
 
         <Preference
             android:key="currentCacheSize"
@@ -46,6 +60,20 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/developer">
+
+        <CheckBoxPreference
+            android:key="crashlytics"
+            android:title="@string/pref_crashlytics_title"
+            android:summaryOn="@string/pref_crashlytics_on"
+            android:summaryOff="@string/pref_crashlytics_off"
+            android:defaultValue="true" />
+
+        <CheckBoxPreference
+            android:key="adb"
+            android:title="@string/pref_adb_title"
+            android:summaryOn="@string/pref_adb_enabled"
+            android:summaryOff="@string/pref_adb_disabled"
+            android:defaultValue="false" />
 
         <Preference
             android:key="licenses"

@@ -7,10 +7,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
+import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.DBContracts.ProfileContract;
+import com.kenny.openimgur.util.DBContracts.UploadContract;
 import com.kenny.openimgur.util.DBContracts.UserContract;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by kcampagna on 7/25/14.
@@ -18,7 +25,7 @@ import com.kenny.openimgur.util.DBContracts.UserContract;
 public class SqlHelper extends SQLiteOpenHelper {
     private static final String TAG = "SqlHelper";
 
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     private static final String DB_NAME = "open_imgur.db";
 
@@ -30,10 +37,12 @@ public class SqlHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(UserContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(ProfileContract.CREATE_TABLE_SQL);
+        sqLiteDatabase.execSQL(UploadContract.CREATE_TABLE_SQL);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
+        // V2 Added uploads Table
         onCreate(db);
     }
 
@@ -169,6 +178,60 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(ProfileContract.COLUMN_LAST_SEEN, profile.getLastSeen());
         values.put(ProfileContract.COLUMN_CREATED, profile.getCreated());
         db.insertWithOnConflict(ProfileContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.close();
+    }
+
+    /**
+     * Inserts an uploaded photo into the database
+     *
+     * @param photo
+     */
+    public void insertUploadedPhoto(ImgurPhoto photo) {
+        if (photo == null || TextUtils.isEmpty(photo.getLink())) {
+            LogUtil.w(TAG, "Null photo can not be inserted");
+            return;
+        }
+
+        LogUtil.v(TAG, "Inserting Uploaded photo: " + photo.getLink());
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues(3);
+        values.put(UploadContract.COLUMN_URL, photo.getLink());
+        values.put(UploadContract.COLUMN_DELETE_HASH, photo.getDeleteHash());
+        values.put(UploadContract.COLUMN_DATE, System.currentTimeMillis());
+        db.insert(UploadContract.TABLE_NAME, null, values);
+        db.close();
+    }
+
+    /**
+     * Returns all upload photos from device
+     *
+     * @param newestFirst
+     * @return
+     */
+    public List<UploadedPhoto> getUploadedPhotos(boolean newestFirst) {
+        List<UploadedPhoto> photos = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(String.format(UploadContract.GET_UPLOADS_SQL, newestFirst ? "DESC" : "ASC"), null);
+
+        while (cursor.moveToNext()) {
+            photos.add(new UploadedPhoto(cursor));
+        }
+
+        cursor.close();
+        db.close();
+        return photos;
+    }
+
+    /**
+     * Deletes the given photo from the Uploaded Photos table
+     *
+     * @param photo
+     */
+    public void deleteUploadedPhoto(UploadedPhoto photo) {
+        if (photo == null) return;
+
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL(String.format(UploadContract.DELETE_PHOTO_SQL, photo.getId()));
         db.close();
     }
 }

@@ -14,7 +14,7 @@
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbar_with_section_height"
-            android:minHeight="?attr/actionBarSize"
+            android:minHeight="?actionBarSize"
             android:gravity="bottom"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha">
@@ -95,6 +95,7 @@
                     android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:text="@string/reddit_top_filter_day"
+                    android:textColor="@android:color/black"
                     android:gravity="center" />
 
                 <TextView
@@ -104,6 +105,7 @@
                     android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:text="@string/reddit_top_filter_week"
+                    android:textColor="@android:color/black"
                     android:gravity="center" />
 
                 <TextView
@@ -113,6 +115,7 @@
                     android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:text="@string/reddit_top_filter_month"
+                    android:textColor="@android:color/black"
                     android:gravity="center" />
 
                 <TextView
@@ -122,6 +125,7 @@
                     android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:text="@string/reddit_top_filter_year"
+                    android:textColor="@android:color/black"
                     android:gravity="center" />
 
                 <TextView
@@ -131,6 +135,7 @@
                     android:layout_weight="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:text="@string/reddit_top_filter_all"
+                    android:textColor="@android:color/black"
                     android:gravity="center" />
 
             </LinearLayout>

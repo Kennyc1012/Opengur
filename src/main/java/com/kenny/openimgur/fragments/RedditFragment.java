@@ -123,6 +123,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
         if (getAdapter() == null || getAdapter().isEmpty()) {
             mIsLoading = false;
             mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+            if (mListener != null) mListener.onLoadingComplete();
         }
     }
 
@@ -247,6 +248,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                     if (getAdapter() == null || getAdapter().isEmpty()) {
                         mMultiStateView.setEmptyText(R.id.empty, getString(R.string.reddit_empty, mQuery));
                         mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+                        if (mListener != null) mListener.onUpdateActionBar(true);
                     }
 
                     mIsLoading = false;
@@ -284,6 +286,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                         mMultiStateView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
                                 fetchGallery();
                             }
                         });

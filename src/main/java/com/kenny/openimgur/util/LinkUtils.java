@@ -2,6 +2,8 @@ package com.kenny.openimgur.util;
 
 import android.text.TextUtils;
 
+import com.kenny.openimgur.classes.ImgurPhoto;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,5 +81,37 @@ public class LinkUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Returns the Image Type based on the url
+     *
+     * @param url
+     * @return
+     */
+    public static String getImageType(String url) {
+        if (TextUtils.isEmpty(url)) return null;
+        url = url.toLowerCase();
+
+        if (url.endsWith("jpeg") || url.endsWith("jpg")) {
+            return ImgurPhoto.IMAGE_TYPE_JPEG;
+        } else if (url.endsWith("gif")) {
+            return ImgurPhoto.IMAGE_TYPE_GIF;
+        }
+
+        return ImgurPhoto.IMAGE_TYPE_PNG;
+    }
+
+    /**
+     * Returns if the link is a video
+     *
+     * @param url
+     * @return
+     */
+    public static boolean isVideoLink(String url) {
+        if (TextUtils.isEmpty(url)) return false;
+
+        url = url.toLowerCase();
+        return url.endsWith("mp4");
     }
 }

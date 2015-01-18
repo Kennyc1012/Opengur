@@ -23,20 +23,15 @@ import butterknife.InjectView;
  * Created by kcampagna on 10/19/14.
  */
 public class NavAdapter extends BaseAdapter {
-
-    /*
-        0. Profile
-        1. Subreddit
-        2. Gallery
-        3. Divider (No Text)
-        4. Settings
-        5. Feedback
-     */
-
+    public static final int PAGE_PROFILE = 0;
+    public static final int PAGE_GALLERY = 1;
+    public static final int PAGE_SUBREDDIT = 2;
+    public static final int PAGE_UPLOADS = 3;
+    public static final int PAGE_DIVIDER = 4;
+    public static final int PAGE_SETTINGS = 5;
+    public static final int PAGE_FEEDBACK = 6;
     private static final int VIEW_TYPE_PRIMARY = 0;
-
     private static final int VIEW_TYPE_DIVIDER = 1;
-
     private static final int VIEW_TYPE_PROFILE = 2;
 
     private String[] mTitles;
@@ -119,7 +114,6 @@ public class NavAdapter extends BaseAdapter {
 
     private View renderProfile(int position, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.nav_profile, parent, false);
-        Resources res = view.getResources();
         TextViewRoboto name = (TextViewRoboto) view.findViewById(R.id.profileName);
         name.setText(mUser != null ? mUser.getUsername() : getItem(position));
         name.setTextColor(mSelectedPosition == position ? mSelectedColor : Color.WHITE);
@@ -136,9 +130,9 @@ public class NavAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
+        if (position == PAGE_PROFILE) {
             return VIEW_TYPE_PROFILE;
-        } else if (position == 3) {
+        } else if (position == PAGE_DIVIDER) {
             return VIEW_TYPE_DIVIDER;
         }
 
@@ -147,7 +141,7 @@ public class NavAdapter extends BaseAdapter {
 
     @Override
     public boolean isEnabled(int position) {
-        return position != 3;
+        return position != NavAdapter.PAGE_DIVIDER;
     }
 
     /**
@@ -156,8 +150,7 @@ public class NavAdapter extends BaseAdapter {
      * @param position
      */
     public void setSelectedPosition(int position) {
-        // A position greater than 2 will result in a new activity, so we won't need to update the selected item
-        if (position > 2) return;
+        if (position == PAGE_PROFILE || position >= PAGE_DIVIDER) return;
 
         mSelectedPosition = position;
         notifyDataSetChanged();
@@ -174,19 +167,23 @@ public class NavAdapter extends BaseAdapter {
     private Drawable getDrawable(int position, Resources res, boolean isSelected) {
         Drawable drawable = null;
         switch (position) {
-            case 1:
+            case PAGE_GALLERY:
                 drawable = res.getDrawable(R.drawable.ic_action_gallery).mutate();
                 break;
 
-            case 2:
+            case PAGE_SUBREDDIT:
                 drawable = res.getDrawable(R.drawable.ic_action_reddit).mutate();
                 break;
 
-            case 4:
+            case PAGE_UPLOADS:
+                drawable = res.getDrawable(R.drawable.ic_action_upload).mutate();
+                break;
+
+            case PAGE_SETTINGS:
                 drawable = res.getDrawable(R.drawable.ic_action_settings).mutate();
                 break;
 
-            case 5:
+            case PAGE_FEEDBACK:
                 drawable = res.getDrawable(R.drawable.ic_action_email).mutate();
                 break;
         }

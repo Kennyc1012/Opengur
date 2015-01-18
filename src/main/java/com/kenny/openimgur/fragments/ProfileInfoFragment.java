@@ -1,5 +1,7 @@
 package com.kenny.openimgur.fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -112,13 +114,13 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
         switch (v.getId()) {
             case R.id.messageBtn:
                 if (mSelectedUser.isSelf(app)) {
-                    new PopupDialogViewBuilder(getActivity())
+                    new AlertDialog.Builder(getActivity())
                             .setTitle(R.string.logout)
                             .setMessage(R.string.logout_confirm)
                             .setNegativeButton(R.string.cancel, null)
-                            .setPositiveButton(R.string.yes, new View.OnClickListener() {
+                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(View view) {
+                                public void onClick(DialogInterface dialog, int which) {
                                     ((ProfileActivity) getActivity()).onUserLogout();
                                 }
                             }).show();

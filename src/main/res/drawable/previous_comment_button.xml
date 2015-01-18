@@ -6,7 +6,7 @@
             <size
                 android:height="@dimen/avatar_size"
                 android:width="@dimen/avatar_size" />
-            <solid android:color="@color/theme_cyan_primary" />
+            <solid android:color="@color/theme_grey_accent" />
             <padding
                 android:left="8dp"
                 android:right="8dp"
@@ -18,5 +18,4 @@
     <item android:left="@dimen/content_padding">
         <bitmap android:src="@drawable/abc_ic_ab_back_mtrl_am_alpha" />
     </item>
-
 </layer-list>

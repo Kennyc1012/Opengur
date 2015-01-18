@@ -13,7 +13,7 @@ import com.kenny.snackbar.SnackBar;
  * Created by kcampagna on 6/30/14.
  */
 public class SettingsActivity extends BaseActivity {
-    public static final int REQUEST_CODE = 001;
+    public static final int REQUEST_CODE = 200;
 
     public static final String NSFW_KEY = "allowNSFW";
 
@@ -22,6 +22,10 @@ public class SettingsActivity extends BaseActivity {
     public static final String CACHE_SIZE_KEY = "cacheSize";
 
     public static final String CURRENT_CACHE_SIZE_KEY = "currentCacheSize";
+
+    public static final String KEY_ADB = "adb";
+
+    public static final String KEY_CACHE_LOC = "cacheLoc";
 
     public static final String CACHE_SIZE_UNLIMITED = "unlimited";
 
@@ -32,6 +36,14 @@ public class SettingsActivity extends BaseActivity {
     public static final String CACHE_SIZE_1GB = "1024";
 
     public static final String CACHE_SIZE_2GB = "2048";
+
+    public static final String CACHE_LOC_INTERNAL = "internal";
+
+    public static final String CACHE_LOC_EXTERNAL = "external";
+
+    public static final String KEY_CRASHLYTICS = "crashlytics";
+
+    public static final String KEY_NSFW_THUMBNAILS = "NSFWThumbnails";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -133,7 +133,7 @@ public class ImgurPhoto extends ImgurBaseObject {
         if (getLink() != null && getId() != null) {
 
             if (recreateLink) {
-                return new StringBuilder("http://i.imgur.com/").append(getId()).append(size).append(ext).toString();
+                return "http://i.imgur.com/" + getId() + size + ext;
             } else {
                 return getLink().replace(getId(), getId() + size);
             }
