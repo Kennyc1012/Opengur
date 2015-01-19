@@ -1,5 +1,6 @@
 package com.kenny.openimgur.activities;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -71,5 +72,12 @@ public class SettingsActivity extends BaseActivity {
 
     public static Intent createIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
+    }
+
+    @Override
+    public void recreate() {
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.container);
+        if (fragment != null) getFragmentManager().beginTransaction().remove(fragment).commit();
+        super.recreate();
     }
 }

@@ -8,12 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.activities.ViewActivity;
+import com.kenny.openimgur.activities.ViewPhotoActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
+import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.ui.MultiStateView;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -64,7 +65,13 @@ public class ProfileUploadsFragment extends BaseGridFragment {
 
     @Override
     protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        startActivity(ViewActivity.createIntent(getActivity(), items, position));
+        ImgurBaseObject obj = items.get(position);
+
+        if (obj instanceof ImgurPhoto) {
+            startActivity(ViewPhotoActivity.createIntent(getActivity(), (ImgurPhoto) obj));
+        } else {
+            startActivity(ViewPhotoActivity.createIntent(getActivity(), obj.getLink(), obj.getLink().endsWith("mp4")));
+        }
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {
@@ -76,6 +83,7 @@ public class ProfileUploadsFragment extends BaseGridFragment {
                     GalleryAdapter adapter = getAdapter();
 
                     if (adapter == null) {
+
                         setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items)));
                     } else {
                         adapter.addItems(items);

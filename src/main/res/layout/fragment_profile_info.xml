@@ -24,7 +24,6 @@
             android:ellipsize="end"
             tools:text="DRButtersMd" />
 
-
     </FrameLayout>
 
     <android.support.v7.widget.CardView
@@ -82,7 +81,6 @@
         </ScrollView>
 
     </android.support.v7.widget.CardView>
-
 
     <com.kenny.openimgur.ui.FloatingActionButton
         android:id="@+id/messageBtn"

@@ -13,7 +13,6 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -77,7 +76,6 @@ public class ProfileActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        getSupportActionBar().hide();
         mSlidingTabs.setBackgroundColor(getResources().getColor(theme.primaryColor));
         mSlidingTabs.setTextColor(Color.WHITE);
         handleData(savedInstanceState, getIntent());
@@ -121,8 +119,9 @@ public class ProfileActivity extends BaseActivity {
         // Load the new user data if we haven't viewed the user within 24 hours
         if (mSelectedUser == null || System.currentTimeMillis() - mSelectedUser.getLastSeen() >= DateUtils.DAY_IN_MILLIS) {
             LogUtil.v(TAG, "Selected user is null or data is too old, fetching new data");
-            String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), mSelectedUser == null ? username : mSelectedUser.getUsername());
-            new ApiClient(detailsUrls, ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
+            String userName = mSelectedUser == null ? username : mSelectedUser.getUsername();
+            String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), userName);
+            new ApiClient(detailsUrls, ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, userName, null);
         } else {
             LogUtil.v(TAG, "Selected user present in database and has valid data");
             mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);
@@ -201,7 +200,7 @@ public class ProfileActivity extends BaseActivity {
                         mSelectedUser = newUser;
                         LogUtil.v(TAG, "User " + newUser.getUsername() + " logged in");
                         String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), newUser.getUsername());
-                        new ApiClient(detailsUrls, ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, null, null);
+                        new ApiClient(detailsUrls, ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, newUser.getUsername(), null);
                         CookieManager.getInstance().removeAllCookie();
                         view.clearHistory();
                         view.clearCache(true);
@@ -227,7 +226,6 @@ public class ProfileActivity extends BaseActivity {
                 int status = event.json.getInt(ApiClient.KEY_STATUS);
 
                 if (status == ApiClient.STATUS_OK) {
-                    Log.e("ASDFASDF", event.json.toString());
                     if (mSelectedUser == null) {
                         mSelectedUser = new ImgurUser(event.json);
                     } else {

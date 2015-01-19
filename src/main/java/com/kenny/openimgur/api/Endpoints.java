@@ -36,8 +36,8 @@ public enum Endpoints {
     // Username/Page
     ACCOUNT_SUBMISSIONS("https://api.imgur.com/3/account/%s/submissions/%d"),
 
-    // Username/Page
-    ACCOUNT_COMMENTS("https://api.imgur.com/3/account/%s/comments/newest/%s"),
+    // Username/Sort/Page
+    ACCOUNT_COMMENTS("https://api.imgur.com/3/account/%s/comments/%s/%s"),
 
     ACCOUNT_CONVOS("https://api.imgur.com/3/conversations"),
 

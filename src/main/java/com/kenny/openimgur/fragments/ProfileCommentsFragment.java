@@ -1,11 +1,16 @@
 package com.kenny.openimgur.fragments;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -39,6 +44,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  * Created by kcampagna on 12/22/14.
  */
 public class ProfileCommentsFragment extends BaseFragment implements AbsListView.OnScrollListener, AdapterView.OnItemClickListener {
+    private static final String KEY_SORT = "sort";
     private static final String KEY_USER = "user";
 
     private static final String KEY_ITEMS = "items";
@@ -46,6 +52,35 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     private static final String KEY_POSITION = "position";
 
     private static final String KEY_PAGE = "page";
+
+    public static enum CommentSort {
+        BEST("best"),
+        WORST("worst"),
+        NEWEST("newest"),
+        OLDEST("oldest");
+
+        private final String mSort;
+
+        private CommentSort(String sort) {
+            mSort = sort;
+        }
+
+        public String getSort() {
+            return mSort;
+        }
+
+        public static CommentSort getSortType(String sort) {
+            if (BEST.getSort().equalsIgnoreCase(sort)) {
+                return BEST;
+            } else if (WORST.getSort().equalsIgnoreCase(sort)) {
+                return WORST;
+            } else if (OLDEST.getSort().equalsIgnoreCase(sort)) {
+                return OLDEST;
+            }
+
+            return NEWEST;
+        }
+    }
 
     @InjectView(R.id.multiView)
     MultiStateView mMultiStatView;
@@ -65,6 +100,8 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
 
     private ApiClient mClient;
 
+    private CommentSort mSort;
+
     public static Fragment createInstance(@NonNull ImgurUser user) {
         ProfileCommentsFragment fragment = new ProfileCommentsFragment();
         Bundle args = new Bundle(1);
@@ -73,10 +110,48 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
         return fragment;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_comments, container, false);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.profile_comments_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sort:
+                final String[] items = getResources().getStringArray(R.array.comments_sort);
+
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.sort_by)
+                        .setItems(items, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mSort = CommentSort.getSortType(items[which]);
+                                if (mAdapter != null) mAdapter.clear();
+                                mPage = 0;
+                                mHasMore = true;
+                                mIsLoading = false;
+                                fetchComments();
+                                mMultiStatView.setViewState(MultiStateView.ViewState.LOADING);
+                            }
+                        }).show();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -90,6 +165,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     private void handleArgs(Bundle args, Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             mSelectedUser = savedInstanceState.getParcelable(KEY_USER);
+            mSort = CommentSort.getSortType(savedInstanceState.getString(KEY_SORT, null));
 
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ArrayList<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
@@ -105,6 +181,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
             }
 
             mSelectedUser = args.getParcelable(KEY_USER);
+            mSort = CommentSort.getSortType(app.getPreferences().getString(KEY_SORT, null));
         }
 
         if (mSelectedUser == null) {
@@ -145,12 +222,12 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     }
 
     private void fetchComments() {
-        String url = String.format(Endpoints.ACCOUNT_COMMENTS.getUrl(), mSelectedUser.getUsername(), mPage);
+        String url = String.format(Endpoints.ACCOUNT_COMMENTS.getUrl(), mSelectedUser.getUsername(), mSort.getSort(), mPage);
 
         if (mClient == null) {
             mClient = new ApiClient(url, ApiClient.HttpRequest.GET);
         } else {
-            mClient.setUrl(String.format(url, mPage));
+            mClient.setUrl(url);
         }
 
         mIsLoading = true;
@@ -160,6 +237,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     @Override
     public void onDestroyView() {
         EventBus.getDefault().unregister(this);
+        app.getPreferences().edit().putString(KEY_SORT, mSort.getSort()).apply();
         super.onPause();
     }
 
@@ -167,6 +245,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_USER, mSelectedUser);
+        outState.putString(KEY_SORT, mSort.getSort());
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
             outState.putInt(KEY_POSITION, mListView.getFirstVisiblePosition());
@@ -235,6 +314,15 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
                     }
 
                     mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
+
+                    if (mPage == 0) {
+                        mMultiStatView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mListView.setSelection(0);
+                            }
+                        });
+                    }
                     break;
 
                 case MESSAGE_ACTION_FAILED:

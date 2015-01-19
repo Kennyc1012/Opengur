@@ -50,6 +50,13 @@
         <item>Copy Link</item>
         <item>Remove Photo</item>
     </string-array>
+    
+    <string-array name="comments_sort">
+        <item>Newest</item>
+        <item>Oldest</item>
+        <item>Best</item>
+        <item>Worst</item>
+    </string-array>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys" translatable="false">
