@@ -17,6 +17,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -80,6 +81,7 @@ public class ProfileSubmissionsFragment extends BaseGridFragment {
                     GalleryAdapter adapter = getAdapter();
 
                     if (adapter == null) {
+                        mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getAdditionalHeaderSpace()));
                         setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items)));
                     } else {
                         adapter.addItems(items);
@@ -124,6 +126,12 @@ public class ProfileSubmissionsFragment extends BaseGridFragment {
             mSelectedUser = getArguments().getParcelable(KEY_USER);
         }
 
-        if (mSelectedUser == null) throw new IllegalArgumentException("Profile must be supplied to fragment");
+        if (mSelectedUser == null)
+            throw new IllegalArgumentException("Profile must be supplied to fragment");
+    }
+
+    @Override
+    protected int getAdditionalHeaderSpace() {
+        return getResources().getDimensionPixelSize(R.dimen.tab_bar_height);
     }
 }

@@ -63,7 +63,7 @@ public class ViewUtils {
     public static View getHeaderViewForTranslucentStyle(Context context, int additionalHeight) {
         View v = View.inflate(context, R.layout.empty_header, null);
         int height = getHeightForTranslucentStyle(context);
-        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height + additionalHeight);
+        AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height + additionalHeight);
         v.setLayoutParams(lp);
         return v;
     }

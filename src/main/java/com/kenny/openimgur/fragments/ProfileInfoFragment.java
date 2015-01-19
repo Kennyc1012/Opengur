@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
@@ -20,6 +21,7 @@ import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.ui.TextViewRoboto;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 
 import java.text.SimpleDateFormat;
@@ -52,6 +54,9 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
     @InjectView(R.id.messageBtn)
     FloatingActionButton mMessageBtn;
 
+    @InjectView(R.id.container)
+    RelativeLayout mContainer;
+
     private ImgurUser mSelectedUser;
 
     public static ProfileInfoFragment createInstance(@NonNull ImgurUser user) {
@@ -77,6 +82,9 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
             throw new IllegalArgumentException("Bundle can not be null and must contain a user");
         }
 
+        int tabHeight = getResources().getDimensionPixelSize(R.dimen.tab_bar_height);
+        int translucentHeight = ViewUtils.getHeightForTranslucentStyle(getActivity());
+        mContainer.setPadding(0, tabHeight + translucentHeight, 0, 0);
         mSelectedUser = bundle.getParcelable(KEY_USER);
         setupInfo();
     }
@@ -134,6 +142,16 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
                     }
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        // Force the action bar to show
+        if (getActivity() instanceof ProfileActivity) {
+            ((ProfileActivity) getActivity()).onUpdateActionBar(true);
         }
     }
 }

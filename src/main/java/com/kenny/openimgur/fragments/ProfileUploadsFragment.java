@@ -16,6 +16,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -83,7 +84,7 @@ public class ProfileUploadsFragment extends BaseGridFragment {
                     GalleryAdapter adapter = getAdapter();
 
                     if (adapter == null) {
-
+                        mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getAdditionalHeaderSpace()));
                         setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items)));
                     } else {
                         adapter.addItems(items);
@@ -112,4 +113,9 @@ public class ProfileUploadsFragment extends BaseGridFragment {
             super.handleMessage(msg);
         }
     };
+
+    @Override
+    protected int getAdditionalHeaderSpace() {
+        return getResources().getDimensionPixelSize(R.dimen.tab_bar_height);
+    }
 }

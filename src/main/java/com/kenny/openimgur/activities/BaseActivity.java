@@ -6,7 +6,6 @@ import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -129,8 +128,9 @@ abstract public class BaseActivity extends ActionBarActivity {
      *
      * @param toolbar    The toolbar that is taking the place of the actionbar
      * @param shouldShow If the actionbar should be shown
+     * @return The visibility of the action Bar
      */
-    public void setActionBarVisibility(Toolbar toolbar, boolean shouldShow) {
+    protected boolean setActionBarVisibility(Toolbar toolbar, boolean shouldShow) {
         if (shouldShow && !mIsActionBarShowing) {
             mIsActionBarShowing = true;
             toolbar.animate().translationY(0);
@@ -138,6 +138,8 @@ abstract public class BaseActivity extends ActionBarActivity {
             mIsActionBarShowing = false;
             toolbar.animate().translationY(-toolbar.getHeight());
         }
+
+        return mIsActionBarShowing;
     }
 
     /**

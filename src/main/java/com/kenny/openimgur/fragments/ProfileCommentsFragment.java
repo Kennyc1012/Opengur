@@ -1,5 +1,6 @@
 package com.kenny.openimgur.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
@@ -23,11 +24,13 @@ import com.kenny.openimgur.adapters.ProfileCommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -102,6 +105,10 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
 
     private CommentSort mSort;
 
+    private int mPreviousItem;
+
+    private FragmentListener mListener;
+
     public static Fragment createInstance(@NonNull ImgurUser user) {
         ProfileCommentsFragment fragment = new ProfileCommentsFragment();
         Bundle args = new Bundle(1);
@@ -114,6 +121,18 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof FragmentListener) mListener = (FragmentListener) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        mListener = null;
+        super.onDetach();
     }
 
     @Nullable
@@ -159,6 +178,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
         super.onViewCreated(view, savedInstanceState);
         mListView.setOnScrollListener(this);
         mListView.setOnItemClickListener(this);
+        mListView.setHeaderDividersEnabled(false);
         handleArgs(getArguments(), savedInstanceState);
     }
 
@@ -171,6 +191,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
                 ArrayList<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 mPage = savedInstanceState.getInt(KEY_PAGE, 0);
                 mAdapter = new ProfileCommentAdapter(getActivity(), comments);
+                mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
                 mListView.setAdapter(mAdapter);
                 mListView.setSelection(savedInstanceState.getInt(KEY_POSITION, 0));
                 mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -196,6 +217,15 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        // Hide the actionbar when scrolling down, show when scrolling up
+        if (firstVisibleItem > mPreviousItem && mListener != null) {
+            mListener.onUpdateActionBar(false);
+        } else if (firstVisibleItem < mPreviousItem && mListener != null) {
+            mListener.onUpdateActionBar(true);
+        }
+
+        mPreviousItem = firstVisibleItem;
+
         if (!mIsLoading && mHasMore && totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount) {
             mPage++;
             fetchComments();
@@ -308,6 +338,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
 
                     if (mAdapter == null) {
                         mAdapter = new ProfileCommentAdapter(getActivity(), comments);
+                        mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
                         mListView.setAdapter(mAdapter);
                     } else {
                         mAdapter.addItems(comments);

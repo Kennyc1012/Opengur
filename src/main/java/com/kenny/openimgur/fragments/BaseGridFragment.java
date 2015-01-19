@@ -207,7 +207,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
+                mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getAdditionalHeaderSpace()));
                 setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items)));
                 mGrid.setSelection(currentPosition);
 
@@ -329,6 +329,16 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
         mRequestId = url;
         mApiClient.doWork(getEventType(), mRequestId, null);
+    }
+
+    /**
+     * Returns any additional space needed for the header view for the grid.
+     * Only should be overridden when the value is > than 0
+     *
+     * @return
+     */
+    protected int getAdditionalHeaderSpace() {
+        return 0;
     }
 
     /**

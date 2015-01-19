@@ -20,6 +20,7 @@ import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,15 +68,18 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_ITEMS)) {
             List<ImgurConvo> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
             mAdapter = new ConvoAdapter(getActivity(), items);
+            mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
             mListView.setAdapter(mAdapter);
             mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
         }
 
+        mListView.setHeaderDividersEnabled(false);
         mListView.setOnItemClickListener(this);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        position = position - mListView.getHeaderViewsCount();
         ImgurConvo convo = mAdapter.getItem(position);
         startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
     }
@@ -152,6 +156,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
                 case MESSAGE_ACTION_COMPLETE:
                     List<ImgurConvo> convos = (ArrayList<ImgurConvo>) msg.obj;
                     mAdapter = new ConvoAdapter(getActivity(), convos);
+                    mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
                     mListView.setAdapter(mAdapter);
                     mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
                     break;

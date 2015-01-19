@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <com.astuetz.PagerSlidingTabStrip
-        android:id="@+id/slidingTabs"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/tab_bar_height"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        app:pstsIndicatorColor="@android:color/white" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</LinearLayout>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?actionBarSize"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha" />
+
+    <com.astuetz.PagerSlidingTabStrip
+        android:id="@+id/slidingTabs"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tab_bar_height"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:layout_below="@id/toolBar"
+        app:pstsIndicatorColor="@android:color/white" />
+
+</RelativeLayout>
