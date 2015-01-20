@@ -1,5 +1,13 @@
 #Open Imgur Changelog
 
+<b>1.6.1</b>
+- Fixed rare chance of not having items from savedInstance in
+ViewActivity
+
+- Upload to gallery bug fix
+
+- Settings Fragment fix
+
 <b>1.6</b>
 - All uploads done within the app will now appear in the Uploads tab
 which can be accessed via the Navigation Drawer.
