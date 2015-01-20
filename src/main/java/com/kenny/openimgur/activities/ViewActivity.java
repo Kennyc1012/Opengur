@@ -306,7 +306,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
      * @param savedInstanceState Bundle if restoring
      */
     private void handleIntent(Intent intent, Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_OBJECTS)) {
             LogUtil.v(TAG, "Bundle present, will restore in onPostCreate");
             return;
         }
@@ -329,7 +329,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void loadComments() {
-        if (mLoadComments) {
+        if (mLoadComments && mPagerAdapter != null) {
             ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
             String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId(), mCommentSort.getSort());
 
@@ -346,7 +346,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             mMultiView.setViewState(MultiStateView.ViewState.LOADING);
             mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, imgurBaseObject.getId(), null);
-        } else if (mMultiView.getViewState() != MultiStateView.ViewState.ERROR) {
+        } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.ViewState.ERROR) {
             mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
             mMultiView.setViewState(MultiStateView.ViewState.ERROR);
         }
@@ -924,8 +924,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
         outState.putBoolean(KEY_LOAD_COMMENTS, mLoadComments);
         outState.putString(KEY_SORT, mCommentSort.getSort());
-        outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
-        outState.putParcelableArrayList(KEY_OBJECTS, mPagerAdapter.retainItems());
+
+        if (mPagerAdapter != null && !mPagerAdapter.isEmpty()) {
+            outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
+            outState.putParcelableArrayList(KEY_OBJECTS, mPagerAdapter.retainItems());
+        }
     }
 
     private void onListItemClick(int position) {
@@ -1172,6 +1175,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             if (objects != null) {
                 objects.clear();
             }
+        }
+
+        public boolean isEmpty() {
+            return objects == null || objects.isEmpty();
         }
 
         public ArrayList<ImgurBaseObject> retainItems() {
