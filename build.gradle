@@ -30,15 +30,15 @@ android {
         applicationId "com.kennyc.open.imgur"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 9
-        versionName "1.6"
+        versionCode 10
+        versionName "1.6.1"
     }
     buildTypes {
         release {
             minifyEnabled false
         }
 
-        debug{
+        debug {
             minifyEnabled false
         }
     }
@@ -62,7 +62,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.cocosw:bottomsheet:0.6@aar'
-    compile(name: 'photo_zoom', ext:'aar')
+    compile(name: 'photo_zoom', ext: 'aar')
     compile project(':libraries:EventBus')
     compile('com.crashlytics.sdk.android:crashlytics:2.2.0@aar') {
         transitive = true;
