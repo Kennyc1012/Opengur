@@ -28,12 +28,15 @@ import butterknife.InjectView;
 /**
  * Created by kcampagna on 7/27/14.
  */
-public class GalleryAdapter extends ImgurBaseAdapter {
+public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
     public static final int MAX_ITEMS = 200;
 
     private LayoutInflater mInflater;
+
     private int mUpvoteColor;
+
     private int mDownVoteColor;
+
     private boolean mAllowNSFWThumb;
 
     public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects) {
@@ -49,14 +52,9 @@ public class GalleryAdapter extends ImgurBaseAdapter {
         return ImageUtil.getDisplayOptionsForGallery().build();
     }
 
-    @Override
-    public ArrayList<ImgurBaseObject> retainItems() {
-        return new ArrayList<ImgurBaseObject>(getAllItems());
-    }
-
     /**
-     * Returns a list of objects for the viewing activity. This will return a max of 100 items to avoid memory issues.
-     * 50 before and 50 after the currently selected position. If there are not 50 available before or after, it will go to as many as it can
+     * Returns a list of objects for the viewing activity. This will return a max of 200 items to avoid memory issues.
+     * 100 before and 100 after the currently selected position. If there are not 100 available before or after, it will go to as many as it can
      *
      * @param position The position of the selected items
      * @return
@@ -71,12 +69,7 @@ public class GalleryAdapter extends ImgurBaseAdapter {
             objects = getAllItems().subList(position - (MAX_ITEMS / 2), position + (MAX_ITEMS / 2) <= size ? position + (MAX_ITEMS / 2) : size);
         }
 
-        return new ArrayList<ImgurBaseObject>(objects);
-    }
-
-    @Override
-    public ImgurBaseObject getItem(int position) {
-        return (ImgurBaseObject) super.getItem(position);
+        return new ArrayList<>(objects);
     }
 
     @Override
@@ -127,6 +120,7 @@ public class GalleryAdapter extends ImgurBaseAdapter {
     static class GalleryHolder extends ImgurViewHolder {
         @InjectView(R.id.image)
         ImageView image;
+
         @InjectView(R.id.score)
         TextViewRoboto score;
 

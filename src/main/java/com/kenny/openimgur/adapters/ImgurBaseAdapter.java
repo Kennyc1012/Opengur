@@ -6,6 +6,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -17,19 +18,19 @@ import butterknife.ButterKnife;
 /**
  * Created by kcampagna on 11/15/14.
  */
-public abstract class ImgurBaseAdapter extends BaseAdapter {
+public abstract class ImgurBaseAdapter<T> extends BaseAdapter {
     protected final String TAG = getClass().getSimpleName();
 
-    private List<Object> mItems;
+    private List<T> mItems;
 
     private ImageLoader mImageLoader;
 
-    public ImgurBaseAdapter(Context context, List collection, boolean hasImageLoader) {
+    public ImgurBaseAdapter(Context context, List<T> collection, boolean hasImageLoader) {
         if (hasImageLoader) mImageLoader = OpenImgurApp.getInstance(context).getImageLoader();
         mItems = collection;
     }
 
-    public ImgurBaseAdapter(Context context, List collection) {
+    public ImgurBaseAdapter(Context context, List<T> collection) {
         this(context, collection, false);
     }
 
@@ -38,7 +39,7 @@ public abstract class ImgurBaseAdapter extends BaseAdapter {
      *
      * @param object
      */
-    public void addItem(Object object) {
+    public void addItem(T object) {
         mItems.add(object);
         notifyDataSetChanged();
     }
@@ -48,7 +49,7 @@ public abstract class ImgurBaseAdapter extends BaseAdapter {
      *
      * @param items
      */
-    public void addItems(List items) {
+    public void addItems(List<T> items) {
         if (mItems == null) {
             mItems = items;
         } else {
@@ -63,7 +64,7 @@ public abstract class ImgurBaseAdapter extends BaseAdapter {
      *
      * @param object
      */
-    public void removeItem(Object object) {
+    public void removeItem(T object) {
         if (mItems != null) {
             mItems.remove(object);
             notifyDataSetChanged();
@@ -76,9 +77,9 @@ public abstract class ImgurBaseAdapter extends BaseAdapter {
      * @param position
      * @return The item removed
      */
-    public Object removeItem(int position) {
+    public T removeItem(int position) {
         if (mItems != null) {
-            Object removedItem = mItems.remove(position);
+            T removedItem = mItems.remove(position);
             notifyDataSetChanged();
             return removedItem;
         }
@@ -101,7 +102,7 @@ public abstract class ImgurBaseAdapter extends BaseAdapter {
      *
      * @return
      */
-    protected List getAllItems() {
+    protected List<T> getAllItems() {
         return mItems;
     }
 
@@ -116,7 +117,7 @@ public abstract class ImgurBaseAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public T getItem(int position) {
         return mItems != null ? mItems.get(position) : null;
     }
 
@@ -140,14 +141,18 @@ public abstract class ImgurBaseAdapter extends BaseAdapter {
      *
      * @return
      */
-    protected abstract DisplayImageOptions getDisplayOptions();
+    protected DisplayImageOptions getDisplayOptions() {
+        return ImageUtil.getDefaultDisplayOptions().build();
+    }
 
     /**
      * Returns an ArrayList of the items in the adapter, used for saving the items for configuration changes
      *
      * @return
      */
-    public abstract ArrayList<?> retainItems();
+    public ArrayList<T> retainItems() {
+        return new ArrayList<>(mItems);
+    }
 
     public abstract static class ImgurViewHolder {
         public ImgurViewHolder(View view) {
