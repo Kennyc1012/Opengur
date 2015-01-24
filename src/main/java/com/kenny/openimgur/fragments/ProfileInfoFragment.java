@@ -156,7 +156,6 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
                             }).show();
                 } else {
                     if (app.getUser() != null) {
-
                         ImgurConvo convo = ImgurConvo.createConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
                         startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
                     } else {

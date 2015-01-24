@@ -1,5 +1,7 @@
 package com.kenny.openimgur.fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
@@ -37,7 +39,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 12/24/14.
  */
-public class ProfileMessagesFragment extends BaseFragment implements AdapterView.OnItemClickListener {
+public class ProfileMessagesFragment extends BaseFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private static final String KEY_ITEMS = "items";
 
     @InjectView(R.id.multiView)
@@ -81,13 +83,47 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
 
         mListView.setHeaderDividersEnabled(false);
         mListView.setOnItemClickListener(this);
+        mListView.setOnItemLongClickListener(this);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         position = position - mListView.getHeaderViewsCount();
-        ImgurConvo convo = mAdapter.getItem(position);
-        startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
+
+        if (position >= 0) {
+            ImgurConvo convo = mAdapter.getItem(position);
+            startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
+        }
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        position = position - mListView.getHeaderViewsCount();
+
+        if (position >= 0) {
+            final ImgurConvo convo = mAdapter.getItem(position);
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.convo_delete)
+                    .setMessage(R.string.convo_delete_message)
+                    .setNegativeButton(R.string.cancel, null)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String url = String.format(Endpoints.DELETE_CONVO.getUrl(), convo.getId());
+                            // We don't care about the response
+                            new ApiClient(url, ApiClient.HttpRequest.DELETE).doWork(ImgurBusEvent.EventType.CONVO_DELETE, convo.getId(), null);
+                            mAdapter.removeItem(convo);
+
+                            if (mAdapter.isEmpty()) {
+                                mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
+                            }
+                        }
+                    }).show();
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -116,6 +152,11 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
                 int status = event.json.getInt(ApiClient.KEY_STATUS);
 
                 if (status == ApiClient.STATUS_OK) {
+                    if (event.json.get(ApiClient.KEY_DATA) instanceof Boolean) {
+                        mHandler.sendEmptyMessage(ImgurHandler.MESSAGE_EMPTY_RESULT);
+                        return;
+                    }
+
                     JSONArray data = event.json.getJSONArray(ApiClient.KEY_DATA);
                     List<ImgurConvo> convos = new ArrayList<>(data.length());
 
@@ -193,14 +234,5 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
         if (mAdapter != null && !mAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_ITEMS, mAdapter.retainItems());
         }
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-      /*  if (isVisibleToUser && mListView != null && mListView.getFirstVisiblePosition() <= 1 && li != null) {
-            mListener.onUpdateActionBar(true);
-        }*/
     }
 }

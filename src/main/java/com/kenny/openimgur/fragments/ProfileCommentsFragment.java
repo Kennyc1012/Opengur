@@ -31,6 +31,7 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ScrollHelper;
 import com.kenny.openimgur.util.ViewUtils;
 
 import org.json.JSONArray;
@@ -106,7 +107,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
 
     private CommentSort mSort;
 
-    private int mPreviousItem;
+    private ScrollHelper mScrollHelper = new ScrollHelper();
 
     private FragmentListener mListener;
 
@@ -224,13 +225,19 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         // Hide the actionbar when scrolling down, show when scrolling up
-        if (firstVisibleItem > mPreviousItem && mListener != null) {
-            mListener.onUpdateActionBar(false);
-        } else if (firstVisibleItem < mPreviousItem && mListener != null) {
-            mListener.onUpdateActionBar(true);
-        }
+        switch (mScrollHelper.getScrollDirection(view, firstVisibleItem, totalItemCount)) {
+            case ScrollHelper.DIRECTION_DOWN:
+                if (mListener != null) mListener.onUpdateActionBar(false);
+                break;
 
-        mPreviousItem = firstVisibleItem;
+            case ScrollHelper.DIRECTION_UP:
+                if (mListener != null) mListener.onUpdateActionBar(true);
+                break;
+
+            case ScrollHelper.DIRECTION_NOT_CHANGED:
+            default:
+                break;
+        }
 
         if (!mIsLoading && mHasMore && totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount) {
             mPage++;
@@ -241,9 +248,12 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         position = position - mListView.getHeaderViewsCount();
-        ImgurComment comment = mAdapter.getItem(position);
-        String url = "https://imgur.com/gallery/" + comment.getImageId();
-        startActivity(ViewActivity.createIntent(getActivity(), url));
+
+        if (position >= 0) {
+            ImgurComment comment = mAdapter.getItem(position);
+            String url = "https://imgur.com/gallery/" + comment.getImageId();
+            startActivity(ViewActivity.createIntent(getActivity(), url));
+        }
     }
 
     @Override

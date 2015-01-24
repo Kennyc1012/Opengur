@@ -21,6 +21,7 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ScrollHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -68,13 +69,13 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
     protected String mRequestId = null;
 
-    private int mPreviousItem = 0;
-
     private boolean mAllowNSFW;
 
     protected boolean mHasMore = true;
 
     private GalleryAdapter mAdapter;
+
+    private ScrollHelper mScrollHelper = new ScrollHelper();
 
     @Override
     public void onAttach(Activity activity) {
@@ -141,13 +142,15 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         // Hide the actionbar when scrolling down, show when scrolling up
-        if (firstVisibleItem > mPreviousItem && mListener != null) {
-            mListener.onUpdateActionBar(false);
-        } else if (firstVisibleItem < mPreviousItem && mListener != null) {
-            mListener.onUpdateActionBar(true);
-        }
+        switch (mScrollHelper.getScrollDirection(view, firstVisibleItem, totalItemCount)) {
+            case ScrollHelper.DIRECTION_DOWN:
+                if (mListener != null) mListener.onUpdateActionBar(false);
+                break;
 
-        mPreviousItem = firstVisibleItem;
+            case ScrollHelper.DIRECTION_UP:
+                if (mListener != null) mListener.onUpdateActionBar(true);
+                break;
+        }
 
         // Load more items when hey get to the end of the list
         if (mHasMore && totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading) {

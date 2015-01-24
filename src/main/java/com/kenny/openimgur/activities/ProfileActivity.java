@@ -2,9 +2,11 @@ package com.kenny.openimgur.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,6 +18,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
@@ -164,6 +169,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
             mSlidingTabs.setViewPager(mPager);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
             getSupportActionBar().setTitle(mSelectedUser.getUsername());
+            supportInvalidateOptionsMenu();
         }
     }
 
@@ -171,6 +177,37 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         mSelectedUser = null;
         app.onLogout();
         configWebView();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.profile, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.logout).setVisible(mSelectedUser != null && mSelectedUser.isSelf(app));
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.logout:
+                new AlertDialog.Builder(ProfileActivity.this)
+                        .setTitle(R.string.logout)
+                        .setMessage(R.string.logout_confirm)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                onUserLogout();
+                            }
+                        }).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -242,6 +279,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                         view.clearHistory();
                         view.clearCache(true);
                         view.clearFormData();
+                        getSupportActionBar().show();
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, R.string.error_generic);
                     }
@@ -269,7 +307,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                         mSelectedUser.parseJsonForValues(event.json);
                     }
 
-                    if (mSelectedUser.isSelf()) {
+                    if (mSelectedUser.isSelf(app)) {
                         app.getSql().updateUserInfo(mSelectedUser);
                     } else {
                         app.getSql().insertProfile(mSelectedUser);
@@ -319,6 +357,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                     mPager.setAdapter(mAdapter);
                     mSlidingTabs.setViewPager(mPager);
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    supportInvalidateOptionsMenu();
                     break;
 
                 case MESSAGE_ACTION_FAILED:
@@ -336,27 +375,29 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
 
     @Override
     public void onUpdateActionBar(boolean shouldShow) {
-        boolean visiblity = shouldChangeActionBarVisibility(shouldShow);
+        boolean isVisibile = mToolbarContainer.getTranslationY() == 0;
 
-        if (visiblity == shouldShow && !mIsAnimating) {
+        if (isVisibile != shouldShow && !mIsAnimating) {
+            Log.e("ASDFASDF", "ANIMATING");
             //Actionbar visibility has changed
             mIsAnimating = true;
-            mToolbarContainer.animate().translationY(shouldShow ? 0 : -mToolBar.getHeight())
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-                            super.onAnimationCancel(animation);
-                            mIsAnimating = false;
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            mIsAnimating = false;
-                        }
-                    });
+            mToolbarContainer.animate().translationY(shouldShow ? 0 : -mToolBar.getHeight()).setListener(mAnimAdapter);
         }
     }
+
+    private AnimatorListenerAdapter mAnimAdapter = new AnimatorListenerAdapter() {
+        @Override
+        public void onAnimationCancel(Animator animation) {
+            super.onAnimationCancel(animation);
+            mIsAnimating = false;
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            super.onAnimationEnd(animation);
+            mIsAnimating = false;
+        }
+    };
 
     @Override
     public void onLoadingStarted() {
@@ -388,7 +429,6 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         private ImgurUser mUser;
 
         private int mNumPages;
-
 
         public ProfilePager(Context context, FragmentManager fm, ImgurUser user) {
             super(fm);

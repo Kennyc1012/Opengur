@@ -12,7 +12,6 @@ import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.ui.TextViewRoboto;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
@@ -20,7 +19,7 @@ import butterknife.InjectView;
 /**
  * Created by kcampagna on 12/24/14.
  */
-public class ConvoAdapter extends ImgurBaseAdapter {
+public class ConvoAdapter extends ImgurBaseAdapter<ImgurConvo> {
     private int mCircleSize;
 
     public ConvoAdapter(Context context, List<ImgurConvo> convos) {
@@ -31,16 +30,6 @@ public class ConvoAdapter extends ImgurBaseAdapter {
     @Override
     protected DisplayImageOptions getDisplayOptions() {
         return null;
-    }
-
-    @Override
-    public ArrayList<ImgurConvo> retainItems() {
-        return new ArrayList<ImgurConvo>(getAllItems());
-    }
-
-    @Override
-    public ImgurConvo getItem(int position) {
-        return (ImgurConvo) super.getItem(position);
     }
 
     @Override

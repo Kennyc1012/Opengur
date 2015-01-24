@@ -76,6 +76,9 @@ public enum Endpoints {
     // recipient
     SEND_MESSAGE("https://api.imgur.com/3/conversations/%s"),
 
+    // Convo Id
+    DELETE_CONVO("https://api.imgur.com/3/conversations/%s"),
+
     // Delete hash or image id if owned by account
     IMAGE_DELETE("https://api.imgur.com/3/image/%s");
 
