@@ -27,9 +27,8 @@ import butterknife.InjectView;
 /**
  * Created by kcampagna on 7/27/14.
  */
-public class GalleryAdapter extends ImgurBaseAdapter {
+public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
     public static final int MAX_ITEMS = 200;
-
     private int mUpvoteColor;
 
     private int mDownVoteColor;
@@ -48,14 +47,9 @@ public class GalleryAdapter extends ImgurBaseAdapter {
         return ImageUtil.getDisplayOptionsForGallery().build();
     }
 
-    @Override
-    public ArrayList<ImgurBaseObject> retainItems() {
-        return new ArrayList<ImgurBaseObject>(getAllItems());
-    }
-
     /**
-     * Returns a list of objects for the viewing activity. This will return a max of 100 items to avoid memory issues.
-     * 50 before and 50 after the currently selected position. If there are not 50 available before or after, it will go to as many as it can
+     * Returns a list of objects for the viewing activity. This will return a max of 200 items to avoid memory issues.
+     * 100 before and 100 after the currently selected position. If there are not 100 available before or after, it will go to as many as it can
      *
      * @param position The position of the selected items
      * @return
@@ -71,11 +65,6 @@ public class GalleryAdapter extends ImgurBaseAdapter {
         }
 
         return new ArrayList<>(objects);
-    }
-
-    @Override
-    public ImgurBaseObject getItem(int position) {
-        return (ImgurBaseObject) super.getItem(position);
     }
 
     @Override

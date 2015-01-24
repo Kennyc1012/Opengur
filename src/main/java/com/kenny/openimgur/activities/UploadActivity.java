@@ -248,6 +248,9 @@ public class UploadActivity extends BaseActivity {
                 case UPLOAD:
                     if (status == ApiClient.STATUS_OK) {
                         ImgurPhoto photo = new ImgurPhoto(event.json.getJSONObject(ApiClient.KEY_DATA));
+                        app.getSql().insertUploadedPhoto(photo);
+                        setResult(Activity.RESULT_OK);
+
                         // If our id is true, that means we need to upload the resulting id to the gallery
                         if (String.valueOf(true).equals(event.id)) {
                             // If the image was to be uploaded to the gallery, send it there
@@ -260,7 +263,6 @@ public class UploadActivity extends BaseActivity {
                             client.doWork(ImgurBusEvent.EventType.GALLERY_SUBMISSION, photo.getLink(), body);
                             mIsUploading = true;
                         } else {
-                            setResult(Activity.RESULT_OK);
                             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photo);
                         }
                     } else {
@@ -587,9 +589,15 @@ public class UploadActivity extends BaseActivity {
 
                 case MESSAGE_ACTION_COMPLETE:
                     dismissDialogFragment(DFRAGMENT_UPLOADING);
-                    final ImgurPhoto photo = (ImgurPhoto) msg.obj;
-                    app.getSql().insertUploadedPhoto(photo);
-                    String message = getString(R.string.upload_success, photo.getLink());
+                    final String url;
+
+                    if (msg.obj instanceof ImgurPhoto) {
+                        url = ((ImgurPhoto) msg.obj).getLink();
+                    } else {
+                        url = (String) msg.obj;
+                    }
+
+                    String message = getString(R.string.upload_success, url);
                     Dialog dialog = new AlertDialog.Builder(UploadActivity.this)
                             .setTitle(R.string.upload_complete)
                             .setMessage(message).setNegativeButton(R.string.dismiss, null)
@@ -597,7 +605,7 @@ public class UploadActivity extends BaseActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", photo.getLink()));
+                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", url));
                                 }
                             }).create();
 

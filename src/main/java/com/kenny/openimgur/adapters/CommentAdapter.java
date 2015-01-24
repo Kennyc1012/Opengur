@@ -16,14 +16,14 @@ import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.ui.TextViewRoboto;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
 
-public class CommentAdapter extends ImgurBaseAdapter {
+
+public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
+    private LayoutInflater mInflater;
     private ImgurListener mListener;
 
     private int mSelectedIndex = -1;
@@ -35,27 +35,12 @@ public class CommentAdapter extends ImgurBaseAdapter {
         mListener = listener;
     }
 
-    @Override
-    protected DisplayImageOptions getDisplayOptions() {
-        return null;
-    }
-
-    @Override
-    public ArrayList<ImgurComment> retainItems() {
-        return new ArrayList<ImgurComment>(getAllItems());
-    }
-
     /**
      * Removes all items from list and ImgurListener is removed
      */
     public void destroy() {
         clear();
         mListener = null;
-    }
-
-    @Override
-    public ImgurComment getItem(int position) {
-        return (ImgurComment) super.getItem(position);
     }
 
     @Override

@@ -13,7 +13,6 @@ import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
@@ -21,7 +20,7 @@ import butterknife.InjectView;
 /**
  * Created by Kenny-PC on 1/14/2015.
  */
-public class UploadAdapter extends ImgurBaseAdapter {
+public class UploadAdapter extends ImgurBaseAdapter<UploadedPhoto> {
     public UploadAdapter(Context context, List<UploadedPhoto> photos) {
         super(context, photos, true);
     }
@@ -29,16 +28,6 @@ public class UploadAdapter extends ImgurBaseAdapter {
     @Override
     protected DisplayImageOptions getDisplayOptions() {
         return ImageUtil.getDisplayOptionsForGallery().build();
-    }
-
-    @Override
-    public ArrayList<UploadedPhoto> retainItems() {
-        return new ArrayList<UploadedPhoto>(getAllItems());
-    }
-
-    @Override
-    public UploadedPhoto getItem(int position) {
-        return (UploadedPhoto) super.getItem(position);
     }
 
     @Override
@@ -60,6 +49,7 @@ public class UploadAdapter extends ImgurBaseAdapter {
     static class UploadHolder extends ImgurBaseAdapter.ImgurViewHolder {
         @InjectView(R.id.image)
         ImageView image;
+
         @InjectView(R.id.score)
         TextViewRoboto score;
 

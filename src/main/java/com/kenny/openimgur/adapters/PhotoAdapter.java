@@ -20,13 +20,12 @@ import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
 import pl.droidsonroids.gif.GifDrawable;
 
-public class PhotoAdapter extends ImgurBaseAdapter {
+public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
     private ImgurListener mListener;
 
     private static final long PHOTO_SIZE_LIMIT = 1024 * 1024 * 2;
@@ -48,16 +47,6 @@ public class PhotoAdapter extends ImgurBaseAdapter {
     @Override
     protected DisplayImageOptions getDisplayOptions() {
         return ImageUtil.getDisplayOptionsForView().build();
-    }
-
-    @Override
-    public ArrayList<ImgurPhoto> retainItems() {
-        return new ArrayList<ImgurPhoto>(getAllItems());
-    }
-
-    @Override
-    public ImgurPhoto getItem(int position) {
-        return (ImgurPhoto) super.getItem(position);
     }
 
     @Override
