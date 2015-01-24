@@ -1,4 +1,3 @@
-
 package com.kenny.openimgur.classes;
 
 import android.text.Layout;
@@ -19,7 +18,7 @@ public class CustomLinkMovement extends LinkMovementMethod {
 
     private static CustomLinkMovement mInstance;
 
-    private Set<ImgurListener> mListeners = new HashSet<ImgurListener>();
+    private Set<ImgurListener> mListeners = new HashSet<>();
 
     public static CustomLinkMovement getInstance(ImgurListener listener) {
         if (mInstance == null) {

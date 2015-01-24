@@ -1,5 +1,6 @@
 package com.kenny.openimgur.fragments;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -69,6 +70,11 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
             List<ImgurConvo> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
             mAdapter = new ConvoAdapter(getActivity(), items);
             mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                mListView.addFooterView(ViewUtils.getFooterViewForComments(getActivity()));
+            }
+
             mListView.setAdapter(mAdapter);
             mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
         }
@@ -157,6 +163,11 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
                     List<ImgurConvo> convos = (ArrayList<ImgurConvo>) msg.obj;
                     mAdapter = new ConvoAdapter(getActivity(), convos);
                     mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        mListView.addFooterView(ViewUtils.getFooterViewForComments(getActivity()));
+                    }
+
                     mListView.setAdapter(mAdapter);
                     mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
                     break;
@@ -182,5 +193,14 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
         if (mAdapter != null && !mAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_ITEMS, mAdapter.retainItems());
         }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+      /*  if (isVisibleToUser && mListView != null && mListView.getFirstVisiblePosition() <= 1 && li != null) {
+            mListener.onUpdateActionBar(true);
+        }*/
     }
 }

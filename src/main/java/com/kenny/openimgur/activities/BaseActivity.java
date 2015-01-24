@@ -143,6 +143,24 @@ abstract public class BaseActivity extends ActionBarActivity {
     }
 
     /**
+     * Returns if the action bar visibility should change. This does not hide/remove the action bar
+     *
+     * @param shouldShow If the actionbar should be shown
+     * @return
+     */
+    protected boolean shouldChangeActionBarVisibility(boolean shouldShow) {
+        if (shouldShow && !mIsActionBarShowing) {
+            mIsActionBarShowing = true;
+            return true;
+        } else if (!shouldShow && mIsActionBarShowing) {
+            mIsActionBarShowing = false;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Returns if the current activity is in landscape orientation
      *
      * @return

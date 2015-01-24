@@ -59,7 +59,6 @@ public class ViewUtils {
      * @param additionalHeight Additional height to be added to the view
      * @return
      */
-
     public static View getHeaderViewForTranslucentStyle(Context context, int additionalHeight) {
         View v = View.inflate(context, R.layout.empty_header, null);
         int height = getHeightForTranslucentStyle(context);
@@ -157,5 +156,19 @@ public class ViewUtils {
         }
 
         return canRefresh;
+    }
+
+    /**
+     * Returns an empty view to occupy the space of the navigation bar for a translucent style for comments and messages fragment
+     *
+     * @param context
+     * @return
+     */
+    public static View getFooterViewForComments(Context context) {
+        View v = LayoutInflater.from(context).inflate(R.layout.profile_comment_item, null);
+        int height = getNavigationBarHeight(context);
+        AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
+        v.setLayoutParams(lp);
+        return v;
     }
 }

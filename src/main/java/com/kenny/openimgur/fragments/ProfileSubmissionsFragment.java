@@ -134,4 +134,13 @@ public class ProfileSubmissionsFragment extends BaseGridFragment {
     protected int getAdditionalHeaderSpace() {
         return getResources().getDimensionPixelSize(R.dimen.tab_bar_height);
     }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser && mGrid != null && mGrid.getFirstVisiblePosition() <= 1 && mListener != null) {
+            mListener.onUpdateActionBar(true);
+        }
+    }
 }

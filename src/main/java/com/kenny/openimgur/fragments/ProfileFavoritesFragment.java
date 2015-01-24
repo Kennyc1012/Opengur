@@ -81,7 +81,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
                     GalleryAdapter adapter = getAdapter();
 
                     if (adapter == null) {
-                        mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(),getAdditionalHeaderSpace()));
+                        mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getAdditionalHeaderSpace()));
                         setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items)));
                     } else {
                         adapter.addItems(items);
@@ -126,11 +126,21 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
             mSelectedUser = getArguments().getParcelable(KEY_USER);
         }
 
-        if (mSelectedUser == null) throw new IllegalArgumentException("Profile must be supplied to fragment");
+        if (mSelectedUser == null)
+            throw new IllegalArgumentException("Profile must be supplied to fragment");
     }
 
     @Override
     protected int getAdditionalHeaderSpace() {
         return getResources().getDimensionPixelSize(R.dimen.tab_bar_height);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser && mGrid != null && mGrid.getFirstVisiblePosition() <= 1 && mListener != null) {
+            mListener.onUpdateActionBar(true);
+        }
     }
 }

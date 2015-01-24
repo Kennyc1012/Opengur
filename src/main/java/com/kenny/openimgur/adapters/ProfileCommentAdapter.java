@@ -27,7 +27,7 @@ import butterknife.InjectView;
 /**
  * Created by kcampagna on 12/22/14.
  */
-public class ProfileCommentAdapter extends ImgurBaseAdapter {
+public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
 
     public ProfileCommentAdapter(Context context, List<ImgurComment> comments) {
         super(context, comments, true);
@@ -36,16 +36,6 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter {
     @Override
     protected DisplayImageOptions getDisplayOptions() {
         return ImageUtil.getDisplayOptionsForComments().build();
-    }
-
-    @Override
-    public ArrayList<ImgurComment> retainItems() {
-        return new ArrayList<ImgurComment>(getAllItems());
-    }
-
-    @Override
-    public ImgurComment getItem(int position) {
-        return (ImgurComment) super.getItem(position);
     }
 
     @Override

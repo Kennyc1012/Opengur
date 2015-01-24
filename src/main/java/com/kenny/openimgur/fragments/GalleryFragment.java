@@ -245,6 +245,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         mShowViral = showViral;
         mCurrentPage = 0;
         mIsLoading = true;
+        mHasMore = true;
         mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
 
         if (mListener != null) {

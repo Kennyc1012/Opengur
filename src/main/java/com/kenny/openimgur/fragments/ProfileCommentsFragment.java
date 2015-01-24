@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -192,6 +193,11 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
                 mPage = savedInstanceState.getInt(KEY_PAGE, 0);
                 mAdapter = new ProfileCommentAdapter(getActivity(), comments);
                 mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    mListView.addFooterView(ViewUtils.getFooterViewForComments(getActivity()));
+                }
+
                 mListView.setAdapter(mAdapter);
                 mListView.setSelection(savedInstanceState.getInt(KEY_POSITION, 0));
                 mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -234,6 +240,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        position = position - mListView.getHeaderViewsCount();
         ImgurComment comment = mAdapter.getItem(position);
         String url = "https://imgur.com/gallery/" + comment.getImageId();
         startActivity(ViewActivity.createIntent(getActivity(), url));
@@ -339,6 +346,11 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
                     if (mAdapter == null) {
                         mAdapter = new ProfileCommentAdapter(getActivity(), comments);
                         mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            mListView.addFooterView(ViewUtils.getFooterViewForComments(getActivity()));
+                        }
+
                         mListView.setAdapter(mAdapter);
                     } else {
                         mAdapter.addItems(comments);
@@ -380,4 +392,13 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
             super.handleMessage(msg);
         }
     };
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser && mListView != null && mListView.getFirstVisiblePosition() <= 1 && mListener != null) {
+            mListener.onUpdateActionBar(true);
+        }
+    }
 }

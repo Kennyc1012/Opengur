@@ -16,10 +16,11 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.kenny.openimgur.R;
@@ -67,6 +68,9 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     @InjectView(R.id.toolBar)
     Toolbar mToolBar;
 
+    @InjectView(R.id.toolBarContainer)
+    View mToolbarContainer;
+
     private ImgurUser mSelectedUser;
 
     private ProfilePager mAdapter;
@@ -100,7 +104,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         if (isLandscape() && !isTablet()) {
             // Don't add the extra padding
         } else {
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mToolBar.getLayoutParams();
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mToolBar.getLayoutParams();
             lp.setMargins(0, ViewUtils.getStatusBarHeight(getApplicationContext()), 0, 0);
             mToolBar.setLayoutParams(lp);
         }
@@ -151,6 +155,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
             LogUtil.v(TAG, "Selected user is null or data is too old, fetching new data");
             String userName = mSelectedUser == null ? username : mSelectedUser.getUsername();
             String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), userName);
+            getSupportActionBar().setTitle(userName);
             new ApiClient(detailsUrls, ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, userName, null);
         } else {
             LogUtil.v(TAG, "Selected user present in database and has valid data");
@@ -158,6 +163,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
             mPager.setAdapter(mAdapter);
             mSlidingTabs.setViewPager(mPager);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            getSupportActionBar().setTitle(mSelectedUser.getUsername());
         }
     }
 
@@ -171,6 +177,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
      * Configures the webview to handle a user logging in
      */
     private void configWebView() {
+        getSupportActionBar().hide();
         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
         WebView webView = (WebView) mMultiView.getView(MultiStateView.ViewState.EMPTY).findViewById(R.id.loginWebView);
         webView.loadUrl(Endpoints.LOGIN.getUrl());
@@ -329,12 +336,12 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
 
     @Override
     public void onUpdateActionBar(boolean shouldShow) {
-        boolean visiblity = setActionBarVisibility(mToolBar, shouldShow);
+        boolean visiblity = shouldChangeActionBarVisibility(shouldShow);
 
         if (visiblity == shouldShow && !mIsAnimating) {
             //Actionbar visibility has changed
             mIsAnimating = true;
-            mSlidingTabs.animate().translationY(shouldShow ? 0 : -mToolBar.getHeight())
+            mToolbarContainer.animate().translationY(shouldShow ? 0 : -mToolBar.getHeight())
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationCancel(Animator animation) {

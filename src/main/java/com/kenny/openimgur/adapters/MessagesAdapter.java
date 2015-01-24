@@ -24,7 +24,7 @@ import butterknife.InjectView;
 /**
  * Created by kcampagna on 12/25/14.
  */
-public class MessagesAdapter extends ImgurBaseAdapter {
+public class MessagesAdapter extends ImgurBaseAdapter<ImgurMessage> {
     private int mMargin;
 
     private int mUserId;
@@ -33,21 +33,6 @@ public class MessagesAdapter extends ImgurBaseAdapter {
         super(context, messages);
         mUserId = OpenImgurApp.getInstance(context).getUser().getId();
         mMargin = (int) (context.getResources().getDisplayMetrics().widthPixels * .25);
-    }
-
-    @Override
-    protected DisplayImageOptions getDisplayOptions() {
-        return null;
-    }
-
-    @Override
-    public ArrayList<ImgurMessage> retainItems() {
-        return new ArrayList<ImgurMessage>(getAllItems());
-    }
-
-    @Override
-    public ImgurMessage getItem(int position) {
-        return (ImgurMessage) super.getItem(position);
     }
 
     @Override

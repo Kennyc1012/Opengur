@@ -7,9 +7,10 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.CustomLinkMovement;
@@ -23,7 +24,6 @@ import butterknife.InjectView;
 
 
 public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
-    private LayoutInflater mInflater;
     private ImgurListener mListener;
 
     private int mSelectedIndex = -1;
@@ -70,13 +70,7 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
         Linkify.addLinks(holder.comment, Linkify.WEB_URLS);
         holder.score.setText(String.valueOf(comment.getPoints()));
         holder.score.setBackgroundResource(comment.getPoints() >= 0 ? R.drawable.positive_circle : R.drawable.negative_circle);
-
-        if (comment.getReplyCount() > 0) {
-            holder.replies.setText(comment.getReplyCount() > 9 ? "9+" : String.valueOf(comment.getReplyCount()));
-            holder.replies.setVisibility(View.VISIBLE);
-        } else {
-            holder.replies.setVisibility(View.GONE);
-        }
+        holder.replies.setVisibility(comment.getReplyCount() > 0 ? View.VISIBLE : View.GONE);
 
         convertView.setBackgroundColor(position == mSelectedIndex ?
                 convertView.getResources().getColor(R.color.comment_bg_selected) :
@@ -164,7 +158,7 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
         TextViewRoboto score;
 
         @InjectView(R.id.replies)
-        TextViewRoboto replies;
+        ImageButton replies;
 
         public CommentViewHolder(View view) {
             super(view);
