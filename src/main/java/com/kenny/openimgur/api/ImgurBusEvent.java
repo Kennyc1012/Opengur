@@ -30,7 +30,8 @@ public class ImgurBusEvent {
         MESSAGE_SEND,
         ACCOUNT_UPLOADS,
         COMMENT_POSTED,
-        CONVO_DELETE
+        CONVO_DELETE,
+        IMAGE_DELETE
     }
 
     public JSONObject json;

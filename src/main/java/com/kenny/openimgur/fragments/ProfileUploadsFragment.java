@@ -1,32 +1,46 @@
 package com.kenny.openimgur.fragments;
 
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewPhotoActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
+import com.kenny.snackbar.SnackBar;
 
 import org.apache.commons.collections15.list.SetUniqueList;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.util.ThrowableFailureEvent;
+
 /**
  * Created by kcampagna on 12/27/14.
  */
-public class ProfileUploadsFragment extends BaseGridFragment {
+public class ProfileUploadsFragment extends BaseGridFragment implements AdapterView.OnItemLongClickListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +55,12 @@ public class ProfileUploadsFragment extends BaseGridFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_gallery, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mGrid.setOnItemLongClickListener(this);
     }
 
     @Override
@@ -75,6 +95,82 @@ public class ProfileUploadsFragment extends BaseGridFragment {
         }
     }
 
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        int headerSize = mGrid.getNumColumns() * mGrid.getHeaderViewCount();
+        int adapterPosition = position - headerSize;
+
+        if (adapterPosition >= 0) {
+            final ImgurBaseObject photo = getAdapter().getItem(adapterPosition);
+
+            new AlertDialog.Builder(getActivity())
+                    .setItems(R.array.uploaded_photos_options, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // 0. Share 1. Copy Link 2. Delete
+
+                            switch (which) {
+                                case 0:
+                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                    shareIntent.setType("text/plain");
+                                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, photo.getLink());
+
+                                    if (shareIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                                        startActivity(Intent.createChooser(shareIntent, getString(R.string.send_feedback)));
+                                    } else {
+                                        SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                                    }
+                                    break;
+
+                                case 1:
+                                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", photo.getLink()));
+                                    break;
+
+                                case 2:
+
+                                    new AlertDialog.Builder(getActivity())
+                                            .setMessage(R.string.profile_delete_image)
+                                            .setNegativeButton(R.string.cancel, null)
+                                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    String url = String.format(Endpoints.IMAGE_DELETE.getUrl(), photo.getDeleteHash());
+                                                    new ApiClient(url, ApiClient.HttpRequest.DELETE).doWork(ImgurBusEvent.EventType.IMAGE_DELETE, photo.getId(), null);
+                                                    mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+                                                }
+                                            }).show();
+                                    break;
+                            }
+                        }
+                    }).show();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onEventAsync(@NonNull ImgurBusEvent event) {
+        if (event.eventType == ImgurBusEvent.EventType.IMAGE_DELETE) {
+            try {
+                int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
+                boolean success = event.json.getBoolean(ApiClient.KEY_DATA);
+
+                if (statusCode == ApiClient.STATUS_OK && success) {
+                    mHandler.sendMessage(ImgurHandler.MESSAGE_IMAGE_DELETED, event.id);
+                } else {
+                    mHandler.sendMessage(ImgurHandler.MESSAGE_IMAGE_DELETED, false);
+                }
+            } catch (JSONException e) {
+                LogUtil.e(TAG, "Error parsing JSON", e);
+                getHandler().sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
+            }
+        } else {
+            super.onEventAsync(event);
+        }
+    }
+
     private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
@@ -105,6 +201,22 @@ public class ProfileUploadsFragment extends BaseGridFragment {
                         String errorMessage = getString(R.string.profile_no_uploads);
                         mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
                         mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+                    }
+                    break;
+
+                case MESSAGE_IMAGE_DELETED:
+                    if (msg.obj instanceof String) {
+                        GalleryAdapter gAdapter = getAdapter();
+
+                        if (gAdapter != null) {
+                            gAdapter.removeItem((String) msg.obj);
+                            mMultiStateView.setViewState(gAdapter.isEmpty() ? MultiStateView.ViewState.EMPTY : MultiStateView.ViewState.CONTENT);
+                        }
+
+                        SnackBar.show(getActivity(), R.string.profile_delete_success);
+                    } else {
+                        mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                        SnackBar.show(getActivity(), R.string.profile_delete_failure);
                     }
                     break;
             }

@@ -378,7 +378,6 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         boolean isVisibile = mToolbarContainer.getTranslationY() == 0;
 
         if (isVisibile != shouldShow && !mIsAnimating) {
-            Log.e("ASDFASDF", "ANIMATING");
             //Actionbar visibility has changed
             mIsAnimating = true;
             mToolbarContainer.animate().translationY(shouldShow ? 0 : -mToolBar.getHeight()).setListener(mAnimAdapter);

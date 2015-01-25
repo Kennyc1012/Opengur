@@ -67,6 +67,27 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
         return new ArrayList<>(objects);
     }
 
+    /**
+     * Removes an item from the adapter given an id
+     *
+     * @param id The id of the item
+     * @return If the item was removed
+     */
+    public boolean removeItem(String id) {
+        List<ImgurBaseObject> items = getAllItems();
+        boolean removed = false;
+
+        for (ImgurBaseObject obj : items) {
+            if (obj.getId().equals(id)) {
+                removeItem(obj);
+                removed = true;
+                break;
+            }
+        }
+
+        return removed;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         GalleryHolder holder;

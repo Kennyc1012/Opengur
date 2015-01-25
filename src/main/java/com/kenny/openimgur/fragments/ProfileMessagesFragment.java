@@ -1,5 +1,6 @@
 package com.kenny.openimgur.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Build;
@@ -10,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -19,10 +21,12 @@ import com.kenny.openimgur.adapters.ConvoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ScrollHelper;
 import com.kenny.openimgur.util.ViewUtils;
 
 import org.json.JSONArray;
@@ -39,7 +43,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 12/24/14.
  */
-public class ProfileMessagesFragment extends BaseFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class ProfileMessagesFragment extends BaseFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AbsListView.OnScrollListener {
     private static final String KEY_ITEMS = "items";
 
     @InjectView(R.id.multiView)
@@ -50,6 +54,10 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
 
     private ConvoAdapter mAdapter;
 
+    private FragmentListener mListener;
+
+    private ScrollHelper mScrollHelper = new ScrollHelper();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +65,18 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
         if (user == null) {
             throw new IllegalStateException("User is not logged in");
         }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof FragmentListener) mListener = (FragmentListener) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        mListener = null;
+        super.onDetach();
     }
 
     @Nullable
@@ -84,6 +104,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
         mListView.setHeaderDividersEnabled(false);
         mListView.setOnItemClickListener(this);
         mListView.setOnItemLongClickListener(this);
+        mListView.setOnScrollListener(this);
     }
 
     @Override
@@ -94,6 +115,29 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
             ImgurConvo convo = mAdapter.getItem(position);
             startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
         }
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        // Hide the actionbar when scrolling down, show when scrolling up
+        switch (mScrollHelper.getScrollDirection(view, firstVisibleItem, totalItemCount)) {
+            case ScrollHelper.DIRECTION_DOWN:
+                if (mListener != null) mListener.onUpdateActionBar(false);
+                break;
+
+            case ScrollHelper.DIRECTION_UP:
+                if (mListener != null) mListener.onUpdateActionBar(true);
+                break;
+
+            case ScrollHelper.DIRECTION_NOT_CHANGED:
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        // NOOP
     }
 
     @Override

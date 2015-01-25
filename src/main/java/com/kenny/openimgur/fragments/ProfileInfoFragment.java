@@ -17,7 +17,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
@@ -66,7 +65,7 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
     FloatingActionButton mMessageBtn;
 
     @InjectView(R.id.container)
-    ScrollView mContainer;
+    View mContainer;
 
     private ImgurUser mSelectedUser;
 

@@ -26,6 +26,8 @@ public class ImgurHandler extends Handler {
 
     public static final int MESSAGE_MESSAGE_SENT = 8;
 
+    public static final int MESSAGE_IMAGE_DELETED = 9;
+
     /**
      * Sends a message to the handler
      *
