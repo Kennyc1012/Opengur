@@ -111,7 +111,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         position = position - mListView.getHeaderViewsCount();
 
-        if (position >= 0) {
+        if (position >= 0 && position < mAdapter.getCount()) {
             ImgurConvo convo = mAdapter.getItem(position);
             startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
         }

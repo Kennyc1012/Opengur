@@ -249,7 +249,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         position = position - mListView.getHeaderViewsCount();
 
-        if (position >= 0) {
+        if (position >= 0 && position < mAdapter.getCount()) {
             ImgurComment comment = mAdapter.getItem(position);
             String url = "https://imgur.com/gallery/" + comment.getImageId();
             startActivity(ViewActivity.createIntent(getActivity(), url));
