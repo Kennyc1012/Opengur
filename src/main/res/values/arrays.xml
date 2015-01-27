@@ -13,6 +13,7 @@
         <item>Profile</item>
         <item>Gallery</item>
         <item>Subreddit</item>
+        <item>Random</item>
         <item>Uploads</item>
         <item>Divider</item>
         <item>Settings</item>
@@ -50,7 +51,7 @@
         <item>Copy Link</item>
         <item>Remove Photo</item>
     </string-array>
-    
+
     <string-array name="comments_sort">
         <item>Newest</item>
         <item>Oldest</item>

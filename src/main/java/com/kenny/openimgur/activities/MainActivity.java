@@ -30,6 +30,7 @@ import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.NavFragment;
+import com.kenny.openimgur.fragments.RandomFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.ui.FloatingActionButton;
@@ -162,13 +163,16 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 break;
 
             case NavAdapter.PAGE_PROFILE:
-                //fragment = ProfileFragment.createInstance(null);
-                //mCurrentPage = position;
                 startActivity(ProfileActivity.createIntent(getApplicationContext(), null));
                 break;
 
             case NavAdapter.PAGE_SUBREDDIT:
                 fragment = RedditFragment.createInstance();
+                mCurrentPage = position;
+                break;
+
+            case NavAdapter.PAGE_RANDOM:
+                fragment = RandomFragment.createInstance();
                 mCurrentPage = position;
                 break;
 

@@ -80,7 +80,10 @@ public enum Endpoints {
     DELETE_CONVO("https://api.imgur.com/3/conversations/%s"),
 
     // Delete hash or image id if owned by account
-    IMAGE_DELETE("https://api.imgur.com/3/image/%s");
+    IMAGE_DELETE("https://api.imgur.com/3/image/%s"),
+
+    // Page Number
+    RANDOM("https://api.imgur.com/3/gallery/random/%d");
 
     private final String mUrl;
 
