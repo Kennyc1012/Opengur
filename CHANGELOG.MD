@@ -1,5 +1,9 @@
 #Open Imgur Changelog
 
+<b>1.6.2</b>
+- Fix third party login. To login with a a third party, click the logo of desired party, and click allow with the fields
+empty, you will then go through the login flow on that website. 
+
 <b>1.6.1</b>
 - Fixed rare chance of not having items from savedInstance in
 ViewActivity
