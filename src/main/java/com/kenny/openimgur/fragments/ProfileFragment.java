@@ -379,11 +379,14 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
         // Add the empty space so the webview isnt cut off by the action bar
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mWebView.getLayoutParams();
         lp.setMargins(0, ViewUtils.getHeightForTranslucentStyle(getActivity()), 0, 0);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mWebView.loadUrl(Endpoints.LOGIN.getUrl());
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.contains("#")) {
+                if (url.startsWith("https://com.kenny.openimgur/")) {
+                    LogUtil.v(TAG, "Received Login URL " + url);
                     // We will extract the info from the callback url
                     mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                     if (mListener != null) mListener.onLoadingStarted();
@@ -451,9 +454,7 @@ public class ProfileFragment extends BaseFragment implements ImgurListener {
                     }
 
                 } else {
-                    // Didn't get our tokens from the response, they probably denied accessed, just reshow the login page
-                    LogUtil.w(TAG, "URL didn't contain a '#'. User denied access");
-                    mWebView.loadUrl(Endpoints.LOGIN.getUrl());
+                    view.loadUrl(url);
                 }
 
                 return true;
