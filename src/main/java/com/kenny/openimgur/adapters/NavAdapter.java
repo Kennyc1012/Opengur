@@ -46,7 +46,7 @@ public class NavAdapter extends BaseAdapter {
 
     private int mDefaultColor;
 
-    private int mProfileColor;
+    private int mProfileColor;;
 
     public NavAdapter(Context context, ImgurUser user) {
         ImgurTheme theme = OpenImgurApp.getInstance(context).getImgurTheme();
@@ -56,7 +56,8 @@ public class NavAdapter extends BaseAdapter {
         mUser = user;
         mSelectedColor = res.getColor(theme.accentColor);
         mProfileColor = res.getColor(theme.primaryColor);
-        mDefaultColor = res.getColor(R.color.abc_primary_text_material_light);
+        mDefaultColor = res.getColor(theme.isDarkTheme ? R.color.primary_text_default_material_dark : R.color.primary_text_default_material_light);
+
     }
 
     public void onUpdateTheme(ImgurTheme theme, Resources res) {
@@ -101,6 +102,7 @@ public class NavAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.nav_item, parent, false);
             holder = new NavHolder(convertView);
+            Resources res = convertView.getResources();
         } else {
             holder = (NavHolder) convertView.getTag();
         }
@@ -108,7 +110,6 @@ public class NavAdapter extends BaseAdapter {
         boolean isSelected = mSelectedPosition == position;
         holder.icon.setImageDrawable(getDrawable(position, convertView.getResources(), isSelected));
         holder.title.setText(getItem(position));
-        holder.title.setTextColor(isSelected ? mSelectedColor : mDefaultColor);
         return convertView;
     }
 

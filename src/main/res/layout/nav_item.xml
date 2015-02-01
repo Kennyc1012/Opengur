@@ -20,7 +20,6 @@
         android:gravity="center_vertical"
         app:robotoFont="medium"
         android:textSize="14sp"
-        android:textColor="@color/abc_primary_text_material_light"
         android:layout_marginLeft="@dimen/keyline_margin"
         android:paddingRight="@dimen/content_padding"
         android:layout_gravity="center_vertical" />

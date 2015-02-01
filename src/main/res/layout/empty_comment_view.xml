@@ -7,7 +7,6 @@
     app:robotoFont="regular"
     android:textSize="16sp"
     android:text="@string/empty_comment_message"
-    android:textColor="@android:color/black"
     android:gravity="center"
     android:layout_gravity="center"
     android:drawableTop="@drawable/no_comments" />

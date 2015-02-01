@@ -17,7 +17,6 @@
         <item name="android:windowTranslucentNavigation">@bool/translucent_nav_bar</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
     </style>
 
 </resources>

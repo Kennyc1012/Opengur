@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NavAdapter;
 import com.kenny.openimgur.classes.FragmentListener;
+import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
@@ -80,6 +81,10 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     private boolean uploadMenuOpen = false;
 
     private boolean uploadMenuShowing = false;
+
+    private ImgurTheme mSavedTheme;
+
+    private boolean mIsDarkTheme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,6 +183,8 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 break;
 
             case NavAdapter.PAGE_SETTINGS:
+                mSavedTheme = ImgurTheme.copy(theme);
+                mIsDarkTheme = app.getPreferences().getBoolean(SettingsActivity.KEY_DARK_THEME, mSavedTheme.isDarkTheme);
                 startActivityForResult(SettingsActivity.createIntent(getApplicationContext()), SettingsActivity.REQUEST_CODE);
                 break;
 
@@ -415,17 +422,16 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         switch (requestCode) {
             // Set the theme if coming from the settings activity
             case SettingsActivity.REQUEST_CODE:
-                app = OpenImgurApp.getInstance(getApplicationContext());
-                theme = app.getImgurTheme();
-                Resources res = getResources();
-                int accentColor = res.getColor(theme.accentColor);
-                mToolBar.setBackgroundColor(res.getColor(theme.primaryColor));
-                mUploadButton.setColor(accentColor);
-                mLinkUpload.setColor(accentColor);
-                mCameraUpload.setColor(accentColor);
-                mGalleryUpload.setColor(accentColor);
-                setStatusBarColor(res.getColor(theme.darkColor));
-                mNavFragment.onUpdateTheme(theme);
+                ImgurTheme theme = OpenImgurApp.getInstance(getApplicationContext()).getImgurTheme();
+                if (mSavedTheme == null || theme != mSavedTheme || mIsDarkTheme != theme.isDarkTheme) {
+                    Intent intent = getIntent();
+                    overridePendingTransition(0, 0);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    finish();
+
+                    overridePendingTransition(0, 0);
+                    startActivity(intent);
+                }
                 break;
 
             case UploadActivity.REQUEST_CODE:

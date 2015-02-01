@@ -176,6 +176,9 @@
     <string name="pref_crashlytics_title">Anonymous Usage Statistics</string>
     <string name="pref_crashlytics_on">Anonymous usage statistics will be reported</string>
     <string name="pref_crashlytics_off">Anonymous usage statistics will not be reported</string>
+    <string name="pref_dark_theme_title">Dark Theme</string>
+    <string name="pref_dark_theme_on">Use dark theme</string>
+    <string name="pref_dark_theme_off">Do not use dark theme</string>
     <string-array name="pref_cache_size_items">
         <item>256MB</item>
         <item>512MB</item>

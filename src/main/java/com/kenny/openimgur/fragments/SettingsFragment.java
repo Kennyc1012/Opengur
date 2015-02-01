@@ -53,6 +53,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
         findPreference(SettingsActivity.KEY_ADB).setOnPreferenceChangeListener(this);
+        findPreference(SettingsActivity.KEY_DARK_THEME).setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -90,7 +91,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             }
 
             if (preference.getKey().equals(SettingsActivity.THEME_KEY)) {
+                boolean isDarkTheme = mApp.getImgurTheme().isDarkTheme;
                 ImgurTheme theme = ImgurTheme.getThemeFromString(listPreference.getEntries()[prefIndex].toString());
+                theme.isDarkTheme = isDarkTheme;
                 mApp.setImgurTheme(theme);
 
                 if (!mFirstLaunch) {
@@ -104,10 +107,15 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
             return true;
         } else if (preference instanceof CheckBoxPreference) {
-            // Ignore if its a debug build
-            if (!BuildConfig.DEBUG) {
-                LogUtil.SHOULD_WRITE_LOGS = (Boolean) object;
-                mApp.setAllowLogs((Boolean) object);
+            if (preference.getKey().equals(SettingsActivity.KEY_ADB)) {
+                // Ignore if its a debug build
+                if (!BuildConfig.DEBUG) {
+                    LogUtil.SHOULD_WRITE_LOGS = (Boolean) object;
+                    mApp.setAllowLogs((Boolean) object);
+                }
+            } else if (preference.getKey().equals(SettingsActivity.KEY_DARK_THEME)) {
+                mApp.getImgurTheme().isDarkTheme = (Boolean) object;
+                getActivity().recreate();
             }
 
             return true;
