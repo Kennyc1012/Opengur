@@ -167,7 +167,7 @@ public class UploadActivity extends BaseActivity {
                 Intent intent = createPhotoIntent(uploadType);
 
                 if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(createPhotoIntent(uploadType), requestCode);
+                    startActivityForResult(intent, requestCode);
                 } else {
                     finish();
                     Toast.makeText(getApplicationContext(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
