@@ -1,5 +1,13 @@
 #Open Imgur Changelog
 
+<b>1.6.3</b>
+- Fix trying to use a recycled bitmap crash when viewing an image full screen.
+
+- Added null and empty check for adding items in an adapter
+
+- Made sure the device can handle the photo/gallery intent before
+launching
+
 <b>1.6.2</b>
 - Fix third party login. To login with a a third party, click the logo of desired party, and click allow with the fields
 empty, you will then go through the login flow on that website. 
