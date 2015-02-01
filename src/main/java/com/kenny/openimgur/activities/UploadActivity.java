@@ -30,6 +30,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
@@ -163,7 +164,15 @@ public class UploadActivity extends BaseActivity {
 
             if (uploadType != UPLOAD_TYPE_LINK) {
                 int requestCode = uploadType == UPLOAD_TYPE_GALLERY ? REQUEST_CODE_GALLERY : REQUEST_CODE_CAMERA;
-                startActivityForResult(createPhotoIntent(uploadType), requestCode);
+                Intent intent = createPhotoIntent(uploadType);
+
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(createPhotoIntent(uploadType), requestCode);
+                } else {
+                    finish();
+                    Toast.makeText(getApplicationContext(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
+                }
+
             }
         } else {
             uploadType = savedInstanceState.getInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
