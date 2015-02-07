@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -54,6 +55,11 @@ public abstract class ImgurBaseAdapter<T> extends BaseAdapter {
      * @param items
      */
     public void addItems(List<T> items) {
+        if (items == null || items.isEmpty()) {
+            LogUtil.w(TAG, "List is empty or null");
+            return;
+        }
+
         if (mItems == null) {
             mItems = items;
         } else {

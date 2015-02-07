@@ -31,15 +31,17 @@ android {
         applicationId "com.kennyc.open.imgur"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 10
-        versionName "1.6.1"
+        versionCode 12
+        versionName "1.6.3"
     }
     buildTypes {
         release {
+            ext.enableCrashlytics = true
             minifyEnabled false
         }
 
         debug {
+            ext.enableCrashlytics = false
             minifyEnabled false
         }
     }
@@ -51,8 +53,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.sothree.slidinguppanel:library:+'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.2'
+    compile 'com.sothree.slidinguppanel:library:3.0.0'
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile 'com.android.support:support-annotations:21.0.3'
     compile 'com.android.support:support-v13:21.0.3'

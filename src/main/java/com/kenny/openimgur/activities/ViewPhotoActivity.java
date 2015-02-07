@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.diegocarloslima.byakugallery.lib.TileBitmapDrawable;
@@ -36,7 +35,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import java.io.File;
 
 import butterknife.InjectView;
-import uk.co.senab.photoview.PhotoViewAttacher;
+import uk.co.senab.photoview.PhotoView;
 
 /**
  * Created by kcampagna on 6/22/14.
@@ -60,7 +59,7 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
     VideoView mVideoView;
 
     @InjectView(R.id.gifImage)
-    ImageView mGifImageView;
+    PhotoView mGifImageView;
 
     @Nullable
     private ImgurPhoto photo;
@@ -69,8 +68,6 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
     private String mUrl;
 
     private boolean mIsVideo = false;
-
-    private boolean mDidDecoderFail = false;
 
     public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {
         return new Intent(context, ViewPhotoActivity.class).putExtra(KEY_IMAGE, photo);
@@ -142,20 +139,9 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
                         finish();
                         Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
                     } else {
-                        PhotoViewAttacher photoView = new PhotoViewAttacher(mGifImageView);
-                        photoView.setMaximumScale(10.0f);
                         mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                        photoView.update();
                     }
-                } else if (mDidDecoderFail) {
-                    // When our image fails, display it with the PhotoViewAttacher
-                    PhotoViewAttacher photoView = new PhotoViewAttacher(mGifImageView);
-                    mGifImageView.setImageBitmap(bitmap);
-                    photoView.setMaximumScale(10.0f);
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                    photoView.update();
                 } else {
-
                     // Static images will use the TouchImageView to render the image. This allows large(tall) images to render better and be better legible
                     try {
                         File file = app.getImageLoader().getDiskCache().get(s);
@@ -171,12 +157,7 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
                         }
                     } catch (Exception e) {
                         LogUtil.e(TAG, "Error creating tile bitmap", e);
-                        // When our image fails, display it with the PhotoViewAttacher
-                        PhotoViewAttacher photoView = new PhotoViewAttacher(mGifImageView);
-                        mGifImageView.setImageBitmap(bitmap);
-                        photoView.setMaximumScale(10.0f);
-                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                        photoView.update();
+                        onError(e);
                     }
                 }
             }
@@ -307,9 +288,19 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
     @Override
     public void onError(Exception e) {
         LogUtil.e(TAG, "Error decoding image with BitmapRegionDecoder", e);
-        mDidDecoderFail = true;
-        // We will display the image with the PhotoView when a failure occurs.
-        displayImage();
+        // If the image fails to load from the BitmapRegionDecoder, use the default pinch to zoom
+        String url = photo != null ? photo.getLink() : mUrl;
+
+        if (!TextUtils.isEmpty(url)) {
+            mGifImageView.setVisibility(View.VISIBLE);
+            mVideoView.setVisibility(View.GONE);
+            mImageView.setVisibility(View.GONE);
+            app.getImageLoader().displayImage(url, mGifImageView);
+            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        } else {
+            finish();
+            Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
