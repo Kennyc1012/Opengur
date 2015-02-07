@@ -18,7 +18,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -221,7 +220,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.contains("#")) {
+                if (url.startsWith("https://com.kenny.openimgur/")) {
                     // We will extract the info from the callback url
                     mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                     String[] outerSplit = url.split("\\#")[1].split("\\&");
@@ -283,11 +282,8 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, R.string.error_generic);
                     }
-
                 } else {
-                    // Didn't get our tokens from the response, they probably denied accessed, just reshow the login page
-                    LogUtil.w(TAG, "URL didn't contain a '#'. User denied access");
-                    view.loadUrl(Endpoints.LOGIN.getUrl());
+                    view.loadUrl(url);
                 }
 
                 return true;
