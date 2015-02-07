@@ -1,22 +1,24 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
@@ -27,7 +29,6 @@ import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.LinkUtils;
@@ -38,19 +39,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.InjectView;
-import butterknife.OnClick;
 
 /**
  * Created by kcampagna on 12/14/14.
  */
-public class ProfileInfoFragment extends BaseFragment implements View.OnClickListener, ImgurListener {
+public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     private static final String KEY_USER = "user";
 
-    @InjectView(R.id.userName)
+    @InjectView(R.id.username)
     TextView mUserName;
-
-    @InjectView(R.id.flexibleSpace)
-    FrameLayout mFlexibleSpace;
 
     @InjectView(R.id.notoriety)
     TextViewRoboto mNotoriety;
@@ -61,11 +58,14 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
     @InjectView(R.id.bio)
     TextViewRoboto mBio;
 
-    @InjectView(R.id.messageBtn)
-    FloatingActionButton mMessageBtn;
+    @InjectView(R.id.date)
+    TextViewRoboto mDate;
 
     @InjectView(R.id.container)
-    View mContainer;
+    ScrollView mContainer;
+
+    @InjectView(R.id.infoContainer)
+    LinearLayout mInfoContainer;
 
     private ImgurUser mSelectedUser;
 
@@ -75,6 +75,12 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
         args.putParcelable(KEY_USER, user);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -94,9 +100,42 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
 
         int tabHeight = getResources().getDimensionPixelSize(R.dimen.tab_bar_height);
         int translucentHeight = ViewUtils.getHeightForTranslucentStyle(getActivity());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mInfoContainer.addView(ViewUtils.getFooterViewForComments(getActivity()));
+        }
+
         mContainer.setPadding(0, tabHeight + translucentHeight, 0, 0);
         mSelectedUser = bundle.getParcelable(KEY_USER);
         setupInfo();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.profile_info, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.message).setVisible(!mSelectedUser.isSelf(app));
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.message:
+                if (app.getUser() != null) {
+                    ImgurConvo convo = ImgurConvo.createConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
+                    startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
+                } else {
+                    SnackBar.show(getActivity(), R.string.user_not_logged_in);
+                }
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -115,53 +154,17 @@ public class ProfileInfoFragment extends BaseFragment implements View.OnClickLis
      * Sets up the view to display the user's info
      */
     private void setupInfo() {
-        mFlexibleSpace.setBackgroundColor(getResources().getColor(theme.primaryColor));
-        mMessageBtn.setColor(getResources().getColor(theme.accentColor));
-
         String date = new SimpleDateFormat("MMM yyyy").format(new Date(mSelectedUser.getCreated()));
-        String reputationText = mSelectedUser.getReputation() + " " + getString(R.string.profile_rep_date, date);
         mNotoriety.setText(mSelectedUser.getNotoriety().getStringId());
         mNotoriety.setTextColor(getResources().getColor(mSelectedUser.getNotoriety().getNotorietyColor()));
-        mRep.setText(reputationText);
+        mRep.setText(getString(R.string.profile_rep, mSelectedUser.getReputation()));
         mUserName.setText(mSelectedUser.getUsername());
+        mDate.setText(getString(R.string.profile_date, date));
 
         if (!TextUtils.isEmpty(mSelectedUser.getBio())) {
             mBio.setText(mSelectedUser.getBio());
             mBio.setMovementMethod(CustomLinkMovement.getInstance(this));
             Linkify.addLinks(mBio, Linkify.WEB_URLS);
-        }
-
-        Drawable icon = mSelectedUser.isSelf() ? getResources().getDrawable(R.drawable.ic_logout) :
-                getResources().getDrawable(R.drawable.ic_action_message);
-        mMessageBtn.setDrawable(icon);
-        mMessageBtn.setColor(getResources().getColor(theme.accentColor));
-    }
-
-    @OnClick({R.id.messageBtn})
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.messageBtn:
-                if (mSelectedUser.isSelf(app)) {
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.logout)
-                            .setMessage(R.string.logout_confirm)
-                            .setNegativeButton(R.string.cancel, null)
-                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ((ProfileActivity) getActivity()).onUserLogout();
-                                }
-                            }).show();
-                } else {
-                    if (app.getUser() != null) {
-                        ImgurConvo convo = ImgurConvo.createConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
-                        startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
-                    } else {
-                        SnackBar.show(getActivity(), R.string.user_not_logged_in);
-                    }
-                }
-                break;
         }
     }
 

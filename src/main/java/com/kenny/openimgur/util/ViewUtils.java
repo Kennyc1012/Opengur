@@ -68,42 +68,6 @@ public class ViewUtils {
     }
 
     /**
-     * Returns a view populated with a user's data
-     *
-     * @param user      The user for whom we are displaying data for
-     * @param context   App Context
-     * @param container The optional ViewGroup to attach to
-     * @param listener  The Imgur listener to listen for link click events
-     * @return
-     */
-    public static View getProfileView(@NonNull ImgurUser user, @NonNull Context context, @Nullable ViewGroup container, @NonNull ImgurListener listener) {
-        View header;
-
-        if (container != null) {
-            header = LayoutInflater.from(context).inflate(R.layout.profile_header, container, false);
-        } else {
-            header = LayoutInflater.from(context).inflate(R.layout.profile_header, null);
-        }
-
-        String date = new SimpleDateFormat("MMM yyyy").format(new Date(user.getCreated()));
-        String reputationText = user.getReputation() + " " + context.getString(R.string.profile_rep_date, date);
-        TextViewRoboto notoriety = (TextViewRoboto) header.findViewById(R.id.notoriety);
-        notoriety.setText(user.getNotoriety().getStringId());
-        notoriety.setTextColor(context.getResources().getColor(user.getNotoriety().getNotorietyColor()));
-        ((TextViewRoboto) header.findViewById(R.id.rep)).setText(reputationText);
-        ((TextViewRoboto) header.findViewById(R.id.username)).setText(user.getUsername());
-
-        if (!TextUtils.isEmpty(user.getBio())) {
-            TextViewRoboto bio = (TextViewRoboto) header.findViewById(R.id.bio);
-            bio.setText(user.getBio());
-            bio.setMovementMethod(CustomLinkMovement.getInstance(listener));
-            Linkify.addLinks(bio, Linkify.WEB_URLS);
-        }
-
-        return header;
-    }
-
-    /**
      * Returns the height of the navigation bar
      *
      * @param context

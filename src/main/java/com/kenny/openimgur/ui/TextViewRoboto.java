@@ -46,23 +46,43 @@ public class TextViewRoboto extends TextView {
             try {
                 switch (typeFace) {
                     case ROBOTO_LIGHT:
-                        setTypeface(Typeface.createFromAsset(getResources().getAssets(), "RobotoCondensed-Light.ttf"));
+                        if (RobotoTypeFace.ROBOTO_LIGHT == null) {
+                            RobotoTypeFace.ROBOTO_LIGHT = Typeface.createFromAsset(getResources().getAssets(), "RobotoCondensed-Light.ttf");
+                        }
+
+                        setTypeface(RobotoTypeFace.ROBOTO_LIGHT);
                         break;
 
                     case ROBOTO_REGULAR:
-                        setTypeface(Typeface.createFromAsset(getResources().getAssets(), "RobotoCondensed-Regular.ttf"));
+                        if (RobotoTypeFace.ROBOTO_REGULAR == null) {
+                            RobotoTypeFace.ROBOTO_REGULAR = Typeface.createFromAsset(getResources().getAssets(), "RobotoCondensed-Regular.ttf");
+                        }
+
+                        setTypeface(RobotoTypeFace.ROBOTO_REGULAR);
                         break;
 
                     case ROBOTO_BOLD:
-                        setTypeface(Typeface.createFromAsset(getResources().getAssets(), "RobotoCondensed-Bold.ttf"));
+                        if (RobotoTypeFace.ROBOTO_BOLD == null) {
+                            RobotoTypeFace.ROBOTO_BOLD = Typeface.createFromAsset(getResources().getAssets(), "RobotoCondensed-Bold.ttf");
+                        }
+
+                        setTypeface(RobotoTypeFace.ROBOTO_BOLD);
                         break;
 
                     case ROBOTO_THIN:
-                        setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Roboto-Thin.ttf"));
+                        if (RobotoTypeFace.ROBOTO_THIN == null) {
+                            RobotoTypeFace.ROBOTO_THIN = Typeface.createFromAsset(getResources().getAssets(), "Roboto-Thin.ttf");
+                        }
+
+                        setTypeface(RobotoTypeFace.ROBOTO_THIN);
                         break;
 
                     case ROBOTO_MEDIUM:
-                        setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Roboto-Medium.ttf"));
+                        if (RobotoTypeFace.ROBOTO_MEDIUM == null) {
+                            RobotoTypeFace.ROBOTO_MEDIUM = Typeface.createFromAsset(getResources().getAssets(), "Roboto-Medium.ttf");
+                        }
+
+                        setTypeface(RobotoTypeFace.ROBOTO_MEDIUM);
                         break;
                 }
             } catch (Exception ex) {
@@ -71,5 +91,17 @@ public class TextViewRoboto extends TextView {
 
             a.recycle();
         }
+    }
+
+    static class RobotoTypeFace {
+        static Typeface ROBOTO_LIGHT = null;
+
+        static Typeface ROBOTO_THIN = null;
+
+        static Typeface ROBOTO_MEDIUM = null;
+
+        static Typeface ROBOTO_BOLD = null;
+
+        static Typeface ROBOTO_REGULAR = null;
     }
 }
