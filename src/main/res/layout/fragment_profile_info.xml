@@ -12,27 +12,21 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
+        <com.kenny.openimgur.ui.TextViewRoboto
+            android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@android:color/white"
+            android:textSize="@dimen/abc_text_size_display_1_material"
+            android:textColor="@android:color/white"
             android:padding="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin">
-
-            <com.kenny.openimgur.ui.TextViewRoboto
-                android:id="@+id/username"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/abc_text_size_display_1_material"
-                android:textColor="@color/primary_material_dark"
-                app:robotoFont="medium"
-                tools:text="DrButtersMd" />
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            app:robotoFont="medium"
+            tools:text="DrButtersMd"
+            tools:background="@color/theme_teal_primary"/>
 
             <com.kenny.openimgur.ui.TextViewRoboto
                 android:id="@+id/notoriety"
                 style="@style/Profile.Info.TextView"
-                android:layout_marginTop="16dp"
                 tools:text="@string/notoriety_liked" />
 
             <com.kenny.openimgur.ui.TextViewRoboto
@@ -47,7 +41,13 @@
                 android:textColor="@color/primary_text_default_material_light"
                 tools:text="Since June 2014" />
 
-        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="4dp"
+            android:background="@color/background_material_dark"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"/>
 
         <com.kenny.openimgur.ui.TextViewRoboto
             android:id="@+id/bio"

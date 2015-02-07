@@ -154,6 +154,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
      * Sets up the view to display the user's info
      */
     private void setupInfo() {
+        mUserName.setBackgroundColor(getResources().getColor(theme.primaryColor));
         String date = new SimpleDateFormat("MMM yyyy").format(new Date(mSelectedUser.getCreated()));
         mNotoriety.setText(mSelectedUser.getNotoriety().getStringId());
         mNotoriety.setTextColor(getResources().getColor(mSelectedUser.getNotoriety().getNotorietyColor()));
@@ -165,6 +166,8 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
             mBio.setText(mSelectedUser.getBio());
             mBio.setMovementMethod(CustomLinkMovement.getInstance(this));
             Linkify.addLinks(mBio, Linkify.WEB_URLS);
+        } else {
+            mBio.setText(getString(R.string.profile_bio_empty, mSelectedUser.getUsername()));
         }
     }
 

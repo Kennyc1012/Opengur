@@ -159,6 +159,7 @@
     <string name="profile_send_message">Send Message</string>
     <string name="profile_rep">%d Reputation</string>
     <string name="profile_date">Since %s</string>
+    <string name="profile_bio_empty">%s does not have a bio.</string>
 
     <!-- Preferences -->
     <string name="pref_cache_title">Cache</string>

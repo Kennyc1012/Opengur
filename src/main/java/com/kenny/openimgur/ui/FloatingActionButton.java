@@ -10,7 +10,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -47,7 +46,6 @@ public class FloatingActionButton extends View {
         this(context, attributeSet, 0);
     }
 
-
     public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
@@ -63,22 +61,15 @@ public class FloatingActionButton extends View {
         mButtonPaint.setShadowLayer(radius, dx, dy, color);
 
         Drawable drawable = a.getDrawable(R.styleable.FloatingActionButton_drawable);
-        if (null != drawable) {
-            mBitmap = ((BitmapDrawable) drawable).getBitmap();
-        }
-        setWillNotDraw(false);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        if (drawable != null) mBitmap = ((BitmapDrawable) drawable).getBitmap();
 
-        WindowManager mWindowManager = (WindowManager)
-                context.getSystemService(Context.WINDOW_SERVICE);
+        setWillNotDraw(false);
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        WindowManager mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = mWindowManager.getDefaultDisplay();
         Point size = new Point();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            display.getSize(size);
-            mYHidden = size.y;
-        } else mYHidden = display.getHeight();
-
+        display.getSize(size);
+        mYHidden = size.y;
         a.recycle();
     }
 
@@ -92,11 +83,6 @@ public class FloatingActionButton extends View {
     public void setColor(int color) {
         mColor = color;
         mButtonPaint.setColor(mColor);
-        invalidate();
-    }
-
-    public void setDrawable(Drawable drawable) {
-        mBitmap = ((BitmapDrawable) drawable).getBitmap();
         invalidate();
     }
 

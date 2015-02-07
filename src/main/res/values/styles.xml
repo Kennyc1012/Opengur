@@ -30,6 +30,8 @@
         <item name="android:layout_marginTop">4dp</item>
         <item name="robotoFont">regular</item>
         <item name="android:textSize">20sp</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
     </style>
 
 </resources>
