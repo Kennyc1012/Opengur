@@ -35,10 +35,12 @@ android {
     }
     buildTypes {
         release {
+            ext.enableCrashlytics = true
             minifyEnabled false
         }
 
         debug {
+            ext.enableCrashlytics = false
             minifyEnabled false
         }
     }
@@ -50,7 +52,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.sothree.slidinguppanel:library:+'
+    compile 'com.sothree.slidinguppanel:library:3.0.0'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.0'
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile 'com.android.support:support-annotations:21.0.3'

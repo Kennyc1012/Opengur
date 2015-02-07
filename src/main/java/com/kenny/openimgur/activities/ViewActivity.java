@@ -442,12 +442,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onBackPressed() {
-        if (mSlidingPane.isPanelExpanded()) {
+        if (mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             if (mCommentAdapter != null && !mCommentAdapter.isEmpty() &&
                     mCommentArray != null && mCommentArray.size() > 0) {
                 previousComments(mCommentAdapter.getItem(0));
             } else {
-                mSlidingPane.collapsePanel();
+                mSlidingPane.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             }
 
             return;
@@ -552,10 +552,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.panelUpBtn:
-                if (mSlidingPane.isPanelExpanded()) {
-                    mSlidingPane.collapsePanel();
+                if (mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    mSlidingPane.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                 } else {
-                    mSlidingPane.expandPanel();
+                    mSlidingPane.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 }
                 break;
 
