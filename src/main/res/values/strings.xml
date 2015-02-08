@@ -5,8 +5,6 @@
     <string name="app_name">Open Imgur</string>
     <string name="points">points</string>
     <string name="action_settings">Settings</string>
-    <string name="viral">Most Viral</string>
-    <string name="user_sub">User Submitted</string>
     <string name="random">Random</string>
     <string name="refresh">Refresh</string>
     <string name="clear_cache">Clear Cache</string>
@@ -123,6 +121,9 @@
     <string name="filter_time">Newest</string>
     <string name="filter_rising">Rising</string>
     <string name="filter_top">Top</string>
+    <string name="filter_highest_scoring">Highest Scoring</string>
+    <string name="filter_viral">Most Viral</string>
+    <string name="filter_user_sub">User Submitted</string>
     <string name="reddit_top_filter_day">Day</string>
     <string name="reddit_top_filter_week">Week</string>
     <string name="reddit_top_filter_month">Month</string>

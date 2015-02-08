@@ -27,6 +27,7 @@ import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurComment;
+import com.kenny.openimgur.classes.ImgurFilters.CommentSort;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -57,35 +58,6 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     private static final String KEY_POSITION = "position";
 
     private static final String KEY_PAGE = "page";
-
-    public static enum CommentSort {
-        BEST("best"),
-        WORST("worst"),
-        NEWEST("newest"),
-        OLDEST("oldest");
-
-        private final String mSort;
-
-        private CommentSort(String sort) {
-            mSort = sort;
-        }
-
-        public String getSort() {
-            return mSort;
-        }
-
-        public static CommentSort getSortType(String sort) {
-            if (BEST.getSort().equalsIgnoreCase(sort)) {
-                return BEST;
-            } else if (WORST.getSort().equalsIgnoreCase(sort)) {
-                return WORST;
-            } else if (OLDEST.getSort().equalsIgnoreCase(sort)) {
-                return OLDEST;
-            }
-
-            return NEWEST;
-        }
-    }
 
     @InjectView(R.id.multiView)
     MultiStateView mMultiStatView;

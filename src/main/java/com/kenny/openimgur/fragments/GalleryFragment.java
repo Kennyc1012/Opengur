@@ -5,9 +5,7 @@ import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +19,9 @@ import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.classes.ImgurFilters.GallerySection;
+import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
+import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.ViewUtils;
@@ -38,132 +39,15 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
 
     private static final String KEY_SORT = "sort";
 
+    private static final String KEY_TOP_SORT = "galleryTopSort";
+
     private static final String KEY_SHOW_VIRAL = "showViral";
-
-    public enum GallerySection {
-        HOT("hot"),
-        USER("user");
-
-        private final String mSection;
-
-        private GallerySection(String s) {
-            mSection = s;
-        }
-
-        public String getSection() {
-            return mSection;
-        }
-
-        /**
-         * Returns the Enum value for the section based on the string
-         *
-         * @param section
-         * @return
-         */
-        public static GallerySection getSectionFromString(String section) {
-            if (HOT.getSection().equals(section)) {
-                return HOT;
-            }
-
-            return USER;
-        }
-
-        /**
-         * Returns the position in the enum array of the given section
-         *
-         * @param section
-         * @return
-         */
-        public static int getPositionFromSection(GallerySection section) {
-            GallerySection[] sections = GallerySection.values();
-
-            for (int i = 0; i < sections.length; i++) {
-                if (section.equals(sections[i])) {
-                    if (i == 1) {
-                        return 49;
-                    } else if (i == 2) {
-                        return 99;
-                    }
-
-                    return i;
-                }
-            }
-
-            return 0;
-        }
-
-        /**
-         * Returns the GallerySection in the enum array from the given position
-         *
-         * @param position
-         * @return
-         */
-        public static GallerySection getSectionFromPosition(int position) {
-            GallerySection[] sections = GallerySection.values();
-
-            for (GallerySection section : sections) {
-                if (section == sections[position]) {
-                    return section;
-                }
-            }
-
-            return GallerySection.HOT;
-        }
-
-        /**
-         * Returns the String Resource for the section
-         *
-         * @return
-         */
-        @StringRes
-        public int getResourceId() {
-            switch (this) {
-                case HOT:
-                    return R.string.viral;
-
-                case USER:
-                    return R.string.user_sub;
-            }
-
-            return R.string.viral;
-        }
-    }
-
-    public enum GallerySort {
-        TIME("time"),
-        RISING("rising"),
-        VIRAL("viral");
-
-        private final String mSort;
-
-        private GallerySort(String s) {
-            mSort = s;
-        }
-
-        public String getSort() {
-            return mSort;
-        }
-
-        /**
-         * Returns the Enum value based on a string
-         *
-         * @param sort
-         * @return
-         */
-        public static GallerySort getSortFromString(String sort) {
-            if (TIME.getSort().equals(sort)) {
-                return TIME;
-            } else if (RISING.getSort().equals(sort)) {
-                return RISING;
-            }
-
-            return VIRAL;
-        }
-    }
 
     private GallerySection mSection = GallerySection.HOT;
 
     private GallerySort mSort = GallerySort.TIME;
+
+    private TimeSort mTimeSort = TimeSort.DAY;
 
     private boolean mShowViral = true;
 
@@ -204,7 +88,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
             case R.id.filter:
                 if (mListener != null) mListener.onUpdateActionBar(false);
 
-                GalleryFilterFragment fragment = GalleryFilterFragment.createInstance(mSort, mSection, mShowViral);
+                GalleryFilterFragment fragment = GalleryFilterFragment.createInstance(mSort, mSection, mTimeSort, mShowViral);
                 fragment.setFilterListener(this);
                 getFragmentManager().beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -222,17 +106,22 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
      * @return
      */
     private String getGalleryUrl() {
+        if (mSort == GallerySort.HIGHEST_SCORING) {
+            return String.format(Endpoints.GALLERY.getUrl(), mSort.getSort(), mTimeSort.getSort(), mCurrentPage, mShowViral);
+        }
+
         return String.format(Endpoints.GALLERY.getUrl(), mSection.getSection(), mSort.getSort(), mCurrentPage, mShowViral);
     }
 
     @Override
-    public void onFilterChange(GallerySection section, GallerySort sort, boolean showViral) {
+    public void onFilterChange(GallerySection section, GallerySort sort, TimeSort timeSort, boolean showViral) {
         FragmentManager fm = getFragmentManager();
         fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
         if (mListener != null) mListener.onUpdateActionBar(true);
 
         // Null values represent that the filter was canceled
-        if (section == null || sort == null || (section == mSection && mSort == sort && mShowViral == showViral)) {
+        if (section == null || sort == null || timeSort == null ||
+                (section == mSection && mSort == sort && mShowViral == showViral && timeSort == mTimeSort)) {
             return;
         }
 
@@ -242,6 +131,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
 
         mSection = section;
         mSort = sort;
+        mTimeSort = timeSort;
         mShowViral = showViral;
         mCurrentPage = 0;
         mIsLoading = true;
@@ -330,6 +220,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         outState.putString(KEY_SECTION, mSection.getSection());
         outState.putString(KEY_SORT, mSort.getSort());
         outState.putBoolean(KEY_SHOW_VIRAL, mShowViral);
+        outState.putString(KEY_TOP_SORT, mTimeSort.getSort());
     }
 
     @Override
@@ -337,13 +228,15 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         super.onRestoreSavedInstance(savedInstanceState);
 
         if (savedInstanceState == null) {
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            SharedPreferences pref = app.getPreferences();
             mSection = GallerySection.getSectionFromString(pref.getString(KEY_SECTION, null));
             mSort = GallerySort.getSortFromString(pref.getString(KEY_SORT, null));
+            mTimeSort = TimeSort.getSortFromString(pref.getString(KEY_TOP_SORT, null));
             mShowViral = pref.getBoolean(KEY_SHOW_VIRAL, true);
         } else {
             mSort = GallerySort.getSortFromString(savedInstanceState.getString(KEY_SORT, GallerySort.TIME.getSort()));
             mSection = GallerySection.getSectionFromString(savedInstanceState.getString(KEY_SECTION, GallerySection.HOT.getSection()));
+            mTimeSort = TimeSort.getSortFromString(savedInstanceState.getString(KEY_TOP_SORT, null));
             mShowViral = savedInstanceState.getBoolean(KEY_SHOW_VIRAL, true);
         }
 
@@ -356,6 +249,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         app.getPreferences().edit()
                 .putString(KEY_SECTION, mSection.getSection())
                 .putBoolean(KEY_SHOW_VIRAL, mShowViral)
+                .putString(KEY_TOP_SORT, mTimeSort.getSort())
                 .putString(KEY_SORT, mSort.getSort()).apply();
     }
 

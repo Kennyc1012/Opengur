@@ -21,6 +21,8 @@ import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.classes.ImgurFilters;
+import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
@@ -35,58 +37,6 @@ import java.util.List;
  * Created by kcampagna on 8/14/14.
  */
 public class RedditFragment extends BaseGridFragment implements RedditFilterFragment.FilterListener {
-    public enum RedditSort {
-        TIME("time"),
-        TOP("top");
-
-        private final String mSort;
-
-        RedditSort(String sort) {
-            mSort = sort;
-        }
-
-        public String getSort() {
-            return mSort;
-        }
-
-        public static RedditSort getSortFromString(String item) {
-            for (RedditSort s : RedditSort.values()) {
-                if (s.getSort().equals(item)) {
-                    return s;
-                }
-            }
-
-            return TIME;
-        }
-    }
-
-    public enum RedditTopSort {
-        DAY("day"),
-        WEEK("week"),
-        MONTH("month"),
-        YEAR("year"),
-        ALL("all");
-
-        private final String mSort;
-
-        RedditTopSort(String sort) {
-            mSort = sort;
-        }
-
-        public String getSort() {
-            return mSort;
-        }
-
-        public static RedditTopSort getSortFromString(String sort) {
-            for (RedditTopSort s : RedditTopSort.values()) {
-                if (s.getSort().equals(sort)) {
-                    return s;
-                }
-            }
-
-            return DAY;
-        }
-    }
 
     private static final String KEY_QUERY = "query";
 
@@ -98,7 +48,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
     private RedditSort mSort;
 
-    private RedditTopSort mTopSort;
+    private ImgurFilters.TimeSort mTopSort;
 
     public static RedditFragment createInstance() {
         return new RedditFragment();
@@ -191,7 +141,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     }
 
     @Override
-    public void onFilterChanged(RedditSort sort, RedditTopSort topSort) {
+    public void onFilterChanged(RedditSort sort, ImgurFilters.TimeSort topSort) {
         FragmentManager fm = getFragmentManager();
         fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
         if (mListener != null) mListener.onUpdateActionBar(true);
@@ -320,11 +270,11 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
         super.onRestoreSavedInstance(savedInstanceState);
         if (savedInstanceState == null) {
             mSort = RedditSort.getSortFromString(app.getPreferences().getString(KEY_SORT, RedditSort.TIME.getSort()));
-            mTopSort = RedditTopSort.getSortFromString(app.getPreferences().getString(KEY_TOP_SORT, RedditSort.TIME.getSort()));
+            mTopSort = ImgurFilters.TimeSort.getSortFromString(app.getPreferences().getString(KEY_TOP_SORT, RedditSort.TIME.getSort()));
         } else {
             mQuery = savedInstanceState.getString(KEY_QUERY, null);
             mSort = RedditSort.getSortFromString(savedInstanceState.getString(KEY_SORT, RedditSort.TIME.getSort()));
-            mTopSort = RedditTopSort.getSortFromString(savedInstanceState.getString(KEY_TOP_SORT, RedditTopSort.DAY.getSort()));
+            mTopSort = ImgurFilters.TimeSort.getSortFromString(savedInstanceState.getString(KEY_TOP_SORT, ImgurFilters.TimeSort.DAY.getSort()));
         }
 
         if (TextUtils.isEmpty(mQuery) && mListener != null) {

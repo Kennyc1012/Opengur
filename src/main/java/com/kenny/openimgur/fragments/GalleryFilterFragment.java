@@ -19,6 +19,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.ImgurFilters;
+import com.kenny.openimgur.classes.ImgurFilters.GallerySection;
+import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
+import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
 import com.kenny.openimgur.util.ViewUtils;
 
 import butterknife.InjectView;
@@ -30,10 +34,9 @@ import butterknife.OnClick;
 public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSeekBarChangeListener,
         RadioGroup.OnCheckedChangeListener, View.OnClickListener {
     private static final String KEY_SECTION = "section";
-
     private static final String KEY_SORT = "sort";
-
     private static final String KEY_VIRAL = "showViral";
+    private static final String KEY_TIME_SORT = "timeSort";
 
     @InjectView(R.id.sectionGroup)
     RadioGroup mSectionRG;
@@ -41,21 +44,40 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
     @InjectView(R.id.time)
     TextView mTime;
 
-    @InjectView(R.id.rising)
-    TextView mRising;
+    @InjectView(R.id.optionalSort)
+    TextView mOptionalSort;
 
     @InjectView(R.id.viral)
     TextView mViral;
 
+    @InjectView(R.id.day)
+    TextView mDay;
+
+    @InjectView(R.id.week)
+    TextView mWeek;
+
+    @InjectView(R.id.month)
+    TextView mMonth;
+
+    @InjectView(R.id.year)
+    TextView mYear;
+
+    @InjectView(R.id.all)
+    TextView mAll;
+
     @InjectView(R.id.sortSeekBar)
     SeekBar mSeekBar;
+
+    @InjectView(R.id.dateSeekBar)
+    SeekBar mDateSeekBar;
 
     @InjectView(R.id.showViral)
     CheckBox mShowViral;
 
-    private FilterListener mListener;
+    @InjectView(R.id.dateRangeContainer)
+    View mDateRangerContainer;
 
-    private boolean mHasThreeSortOpts = false;
+    private FilterListener mListener;
 
     /**
      * Creates a new instance of GalleryFilterFragment
@@ -65,12 +87,13 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
      * @param showViral If viral images should be shown in User Sub
      * @return
      */
-    public static GalleryFilterFragment createInstance(GalleryFragment.GallerySort sort, GalleryFragment.GallerySection section, boolean showViral) {
+    public static GalleryFilterFragment createInstance(GallerySort sort, GallerySection section, TimeSort timeSort, boolean showViral) {
         Bundle args = new Bundle();
         GalleryFilterFragment fragment = new GalleryFilterFragment();
         args.putString(KEY_SECTION, section.getSection());
         args.putString(KEY_SORT, sort.getSort());
         args.putBoolean(KEY_VIRAL, showViral);
+        args.putString(KEY_TIME_SORT, timeSort.getSort());
         fragment.setArguments(args);
         return fragment;
     }
@@ -93,33 +116,41 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
         configToolBar((Toolbar) view.findViewById(R.id.toolBar));
         ((TextView) view.findViewById(R.id.sectionTitle)).setTextColor(getResources().getColor(theme.darkColor));
         ((TextView) view.findViewById(R.id.sortTitle)).setTextColor(getResources().getColor(theme.darkColor));
+        ((TextView) view.findViewById(R.id.dateTitle)).setTextColor(getResources().getColor(theme.darkColor));
         Bundle args = getArguments();
-        GalleryFragment.GallerySort sort = GalleryFragment.GallerySort.getSortFromString(args.getString(KEY_SORT, null));
-        GalleryFragment.GallerySection section = GalleryFragment.GallerySection.getSectionFromString(args.getString(KEY_SECTION, null));
+        GallerySort sort = GallerySort.getSortFromString(args.getString(KEY_SORT, null));
+        GallerySection section = GallerySection.getSectionFromString(args.getString(KEY_SECTION, null));
+        TimeSort timeSort = TimeSort.getSortFromString(args.getString(KEY_TIME_SORT, null));
         mShowViral.setChecked(args.getBoolean(KEY_VIRAL, true));
 
         switch (section) {
             case USER:
-                mHasThreeSortOpts = true;
                 mSectionRG.check(R.id.userSubRB);
-                mShowViral.setAlpha(1.0f);
                 mShowViral.setVisibility(View.VISIBLE);
+                mOptionalSort.setText(R.string.filter_rising);
+                mDateRangerContainer.setVisibility(View.INVISIBLE);
                 break;
 
             case HOT:
-                mHasThreeSortOpts = false;
-                mRising.setAlpha(0.0f);
+                if (sort == GallerySort.HIGHEST_SCORING) {
+                    mDateRangerContainer.setVisibility(View.VISIBLE);
+                } else {
+                    mDateRangerContainer.setVisibility(View.INVISIBLE);
+                }
+
+                mOptionalSort.setText(R.string.filter_highest_scoring);
+                mOptionalSort.setAlpha(1.0f);
                 mSectionRG.check(R.id.viralRB);
-                mShowViral.setAlpha(0.0f);
-                mShowViral.setVisibility(View.INVISIBLE);
+                mShowViral.setVisibility(View.GONE);
                 break;
         }
 
         switch (sort) {
+            case HIGHEST_SCORING:
             case RISING:
-                mRising.setTextColor(getResources().getColor(theme.accentColor));
+                mOptionalSort.setTextColor(getResources().getColor(theme.accentColor));
                 mSeekBar.setProgress(50);
-                mRising.setTypeface(null, Typeface.BOLD);
+                mOptionalSort.setTypeface(null, Typeface.BOLD);
                 break;
 
             case VIRAL:
@@ -135,12 +166,61 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
                 break;
         }
 
+
+        switch (timeSort) {
+            default:
+            case DAY:
+                mDateSeekBar.setProgress(0);
+                break;
+
+            case WEEK:
+                mDateSeekBar.setProgress(20);
+                break;
+
+            case MONTH:
+                mDateSeekBar.setProgress(40);
+                break;
+
+            case YEAR:
+                mDateSeekBar.setProgress(60);
+                break;
+
+            case ALL:
+                mDateSeekBar.setProgress(80);
+                break;
+        }
+
+        updateTextView(timeSort);
         mSeekBar.setOnSeekBarChangeListener(this);
+        mDateSeekBar.setOnSeekBarChangeListener(this);
         mSectionRG.setOnCheckedChangeListener(this);
 
         // I've never found fragment transaction animations to work properly, so we will animate the view
         // when it is added to the fragment manager
         view.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.filter_appear));
+    }
+
+    /**
+     * Updates the Range TextViews appropriately
+     *
+     * @param topSort
+     */
+    private void updateTextView(ImgurFilters.TimeSort topSort) {
+        int selected = getResources().getColor(theme.accentColor);
+        int black = Color.BLACK;
+        int tfNormal = Typeface.NORMAL;
+        int tfBold = Typeface.BOLD;
+
+        mDay.setTextColor(topSort == ImgurFilters.TimeSort.DAY ? selected : black);
+        mDay.setTypeface(null, topSort == ImgurFilters.TimeSort.DAY ? tfBold : tfNormal);
+        mWeek.setTextColor(topSort == ImgurFilters.TimeSort.WEEK ? selected : black);
+        mWeek.setTypeface(null, topSort == ImgurFilters.TimeSort.WEEK ? tfBold : tfNormal);
+        mMonth.setTextColor(topSort == ImgurFilters.TimeSort.MONTH ? selected : black);
+        mMonth.setTypeface(null, topSort == ImgurFilters.TimeSort.MONTH ? tfBold : tfNormal);
+        mYear.setTextColor(topSort == ImgurFilters.TimeSort.YEAR ? selected : black);
+        mYear.setTypeface(null, topSort == ImgurFilters.TimeSort.YEAR ? tfBold : tfNormal);
+        mAll.setTextColor(topSort == ImgurFilters.TimeSort.ALL ? selected : black);
+        mAll.setTypeface(null, topSort == ImgurFilters.TimeSort.ALL ? tfBold : tfNormal);
     }
 
     private void configToolBar(Toolbar tb) {
@@ -150,7 +230,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
         tb.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dismiss(null, null);
+                dismiss(null, null, null);
             }
         });
         tb.setBackgroundColor(getResources().getColor(theme.primaryColor));
@@ -170,49 +250,62 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
     public void onStopTrackingTouch(SeekBar seekBar) {
         int position = seekBar.getProgress();
 
-        if (mHasThreeSortOpts) {
+        if (seekBar == mSeekBar) {
+            boolean isViral = mSectionRG.getCheckedRadioButtonId() == R.id.viralRB;
+
             if (position <= 33) {
                 mSeekBar.setProgress(0);
                 mTime.setTextColor(getResources().getColor(theme.accentColor));
                 mViral.setTextColor(Color.BLACK);
-                mRising.setTextColor(Color.BLACK);
+                mOptionalSort.setTextColor(Color.BLACK);
                 mTime.setTypeface(null, Typeface.BOLD);
                 mViral.setTypeface(null, Typeface.NORMAL);
-                mRising.setTypeface(null, Typeface.NORMAL);
+                mOptionalSort.setTypeface(null, Typeface.NORMAL);
+
+                if (isViral && mDateRangerContainer.getVisibility() == View.VISIBLE) {
+                    toggleDataSeekBar(false);
+                }
             } else if (position <= 66) {
                 mSeekBar.setProgress(50);
                 mTime.setTextColor(Color.BLACK);
                 mViral.setTextColor(Color.BLACK);
-                mRising.setTextColor(getResources().getColor(theme.accentColor));
+                mOptionalSort.setTextColor(getResources().getColor(theme.accentColor));
                 mTime.setTypeface(null, Typeface.NORMAL);
                 mViral.setTypeface(null, Typeface.NORMAL);
-                mRising.setTypeface(null, Typeface.BOLD);
+                mOptionalSort.setTypeface(null, Typeface.BOLD);
+
+                if (isViral && mDateRangerContainer.getVisibility() == View.INVISIBLE) {
+                    toggleDataSeekBar(true);
+                }
             } else {
                 mSeekBar.setProgress(100);
                 mTime.setTextColor(Color.BLACK);
                 mViral.setTextColor(getResources().getColor(theme.accentColor));
-                mRising.setTextColor(Color.BLACK);
+                mOptionalSort.setTextColor(Color.BLACK);
                 mTime.setTypeface(null, Typeface.NORMAL);
                 mViral.setTypeface(null, Typeface.BOLD);
-                mRising.setTypeface(null, Typeface.NORMAL);
+                mOptionalSort.setTypeface(null, Typeface.NORMAL);
+
+                if (isViral && mDateRangerContainer.getVisibility() == View.VISIBLE) {
+                    toggleDataSeekBar(false);
+                }
             }
         } else {
-            if (position <= 50) {
-                mSeekBar.setProgress(0);
-                mTime.setTextColor(getResources().getColor(theme.accentColor));
-                mViral.setTextColor(Color.BLACK);
-                mRising.setTextColor(Color.BLACK);
-                mTime.setTypeface(null, Typeface.BOLD);
-                mViral.setTypeface(null, Typeface.NORMAL);
-                mRising.setTypeface(null, Typeface.NORMAL);
+            if (position <= 10) {
+                seekBar.setProgress(0);
+                updateTextView(ImgurFilters.TimeSort.DAY);
+            } else if (position <= 30) {
+                seekBar.setProgress(20);
+                updateTextView(ImgurFilters.TimeSort.WEEK);
+            } else if (position <= 50) {
+                seekBar.setProgress(40);
+                updateTextView(ImgurFilters.TimeSort.MONTH);
+            } else if (position <= 70) {
+                seekBar.setProgress(60);
+                updateTextView(ImgurFilters.TimeSort.YEAR);
             } else {
-                mSeekBar.setProgress(100);
-                mTime.setTextColor(Color.BLACK);
-                mViral.setTextColor(getResources().getColor(theme.accentColor));
-                mRising.setTextColor(Color.BLACK);
-                mTime.setTypeface(null, Typeface.NORMAL);
-                mViral.setTypeface(null, Typeface.BOLD);
-                mRising.setTypeface(null, Typeface.NORMAL);
+                seekBar.setProgress(80);
+                updateTextView(ImgurFilters.TimeSort.ALL);
             }
         }
     }
@@ -221,40 +314,31 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         switch (checkedId) {
             case R.id.userSubRB:
-                mHasThreeSortOpts = true;
-                mRising.animate().alpha(1.0f).setDuration(300L);
-                mShowViral.animate().alpha(1.0f).setDuration(300L)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-                                super.onAnimationStart(animation);
-                                animation.removeAllListeners();
-                                if (mShowViral != null) mShowViral.setVisibility(View.VISIBLE);
-                            }
-                        });
+                mShowViral.setVisibility(View.VISIBLE);
+                mOptionalSort.setText(R.string.filter_rising);
+                toggleDataSeekBar(false);
                 break;
 
             case R.id.viralRB:
-                mHasThreeSortOpts = false;
-                mRising.animate().alpha(0.0f).setDuration(300L);
-                mShowViral.animate().alpha(0.0f).setDuration(300L)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                animation.removeAllListeners();
-                                if (mShowViral != null) mShowViral.setVisibility(View.INVISIBLE);
-                            }
-                        });
-
-                // Need to reset the progress bar if it previously had three options
-                if (mSeekBar.getProgress() == 50) {
-                    mSeekBar.setProgress(100);
-                    mViral.setTextColor(getResources().getColor(theme.accentColor));
-                    mRising.setTextColor(Color.BLACK);
-                }
+                mOptionalSort.setText(R.string.filter_highest_scoring);
+                mShowViral.setVisibility(View.GONE);
+                if (mSeekBar.getProgress() == 50) toggleDataSeekBar(true);
                 break;
         }
+    }
+
+    private void toggleDataSeekBar(final boolean shouldShow) {
+        mDateRangerContainer.animate().alpha(shouldShow ? 1.0f : 0.0f).setDuration(300L)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        super.onAnimationStart(animation);
+                        animation.removeAllListeners();
+                        if (mDateRangerContainer != null) {
+                            mDateRangerContainer.setVisibility(shouldShow ? View.VISIBLE : View.INVISIBLE);
+                        }
+                    }
+                });
     }
 
     @OnClick({R.id.negative, R.id.positive})
@@ -262,30 +346,51 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.negative:
-                dismiss(null, null);
+                dismiss(null, null, null);
                 break;
 
             case R.id.positive:
-                GalleryFragment.GallerySort sort;
-                GalleryFragment.GallerySection section;
+                GallerySort sort;
+                GallerySection section;
+                TimeSort timeSort;
                 int position = mSeekBar.getProgress();
+                int timePosition = mDateSeekBar.getProgress();
 
                 if (mSectionRG.getCheckedRadioButtonId() == R.id.userSubRB) {
-                    section = GalleryFragment.GallerySection.USER;
+                    section = GallerySection.USER;
 
                     if (position == 0) {
-                        sort = GalleryFragment.GallerySort.TIME;
+                        sort = GallerySort.TIME;
                     } else if (position == 50) {
-                        sort = GalleryFragment.GallerySort.RISING;
+                        sort = GallerySort.RISING;
                     } else {
-                        sort = GalleryFragment.GallerySort.VIRAL;
+                        sort = GallerySort.VIRAL;
                     }
                 } else {
-                    section = GalleryFragment.GallerySection.HOT;
-                    sort = position == 0 ? GalleryFragment.GallerySort.TIME : GalleryFragment.GallerySort.VIRAL;
+                    section = GallerySection.HOT;
+
+                    if (position == 0) {
+                        sort = GallerySort.TIME;
+                    } else if (position == 50) {
+                        sort = GallerySort.HIGHEST_SCORING;
+                    } else {
+                        sort = GallerySort.VIRAL;
+                    }
                 }
 
-                dismiss(sort, section);
+                if (timePosition <= 10) {
+                    timeSort = TimeSort.DAY;
+                } else if (timePosition <= 30) {
+                    timeSort = TimeSort.WEEK;
+                } else if (timePosition <= 50) {
+                    timeSort = TimeSort.MONTH;
+                } else if (timePosition <= 70) {
+                    timeSort = TimeSort.YEAR;
+                } else {
+                    timeSort = TimeSort.ALL;
+                }
+
+                dismiss(sort, section, timeSort);
                 break;
         }
     }
@@ -296,13 +401,13 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
      * @param sort
      * @param section
      */
-    public void dismiss(final GalleryFragment.GallerySort sort, final GalleryFragment.GallerySection section) {
+    public void dismiss(final GallerySort sort, final GallerySection section, final TimeSort timeSort) {
         Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.filter_disappear);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 if (mListener != null)
-                    mListener.onFilterChange(section, sort, mShowViral.isChecked());
+                    mListener.onFilterChange(section, sort, timeSort, mShowViral.isChecked());
             }
 
             @Override
@@ -329,7 +434,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
     }
 
     public static interface FilterListener {
-        void onFilterChange(GalleryFragment.GallerySection section, GalleryFragment.GallerySort sort, boolean showViral);
+        void onFilterChange(GallerySection section, GallerySort sort, TimeSort timeSort, boolean showViral);
     }
 
 }

@@ -403,7 +403,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             Fragment fragment = fm.findFragmentByTag("filter");
 
             if (fragment instanceof GalleryFilterFragment) {
-                ((GalleryFilterFragment) fragment).dismiss(null, null);
+                ((GalleryFilterFragment) fragment).dismiss(null, null, null);
             } else {
                 fm.beginTransaction().remove(fragment).commit();
             }

@@ -19,6 +19,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.ImgurFilters;
+import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
 import com.kenny.openimgur.util.ViewUtils;
 
 import butterknife.InjectView;
@@ -59,7 +61,7 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
     @InjectView(R.id.dateRangeContainer)
     View mDateRangeContainer;
 
-    public static RedditFilterFragment createInstance(RedditFragment.RedditSort sort, RedditFragment.RedditTopSort topSort) {
+    public static RedditFilterFragment createInstance(RedditSort sort, ImgurFilters.TimeSort topSort) {
         RedditFilterFragment fragment = new RedditFilterFragment();
         Bundle args = new Bundle(2);
         args.putSerializable(KEY_SORT, sort);
@@ -87,10 +89,10 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
         ((TextView) view.findViewById(R.id.sortTitle)).setTextColor(getResources().getColor(theme.darkColor));
         ((TextView) view.findViewById(R.id.dateTitle)).setTextColor(getResources().getColor(theme.darkColor));
         Bundle args = getArguments();
-        RedditFragment.RedditSort sort = (RedditFragment.RedditSort) args.getSerializable(KEY_SORT);
-        RedditFragment.RedditTopSort topSort = (RedditFragment.RedditTopSort) args.getSerializable(KEY_TOP_SORT);
-        mSortRG.check(sort == RedditFragment.RedditSort.TIME ? R.id.newestRB : R.id.topRB);
-        mDateRangeContainer.setVisibility(sort == RedditFragment.RedditSort.TOP ? View.VISIBLE : View.GONE);
+        RedditSort sort = (RedditSort) args.getSerializable(KEY_SORT);
+        ImgurFilters.TimeSort topSort = (ImgurFilters.TimeSort) args.getSerializable(KEY_TOP_SORT);
+        mSortRG.check(sort == RedditSort.TIME ? R.id.newestRB : R.id.topRB);
+        mDateRangeContainer.setVisibility(sort == RedditSort.TOP ? View.VISIBLE : View.GONE);
 
         switch (topSort) {
             case DAY:
@@ -190,22 +192,22 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
                 break;
 
             case R.id.positive:
-                RedditFragment.RedditSort sort = mSortRG.getCheckedRadioButtonId() == R.id.newestRB
-                        ? RedditFragment.RedditSort.TIME : RedditFragment.RedditSort.TOP;
+                RedditSort sort = mSortRG.getCheckedRadioButtonId() == R.id.newestRB
+                        ? RedditSort.TIME : RedditSort.TOP;
 
-                RedditFragment.RedditTopSort topSort;
+                ImgurFilters.TimeSort topSort;
                 int position = mSeekBar.getProgress();
 
                 if (position <= 10) {
-                    topSort = RedditFragment.RedditTopSort.DAY;
+                    topSort = ImgurFilters.TimeSort.DAY;
                 } else if (position <= 30) {
-                    topSort = RedditFragment.RedditTopSort.WEEK;
+                    topSort = ImgurFilters.TimeSort.WEEK;
                 } else if (position <= 50) {
-                    topSort = RedditFragment.RedditTopSort.MONTH;
+                    topSort = ImgurFilters.TimeSort.MONTH;
                 } else if (position <= 70) {
-                    topSort = RedditFragment.RedditTopSort.YEAR;
+                    topSort = ImgurFilters.TimeSort.YEAR;
                 } else {
-                    topSort = RedditFragment.RedditTopSort.ALL;
+                    topSort = ImgurFilters.TimeSort.ALL;
                 }
 
                 dismiss(sort, topSort);
@@ -218,22 +220,22 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
      *
      * @param topSort
      */
-    private void updateTextView(RedditFragment.RedditTopSort topSort) {
+    private void updateTextView(ImgurFilters.TimeSort topSort) {
         int selected = getResources().getColor(theme.accentColor);
         int black = Color.BLACK;
         int tfNormal = Typeface.NORMAL;
         int tfBold = Typeface.BOLD;
 
-        mDay.setTextColor(topSort == RedditFragment.RedditTopSort.DAY ? selected : black);
-        mDay.setTypeface(null, topSort == RedditFragment.RedditTopSort.DAY ? tfBold : tfNormal);
-        mWeek.setTextColor(topSort == RedditFragment.RedditTopSort.WEEK ? selected : black);
-        mWeek.setTypeface(null, topSort == RedditFragment.RedditTopSort.WEEK ? tfBold : tfNormal);
-        mMonth.setTextColor(topSort == RedditFragment.RedditTopSort.MONTH ? selected : black);
-        mMonth.setTypeface(null, topSort == RedditFragment.RedditTopSort.MONTH ? tfBold : tfNormal);
-        mYear.setTextColor(topSort == RedditFragment.RedditTopSort.YEAR ? selected : black);
-        mYear.setTypeface(null, topSort == RedditFragment.RedditTopSort.YEAR ? tfBold : tfNormal);
-        mAll.setTextColor(topSort == RedditFragment.RedditTopSort.ALL ? selected : black);
-        mAll.setTypeface(null, topSort == RedditFragment.RedditTopSort.ALL ? tfBold : tfNormal);
+        mDay.setTextColor(topSort == ImgurFilters.TimeSort.DAY ? selected : black);
+        mDay.setTypeface(null, topSort == ImgurFilters.TimeSort.DAY ? tfBold : tfNormal);
+        mWeek.setTextColor(topSort == ImgurFilters.TimeSort.WEEK ? selected : black);
+        mWeek.setTypeface(null, topSort == ImgurFilters.TimeSort.WEEK ? tfBold : tfNormal);
+        mMonth.setTextColor(topSort == ImgurFilters.TimeSort.MONTH ? selected : black);
+        mMonth.setTypeface(null, topSort == ImgurFilters.TimeSort.MONTH ? tfBold : tfNormal);
+        mYear.setTextColor(topSort == ImgurFilters.TimeSort.YEAR ? selected : black);
+        mYear.setTypeface(null, topSort == ImgurFilters.TimeSort.YEAR ? tfBold : tfNormal);
+        mAll.setTextColor(topSort == ImgurFilters.TimeSort.ALL ? selected : black);
+        mAll.setTypeface(null, topSort == ImgurFilters.TimeSort.ALL ? tfBold : tfNormal);
     }
 
     @Override
@@ -252,19 +254,19 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
 
         if (position <= 10) {
             seekBar.setProgress(0);
-            updateTextView(RedditFragment.RedditTopSort.DAY);
+            updateTextView(ImgurFilters.TimeSort.DAY);
         } else if (position <= 30) {
             seekBar.setProgress(20);
-            updateTextView(RedditFragment.RedditTopSort.WEEK);
+            updateTextView(ImgurFilters.TimeSort.WEEK);
         } else if (position <= 50) {
             seekBar.setProgress(40);
-            updateTextView(RedditFragment.RedditTopSort.MONTH);
+            updateTextView(ImgurFilters.TimeSort.MONTH);
         } else if (position <= 70) {
             seekBar.setProgress(60);
-            updateTextView(RedditFragment.RedditTopSort.YEAR);
+            updateTextView(ImgurFilters.TimeSort.YEAR);
         } else {
             seekBar.setProgress(80);
-            updateTextView(RedditFragment.RedditTopSort.ALL);
+            updateTextView(ImgurFilters.TimeSort.ALL);
         }
     }
 
@@ -274,7 +276,7 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
      * @param sort
      * @param topSort
      */
-    public void dismiss(final RedditFragment.RedditSort sort, final RedditFragment.RedditTopSort topSort) {
+    public void dismiss(final RedditSort sort, final ImgurFilters.TimeSort topSort) {
         Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.filter_disappear);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -306,6 +308,6 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
     }
 
     public static interface FilterListener {
-        void onFilterChanged(RedditFragment.RedditSort sort, RedditFragment.RedditTopSort topSort);
+        void onFilterChanged(RedditSort sort, ImgurFilters.TimeSort topSort);
     }
 }
