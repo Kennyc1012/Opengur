@@ -430,6 +430,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 mGalleryUpload.setColor(accentColor);
                 setStatusBarColor(res.getColor(theme.darkColor));
                 mNavFragment.onUpdateTheme(theme);
+                updateTaskDescription(null);
                 break;
 
             case UploadActivity.REQUEST_CODE:

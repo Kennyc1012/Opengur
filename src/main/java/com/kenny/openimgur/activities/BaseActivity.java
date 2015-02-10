@@ -1,14 +1,19 @@
 package com.kenny.openimgur.activities;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 
 import com.kenny.openimgur.R;
@@ -46,6 +51,7 @@ abstract public class BaseActivity extends ActionBarActivity {
         app = OpenImgurApp.getInstance(getApplicationContext());
         theme = app.getImgurTheme();
         theme.applyTheme(getTheme());
+        updateTaskDescription(null);
         super.onCreate(savedInstanceState);
         ActionBar ab = getSupportActionBar();
 
@@ -199,10 +205,27 @@ abstract public class BaseActivity extends ActionBarActivity {
      *
      * @param color
      */
-    @SuppressLint("NewApi")
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setStatusBarColor(int color) {
         if (app.sdkVersion >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(color);
+        }
+    }
+
+    /**
+     * Sets the Task Description for Lollipop devices
+     *
+     * @param title
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    protected void updateTaskDescription(String title) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Resources res = getResources();
+            if (TextUtils.isEmpty(title)) title = res.getString(R.string.app_name);
+            Bitmap icon = BitmapFactory.decodeResource(res, R.drawable.ic_launcher);
+            int color = res.getColor(theme.primaryColor);
+            ActivityManager.TaskDescription description = new ActivityManager.TaskDescription(title, icon, color);
+            setTaskDescription(description);
         }
     }
 }
