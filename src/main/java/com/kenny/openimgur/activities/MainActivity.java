@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -25,7 +26,6 @@ import android.widget.RelativeLayout;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NavAdapter;
 import com.kenny.openimgur.classes.FragmentListener;
-import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
@@ -164,7 +164,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 break;
 
             case NavAdapter.PAGE_PROFILE:
-                startActivity(ProfileActivity.createIntent(getApplicationContext(), null));
+                startActivityForResult(ProfileActivity.createIntent(getApplicationContext(), null), ProfileActivity.REQUEST_CODE);
                 break;
 
             case NavAdapter.PAGE_SUBREDDIT:
@@ -260,11 +260,6 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     @Override
     public void onUpdateActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
-    }
-
-    @Override
-    public void onUpdateUser(ImgurUser user) {
-        if (mNavFragment != null) mNavFragment.onUsernameChange(user);
     }
 
     @Override
@@ -437,6 +432,17 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             case UploadActivity.REQUEST_CODE:
                 Fragment current = getFragmentManager().findFragmentById(R.id.container);
                 if (current != null) current.onActivityResult(requestCode, resultCode, data);
+                break;
+
+            case ProfileActivity.REQUEST_CODE:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    if (data.getBooleanExtra(ProfileActivity.KEY_LOGGED_IN, false)) {
+                        app = OpenImgurApp.getInstance(getApplicationContext());
+                        if (mNavFragment != null) mNavFragment.onUserLogin(app.getUser());
+                    } else if (data.getBooleanExtra(ProfileActivity.KEY_LOGGED_OUT, false)) {
+                        if (mNavFragment != null) mNavFragment.onUserLogin(null);
+                    }
+                }
                 break;
         }
 

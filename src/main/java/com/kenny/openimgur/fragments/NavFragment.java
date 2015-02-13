@@ -79,8 +79,8 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
      *
      * @param user The newly logged in user
      */
-    public void onUsernameChange(ImgurUser user) {
-        if (mAdapter != null) mAdapter.onUsernameChange(user);
+    public void onUserLogin(ImgurUser user) {
+        if (mAdapter != null) mAdapter.onUserLogin(user);
     }
 
     /**
