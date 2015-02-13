@@ -51,6 +51,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  */
 public class ProfileCommentsFragment extends BaseFragment implements AbsListView.OnScrollListener, AdapterView.OnItemClickListener {
     private static final String KEY_SORT = "sort";
+
     private static final String KEY_USER = "user";
 
     private static final String KEY_ITEMS = "items";
@@ -255,8 +256,13 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
 
     @Override
     public void onDestroyView() {
-        EventBus.getDefault().unregister(this);
         app.getPreferences().edit().putString(KEY_SORT, mSort.getSort()).apply();
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onPause() {
+        EventBus.getDefault().unregister(this);
         super.onPause();
     }
 
