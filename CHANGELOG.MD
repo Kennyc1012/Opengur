@@ -10,6 +10,8 @@ their own account.
 
 - Task Descriptions updated for Lollipop devices
 
+- Better scroll detection
+
 - Various bug fixes 
 
 <b>1.6.3</b>
