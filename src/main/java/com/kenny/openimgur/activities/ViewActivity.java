@@ -928,7 +928,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         if (mCommentArray.size() > 0) {
             long key = mCommentArray.keyAt(0);
             outState.putParcelableArrayList(KEY_COMMENT, mCommentArray.get(key));
-        } else if (!mCommentAdapter.isEmpty()) {
+        } else if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_COMMENT, mCommentAdapter.retainItems());
         }
 
