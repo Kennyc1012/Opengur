@@ -1,5 +1,17 @@
 #Open Imgur Changelog
 
+<b>2.0</b>
+- New Profile Layout. Users can now view submissions, favorites, and comments of other users as well as messages and uploads for
+their own account.
+
+- Random mode added
+
+- Highest Scoring Filter added
+
+- Task Descriptions updated for Lollipop devices
+
+- Various bug fixes 
+
 <b>1.6.3</b>
 - Fix trying to use a recycled bitmap crash when viewing an image full screen.
 
