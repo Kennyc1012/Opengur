@@ -193,27 +193,5 @@
     <string name="pref_dark_theme_title">Dark Theme</string>
     <string name="pref_dark_theme_on">Use dark theme</string>
     <string name="pref_dark_theme_off">Do not use dark theme</string>
-    <string-array name="pref_cache_size_items">
-        <item>256MB</item>
-        <item>512MB</item>
-        <item>1GB</item>
-        <item>2GB</item>
-        <item>Unlimited</item>
-    </string-array>
-    <string-array name="pref_themes_items">
-        <item>Blue</item>
-        <item>Cyan</item>
-        <item>Grey</item>
-        <item>Green</item>
-        <item>Orange</item>
-        <item>Pink</item>
-        <item>Purple</item>
-        <item>Red</item>
-        <item>Teal</item>
-    </string-array>
-    <string-array name="pref_cache_loc_items">
-        <item>Internal Partition</item>
-        <item>External Partition</item>
-    </string-array>
 
 </resources>
