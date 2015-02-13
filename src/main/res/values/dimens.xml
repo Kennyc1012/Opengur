@@ -6,16 +6,13 @@
     <dimen name="gallery_item_text_size">16sp</dimen>
     <dimen name="fab_button_radius">72dp</dimen>
     <dimen name="fab_button_radius_smaller">64dp</dimen>
-    <dimen name="profile_username_textsize">24sp</dimen>
-    <dimen name="notoriety_text_size">22sp</dimen>
-    <dimen name="profile_rep_text_size">18sp</dimen>
-    <dimen name="profile_bio_text_size">16sp</dimen>
+    <dimen name="fab_button_half">36dp</dimen>
     <dimen name="dialog_content_margin">24dp</dimen>
     <dimen name="dialog_button_margin">16dp</dimen>
     <dimen name="grid_padding">4dp</dimen>
     <dimen name="view_activity_margin">16dp</dimen>
     <dimen name="loading_circle_size">40dp</dimen>
-    <dimen name="upload_button_margin_right">0dp</dimen>
+    <dimen name="upload_button_margin_right">16dp</dimen>
     <dimen name="upload_button_margin_bottom">16dp</dimen>
     <dimen name="upload_image_margin">0dp</dimen>
 
@@ -25,5 +22,6 @@
     <dimen name="drawer_max_width">320dp</dimen>
     <dimen name="toolbar_with_section_height">128dp</dimen>
     <dimen name="avatar_size">48dp</dimen>
+    <dimen name="tab_bar_height">48dp</dimen>
 
 </resources>

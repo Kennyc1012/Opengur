@@ -11,6 +11,7 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.CustomLinkMovement;
@@ -58,49 +59,12 @@ public class ViewUtils {
      * @param additionalHeight Additional height to be added to the view
      * @return
      */
-
     public static View getHeaderViewForTranslucentStyle(Context context, int additionalHeight) {
         View v = View.inflate(context, R.layout.empty_header, null);
         int height = getHeightForTranslucentStyle(context);
-        ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height + additionalHeight);
+        AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height + additionalHeight);
         v.setLayoutParams(lp);
         return v;
-    }
-
-    /**
-     * Returns a view populated with a user's data
-     *
-     * @param user      The user for whom we are displaying data for
-     * @param context   App Context
-     * @param container The optional ViewGroup to attach to
-     * @param listener  The Imgur listener to listen for link click events
-     * @return
-     */
-    public static View getProfileView(@NonNull ImgurUser user, @NonNull Context context, @Nullable ViewGroup container, @NonNull ImgurListener listener) {
-        View header;
-
-        if (container != null) {
-            header = LayoutInflater.from(context).inflate(R.layout.profile_header, container, false);
-        } else {
-            header = LayoutInflater.from(context).inflate(R.layout.profile_header, null);
-        }
-
-        String date = new SimpleDateFormat("MMM yyyy").format(new Date(user.getCreated()));
-        String reputationText = user.getReputation() + " " + context.getString(R.string.profile_rep_date, date);
-        TextViewRoboto notoriety = (TextViewRoboto) header.findViewById(R.id.notoriety);
-        notoriety.setText(user.getNotoriety().getStringId());
-        notoriety.setTextColor(context.getResources().getColor(user.getNotoriety().getNotorietyColor()));
-        ((TextViewRoboto) header.findViewById(R.id.rep)).setText(reputationText);
-        ((TextViewRoboto) header.findViewById(R.id.username)).setText(user.getUsername());
-
-        if (!TextUtils.isEmpty(user.getBio())) {
-            TextViewRoboto bio = (TextViewRoboto) header.findViewById(R.id.bio);
-            bio.setText(user.getBio());
-            bio.setMovementMethod(CustomLinkMovement.getInstance(listener));
-            Linkify.addLinks(bio, Linkify.WEB_URLS);
-        }
-
-        return header;
     }
 
     /**
@@ -138,5 +102,37 @@ public class ViewUtils {
         }
 
         return height;
+    }
+
+    /**
+     * Returns if a SwipeRefreshLayout should be able to refresh given a ListView
+     *
+     * @param view
+     * @return
+     */
+    public static boolean canRefreshInListView(AbsListView view) {
+        boolean canRefresh = false;
+
+        if (view != null && view.getChildCount() > 0) {
+            boolean firstItemVisible = view.getFirstVisiblePosition() == 0;
+            boolean topOfFirstItemVisible = view.getChildAt(0).getTop() == 0;
+            canRefresh = firstItemVisible && topOfFirstItemVisible;
+        }
+
+        return canRefresh;
+    }
+
+    /**
+     * Returns an empty view to occupy the space of the navigation bar for a translucent style for comments and messages fragment
+     *
+     * @param context
+     * @return
+     */
+    public static View getFooterViewForComments(Context context) {
+        View v = LayoutInflater.from(context).inflate(R.layout.profile_comment_item, null);
+        int height = getNavigationBarHeight(context);
+        AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
+        v.setLayoutParams(lp);
+        return v;
     }
 }

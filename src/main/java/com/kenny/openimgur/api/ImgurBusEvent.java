@@ -24,7 +24,15 @@ public class ImgurBusEvent {
         UPLOAD,
         GALLERY_SUBMISSION,
         REDDIT_SEARCH,
-        COMMENT_POSTED
+        ACCOUNT_COMMENTS,
+        ACCOUNT_CONVOS,
+        CONVO_MESSAGES,
+        MESSAGE_SEND,
+        ACCOUNT_UPLOADS,
+        COMMENT_POSTED,
+        CONVO_DELETE,
+        IMAGE_DELETE,
+        RANDOM_GALLERY
     }
 
     public JSONObject json;
@@ -42,5 +50,13 @@ public class ImgurBusEvent {
         this.eventType = eventType;
         this.httpRequest = httpRequest;
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "JSON: " + json.toString()
+                + "EVENT TYPE: " + eventType.name()
+                + "ID: " + id
+                + "REQUEST TYPE: " + httpRequest.name();
     }
 }

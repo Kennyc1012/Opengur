@@ -21,6 +21,7 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ScrollHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
@@ -50,6 +51,8 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
     private static final String KEY_REQUEST_ID = "requestId";
 
+    private static final String KEY_HAS_MORE = "hasMore";
+
     @InjectView(R.id.multiView)
     protected MultiStateView mMultiStateView;
 
@@ -66,13 +69,13 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
     protected String mRequestId = null;
 
-    private int mPreviousItem = 0;
-
     private boolean mAllowNSFW;
 
     protected boolean mHasMore = true;
 
     private GalleryAdapter mAdapter;
+
+    private ScrollHelper mScrollHelper = new ScrollHelper();
 
     @Override
     public void onAttach(Activity activity) {
@@ -139,13 +142,15 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         // Hide the actionbar when scrolling down, show when scrolling up
-        if (firstVisibleItem > mPreviousItem && mListener != null) {
-            mListener.onUpdateActionBar(false);
-        } else if (firstVisibleItem < mPreviousItem && mListener != null) {
-            mListener.onUpdateActionBar(true);
-        }
+        switch (mScrollHelper.getScrollDirection(view, firstVisibleItem, totalItemCount)) {
+            case ScrollHelper.DIRECTION_DOWN:
+                if (mListener != null) mListener.onUpdateActionBar(false);
+                break;
 
-        mPreviousItem = firstVisibleItem;
+            case ScrollHelper.DIRECTION_UP:
+                if (mListener != null) mListener.onUpdateActionBar(true);
+                break;
+        }
 
         // Load more items when hey get to the end of the list
         if (mHasMore && totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading) {
@@ -200,11 +205,12 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         if (savedInstanceState != null) {
             mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, 0);
             mRequestId = savedInstanceState.getString(KEY_REQUEST_ID, null);
+            mHasMore = savedInstanceState.getBoolean(KEY_HAS_MORE, true);
 
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
+                mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getAdditionalHeaderSpace()));
                 setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items)));
                 mGrid.setSelection(currentPosition);
 
@@ -222,6 +228,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
         outState.putString(KEY_REQUEST_ID, mRequestId);
+        outState.putBoolean(KEY_HAS_MORE, mHasMore);
 
         if (getAdapter() != null && !getAdapter().isEmpty()) {
             outState.putParcelableArrayList(KEY_ITEMS, getAdapter().retainItems());
@@ -258,7 +265,6 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
                     if (arr == null || arr.length() <= 0) {
                         mHasMore = false;
-                        mIsLoading = false;
                         LogUtil.v(TAG, "Did not receive any items in the json array");
                         getHandler().sendEmptyMessage(ImgurHandler.MESSAGE_EMPTY_RESULT);
                         return;
@@ -315,6 +321,27 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         }
 
         LogUtil.e(TAG, "Error received from Event Bus", e);
+    }
+
+    protected void makeRequest(String url) {
+        if (mApiClient == null) {
+            mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
+        } else {
+            mApiClient.setUrl(url);
+        }
+
+        mRequestId = url;
+        mApiClient.doWork(getEventType(), mRequestId, null);
+    }
+
+    /**
+     * Returns any additional space needed for the header view for the grid.
+     * Only should be overridden when the value is > than 0
+     *
+     * @return
+     */
+    protected int getAdditionalHeaderSpace() {
+        return 0;
     }
 
     /**

@@ -9,9 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
-        app:panelHeight="?attr/actionBarSize"
-        app:shadowHeight="4dp"
-        app:dragView="@+id/topContainer"
+        app:umanoPanelHeight="?attr/actionBarSize"
+        app:umanoShadowHeight="4dp"
+        app:umanoDragView="@+id/topContainer"
         android:layout_weight="1">
 
         <!-- MAIN CONTENT -->

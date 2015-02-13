@@ -1,25 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/favorites"
-        android:title="@string/favorites"
-        android:icon="@drawable/ic_action_favorite"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/submissions"
-        android:title="@string/submissions"
-        android:icon="@drawable/ic_action_upload"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/refresh"
-        android:title="@string/refresh"
-        android:icon="@drawable/ic_action_navigation_refresh"
-        app:showAsAction="ifRoom" />
-
     <item
         android:id="@+id/logout"
         android:title="@string/logout"

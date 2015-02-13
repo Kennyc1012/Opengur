@@ -30,11 +30,19 @@ public enum Endpoints {
     // Username
     PROFILE("https://api.imgur.com/3/account/%s"),
 
-    // Username
-    ACCOUNT_GALLERY_FAVORITES("https://api.imgur.com/3/account/%s/gallery_favorites"),
+    // Username/page
+    ACCOUNT_GALLERY_FAVORITES("https://api.imgur.com/3/account/%s/gallery_favorites/%d/newest"),
 
     // Username/Page
     ACCOUNT_SUBMISSIONS("https://api.imgur.com/3/account/%s/submissions/%d"),
+
+    // Username/Sort/Page
+    ACCOUNT_COMMENTS("https://api.imgur.com/3/account/%s/comments/%s/%s"),
+
+    ACCOUNT_CONVOS("https://api.imgur.com/3/conversations"),
+
+    // Username/Page
+    ACCOUNT_IMAGES("https://api.imgur.com/3/account/%s/images/%d"),
 
     // comment id/vote
     COMMENT_VOTE("https://api.imgur.com/3/comment/%s/vote/%s"),
@@ -62,8 +70,20 @@ public enum Endpoints {
     // Image id
     GALLERY_UPLOAD("https://api.imgur.com/3/gallery/%s"),
 
+    // ConvoId, page
+    MESSAGES("https://api.imgur.com/3/conversations/%s/%d/0"),
+
+    // recipient
+    SEND_MESSAGE("https://api.imgur.com/3/conversations/%s"),
+
+    // Convo Id
+    DELETE_CONVO("https://api.imgur.com/3/conversations/%s"),
+
     // Delete hash or image id if owned by account
-    IMAGE_DELETE("https://api.imgur.com/3/image/%s");
+    IMAGE_DELETE("https://api.imgur.com/3/image/%s"),
+
+    // Page Number
+    RANDOM("https://api.imgur.com/3/gallery/random/%d");
 
     private final String mUrl;
 
