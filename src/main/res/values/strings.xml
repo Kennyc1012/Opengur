@@ -151,6 +151,12 @@
     <string name="convo_message_failed">Unable to deliver message</string>
     <string name="convo_delete">Delete Conversation </string>
     <string name="convo_delete_message">Are you sure you want to delete this conversation?</string>
+    <string name="convo_report_title">Report %s</string>
+    <string name="convo_block_title">Block %s</string>
+    <string name="convo_report_message">Are you sure you want to report %s?</string>
+    <string name="convo_block_message">Are you sure you want to block %s?</string>
+    <string name="convo_user_blocked">%s has been blocked</string>
+    <string name="convo_user_reported">%s has been reported</string>
 
     <!-- Profile -->
     <string name="profile_no_uploads">You haven\'t uploaded any images</string>

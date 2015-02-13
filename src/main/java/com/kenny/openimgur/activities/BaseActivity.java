@@ -51,6 +51,7 @@ abstract public class BaseActivity extends ActionBarActivity {
         app = OpenImgurApp.getInstance(getApplicationContext());
         theme = app.getImgurTheme();
         theme.applyTheme(getTheme());
+        updateTaskDescription(null);
         super.onCreate(savedInstanceState);
         ActionBar ab = getSupportActionBar();
 

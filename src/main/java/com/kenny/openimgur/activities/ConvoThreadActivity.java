@@ -1,15 +1,16 @@
 package com.kenny.openimgur.activities;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,7 +26,6 @@ import com.kenny.openimgur.classes.ImgurMessage;
 import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.squareup.okhttp.FormEncodingBuilder;
 
@@ -44,7 +44,9 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 12/25/14.
  */
-public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnScrollListener, SwipeRefreshLayout.OnRefreshListener {
+public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnScrollListener {
+    public static final int REQUEST_CODE = 102;
+    public static final String KEY_BLOCKED_CONVO = "blocked_convo";
     private static final String KEY_CONVO = "convo";
 
     @InjectView(R.id.multiView)
@@ -53,17 +55,11 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
     @InjectView(R.id.convoList)
     ListView mListView;
 
-    @InjectView(R.id.refresh)
-    SwipeRefreshLayout mRefreshLayout;
-
     @InjectView(R.id.sendBtn)
     FloatingActionButton mSendBtn;
 
     @InjectView(R.id.messageInput)
     EditText mMessageInput;
-
-    @InjectView(R.id.messageInputContainer)
-    View mInputContainer;
 
     private ApiClient mApiClient;
 
@@ -74,6 +70,8 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
     private boolean mHasMore = true;
 
     private boolean mIsLoading = false;
+
+    private boolean mHasScrolledInitially = false;
 
     private int mCurrentPage = 1;
 
@@ -88,8 +86,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         mListView.setOnScrollListener(this);
         int accentColor = getResources().getColor(theme.accentColor);
         mSendBtn.setColor(accentColor);
-        mRefreshLayout.setColorSchemeColors(accentColor);
-        mRefreshLayout.setOnRefreshListener(this);
         handleData(savedInstanceState);
     }
 
@@ -103,19 +99,53 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                onRefresh();
+                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+
+                if (mAdapter != null) mAdapter.clear();
+                mHasMore = true;
+                mCurrentPage = 1;
+                fetchMessages();
                 break;
 
             case R.id.block:
-                // TODO
+                reportBlockUser(Endpoints.CONVO_BLOCK);
                 break;
 
             case R.id.report:
-                // TODO
+                reportBlockUser(Endpoints.CONVO_REPORT);
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void reportBlockUser(final Endpoints endpoint) {
+        String title;
+        String message;
+
+        if (endpoint == Endpoints.CONVO_REPORT) {
+            title = getString(R.string.convo_report_title, mConvo.getWithAccount());
+            message = getString(R.string.convo_report_message, mConvo.getWithAccount());
+        } else {
+            title = getString(R.string.convo_block_title, mConvo.getWithAccount());
+            message = getString(R.string.convo_block_message, mConvo.getWithAccount());
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ImgurBusEvent.EventType event = endpoint == Endpoints.CONVO_REPORT ?
+                                ImgurBusEvent.EventType.CONVO_REPORT : ImgurBusEvent.EventType.CONVO_BLOCK;
+
+                        ApiClient client = new ApiClient(String.format(endpoint.getUrl(), mConvo.getWithAccount()), ApiClient.HttpRequest.POST);
+                        client.doWork(event, mConvo.getId(), new FormEncodingBuilder().add("username", mConvo.getWithAccount()).build());
+                        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                    }
+                }).show();
     }
 
     private void handleData(Bundle savedInstance) {
@@ -128,6 +158,8 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         if (mConvo.getMessages() != null && !mConvo.getMessages().isEmpty()) {
             mAdapter = new MessagesAdapter(getApplicationContext(), mConvo.getMessages());
             mListView.setAdapter(mAdapter);
+            mListView.setSelection(mAdapter.getCount() - 1);
+            mHasScrolledInitially = true;
         }
 
         getSupportActionBar().setTitle(mConvo.getWithAccount());
@@ -166,6 +198,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                 mListView.setSelection(mAdapter.getCount() - 1);
                 mApiClient.doWork(ImgurBusEvent.EventType.MESSAGE_SEND, newMessage.getId(), builder.build());
+                mMessageInput.setText(null);
             } else {
                 SnackBar.show(this, R.string.error_generic);
             }
@@ -185,16 +218,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
             mMultiView.setViewState(MultiStateView.ViewState.LOADING);
             fetchMessages();
         }
-    }
-
-    @Override
-    public void onRefresh() {
-        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-
-        if (mAdapter != null) mAdapter.clear();
-        mHasMore = true;
-        mCurrentPage = 1;
-        fetchMessages();
     }
 
     private void fetchMessages() {
@@ -235,12 +258,10 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         // We want to check for when they are at the TOP of the list this time as the messages come in reverse order
         // from the api (newest to oldest)
 
-        if (mHasMore && !mIsLoading && totalItemCount > 0 && firstVisibleItem == 0) {
+        if (mHasMore && !mIsLoading && totalItemCount > 0 && firstVisibleItem == 0 && mHasScrolledInitially) {
             mCurrentPage++;
             fetchMessages();
         }
-
-        mRefreshLayout.setEnabled(ViewUtils.canRefreshInListView(view));
     }
 
     public void onEventAsync(@NonNull ImgurBusEvent event) {
@@ -269,6 +290,14 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                     case MESSAGE_SEND:
                         boolean success = event.json.getBoolean(ApiClient.KEY_SUCCESS);
                         mHandler.sendMessage(ImgurHandler.MESSAGE_MESSAGE_SENT, new Object[]{success, event.id});
+                        break;
+
+                    case CONVO_REPORT:
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_CONVO_REPORTED, event.json.getBoolean(ApiClient.KEY_SUCCESS));
+                        break;
+
+                    case CONVO_BLOCK:
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_CONVO_BLOCKED, event.json.getBoolean(ApiClient.KEY_SUCCESS));
                         break;
 
                 }
@@ -326,6 +355,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                             @Override
                             public void run() {
                                 mListView.setSelection(mAdapter.getCount() - 1);
+                                mHasScrolledInitially = true;
                             }
                         });
                     }
@@ -335,7 +365,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                     if (mAdapter == null || mAdapter.isEmpty()) {
                         mMultiView.setEmptyText(R.id.emptyMessage, getString(R.string.convo_message_hint));
                         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-                        mRefreshLayout.setEnabled(true);
                     }
 
                     mHasMore = false;
@@ -344,7 +373,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                    mRefreshLayout.setEnabled(true);
                     break;
 
                 case MESSAGE_MESSAGE_SENT:
@@ -355,6 +383,32 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                     if (mAdapter != null) {
                         mAdapter.onMessageSendComplete(success, id);
                     }
+                    break;
+
+                case MESSAGE_CONVO_BLOCKED:
+                    if (msg.obj instanceof Boolean) {
+                        if ((Boolean) msg.obj) {
+                            setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_BLOCKED_CONVO, mConvo));
+                            finish();
+                        } else {
+                            SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
+                        }
+                    } else {
+                        SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
+                    }
+                    break;
+
+                case MESSAGE_CONVO_REPORTED:
+                    if (msg.obj instanceof Boolean) {
+                        if ((Boolean) msg.obj) {
+                            SnackBar.show(ConvoThreadActivity.this, getString(R.string.convo_user_reported, mConvo.getWithAccount()));
+                        } else {
+                            SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
+                        }
+                    } else {
+                        SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
+                    }
+
                     break;
             }
 

@@ -84,7 +84,6 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        updateTaskDescription(null);
         setContentView(R.layout.activity_main);
         setupToolBar();
         mNavFragment = (NavFragment) getFragmentManager().findFragmentById(R.id.navDrawer);

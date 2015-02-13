@@ -83,7 +83,12 @@ public enum Endpoints {
     IMAGE_DELETE("https://api.imgur.com/3/image/%s"),
 
     // Page Number
-    RANDOM("https://api.imgur.com/3/gallery/random/%d");
+    RANDOM("https://api.imgur.com/3/gallery/random/%d"),
+
+    // Username
+    CONVO_REPORT("https://api.imgur.com/3/conversations/report/%s"),
+
+    CONVO_BLOCK("https://api.imgur.com/3/conversations/block/%s");
 
     private final String mUrl;
 
