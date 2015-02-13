@@ -2,7 +2,6 @@ package com.kenny.openimgur.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,9 +29,6 @@ import butterknife.InjectView;
  */
 public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
     public static final int MAX_ITEMS = 200;
-
-    private LayoutInflater mInflater;
-
     private int mUpvoteColor;
 
     private int mDownVoteColor;
@@ -41,7 +37,6 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
 
     public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects) {
         super(context, objects, true);
-        mInflater = LayoutInflater.from(context);
         mUpvoteColor = context.getResources().getColor(R.color.notoriety_positive);
         mDownVoteColor = context.getResources().getColor(R.color.notoriety_negative);
         mAllowNSFWThumb = OpenImgurApp.getInstance(context).getPreferences().getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
@@ -70,6 +65,27 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
         }
 
         return new ArrayList<>(objects);
+    }
+
+    /**
+     * Removes an item from the adapter given an id
+     *
+     * @param id The id of the item
+     * @return If the item was removed
+     */
+    public boolean removeItem(String id) {
+        List<ImgurBaseObject> items = getAllItems();
+        boolean removed = false;
+
+        for (ImgurBaseObject obj : items) {
+            if (obj.getId().equals(id)) {
+                removeItem(obj);
+                removed = true;
+                break;
+            }
+        }
+
+        return removed;
     }
 
     @Override

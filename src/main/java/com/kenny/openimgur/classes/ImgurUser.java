@@ -202,33 +202,32 @@ public class ImgurUser implements Parcelable {
      */
     public boolean parseJsonForValues(JSONObject json) {
         try {
-            if (json.has(KEY_DATA) && !json.get(KEY_DATA).equals(null)) {
+            if (!json.isNull(KEY_DATA)) {
                 JSONObject data = json.getJSONObject(KEY_DATA);
 
-                if (data.has(KEY_ID) && !data.get(KEY_ID).equals(null)) {
+                if (!data.isNull(KEY_ID)) {
                     mId = data.getInt(KEY_ID);
                 }
 
-                if (data.has(KEY_USERNAME) && !data.get(KEY_USERNAME).equals(null)) {
+                if (!data.isNull(KEY_USERNAME)) {
                     mUsername = data.getString(KEY_USERNAME);
                 }
 
-                if (data.has(KEY_BIO) && !data.get(KEY_BIO).equals(null)) {
+                if (!data.isNull(KEY_BIO)) {
                     mBio = data.getString(KEY_BIO);
                 }
 
-                if (data.has(KEY_REPUTATION) && !data.get(KEY_REPUTATION).equals(null)) {
+                if (!data.isNull(KEY_REPUTATION)) {
                     mReputation = data.getLong(KEY_REPUTATION);
                     mNotoriety = Notoriety.getNotoriety(mReputation);
                 }
 
-                if (data.has(KEY_CREATED) && !data.get(KEY_CREATED).equals(null)) {
+                if (!data.isNull(KEY_CREATED)) {
                     mCreated = data.getLong(KEY_CREATED) * 1000L;
                 }
 
                 // Can be a boolean if they are not a pro user
-                if (data.has(KEY_PRO_EXPIRATION) && !data.get(KEY_PRO_EXPIRATION).equals(null)
-                        && data.get(KEY_PRO_EXPIRATION) instanceof Long) {
+                if (!data.isNull(KEY_PRO_EXPIRATION) && data.get(KEY_PRO_EXPIRATION) instanceof Long) {
                     mProExpiration = data.getLong(KEY_PRO_EXPIRATION) * 1000L;
                 }
 
@@ -355,6 +354,14 @@ public class ImgurUser implements Parcelable {
     public boolean isSelf() {
         ImgurUser user = OpenImgurApp.getInstance().getUser();
         return user != null && user.equals(this);
+    }
+
+    public boolean isSelf(OpenImgurApp app) {
+        if (app.getUser() != null) {
+            return app.getUser().equals(this);
+        }
+
+        return false;
     }
 
     /**

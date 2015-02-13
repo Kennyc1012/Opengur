@@ -30,7 +30,7 @@ import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.NavFragment;
-import com.kenny.openimgur.fragments.ProfileFragment;
+import com.kenny.openimgur.fragments.RandomFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.ui.FloatingActionButton;
@@ -84,6 +84,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        updateTaskDescription(null);
         setContentView(R.layout.activity_main);
         setupToolBar();
         mNavFragment = (NavFragment) getFragmentManager().findFragmentById(R.id.navDrawer);
@@ -163,12 +164,16 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 break;
 
             case NavAdapter.PAGE_PROFILE:
-                fragment = ProfileFragment.createInstance(null);
-                mCurrentPage = position;
+                startActivity(ProfileActivity.createIntent(getApplicationContext(), null));
                 break;
 
             case NavAdapter.PAGE_SUBREDDIT:
                 fragment = RedditFragment.createInstance();
+                mCurrentPage = position;
+                break;
+
+            case NavAdapter.PAGE_RANDOM:
+                fragment = RandomFragment.createInstance();
                 mCurrentPage = position;
                 break;
 
@@ -399,7 +404,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             Fragment fragment = fm.findFragmentByTag("filter");
 
             if (fragment instanceof GalleryFilterFragment) {
-                ((GalleryFilterFragment) fragment).dismiss(null, null);
+                ((GalleryFilterFragment) fragment).dismiss(null, null, null);
             } else {
                 fm.beginTransaction().remove(fragment).commit();
             }
@@ -426,6 +431,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 mGalleryUpload.setColor(accentColor);
                 setStatusBarColor(res.getColor(theme.darkColor));
                 mNavFragment.onUpdateTheme(theme);
+                updateTaskDescription(null);
                 break;
 
             case UploadActivity.REQUEST_CODE:

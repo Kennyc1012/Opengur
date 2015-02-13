@@ -30,11 +30,23 @@ public class ImgurComment extends ImgurBaseObject {
 
     private static final String KEY_POINTS = "points";
 
+    private static final String KEY_IMAGE_ID = "image_id";
+
+    private static final String KEY_ON_ALBUM = "on_album";
+
+    private static final String KEY_ALBUM_COVER_ID = "album_cover";
+
     private String mAuthor;
 
     private String mAuthorId;
 
     private String mComment;
+
+    private String mImageId;
+
+    private String mAlbumCoverId;
+
+    private boolean mIsAlbumComment;
 
     private boolean mIsDeleted;
 
@@ -51,37 +63,49 @@ public class ImgurComment extends ImgurBaseObject {
 
     private void parseJson(JSONObject json) {
         try {
-            if (json.has(KEY_AUTHOR) && !json.get(KEY_AUTHOR).equals(null)) {
+            if (!json.isNull(KEY_AUTHOR)) {
                 mAuthor = json.getString(KEY_AUTHOR);
             }
 
-            if (json.has(KEY_AUTHOR_ID) && !json.get(KEY_AUTHOR_ID).equals(null)) {
+            if (!json.isNull(KEY_AUTHOR_ID)) {
                 mAuthorId = json.getString(KEY_AUTHOR_ID);
             }
 
-            if (json.has(KEY_DELETED) && !json.get(KEY_DELETED).equals(null)) {
+            if (!json.isNull(KEY_DELETED)) {
                 mIsDeleted = json.getBoolean(KEY_DELETED);
             }
 
-            if (json.has(KEY_CHILDREN) && !json.get(KEY_CHILDREN).equals(null)) {
+            if (!json.isNull(KEY_CHILDREN)) {
                 JSONArray arr = json.getJSONArray(KEY_CHILDREN);
-                mChildrenComments = new ArrayList<ImgurComment>(arr.length());
+                mChildrenComments = new ArrayList<>(arr.length());
                 for (int i = 0; i < arr.length(); i++) {
                     ImgurComment comment = new ImgurComment(arr.getJSONObject(i));
                     mChildrenComments.add(comment);
                 }
             }
 
-            if (json.has(KEY_PARENT_ID) && !json.get(KEY_PARENT_ID).equals(null)) {
+            if (!json.isNull(KEY_PARENT_ID)) {
                 mParentId = json.getLong(KEY_PARENT_ID);
             }
 
-            if (json.has(KEY_COMMENT) && !json.get(KEY_COMMENT).equals(null)) {
+            if (!json.isNull(KEY_COMMENT)) {
                 mComment = json.getString(KEY_COMMENT);
             }
 
-            if (json.has(KEY_POINTS) && !json.get(KEY_POINTS).equals(null)) {
+            if (!json.isNull(KEY_POINTS)) {
                 mPoints = json.getLong(KEY_POINTS);
+            }
+
+            if (!json.isNull(KEY_IMAGE_ID)) {
+                mImageId = json.getString(KEY_IMAGE_ID);
+            }
+
+            if (!json.isNull(KEY_ALBUM_COVER_ID)) {
+                mAlbumCoverId = json.getString(KEY_ALBUM_COVER_ID);
+            }
+
+            if (!json.isNull(KEY_ON_ALBUM)) {
+                mIsAlbumComment = json.getBoolean(KEY_ON_ALBUM);
             }
 
         } catch (JSONException ex) {
@@ -94,7 +118,10 @@ public class ImgurComment extends ImgurBaseObject {
         mAuthor = in.readString();
         mAuthorId = in.readString();
         mComment = in.readString();
+        mImageId = in.readString();
+        mAlbumCoverId = in.readString();
         mIsDeleted = in.readInt() == 1;
+        mIsAlbumComment = in.readInt() == 1;
         mChildrenComments = new ArrayList<>();
         in.readTypedList(mChildrenComments, ImgurComment.CREATOR);
         mParentId = in.readLong();
@@ -106,7 +133,10 @@ public class ImgurComment extends ImgurBaseObject {
         out.writeString(mAuthor);
         out.writeString(mAuthorId);
         out.writeString(mComment);
+        out.writeString(mImageId);
+        out.writeString(mAlbumCoverId);
         out.writeInt(mIsDeleted ? 1 : 0);
+        out.writeInt(mIsAlbumComment ? 1 : 0);
         out.writeTypedList(mChildrenComments);
         out.writeLong(mParentId);
         out.writeLong(mPoints);
@@ -161,5 +191,17 @@ public class ImgurComment extends ImgurBaseObject {
 
     public long getParentId() {
         return mParentId;
+    }
+
+    public boolean isAlbumComment() {
+        return mIsAlbumComment;
+    }
+
+    public String getImageId() {
+        return mImageId;
+    }
+
+    public String getAlbumCoverId() {
+        return mAlbumCoverId;
     }
 }

@@ -15,6 +15,7 @@ apply plugin: 'io.fabric'
 
 repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "http://dl.bintray.com/amulyakhare/maven" }
     mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
     flatDir {
@@ -52,18 +53,20 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.2'
     compile 'com.sothree.slidinguppanel:library:3.0.0'
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.0'
     compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile 'com.android.support:support-annotations:21.0.3'
     compile 'com.android.support:support-v13:21.0.3'
     compile 'com.android.support:cardview-v7:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
-    compile 'com.github.kennyc1012:snackbar:1.0.3-SNAPSHOT:api11Release@aar'
+    compile 'com.github.kennyc1012:snackbar:1.0.4-SNAPSHOT:api11Release@aar'
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.cocosw:bottomsheet:0.6@aar'
+    compile 'com.jpardogo.materialtabstrip:library:1.0.8'
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.0'
     compile(name: 'photo_zoom', ext: 'aar')
     compile project(':libraries:EventBus')
     compile('com.crashlytics.sdk.android:crashlytics:2.2.0@aar') {

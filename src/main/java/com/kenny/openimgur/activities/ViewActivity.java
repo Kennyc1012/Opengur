@@ -227,7 +227,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
         // Header needs to be added before adapter is set for pre 4.4 devices
         mCommentList.addHeaderView(mCommentListHeader);
-        mCommentList.removeHeaderView(mCommentListHeader);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -402,7 +401,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
      * @param comment
      */
     private void previousComments(final ImgurComment comment) {
-        if (mIsCommentsAnimating) return;
+        final Integer previousSelection = mPreviousCommentPositionArray.get(comment.getParentId());
+
+        if (mIsCommentsAnimating || previousSelection == null) {
+            LogUtil.w(TAG, "No previous comments to show");
+            return;
+        }
 
         mIsCommentsAnimating = true;
         mSelectedComment = null;
@@ -422,7 +426,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mCommentAdapter.addItems(mCommentArray.get(comment.getParentId()));
                 mCommentArray.remove(comment.getParentId());
                 mCommentAdapter.notifyDataSetChanged();
-                mCommentList.setSelection(mPreviousCommentPositionArray.get(comment.getParentId()));
+                mCommentList.setSelection(previousSelection);
                 mPreviousCommentPositionArray.remove(comment.getParentId());
                 Animator anim = ObjectAnimator.ofFloat(mCommentList, "translationX", -mCommentList.getWidth(), 0);
 
@@ -497,6 +501,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             if (comments != null) {
                 mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, this);
                 mCommentList.setAdapter(mCommentAdapter);
+                mCommentList.removeHeaderView(mCommentListHeader);
             }
 
             if (mLoadComments) {
@@ -918,7 +923,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
+
+        // If the comment list is browsing replies, we need to get the original list of comments
+        if (mCommentArray.size() > 0) {
+            long key = mCommentArray.keyAt(0);
+            outState.putParcelableArrayList(KEY_COMMENT, mCommentArray.get(key));
+        } else if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_COMMENT, mCommentAdapter.retainItems());
         }
 
@@ -1034,8 +1044,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         if (mCommentAdapter == null) {
                             mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, ViewActivity.this);
                             mCommentAdapter.setOP(imgurObject.getAccount());
-                            // Add and remove the header view for pre 4.4 header support
-                            mCommentList.addHeaderView(mCommentListHeader);
                             mCommentList.setAdapter(mCommentAdapter);
                             mCommentList.removeHeaderView(mCommentListHeader);
                         } else {

@@ -5,8 +5,7 @@
     <string name="app_name">Open Imgur</string>
     <string name="points">points</string>
     <string name="action_settings">Settings</string>
-    <string name="viral">Most Viral</string>
-    <string name="user_sub">User Submitted</string>
+    <string name="random">Random</string>
     <string name="refresh">Refresh</string>
     <string name="clear_cache">Clear Cache</string>
     <string name="clear_cache_message">Are you sure you want to clear your current image cache?</string>
@@ -27,7 +26,6 @@
     <string name="favorites">Favorites</string>
     <string name="favorite">Favorite</string>
     <string name="submissions">Submissions</string>
-    <string name="profile_rep_date">Reputation - Since %s</string>
     <string name="upload">Upload</string>
     <string name="link_upload_desc">Enter URL to Upload From Web</string>
     <string name="upload_desc">Description</string>
@@ -49,8 +47,10 @@
     <string name="view_reddit">View on Reddit</string>
     <string name="accept">Accept</string>
     <string name="previous_comments">Previous Comments</string>
-    <string name="profile_no_favorites">%s has no favorite galleries. Boo</string>
-    <string name="profile_no_submissions">%s has not shared any images with Imgur. Boo</string>
+    <string name="profile_no_favorites">%s has no favorite galleries</string>
+    <string name="profile_no_submissions">%s has not shared any images with Imgur</string>
+    <string name="profile_no_comments">%s has not posted any comments to Imgur</string>
+    <string name="profile_no_convos">You do not have any active conversations</string>
     <string name="sort_by">Sort By</string>
     <string name="developer">Developer</string>
     <string name="version">Version</string>
@@ -90,16 +90,6 @@
     <string name="login_msg">Tap to login</string>
     <string name="dont_ask_again">Don\'t ask me again.</string>
 
-    <string-array name="nav_items">
-        <item>Profile</item>
-        <item>Gallery</item>
-        <item>Subreddit</item>
-        <item>Uploads</item>
-        <item>Divider</item>
-        <item>Settings</item>
-        <item>Feedback</item>
-    </string-array>
-
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
     <string name="error_401">This requires you to be logged in. Please login and try again.</string>
@@ -131,6 +121,9 @@
     <string name="filter_time">Newest</string>
     <string name="filter_rising">Rising</string>
     <string name="filter_top">Top</string>
+    <string name="filter_highest_scoring">Highest Scoring</string>
+    <string name="filter_viral">Most Viral</string>
+    <string name="filter_user_sub">User Submitted</string>
     <string name="reddit_top_filter_day">Day</string>
     <string name="reddit_top_filter_week">Week</string>
     <string name="reddit_top_filter_month">Month</string>
@@ -148,11 +141,26 @@
     <string name="uploaded_photos_title">Uploads</string>
     <string name="uploaded_remove_message">Are you sure you want to remove this photo?</string>
     <string name="uploaded_remove_imgur">Remove from Imgur</string>
-    <string-array name="uploaded_photos_options">
-        <item>Share Link</item>
-        <item>Copy Link</item>
-        <item>Remove Photo</item>
-    </string-array>
+
+    <!-- Convos -->
+    <string name="convo_message_hint">Enter a message</string>
+    <string name="convo_check_for_messages">Check for messages</string>
+    <string name="convo_block">Block</string>
+    <string name="convo_report">Report</string>
+    <string name="convo_message_sending">Sending&#8230;</string>
+    <string name="convo_message_failed">Unable to deliver message</string>
+    <string name="convo_delete">Delete Conversation </string>
+    <string name="convo_delete_message">Are you sure you want to delete this conversation?</string>
+
+    <!-- Profile -->
+    <string name="profile_no_uploads">You haven\'t uploaded any images</string>
+    <string name="profile_delete_image">Are you sure you want to delete this image?</string>
+    <string name="profile_delete_success">Image deleted</string>
+    <string name="profile_delete_failure">Unable to delete image, please try again</string>
+    <string name="profile_send_message">Send Message</string>
+    <string name="profile_rep">%d Reputation</string>
+    <string name="profile_date">Since %s</string>
+    <string name="profile_bio_empty">%s does not have a bio.</string>
 
     <!-- Preferences -->
     <string name="pref_cache_title">Cache</string>
@@ -176,53 +184,5 @@
     <string name="pref_crashlytics_title">Anonymous Usage Statistics</string>
     <string name="pref_crashlytics_on">Anonymous usage statistics will be reported</string>
     <string name="pref_crashlytics_off">Anonymous usage statistics will not be reported</string>
-    <string-array name="pref_cache_size_items">
-        <item>256MB</item>
-        <item>512MB</item>
-        <item>1GB</item>
-        <item>2GB</item>
-        <item>Unlimited</item>
-    </string-array>
-    <string-array name="pref_themes_items">
-        <item>Blue</item>
-        <item>Cyan</item>
-        <item>Grey</item>
-        <item>Green</item>
-        <item>Orange</item>
-        <item>Pink</item>
-        <item>Purple</item>
-        <item>Red</item>
-        <item>Teal</item>
-    </string-array>
-    <string-array name="pref_cache_loc_items">
-        <item>Internal Partition</item>
-        <item>External Partition</item>
-    </string-array>
-
-    <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
-    <string-array name="pref_cache_size_keys" translatable="false">
-        <item>256</item>
-        <item>512</item>
-        <item>1024</item>
-        <item>2048</item>
-        <item>unlimited</item>
-    </string-array>
-
-    <string-array name="pref_theme_keys" translatable="false">
-        <item>blue</item>
-        <item>cyan</item>
-        <item>grey</item>
-        <item>green</item>
-        <item>orange</item>
-        <item>pink</item>
-        <item>purple</item>
-        <item>red</item>
-        <item>teal</item>
-    </string-array>
-
-    <string-array name="pref_cache_loc_keys">
-        <item>internal</item>
-        <item>external</item>
-    </string-array>
 
 </resources>
