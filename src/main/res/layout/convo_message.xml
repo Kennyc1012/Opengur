@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:minHeight="?android:listPreferredItemHeight">
+
+    <LinearLayout
+        android:id="@+id/messageContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:background="@android:color/white">
+
+        <com.kenny.openimgur.ui.TextViewRoboto
+            android:id="@+id/message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:robotoFont="medium"
+            tools:text="blah blah blah this is a message blah blah blah."
+            tools:textColor="@android:color/black" />
+
+        <com.kenny.openimgur.ui.TextViewRoboto
+            android:id="@+id/timeStamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            app:robotoFont="regular"
+            tools:text="12-25-2014 2:59PM"
+            android:textColor="@android:color/black" />
+
+    </LinearLayout>
+
+</FrameLayout>

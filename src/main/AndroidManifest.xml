@@ -34,7 +34,7 @@
             android:theme="@style/Settings_Theme" />
         <activity
             android:name=".activities.ProfileActivity"
-            android:theme="@style/Theme_Translucent" />
+            android:theme="@style/Theme_Translucent_Main" />
         <activity
             android:name=".activities.UploadActivity"
             android:theme="@style/Theme_Not_Translucent"
@@ -50,8 +50,6 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-
-        <service android:name=".DownloaderService" />
         <activity
             android:name=".activities.RoutingActivity"
             android:exported="true"
@@ -153,9 +151,12 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="CRASHLYTICS_KEY" />
+        <activity
+            android:name=".activities.ConvoThreadActivity"
+            android:theme="@style/Imgur_Theme_Base" />
+        <service android:name=".DownloaderService" />
+
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="CRASHLYTICS_KEY"/>
     </application>
 
 </manifest>

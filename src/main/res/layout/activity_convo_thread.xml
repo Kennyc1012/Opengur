@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/messageInputContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="16dp">
+
+        <com.kenny.openimgur.ui.FloatingActionButton
+            android:id="@+id/sendBtn"
+            android:layout_width="@dimen/fab_button_radius"
+            android:layout_height="@dimen/fab_button_radius"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            app:drawable="@drawable/ic_action_send"
+            app:shadowColor="@android:color/white"
+            app:shadowRadius="0"
+            app:shadowDx="0"
+            app:shadowDy="0" />
+
+        <EditText
+            android:id="@+id/messageInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/sendBtn"
+            android:layout_centerVertical="true"
+            android:hint="@string/convo_message_hint"
+            android:inputType="textMultiLine|textCapSentences" />
+
+    </RelativeLayout>
+
+    <com.kenny.openimgur.ui.MultiStateView
+        android:id="@+id/multiView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/messageInputContainer"
+        app:loadingView="@layout/loading_view"
+        app:errorView="@layout/profile_error"
+        app:contentView="@layout/convo_thread"
+        app:emptyView="@layout/empty_comment_view"
+        app:viewState="loading" />
+
+</RelativeLayout>

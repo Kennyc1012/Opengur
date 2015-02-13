@@ -7,10 +7,10 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.CustomLinkMovement;
@@ -22,9 +22,8 @@ import java.util.List;
 
 import butterknife.InjectView;
 
-public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
-    private LayoutInflater mInflater;
 
+public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
     private ImgurListener mListener;
 
     private int mSelectedIndex = -1;
@@ -33,7 +32,6 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
 
     public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
         super(context, comments);
-        mInflater = LayoutInflater.from(context);
         mListener = listener;
     }
 
@@ -70,9 +68,9 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
         holder.comment.setText(comment.getComment());
         holder.author.setText(constructSpan(comment, holder.author.getContext()));
         Linkify.addLinks(holder.comment, Linkify.WEB_URLS);
-        holder.replies.setVisibility(comment.getReplyCount() > 0 ? View.VISIBLE : View.GONE);
         holder.score.setText(String.valueOf(comment.getPoints()));
         holder.score.setBackgroundResource(comment.getPoints() >= 0 ? R.drawable.positive_circle : R.drawable.negative_circle);
+        holder.replies.setVisibility(comment.getReplyCount() > 0 ? View.VISIBLE : View.GONE);
 
         convertView.setBackgroundColor(position == mSelectedIndex ?
                 convertView.getResources().getColor(R.color.comment_bg_selected) :
@@ -137,7 +135,8 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
                         commentDate,
                         now,
                         DateUtils.MINUTE_IN_MILLIS,
-                        DateUtils.FORMAT_ABBREV_RELATIVE);
+                        DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_RELATIVE
+                                | DateUtils.FORMAT_ABBREV_ALL);
     }
 
     public void setOP(String op) {
@@ -159,7 +158,7 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
         TextViewRoboto score;
 
         @InjectView(R.id.replies)
-        ImageView replies;
+        ImageButton replies;
 
         public CommentViewHolder(View view) {
             super(view);

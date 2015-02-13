@@ -26,10 +26,11 @@ public class NavAdapter extends BaseAdapter {
     public static final int PAGE_PROFILE = 0;
     public static final int PAGE_GALLERY = 1;
     public static final int PAGE_SUBREDDIT = 2;
-    public static final int PAGE_UPLOADS = 3;
-    public static final int PAGE_DIVIDER = 4;
-    public static final int PAGE_SETTINGS = 5;
-    public static final int PAGE_FEEDBACK = 6;
+    public static final int PAGE_RANDOM = 3;
+    public static final int PAGE_UPLOADS = 4;
+    public static final int PAGE_DIVIDER = 5;
+    public static final int PAGE_SETTINGS = 6;
+    public static final int PAGE_FEEDBACK = 7;
     private static final int VIEW_TYPE_PRIMARY = 0;
     private static final int VIEW_TYPE_DIVIDER = 1;
     private static final int VIEW_TYPE_PROFILE = 2;
@@ -176,6 +177,10 @@ public class NavAdapter extends BaseAdapter {
                 drawable = res.getDrawable(R.drawable.ic_action_reddit).mutate();
                 break;
 
+            case PAGE_RANDOM:
+                drawable = res.getDrawable(R.drawable.ic_action_shuffle).mutate();
+                break;
+
             case PAGE_UPLOADS:
                 drawable = res.getDrawable(R.drawable.ic_action_upload).mutate();
                 break;
@@ -201,7 +206,7 @@ public class NavAdapter extends BaseAdapter {
      *
      * @param user The newly logged in user
      */
-    public void onUsernameChange(ImgurUser user) {
+    public void onUserLogin(ImgurUser user) {
         mUser = user;
         notifyDataSetChanged();
     }

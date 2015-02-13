@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:paddingRight="@dimen/content_padding"
     android:minHeight="?android:listPreferredItemHeight"
-    android:descendantFocusability="blocksDescendants">
+    android:descendantFocusability="blocksDescendants"
+    tools:layout_height="120dp">
 
     <com.kenny.openimgur.ui.TextViewRoboto
         android:id="@+id/score"
@@ -27,21 +28,21 @@
         android:layout_marginLeft="@dimen/keyline_margin"
         android:layout_gravity="center_vertical">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/replies"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
+            android:layout_alignParentBottom="true"
             android:background="@drawable/pressed_drawable"
-            android:src="@drawable/ic_action_replies"
-            android:clickable="true" />
+            android:src="@drawable/ic_action_replies"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_toLeftOf="@id/replies">
+            android:layout_toLeftOf="@id/replies"
+            android:layout_centerVertical="true">
 
             <com.kenny.openimgur.ui.TextViewRoboto
                 android:id="@+id/author"

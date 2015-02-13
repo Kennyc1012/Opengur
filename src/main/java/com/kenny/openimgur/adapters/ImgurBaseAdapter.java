@@ -1,12 +1,14 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -25,9 +27,12 @@ public abstract class ImgurBaseAdapter<T> extends BaseAdapter {
 
     private ImageLoader mImageLoader;
 
+    protected LayoutInflater mInflater;
+
     public ImgurBaseAdapter(Context context, List<T> collection, boolean hasImageLoader) {
         if (hasImageLoader) mImageLoader = OpenImgurApp.getInstance(context).getImageLoader();
         mItems = collection;
+        mInflater = LayoutInflater.from(context);
     }
 
     public ImgurBaseAdapter(Context context, List<T> collection) {
@@ -50,6 +55,11 @@ public abstract class ImgurBaseAdapter<T> extends BaseAdapter {
      * @param items
      */
     public void addItems(List<T> items) {
+        if (items == null || items.isEmpty()) {
+            LogUtil.w(TAG, "List is empty or null");
+            return;
+        }
+
         if (mItems == null) {
             mItems = items;
         } else {

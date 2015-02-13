@@ -194,6 +194,11 @@ public class ImageUtil {
                 .showImageOnLoading(R.drawable.place_holder);
     }
 
+    public static DisplayImageOptions.Builder getDisplayOptionsForComments() {
+        return getDefaultDisplayOptions()
+                .displayer(new CircleBitmapDisplayer());
+    }
+
     /**
      * Returns the default display options for the image loader
      * Resets view before loading, caches in memory and on disk.

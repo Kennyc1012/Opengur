@@ -52,15 +52,15 @@
             <RadioButton
                 android:id="@+id/userSubRB"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/user_sub"
+                android:layout_height="match_parent"
+                android:text="@string/filter_user_sub"
                 android:layout_weight="1" />
 
             <RadioButton
                 android:id="@+id/viralRB"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/viral"
+                android:layout_height="match_parent"
+                android:text="@string/filter_viral"
                 android:layout_weight="1" />
 
         </RadioGroup>
@@ -90,10 +90,10 @@
                 android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:text="@string/filter_time"
-                android:textColor="@android:color/black"/>
+                android:textColor="@android:color/black" />
 
             <TextView
-                android:id="@+id/rising"
+                android:id="@+id/optionalSort"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -130,6 +130,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin" />
+
+        <include layout="@layout/date_range_filter" />
 
         <LinearLayout
             android:layout_width="match_parent"

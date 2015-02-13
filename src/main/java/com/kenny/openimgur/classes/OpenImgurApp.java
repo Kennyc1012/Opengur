@@ -106,7 +106,7 @@ public class OpenImgurApp extends Application {
     }
 
     public static OpenImgurApp getInstance(Context context) {
-        return (OpenImgurApp) context.getApplicationContext();
+        return context != null ? (OpenImgurApp) context.getApplicationContext() : instance;
     }
 
     public SharedPreferences getPreferences() {
@@ -130,8 +130,9 @@ public class OpenImgurApp extends Application {
      * Deletes all of the cache, including the unused partition (external/internal)
      */
     public void deleteAllCache() {
-        mImageLoader.clearDiskCache();
-        mImageLoader.clearMemoryCache();
+        ImageLoader imageLoader = getImageLoader();
+        imageLoader.clearDiskCache();
+        imageLoader.clearMemoryCache();
         VideoCache.getInstance().deleteCache();
         String cacheKey = mPref.getString(SettingsActivity.KEY_CACHE_LOC, SettingsActivity.CACHE_LOC_INTERNAL);
 

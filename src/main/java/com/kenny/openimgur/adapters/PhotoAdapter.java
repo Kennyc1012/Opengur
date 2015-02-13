@@ -3,7 +3,6 @@ package com.kenny.openimgur.adapters;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +26,6 @@ import butterknife.InjectView;
 import pl.droidsonroids.gif.GifDrawable;
 
 public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
-    private LayoutInflater mInflater;
-
     private ImgurListener mListener;
 
     private static final long PHOTO_SIZE_LIMIT = 1024 * 1024 * 2;
@@ -36,7 +33,6 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
 
     public PhotoAdapter(Context context, List<ImgurPhoto> photos, ImgurListener listener) {
         super(context, photos, true);
-        mInflater = LayoutInflater.from(context);
         mListener = listener;
     }
 
@@ -211,16 +207,22 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
     static class PhotoViewHolder extends ImgurViewHolder {
         @InjectView(R.id.image)
         ImageView image;
+
         @InjectView(R.id.play)
         ImageButton play;
+
         @InjectView(R.id.progressBar)
         ProgressBar prog;
+
         @InjectView(R.id.desc)
         TextViewRoboto desc;
+
         @InjectView(R.id.title)
         TextViewRoboto title;
+
         @InjectView(R.id.videoView)
         VideoView video;
+
         View root;
 
         public PhotoViewHolder(View view) {
