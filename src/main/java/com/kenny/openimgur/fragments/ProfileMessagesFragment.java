@@ -3,6 +3,7 @@ package com.kenny.openimgur.fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
@@ -113,7 +114,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
 
         if (position >= 0 && position < mAdapter.getCount()) {
             ImgurConvo convo = mAdapter.getItem(position);
-            startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
+            startActivityForResult(ConvoThreadActivity.createIntent(getActivity(), convo), ConvoThreadActivity.REQUEST_CODE);
         }
     }
 
@@ -153,14 +154,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
                     .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            String url = String.format(Endpoints.DELETE_CONVO.getUrl(), convo.getId());
-                            // We don't care about the response
-                            new ApiClient(url, ApiClient.HttpRequest.DELETE).doWork(ImgurBusEvent.EventType.CONVO_DELETE, convo.getId(), null);
-                            mAdapter.removeItem(convo);
-
-                            if (mAdapter.isEmpty()) {
-                                mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
-                            }
+                            deleteConvo(convo);
                         }
                     }).show();
 
@@ -168,6 +162,17 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
         }
 
         return false;
+    }
+
+    private void deleteConvo(ImgurConvo convo) {
+        String url = String.format(Endpoints.DELETE_CONVO.getUrl(), convo.getId());
+        // We don't care about the response
+        new ApiClient(url, ApiClient.HttpRequest.DELETE).doWork(ImgurBusEvent.EventType.CONVO_DELETE, convo.getId(), null);
+        mAdapter.removeItem(convo.getId());
+
+        if (mAdapter.isEmpty()) {
+            mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
+        }
     }
 
     @Override
@@ -278,5 +283,19 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
         if (mAdapter != null && !mAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_ITEMS, mAdapter.retainItems());
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case ConvoThreadActivity.REQUEST_CODE:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    ImgurConvo convo = data.getParcelableExtra(ConvoThreadActivity.KEY_BLOCKED_CONVO);
+                    if (convo != null && mAdapter != null) deleteConvo(convo);
+                }
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

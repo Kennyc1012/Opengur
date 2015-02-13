@@ -205,7 +205,7 @@ public class NavAdapter extends BaseAdapter {
      *
      * @param user The newly logged in user
      */
-    public void onUsernameChange(ImgurUser user) {
+    public void onUserLogin(ImgurUser user) {
         mUser = user;
         notifyDataSetChanged();
     }

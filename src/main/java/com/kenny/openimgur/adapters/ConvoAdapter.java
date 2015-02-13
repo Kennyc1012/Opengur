@@ -61,6 +61,17 @@ public class ConvoAdapter extends ImgurBaseAdapter<ImgurConvo> {
         return convertView;
     }
 
+    public void removeItem(String id) {
+        List<ImgurConvo> items = retainItems();
+
+        for (ImgurConvo c : items) {
+            if (c.getId().equals(id)) {
+                removeItem(c);
+                break;
+            }
+        }
+    }
+
     static class ConvoViewHolder extends ImgurViewHolder {
         @InjectView(R.id.author)
         TextViewRoboto author;

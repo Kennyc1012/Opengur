@@ -2,6 +2,7 @@ package com.kenny.openimgur.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -56,6 +57,12 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  * Created by kcampagna on 12/14/14.
  */
 public class ProfileActivity extends BaseActivity implements FragmentListener {
+    public static final int REQUEST_CODE = 101;
+
+    public static final String KEY_LOGGED_IN = "logged_in";
+
+    public static final String KEY_LOGGED_OUT = "logged_out";
+
     private static final String KEY_USERNAME = "username";
 
     private static final String KEY_USER = "user";
@@ -176,6 +183,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         mSelectedUser = null;
         app.onLogout();
         configWebView();
+        setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_LOGGED_OUT, true));
     }
 
     @Override
@@ -279,6 +287,8 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                         view.clearCache(true);
                         view.clearFormData();
                         getSupportActionBar().show();
+                        getSupportActionBar().setTitle(user.getUsername());
+                        setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_LOGGED_IN, true));
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, R.string.error_generic);
                     }
@@ -406,11 +416,6 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
 
     @Override
     public void onError(int errorCode) {
-        // NOOP
-    }
-
-    @Override
-    public void onUpdateUser(ImgurUser user) {
         // NOOP
     }
 

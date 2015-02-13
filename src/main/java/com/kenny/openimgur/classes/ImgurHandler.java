@@ -28,6 +28,10 @@ public class ImgurHandler extends Handler {
 
     public static final int MESSAGE_IMAGE_DELETED = 9;
 
+    public static final int MESSAGE_CONVO_BLOCKED = 10;
+
+    public static final int MESSAGE_CONVO_REPORTED = 11;
+
     /**
      * Sends a message to the handler
      *
