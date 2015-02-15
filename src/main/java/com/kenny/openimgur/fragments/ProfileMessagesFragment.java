@@ -26,6 +26,7 @@ import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ScrollHelper;
 import com.kenny.openimgur.util.ViewUtils;
@@ -264,11 +265,21 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
 
                 case MESSAGE_ACTION_FAILED:
                     mMultiStatView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
+
+                    if (theme.isDarkTheme) {
+                        mMultiStatView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.error, getResources()));
+                    }
+
                     mMultiStatView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
 
                 case MESSAGE_EMPTY_RESULT:
                     mMultiStatView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_convos));
+
+                    if (theme.isDarkTheme) {
+                        mMultiStatView.setEmptyDrawable(R.id.emptyMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.no_comments, getResources()));
+                    }
+
                     mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
                     break;
             }

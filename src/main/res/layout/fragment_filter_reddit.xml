@@ -2,8 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_material_light">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="vertical"
@@ -16,6 +15,7 @@
             android:layout_height="@dimen/toolbar_with_section_height"
             android:minHeight="?actionBarSize"
             android:gravity="bottom"
+            android:background="?colorPrimary"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha">
 
@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:text="@string/sort_by"
+            android:textColor="?colorPrimaryDark"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="8dp" />

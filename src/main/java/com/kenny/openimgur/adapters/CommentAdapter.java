@@ -16,6 +16,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurListener;
+import com.kenny.openimgur.util.ImageUtil;
 
 import java.util.List;
 
@@ -60,6 +61,10 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
             });
 
             holder.comment.setMovementMethod(CustomLinkMovement.getInstance(mListener));
+
+            if (mIsDarkTheme) {
+                holder.replies.setImageDrawable(ImageUtil.getDrawableForDarkTheme(R.drawable.ic_action_replies, convertView.getResources()));
+            }
         } else {
             holder = (CommentViewHolder) convertView.getTag();
         }

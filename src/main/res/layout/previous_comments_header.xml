@@ -8,6 +8,5 @@
     android:drawablePadding="8dp"
     android:text="@string/previous_comments"
     android:gravity="center_vertical"
-    android:textColor="@android:color/black"
     android:textSize="16sp"
     android:textAppearance="@style/TextAppearance.Regular" />

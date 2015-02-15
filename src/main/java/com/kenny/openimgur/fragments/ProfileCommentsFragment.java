@@ -31,6 +31,7 @@ import com.kenny.openimgur.classes.ImgurFilters.CommentSort;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ScrollHelper;
 import com.kenny.openimgur.util.ViewUtils;
@@ -360,6 +361,11 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
                     // Only show Error view when the user has posted no comments
                     if (mAdapter == null || mAdapter.isEmpty()) {
                         mMultiStatView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
+
+                        if (theme.isDarkTheme) {
+                            mMultiStatView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.error, getResources()));
+                        }
+
                         mMultiStatView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                     break;
@@ -371,6 +377,11 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
                     // Only show empty view when the user has posted no comments
                     if (mAdapter == null || mAdapter.isEmpty()) {
                         mMultiStatView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_comments, mSelectedUser.getUsername()));
+
+                        if (theme.isDarkTheme) {
+                            mMultiStatView.setEmptyDrawable(R.id.emptyMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.no_comments, getResources()));
+                        }
+
                         mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
                     }
                     break;

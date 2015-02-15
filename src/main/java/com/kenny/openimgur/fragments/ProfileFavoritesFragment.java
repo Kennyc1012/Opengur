@@ -17,6 +17,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -93,6 +94,11 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
                 case ImgurHandler.MESSAGE_ACTION_FAILED:
                     if (getAdapter() == null || getAdapter().isEmpty()) {
                         mMultiStateView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
+
+                        if (theme.isDarkTheme) {
+                            mMultiStateView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.error, getResources()));
+                        }
+
                         mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                     break;
@@ -101,6 +107,11 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
                     if (getAdapter() == null || getAdapter().isEmpty()) {
                         String errorMessage = getString(R.string.profile_no_favorites, mSelectedUser.getUsername());
                         mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
+
+                        if (theme.isDarkTheme) {
+                            mMultiStateView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.error, getResources()));
+                        }
+
                         mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                     break;

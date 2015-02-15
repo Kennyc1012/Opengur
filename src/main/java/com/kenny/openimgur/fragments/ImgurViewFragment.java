@@ -449,6 +449,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCodeStringResource((Integer) msg.obj));
+
+                    if (theme.isDarkTheme) {
+                        mMultiView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.error, getResources()));
+                    }
+
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
 

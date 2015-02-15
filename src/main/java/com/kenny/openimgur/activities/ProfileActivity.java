@@ -42,6 +42,7 @@ import com.kenny.openimgur.fragments.ProfileMessagesFragment;
 import com.kenny.openimgur.fragments.ProfileSubmissionsFragment;
 import com.kenny.openimgur.fragments.ProfileUploadsFragment;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 
@@ -368,6 +369,11 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
 
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
+
+                    if (theme.isDarkTheme) {
+                        mMultiView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.error, getResources()));
+                    }
+
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
             }

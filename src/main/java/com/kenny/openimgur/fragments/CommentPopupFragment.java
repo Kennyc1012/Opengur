@@ -19,6 +19,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.snackbar.SnackBar;
 import com.squareup.okhttp.FormEncodingBuilder;
 
@@ -85,7 +86,9 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_DeviceDefault_Light_Dialog);
+        int style = OpenImgurApp.getInstance(getActivity()).getImgurTheme().isDarkTheme ?
+                android.R.style.Theme_DeviceDefault_Dialog : android.R.style.Theme_DeviceDefault_Light_Dialog;
+        setStyle(DialogFragment.STYLE_NO_TITLE, style);
     }
 
     @Nullable

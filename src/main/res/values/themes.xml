@@ -26,6 +26,11 @@
         <item name="android:windowBackground">@color/background_material_light</item>
         <item name="android:textColorSecondary">@color/secondary_text_default_material_light</item>
         <item name="android:textColor">@color/primary_text_default_material_light</item>
+        <item name="android:textColorHint">@color/secondary_text_default_material_light</item>
+        <item name="android:editTextColor">@color/primary_text_default_material_light</item>
+        <item name="android:textColorLink">?colorAccent</item>
+        <item name="android:radioButtonStyle">@style/RadioButton.Style.Light</item>
+        <item name="android:checkboxStyle">@style/CheckBox.Style.Light</item>
     </style>
 
     <style name="Theme_Blue" parent="@style/Theme_Light">
@@ -87,6 +92,11 @@
         <item name="android:windowBackground">@color/background_material_dark</item>
         <item name="android:textColorSecondary">@color/secondary_text_default_material_dark</item>
         <item name="android:textColor">@color/primary_text_default_material_dark</item>
+        <item name="android:textColorHint">@color/secondary_text_default_material_dark</item>
+        <item name="android:editTextColor">@color/primary_text_default_material_dark</item>
+        <item name="android:textColorLink">?colorAccent</item>
+        <item name="android:radioButtonStyle">@style/RadioButton.Style.Dark</item>
+        <item name="android:checkboxStyle">@style/CheckBox.Style.Dark</item>
     </style>
 
     <style name="Theme_Blue_Dark" parent="@style/Theme_Dark">

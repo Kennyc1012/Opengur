@@ -6,7 +6,11 @@
     android:layout_height="wrap_content">
 
     <TextView
-        style="@style/dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:layout_margin="@dimen/dialog_content_margin"
+        android:textAppearance="@style/TextAppearance.Medium"
         android:text="@string/comment" />
 
     <EditText

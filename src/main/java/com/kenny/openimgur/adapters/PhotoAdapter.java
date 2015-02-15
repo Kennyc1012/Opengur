@@ -2,6 +2,7 @@ package com.kenny.openimgur.adapters;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -65,6 +66,7 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
             });
 
             setClickListener(holder);
+            if (mIsDarkTheme) holder.root.setCardBackgroundColor(convertView.getResources().getColor(R.color.card_bg_dark));
         } else {
             holder = (PhotoViewHolder) convertView.getTag();
         }
@@ -224,11 +226,11 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
         @InjectView(R.id.videoView)
         VideoView video;
 
-        View root;
+        CardView root;
 
         public PhotoViewHolder(View view) {
             super(view);
-            root = view;
+            root = (CardView) view;
         }
     }
 }

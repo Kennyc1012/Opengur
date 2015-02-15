@@ -27,6 +27,7 @@ import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 
@@ -45,7 +46,9 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
     public HeaderGridView mGrid;
 
     private FragmentListener mListener;
+
     private UploadAdapter mAdapter;
+
     private int mPreviousItem = 0;
 
     public static Fragment createInstance() {
@@ -95,6 +98,10 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                 mGrid.setAdapter(mAdapter);
                 mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
             } else {
+                if (theme.isDarkTheme) {
+                    mMultiStateView.setEmptyDrawable(R.id.emptyMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.empty_uploads, getResources()));
+                }
+
                 mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
                 if (mListener != null) mListener.onUpdateActionBar(true);
             }

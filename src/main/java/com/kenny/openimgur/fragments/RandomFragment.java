@@ -18,6 +18,7 @@ import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -142,6 +143,10 @@ public class RandomFragment extends BaseGridFragment {
                                 fetchGallery();
                             }
                         });
+
+                        if (theme.isDarkTheme) {
+                            mMultiStateView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.empty_uploads, getResources()));
+                        }
 
                         mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                     }

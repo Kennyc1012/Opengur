@@ -1,15 +1,19 @@
 package com.kenny.openimgur.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -270,5 +274,18 @@ public class ImageUtil {
         }
 
         return null;
+    }
+
+    /**
+     * Returns a white tinted drawable for Dark themese
+     *
+     * @param drawableId
+     * @param resources
+     * @return
+     */
+    public static Drawable getDrawableForDarkTheme(@DrawableRes int drawableId, @NonNull Resources resources) {
+        Drawable drawable = resources.getDrawable(drawableId).mutate();
+        drawable.setColorFilter(resources.getColor(R.color.secondary_text_default_material_dark), PorterDuff.Mode.SRC_IN);
+        return drawable;
     }
 }

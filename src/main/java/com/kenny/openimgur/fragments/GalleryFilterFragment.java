@@ -34,8 +34,11 @@ import butterknife.OnClick;
 public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSeekBarChangeListener,
         RadioGroup.OnCheckedChangeListener, View.OnClickListener {
     private static final String KEY_SECTION = "section";
+
     private static final String KEY_SORT = "sort";
+
     private static final String KEY_VIRAL = "showViral";
+
     private static final String KEY_TIME_SORT = "timeSort";
 
     @InjectView(R.id.sectionGroup)
@@ -113,10 +116,14 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (theme.isDarkTheme) {
+            view.setBackgroundColor(getResources().getColor(R.color.background_material_dark));
+        } else {
+            view.setBackgroundColor(getResources().getColor(R.color.background_material_light));
+        }
+
         configToolBar((Toolbar) view.findViewById(R.id.toolBar));
-        ((TextView) view.findViewById(R.id.sectionTitle)).setTextColor(getResources().getColor(theme.darkColor));
-        ((TextView) view.findViewById(R.id.sortTitle)).setTextColor(getResources().getColor(theme.darkColor));
-        ((TextView) view.findViewById(R.id.dateTitle)).setTextColor(getResources().getColor(theme.darkColor));
         Bundle args = getArguments();
         GallerySort sort = GallerySort.getSortFromString(args.getString(KEY_SORT, null));
         GallerySection section = GallerySection.getSectionFromString(args.getString(KEY_SECTION, null));
@@ -207,19 +214,19 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
      */
     private void updateTextView(ImgurFilters.TimeSort topSort) {
         int selected = getResources().getColor(theme.accentColor);
-        int black = Color.BLACK;
+        int defaultColor = theme.isDarkTheme ? Color.WHITE : Color.BLACK;
         int tfNormal = Typeface.NORMAL;
         int tfBold = Typeface.BOLD;
 
-        mDay.setTextColor(topSort == ImgurFilters.TimeSort.DAY ? selected : black);
+        mDay.setTextColor(topSort == ImgurFilters.TimeSort.DAY ? selected : defaultColor);
         mDay.setTypeface(null, topSort == ImgurFilters.TimeSort.DAY ? tfBold : tfNormal);
-        mWeek.setTextColor(topSort == ImgurFilters.TimeSort.WEEK ? selected : black);
+        mWeek.setTextColor(topSort == ImgurFilters.TimeSort.WEEK ? selected : defaultColor);
         mWeek.setTypeface(null, topSort == ImgurFilters.TimeSort.WEEK ? tfBold : tfNormal);
-        mMonth.setTextColor(topSort == ImgurFilters.TimeSort.MONTH ? selected : black);
+        mMonth.setTextColor(topSort == ImgurFilters.TimeSort.MONTH ? selected : defaultColor);
         mMonth.setTypeface(null, topSort == ImgurFilters.TimeSort.MONTH ? tfBold : tfNormal);
-        mYear.setTextColor(topSort == ImgurFilters.TimeSort.YEAR ? selected : black);
+        mYear.setTextColor(topSort == ImgurFilters.TimeSort.YEAR ? selected : defaultColor);
         mYear.setTypeface(null, topSort == ImgurFilters.TimeSort.YEAR ? tfBold : tfNormal);
-        mAll.setTextColor(topSort == ImgurFilters.TimeSort.ALL ? selected : black);
+        mAll.setTextColor(topSort == ImgurFilters.TimeSort.ALL ? selected : defaultColor);
         mAll.setTypeface(null, topSort == ImgurFilters.TimeSort.ALL ? tfBold : tfNormal);
     }
 
@@ -233,7 +240,6 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
                 dismiss(null, null, null);
             }
         });
-        tb.setBackgroundColor(getResources().getColor(theme.primaryColor));
     }
 
     @Override
@@ -249,6 +255,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         int position = seekBar.getProgress();
+        int defaultColor = theme.isDarkTheme ? Color.WHITE : Color.BLACK;
 
         if (seekBar == mSeekBar) {
             boolean isViral = mSectionRG.getCheckedRadioButtonId() == R.id.viralRB;
@@ -256,8 +263,8 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
             if (position <= 33) {
                 mSeekBar.setProgress(0);
                 mTime.setTextColor(getResources().getColor(theme.accentColor));
-                mViral.setTextColor(Color.BLACK);
-                mOptionalSort.setTextColor(Color.BLACK);
+                mViral.setTextColor(defaultColor);
+                mOptionalSort.setTextColor(defaultColor);
                 mTime.setTypeface(null, Typeface.BOLD);
                 mViral.setTypeface(null, Typeface.NORMAL);
                 mOptionalSort.setTypeface(null, Typeface.NORMAL);
@@ -267,8 +274,8 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
                 }
             } else if (position <= 66) {
                 mSeekBar.setProgress(50);
-                mTime.setTextColor(Color.BLACK);
-                mViral.setTextColor(Color.BLACK);
+                mTime.setTextColor(defaultColor);
+                mViral.setTextColor(defaultColor);
                 mOptionalSort.setTextColor(getResources().getColor(theme.accentColor));
                 mTime.setTypeface(null, Typeface.NORMAL);
                 mViral.setTypeface(null, Typeface.NORMAL);
@@ -279,9 +286,9 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
                 }
             } else {
                 mSeekBar.setProgress(100);
-                mTime.setTextColor(Color.BLACK);
+                mTime.setTextColor(defaultColor);
                 mViral.setTextColor(getResources().getColor(theme.accentColor));
-                mOptionalSort.setTextColor(Color.BLACK);
+                mOptionalSort.setTextColor(defaultColor);
                 mTime.setTypeface(null, Typeface.NORMAL);
                 mViral.setTypeface(null, Typeface.BOLD);
                 mOptionalSort.setTypeface(null, Typeface.NORMAL);

@@ -19,6 +19,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -67,7 +68,9 @@ import pl.droidsonroids.gif.GifDrawable;
  */
 public class UploadActivity extends BaseActivity {
     public static final int REQUEST_CODE = 100;
+
     private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
+
     private static final String KEY_FILE_PATH = "filePath";
 
     private static final String KEY_IS_UPLOADING = "isuploading";
@@ -127,8 +130,14 @@ public class UploadActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle(getString(R.string.upload));
         setContentView(R.layout.activity_upload);
-        mUploadButton.setTextColor(getResources().getColor(theme.accentColor));
         mNotifyNoUser = app.getPreferences().getBoolean(PREF_NOTIFY_NO_USER, true);
+
+        if (theme.isDarkTheme) {
+            int bgColor = getResources().getColor(R.color.card_bg_dark);
+            ((CardView) findViewById(R.id.photoContainer)).setCardBackgroundColor(bgColor);
+            ((CardView) findViewById(R.id.infoContainer)).setCardBackgroundColor(bgColor);
+            mPreviewImage.setImageDrawable(ImageUtil.getDrawableForDarkTheme(R.drawable.photo_placeholder, getResources()));
+        }
     }
 
     /**

@@ -30,6 +30,7 @@
         android:layout_marginTop="16dp"
         android:textAllCaps="true"
         android:layout_gravity="center_horizontal"
+        android:textColor="?colorAccent"
         tools:text="Retry" />
 
 </LinearLayout>

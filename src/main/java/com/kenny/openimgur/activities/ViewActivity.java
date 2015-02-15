@@ -56,6 +56,7 @@ import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
@@ -216,7 +217,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         setContentView(R.layout.activity_view);
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
         mMultiView.setErrorButtonText(R.id.errorButton, R.string.load_comments);
-        findViewById(R.id.topContainer).setBackgroundColor(getResources().getColor(theme.primaryColor));
         mCommentListHeader = (TextView) View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
         Drawable[] drawables = mCommentListHeader.getCompoundDrawables();
 
@@ -1063,13 +1063,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             }
                         });
                     } else {
+                        if (theme.isDarkTheme) {
+                            mMultiView.setEmptyDrawable(R.id.emptyMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.no_comments, getResources()));
+                        }
+
                         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
                     }
                     break;
 
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     mMultiView.setErrorButtonText(R.id.errorButton, R.string.retry);
                     mMultiView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
                         @Override
@@ -1077,6 +1080,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             loadComments();
                         }
                     });
+
+                    if (theme.isDarkTheme) {
+                        mMultiView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.error, getResources()));
+                    }
+
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
 
                 case MESSAGE_COMMENT_POSTED:

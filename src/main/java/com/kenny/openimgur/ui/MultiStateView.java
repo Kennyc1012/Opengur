@@ -247,7 +247,7 @@ public class MultiStateView extends FrameLayout {
             throw new NullPointerException("Empty view is null");
         }
 
-        View view = mEmptyView.findViewById(errorView);
+        View view = mErrorView.findViewById(errorView);
 
         if (view instanceof TextView) {
             ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
