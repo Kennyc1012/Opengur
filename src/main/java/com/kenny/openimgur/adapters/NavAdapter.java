@@ -10,12 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
-import com.kenny.openimgur.ui.TextViewRoboto;
 
 import butterknife.InjectView;
 
@@ -24,15 +24,25 @@ import butterknife.InjectView;
  */
 public class NavAdapter extends BaseAdapter {
     public static final int PAGE_PROFILE = 0;
+
     public static final int PAGE_GALLERY = 1;
+
     public static final int PAGE_SUBREDDIT = 2;
+
     public static final int PAGE_RANDOM = 3;
+
     public static final int PAGE_UPLOADS = 4;
+
     public static final int PAGE_DIVIDER = 5;
+
     public static final int PAGE_SETTINGS = 6;
+
     public static final int PAGE_FEEDBACK = 7;
+
     private static final int VIEW_TYPE_PRIMARY = 0;
+
     private static final int VIEW_TYPE_DIVIDER = 1;
+
     private static final int VIEW_TYPE_PROFILE = 2;
 
     private String[] mTitles;
@@ -47,7 +57,9 @@ public class NavAdapter extends BaseAdapter {
 
     private int mDefaultColor;
 
-    private int mProfileColor;;
+    private int mProfileColor;
+
+    ;
 
     public NavAdapter(Context context, ImgurUser user) {
         ImgurTheme theme = OpenImgurApp.getInstance(context).getImgurTheme();
@@ -103,7 +115,6 @@ public class NavAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.nav_item, parent, false);
             holder = new NavHolder(convertView);
-            Resources res = convertView.getResources();
         } else {
             holder = (NavHolder) convertView.getTag();
         }
@@ -116,10 +127,10 @@ public class NavAdapter extends BaseAdapter {
 
     private View renderProfile(int position, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.nav_profile, parent, false);
-        TextViewRoboto name = (TextViewRoboto) view.findViewById(R.id.profileName);
+        TextView name = (TextView) view.findViewById(R.id.profileName);
         name.setText(mUser != null ? mUser.getUsername() : getItem(position));
         name.setTextColor(mSelectedPosition == position ? mSelectedColor : Color.WHITE);
-        TextViewRoboto rep = (TextViewRoboto) view.findViewById(R.id.reputation);
+        TextView rep = (TextView) view.findViewById(R.id.reputation);
         rep.setText(mUser != null ? mUser.getNotoriety().getStringId() : R.string.login_msg);
         view.setBackgroundColor(mProfileColor);
         return view;
@@ -168,6 +179,7 @@ public class NavAdapter extends BaseAdapter {
      */
     private Drawable getDrawable(int position, Resources res, boolean isSelected) {
         Drawable drawable = null;
+
         switch (position) {
             case PAGE_GALLERY:
                 drawable = res.getDrawable(R.drawable.ic_action_gallery).mutate();
@@ -195,7 +207,7 @@ public class NavAdapter extends BaseAdapter {
         }
 
         if (drawable != null) {
-            drawable.setColorFilter(isSelected ? mSelectedColor : mDefaultColor, PorterDuff.Mode.SRC_ATOP);
+            drawable.setColorFilter(isSelected ? mSelectedColor : mDefaultColor, PorterDuff.Mode.SRC_IN);
         }
 
         return drawable;
@@ -213,7 +225,8 @@ public class NavAdapter extends BaseAdapter {
 
     static class NavHolder extends ImgurBaseAdapter.ImgurViewHolder {
         @InjectView(R.id.title)
-        TextViewRoboto title;
+        TextView title;
+
         @InjectView(R.id.icon)
         ImageView icon;
 

@@ -13,12 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
-import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.snackbar.SnackBar;
 import com.squareup.okhttp.FormEncodingBuilder;
 
@@ -32,12 +32,14 @@ import de.greenrobot.event.EventBus;
  */
 public class CommentPopupFragment extends DialogFragment implements View.OnClickListener {
     private static final String KEY_GALLERY_ID = "gallery_id";
+
     private static final String KEY_PARENT_ID = "parent_id";
 
     @InjectView(R.id.comment)
     EditText mComment;
+
     @InjectView(R.id.remainingCharacters)
-    TextViewRoboto mRemainingCharacters;
+    TextView mRemainingCharacters;
 
     private String mGalleryId;
 

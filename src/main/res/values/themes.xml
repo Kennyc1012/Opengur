@@ -22,167 +22,125 @@
     </style>
 
     <!-- Override styles (Light) -->
-    <style name="Theme_Blue">
+    <style name="Theme_Light">
+        <item name="android:windowBackground">@color/background_material_light</item>
+        <item name="android:textColorSecondary">@color/secondary_text_default_material_light</item>
+        <item name="android:textColor">@color/primary_text_default_material_light</item>
+    </style>
+
+    <style name="Theme_Blue" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_blue_primary</item>
         <item name="colorPrimaryDark">@color/theme_blue_dark</item>
         <item name="colorAccent">@color/theme_blue_accent</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_light</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
     </style>
 
-    <style name="Theme_Orange">
+    <style name="Theme_Orange" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_orange_primary</item>
         <item name="colorPrimaryDark">@color/theme_orange_dark</item>
         <item name="colorAccent">@color/theme_light_blue_accent</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_light</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
     </style>
 
-    <style name="Theme_Cyan">
+    <style name="Theme_Cyan" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_cyan_primary</item>
         <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
         <item name="colorAccent">@color/theme_cyan_accent</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_light</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
     </style>
 
-    <style name="Theme_Green">
+    <style name="Theme_Green" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_green_primary</item>
         <item name="colorPrimaryDark">@color/theme_green_dark</item>
         <item name="colorAccent">@color/theme_green_accent</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_light</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
     </style>
 
-    <style name="Theme_Teal">
+    <style name="Theme_Teal" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_teal_primary</item>
         <item name="colorPrimaryDark">@color/theme_teal_dark</item>
         <item name="colorAccent">@color/theme_teal_accent</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_light</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
     </style>
 
-    <style name="Theme_Red">
+    <style name="Theme_Red" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_red_primary</item>
         <item name="colorPrimaryDark">@color/theme_red_dark</item>
         <item name="colorAccent">@color/theme_red_accent</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_light</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
     </style>
 
-    <style name="Theme_Pink">
+    <style name="Theme_Pink" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_pink_primary</item>
         <item name="colorPrimaryDark">@color/theme_pink_dark</item>
         <item name="colorAccent">@color/theme_pink_accent</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_light</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
     </style>
 
-    <style name="Theme_Purple">
+    <style name="Theme_Purple" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_purple_primary</item>
         <item name="colorPrimaryDark">@color/theme_purple_dark</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_light</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
     </style>
 
     <style name="Theme_Grey">
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_light</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
     </style>
 
     <!-- Override styles (Dark) -->
-    <style name="Theme_Blue_Dark">
+    <style name="Theme_Dark">
+        <item name="android:windowBackground">@color/background_material_dark</item>
+        <item name="android:textColorSecondary">@color/secondary_text_default_material_dark</item>
+        <item name="android:textColor">@color/primary_text_default_material_dark</item>
+    </style>
+
+    <style name="Theme_Blue_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_blue_primary</item>
         <item name="colorPrimaryDark">@color/theme_blue_dark</item>
         <item name="colorAccent">@color/theme_blue_accent</item>
-        <item name="android:windowBackground">@color/background_material_dark</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_dark</item>
-        <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
 
-    <style name="Theme_Orange_Dark">
+    <style name="Theme_Orange_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_orange_primary</item>
         <item name="colorPrimaryDark">@color/theme_orange_dark</item>
         <item name="colorAccent">@color/theme_light_blue_accent</item>
-        <item name="android:windowBackground">@color/background_material_dark</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_dark</item>
-        <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
 
-    <style name="Theme_Cyan_Dark">
+    <style name="Theme_Cyan_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_cyan_primary</item>
         <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
         <item name="colorAccent">@color/theme_cyan_accent</item>
-        <item name="android:windowBackground">@color/background_material_dark</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_dark</item>
-        <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
 
-    <style name="Theme_Green_Dark">
+    <style name="Theme_Green_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_green_primary</item>
         <item name="colorPrimaryDark">@color/theme_green_dark</item>
         <item name="colorAccent">@color/theme_green_accent</item>
-        <item name="android:windowBackground">@color/background_material_dark</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_dark</item>
-        <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
 
-    <style name="Theme_Teal_Dark">
+    <style name="Theme_Teal_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_teal_primary</item>
         <item name="colorPrimaryDark">@color/theme_teal_dark</item>
         <item name="colorAccent">@color/theme_teal_accent</item>
-        <item name="android:windowBackground">@color/background_material_dark</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_dark</item>
-        <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
 
-    <style name="Theme_Red_Dark">
+    <style name="Theme_Red_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_red_primary</item>
         <item name="colorPrimaryDark">@color/theme_red_dark</item>
         <item name="colorAccent">@color/theme_red_accent</item>
-        <item name="android:windowBackground">@color/background_material_dark</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_dark</item>
-        <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
 
-    <style name="Theme_Pink_Dark">
+    <style name="Theme_Pink_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_pink_primary</item>
         <item name="colorPrimaryDark">@color/theme_pink_dark</item>
         <item name="colorAccent">@color/theme_pink_accent</item>
-        <item name="android:windowBackground">@color/background_material_dark</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_dark</item>
-        <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
 
-    <style name="Theme_Purple_Dark">
+    <style name="Theme_Purple_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_purple_primary</item>
         <item name="colorPrimaryDark">@color/theme_purple_dark</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
-        <item name="android:windowBackground">@color/background_material_dark</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_dark</item>
-        <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
 
-    <style name="Theme_Grey_Dark">
+    <style name="Theme_Grey_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
-        <item name="android:windowBackground">@color/background_material_dark</item>
-        <item name="android:textColorSecondary">@android:color/secondary_text_dark</item>
-        <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
 
 </resources>

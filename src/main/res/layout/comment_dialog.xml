@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.kenny.openimgur.ui.TextViewRoboto
+    <TextView
         style="@style/dialog_title"
-        android:text="@string/comment"
-        app:robotoFont="bold" />
+        android:text="@string/comment" />
 
     <EditText
         android:id="@+id/comment"
@@ -24,14 +22,14 @@
         <requestFocus />
     </EditText>
 
-    <com.kenny.openimgur.ui.TextViewRoboto
+    <TextView
         android:id="@+id/remainingCharacters"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dialog_content_margin"
         android:layout_marginTop="4dp"
-        app:robotoFont="thin"
         android:textSize="18sp"
+        android:textAppearance="@style/TextAppearance.Regular"
         android:text="140" />
 
     <LinearLayout

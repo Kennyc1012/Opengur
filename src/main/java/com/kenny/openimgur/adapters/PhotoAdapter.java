@@ -10,11 +10,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
@@ -29,6 +29,7 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
     private ImgurListener mListener;
 
     private static final long PHOTO_SIZE_LIMIT = 1024 * 1024 * 2;
+
     private static final long PHOTO_PIXEL_LIMIT = 2048;
 
     public PhotoAdapter(Context context, List<ImgurPhoto> photos, ImgurListener listener) {
@@ -215,10 +216,10 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
         ProgressBar prog;
 
         @InjectView(R.id.desc)
-        TextViewRoboto desc;
+        TextView desc;
 
         @InjectView(R.id.title)
-        TextViewRoboto title;
+        TextView title;
 
         @InjectView(R.id.videoView)
         VideoView video;

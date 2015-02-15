@@ -19,15 +19,15 @@
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha">
 
-            <com.kenny.openimgur.ui.TextViewRoboto
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textAppearance="@style/TextAppearance.Regular"
+                android:textSize="@dimen/abc_text_size_display_1_material"
                 android:textColor="@android:color/white"
                 android:text="@string/reddit_filter"
                 android:paddingRight="@dimen/content_padding"
-                android:paddingBottom="@dimen/content_padding"
-                app:robotoFont="regular" />
+                android:paddingBottom="@dimen/content_padding" />
 
         </android.support.v7.widget.Toolbar>
 

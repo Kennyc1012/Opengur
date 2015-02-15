@@ -6,11 +6,10 @@
         <item name="color">@android:color/white</item>
     </style>
 
-    <style name="dialog_title">
+    <style name="dialog_title" parent="TextAppearance.Medium">
         <item name="android:textColor">@android:color/black</item>
         <item name="android:layout_margin">@dimen/dialog_content_margin</item>
         <item name="android:textSize">25sp</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -28,10 +27,19 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
-        <item name="robotoFont">regular</item>
         <item name="android:textSize">20sp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Regular</item>
         <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
         <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+    </style>
+
+    <style name="TextAppearance.Regular" parent="android:TextAppearance">
+        <item name="android:typeface">sans</item>
+    </style>
+
+    <style name="TextAppearance.Medium" parent="android:TextAppearance">
+        <item name="android:typeface">sans</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>

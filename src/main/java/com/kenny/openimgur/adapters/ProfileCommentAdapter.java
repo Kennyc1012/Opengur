@@ -9,16 +9,15 @@ import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -109,10 +108,10 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
 
     static class CommentViewHolder {
         @InjectView(R.id.author)
-        TextViewRoboto author;
+        TextView author;
 
         @InjectView(R.id.comment)
-        TextViewRoboto comment;
+        TextView comment;
 
         @InjectView(R.id.image)
         ImageView image;

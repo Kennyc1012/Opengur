@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,24 +9,22 @@
     android:layout_gravity="center"
     android:orientation="vertical">
 
-    <com.kenny.openimgur.ui.TextViewRoboto
+    <TextView
+        android:id="@+id/errorMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="8dp"
-        android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:id="@+id/errorMessage"
+        android:textAppearance="@style/TextAppearance.Regular"
         android:drawableTop="@drawable/error"
-        app:robotoFont="regular"
         android:gravity="center_horizontal"
         tools:text="An error has occurred" />
 
     <Button
         android:id="@+id/errorButton"
         style="@style/Widget.AppCompat.ActionButton"
-        android:textColor="@android:color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"

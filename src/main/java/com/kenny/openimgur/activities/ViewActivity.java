@@ -34,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.cocosw.bottomsheet.BottomSheet;
 import com.kenny.openimgur.R;
@@ -54,7 +55,6 @@ import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
@@ -169,7 +169,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private CommentAdapter mCommentAdapter;
 
-    private TextViewRoboto mCommentListHeader;
+    private TextView mCommentListHeader;
 
     // Keeps track of the previous list of comments as we progress in the stack
     private LongSparseArray<ArrayList<ImgurComment>> mCommentArray = new LongSparseArray<>();
@@ -217,7 +217,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
         mMultiView.setErrorButtonText(R.id.errorButton, R.string.load_comments);
         findViewById(R.id.topContainer).setBackgroundColor(getResources().getColor(theme.primaryColor));
-        mCommentListHeader = (TextViewRoboto) View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
+        mCommentListHeader = (TextView) View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
         Drawable[] drawables = mCommentListHeader.getCompoundDrawables();
 
         // Sets the previous comment button color to the themes accent color
@@ -499,7 +499,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             List<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_COMMENT);
 
             if (comments != null) {
-                mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, this);
+                mCommentAdapter = new CommentAdapter(this, comments, this);
                 mCommentList.setAdapter(mCommentAdapter);
                 mCommentList.removeHeaderView(mCommentListHeader);
             }
@@ -1042,7 +1042,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         ImgurBaseObject imgurObject = mPagerAdapter.getImgurItem(mCurrentPosition);
 
                         if (mCommentAdapter == null) {
-                            mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, ViewActivity.this);
+                            mCommentAdapter = new CommentAdapter(ViewActivity.this, comments, ViewActivity.this);
                             mCommentAdapter.setOP(imgurObject.getAccount());
                             mCommentList.setAdapter(mCommentAdapter);
                             mCommentList.removeHeaderView(mCommentListHeader);

@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewPhotoActivity;
@@ -34,7 +35,6 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.PointsBar;
-import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
@@ -152,10 +152,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
      */
     private void createHeader() {
         mHeaderView = View.inflate(getActivity(), R.layout.image_header, null);
-        TextViewRoboto title = (TextViewRoboto) mHeaderView.findViewById(R.id.title);
-        TextViewRoboto author = (TextViewRoboto) mHeaderView.findViewById(R.id.author);
+        TextView title = (TextView) mHeaderView.findViewById(R.id.title);
+        TextView author = (TextView) mHeaderView.findViewById(R.id.author);
         PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
-        TextViewRoboto pointText = (TextViewRoboto) mHeaderView.findViewById(R.id.pointText);
+        TextView pointText = (TextView) mHeaderView.findViewById(R.id.pointText);
 
         if (!TextUtils.isEmpty(mImgurObject.getTitle())) {
             title.setText(mImgurObject.getTitle());
@@ -186,7 +186,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         mImgurObject.setVote(vote);
 
         if (mHeaderView != null) {
-            TextViewRoboto pointText = (TextViewRoboto) mHeaderView.findViewById(R.id.pointText);
+            TextView pointText = (TextView) mHeaderView.findViewById(R.id.pointText);
             PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
 
             int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
