@@ -56,7 +56,6 @@ import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
-import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
@@ -1063,10 +1062,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             }
                         });
                     } else {
-                        if (theme.isDarkTheme) {
-                            mMultiView.setEmptyDrawable(R.id.emptyMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.no_comments, getResources()));
-                        }
-
                         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
                     }
                     break;
@@ -1080,10 +1075,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             loadComments();
                         }
                     });
-
-                    if (theme.isDarkTheme) {
-                        mMultiView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.error, getResources()));
-                    }
 
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;

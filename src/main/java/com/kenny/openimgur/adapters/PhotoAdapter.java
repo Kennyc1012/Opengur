@@ -66,7 +66,6 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
             });
 
             setClickListener(holder);
-            if (mIsDarkTheme) holder.root.setCardBackgroundColor(convertView.getResources().getColor(R.color.card_bg_dark));
         } else {
             holder = (PhotoViewHolder) convertView.getTag();
         }

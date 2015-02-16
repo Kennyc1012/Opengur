@@ -25,7 +25,6 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
@@ -191,11 +190,6 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
                 case ImgurHandler.MESSAGE_ACTION_FAILED:
                     if (getAdapter() == null || getAdapter().isEmpty()) {
                         mMultiStateView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
-
-                        if (theme.isDarkTheme) {
-                            mMultiStateView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.error, getResources()));
-                        }
-
                         mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                     break;
@@ -204,13 +198,6 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
                     if (getAdapter() == null || getAdapter().isEmpty()) {
                         String errorMessage = getString(R.string.profile_no_uploads);
                         mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
-
-                        if (theme.isDarkTheme) {
-                            mMultiStateView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.empty_uploads, getResources()));
-                        } else {
-                            mMultiStateView.setErrorDrawable(R.id.errorMessage, getResources().getDrawable(R.drawable.empty_uploads));
-                        }
-
                         mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                     break;
@@ -223,12 +210,6 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
                             gAdapter.removeItem((String) msg.obj);
 
                             if (gAdapter.isEmpty()) {
-                                if (theme.isDarkTheme) {
-                                    mMultiStateView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.empty_uploads, getResources()));
-                                } else {
-                                    mMultiStateView.setErrorDrawable(R.id.errorMessage, getResources().getDrawable(R.drawable.empty_uploads));
-                                }
-
                                 mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                             } else {
                                 mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);

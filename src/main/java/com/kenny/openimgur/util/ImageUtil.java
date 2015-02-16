@@ -277,15 +277,16 @@ public class ImageUtil {
     }
 
     /**
-     * Returns a white tinted drawable for Dark themese
+     * Returns a drawable that has been tinted
      *
      * @param drawableId
      * @param resources
+     * @param color
      * @return
      */
-    public static Drawable getDrawableForDarkTheme(@DrawableRes int drawableId, @NonNull Resources resources) {
+    public static Drawable tintDrawable(@DrawableRes int drawableId, @NonNull Resources resources, int color) {
         Drawable drawable = resources.getDrawable(drawableId).mutate();
-        drawable.setColorFilter(resources.getColor(R.color.secondary_text_default_material_dark), PorterDuff.Mode.SRC_IN);
+        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         return drawable;
     }
 }

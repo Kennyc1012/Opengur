@@ -23,4 +23,10 @@
         <attr name="shadowColor" format="integer" />
     </declare-styleable>
 
+    <!-- Theme attributes -->
+    <attr name="errorDrawable" format="reference" />
+    <attr name="emptyDrawableUploads" format="reference" />
+    <attr name="emptyDrawableMessages" format="reference" />
+    <attr name="cardBG" format="color" />
+
 </resources>

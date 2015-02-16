@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -19,7 +20,6 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -133,10 +133,7 @@ public class UploadActivity extends BaseActivity {
         mNotifyNoUser = app.getPreferences().getBoolean(PREF_NOTIFY_NO_USER, true);
 
         if (theme.isDarkTheme) {
-            int bgColor = getResources().getColor(R.color.card_bg_dark);
-            ((CardView) findViewById(R.id.photoContainer)).setCardBackgroundColor(bgColor);
-            ((CardView) findViewById(R.id.infoContainer)).setCardBackgroundColor(bgColor);
-            mPreviewImage.setImageDrawable(ImageUtil.getDrawableForDarkTheme(R.drawable.photo_placeholder, getResources()));
+            mPreviewImage.setImageDrawable(ImageUtil.tintDrawable(R.drawable.photo_placeholder, getResources(), Color.WHITE));
         }
     }
 

@@ -3,7 +3,6 @@ package com.kenny.openimgur.adapters;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.util.ImageUtil;
 
 import butterknife.InjectView;
 
@@ -178,39 +178,39 @@ public class NavAdapter extends BaseAdapter {
      * @return
      */
     private Drawable getDrawable(int position, Resources res, boolean isSelected) {
-        Drawable drawable = null;
+        int drawableId = -1;
 
         switch (position) {
             case PAGE_GALLERY:
-                drawable = res.getDrawable(R.drawable.ic_action_gallery).mutate();
+                drawableId = R.drawable.ic_action_gallery;
                 break;
 
             case PAGE_SUBREDDIT:
-                drawable = res.getDrawable(R.drawable.ic_action_reddit).mutate();
+                drawableId = R.drawable.ic_action_reddit;
                 break;
 
             case PAGE_RANDOM:
-                drawable = res.getDrawable(R.drawable.ic_action_shuffle).mutate();
+                drawableId = R.drawable.ic_action_shuffle;
                 break;
 
             case PAGE_UPLOADS:
-                drawable = res.getDrawable(R.drawable.ic_action_upload).mutate();
+                drawableId = R.drawable.ic_action_upload;
                 break;
 
             case PAGE_SETTINGS:
-                drawable = res.getDrawable(R.drawable.ic_action_settings).mutate();
+                drawableId = R.drawable.ic_action_settings;
                 break;
 
             case PAGE_FEEDBACK:
-                drawable = res.getDrawable(R.drawable.ic_action_email).mutate();
+                drawableId = R.drawable.ic_action_email;
                 break;
         }
 
-        if (drawable != null) {
-            drawable.setColorFilter(isSelected ? mSelectedColor : mDefaultColor, PorterDuff.Mode.SRC_IN);
+        if (drawableId > -1) {
+            return ImageUtil.tintDrawable(drawableId, res, isSelected ? mSelectedColor : mDefaultColor);
         }
 
-        return drawable;
+        return null;
     }
 
     /**

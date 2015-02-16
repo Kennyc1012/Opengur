@@ -31,6 +31,7 @@
         <item name="android:textColorLink">?colorAccent</item>
         <item name="android:radioButtonStyle">@style/RadioButton.Style.Light</item>
         <item name="android:checkboxStyle">@style/CheckBox.Style.Light</item>
+        <item name="cardBG">@color/cardview_light_background</item>
     </style>
 
     <style name="Theme_Blue" parent="@style/Theme_Light">
@@ -81,7 +82,7 @@
         <item name="colorAccent">@color/theme_purple_accent</item>
     </style>
 
-    <style name="Theme_Grey">
+    <style name="Theme_Grey" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
@@ -97,6 +98,7 @@
         <item name="android:textColorLink">?colorAccent</item>
         <item name="android:radioButtonStyle">@style/RadioButton.Style.Dark</item>
         <item name="android:checkboxStyle">@style/CheckBox.Style.Dark</item>
+        <item name="cardBG">@color/card_bg_dark</item>
     </style>
 
     <style name="Theme_Blue_Dark" parent="@style/Theme_Dark">

@@ -24,7 +24,6 @@ import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
 import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -194,10 +193,6 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                                 fetchGallery();
                             }
                         });
-
-                        if (theme.isDarkTheme) {
-                            mMultiStateView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.error, getResources()));
-                        }
 
                         mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                     }

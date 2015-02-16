@@ -25,7 +25,6 @@ import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 
@@ -243,10 +242,6 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                                 fetchGallery();
                             }
                         });
-
-                        if (theme.isDarkTheme) {
-                            mMultiStateView.setErrorDrawable(R.id.errorMessage, ImageUtil.getDrawableForDarkTheme(R.drawable.error, getResources()));
-                        }
 
                         mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                     }
