@@ -9,4 +9,4 @@
     android:text="@string/uploaded_photos_empty"
     android:gravity="center"
     android:layout_gravity="center"
-    android:drawableTop="@drawable/empty_uploads" />
+    android:drawableTop="?emptyDrawableUploads" />

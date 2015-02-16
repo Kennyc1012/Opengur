@@ -32,6 +32,10 @@
         <item name="android:radioButtonStyle">@style/RadioButton.Style.Light</item>
         <item name="android:checkboxStyle">@style/CheckBox.Style.Light</item>
         <item name="cardBG">@color/cardview_light_background</item>
+        <item name="emptyDrawableUploads">@drawable/empty_uploads_light</item>
+        <item name="emptyDrawableMessages">@drawable/no_comments_light</item>
+        <item name="errorDrawable">@drawable/error_light</item>
+        <item name="repliesDrawable">@drawable/ic_action_replies_light</item>
     </style>
 
     <style name="Theme_Blue" parent="@style/Theme_Light">
@@ -99,6 +103,10 @@
         <item name="android:radioButtonStyle">@style/RadioButton.Style.Dark</item>
         <item name="android:checkboxStyle">@style/CheckBox.Style.Dark</item>
         <item name="cardBG">@color/card_bg_dark</item>
+        <item name="emptyDrawableUploads">@drawable/empty_uploads_dark</item>
+        <item name="emptyDrawableMessages">@drawable/no_comments_dark</item>
+        <item name="errorDrawable">@drawable/error_dark</item>
+        <item name="repliesDrawable">@drawable/ic_action_replies_dark</item>
     </style>
 
     <style name="Theme_Blue_Dark" parent="@style/Theme_Dark">

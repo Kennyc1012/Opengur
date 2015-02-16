@@ -9,4 +9,4 @@
     android:text="@string/empty_comment_message"
     android:gravity="center"
     android:layout_gravity="center"
-    android:drawableTop="@drawable/no_comments" />
+    android:drawableTop="?emptyDrawableMessages" />
