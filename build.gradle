@@ -66,10 +66,11 @@ dependencies {
     compile 'com.github.kennyc1012:snackbar:1.0.4-SNAPSHOT:api11Release@aar'
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.jakewharton:butterknife:6.0.0'
-    compile 'com.cocosw:bottomsheet:0.6@aar'
+    //compile 'com.cocosw:bottomsheet:0.6@aar'
     compile 'com.jpardogo.materialtabstrip:library:1.0.8'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.0'
     compile(name: 'photo_zoom', ext: 'aar')
+    compile(name: 'bottom-sheet', ext: 'aar')
     compile project(':libraries:EventBus')
     compile('com.crashlytics.sdk.android:crashlytics:2.2.0@aar') {
         transitive = true;

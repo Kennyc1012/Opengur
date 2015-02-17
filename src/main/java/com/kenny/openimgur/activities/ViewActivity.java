@@ -216,7 +216,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         setContentView(R.layout.activity_view);
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
         mMultiView.setErrorButtonText(R.id.errorButton, R.string.load_comments);
-        mCommentListHeader = (TextView) View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
+        mCommentListHeader = (TextView) View.inflate(this, R.layout.previous_comments_header, null);
         Drawable[] drawables = mCommentListHeader.getCompoundDrawables();
 
         // Sets the previous comment button color to the themes accent color
