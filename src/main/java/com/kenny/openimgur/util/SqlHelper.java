@@ -10,9 +10,11 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.DBContracts.ProfileContract;
+import com.kenny.openimgur.util.DBContracts.TopicsContract;
 import com.kenny.openimgur.util.DBContracts.UploadContract;
 import com.kenny.openimgur.util.DBContracts.UserContract;
 
@@ -25,9 +27,13 @@ import java.util.List;
 public class SqlHelper extends SQLiteOpenHelper {
     private static final String TAG = "SqlHelper";
 
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
     private static final String DB_NAME = "open_imgur.db";
+
+    private static SQLiteDatabase mReadableDatabase;
+
+    private static SQLiteDatabase mWritableDatabase;
 
     public SqlHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -38,12 +44,32 @@ public class SqlHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(UserContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(ProfileContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(UploadContract.CREATE_TABLE_SQL);
+        sqLiteDatabase.execSQL(TopicsContract.CREATE_TABLE_SQL);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
         // V2 Added uploads Table
+        // V3 Added topics Table
         onCreate(db);
+    }
+
+    @Override
+    public SQLiteDatabase getReadableDatabase() {
+        if (mReadableDatabase == null || !mReadableDatabase.isOpen()) {
+            mReadableDatabase = super.getReadableDatabase();
+        }
+
+        return mReadableDatabase;
+    }
+
+    @Override
+    public SQLiteDatabase getWritableDatabase() {
+        if (mWritableDatabase == null || !mWritableDatabase.isOpen()) {
+            mWritableDatabase = super.getWritableDatabase();
+        }
+
+        return mReadableDatabase;
     }
 
     /**
@@ -67,7 +93,6 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(UserContract.COLUMN_PRO_EXPIRATION, user.getProExpiration());
         values.put(UserContract.COLUMN_REPUTATION, user.getReputation());
         db.insert(UserContract.TABLE_NAME, null, values);
-        db.close();
     }
 
     /**
@@ -87,7 +112,6 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(UserContract.COLUMN_PRO_EXPIRATION, user.getProExpiration());
         values.put(UserContract.COLUMN_REPUTATION, user.getReputation());
         db.update(UserContract.TABLE_NAME, values, null, null);
-        db.close();
     }
 
     /**
@@ -109,7 +133,6 @@ public class SqlHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
         return user;
 
     }
@@ -130,7 +153,6 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(UserContract.COLUMN_REFRESH_TOKEN, refreshToken);
 
         db.update(UserContract.TABLE_NAME, values, null, null);
-        db.close();
     }
 
     /**
@@ -139,7 +161,6 @@ public class SqlHelper extends SQLiteOpenHelper {
     public void onUserLogout() {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(UserContract.TABLE_NAME, null, null);
-        db.close();
     }
 
     /**
@@ -159,7 +180,6 @@ public class SqlHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
         return user;
     }
 
@@ -178,7 +198,6 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(ProfileContract.COLUMN_LAST_SEEN, profile.getLastSeen());
         values.put(ProfileContract.COLUMN_CREATED, profile.getCreated());
         db.insertWithOnConflict(ProfileContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        db.close();
     }
 
     /**
@@ -199,7 +218,6 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(UploadContract.COLUMN_DELETE_HASH, photo.getDeleteHash());
         values.put(UploadContract.COLUMN_DATE, System.currentTimeMillis());
         db.insert(UploadContract.TABLE_NAME, null, values);
-        db.close();
     }
 
     /**
@@ -218,7 +236,6 @@ public class SqlHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
         return photos;
     }
 
@@ -232,6 +249,53 @@ public class SqlHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL(String.format(UploadContract.DELETE_PHOTO_SQL, photo.getId()));
-        db.close();
+    }
+
+    /**
+     * Adds a list of topics into the database
+     *
+     * @param topics
+     */
+    public void addTopics(List<ImgurTopic> topics) {
+        if (topics == null || topics.isEmpty()) return;
+
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues(3);
+
+        for (ImgurTopic topic : topics) {
+            values.clear();
+            values.put(TopicsContract.COLUMN_TOPIC_ID, topic.getId());
+            values.put(TopicsContract.COLUMN_NAME, topic.getName());
+            values.put(TopicsContract.COLUMN_DESC, topic.getDescription());
+            db.insertWithOnConflict(TopicsContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        }
+    }
+
+    public List<ImgurTopic> getTopics() {
+        List<ImgurTopic> topics = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(TopicsContract.GET_TOPICS_SQL, null);
+
+        while (cursor.moveToNext()) {
+            topics.add(new ImgurTopic(cursor));
+        }
+
+        return topics;
+    }
+
+    @Override
+    public synchronized void close() {
+        if (mReadableDatabase != null) {
+            mReadableDatabase.close();
+            mReadableDatabase = null;
+        }
+
+        if (mWritableDatabase != null) {
+            mWritableDatabase.close();
+            mWritableDatabase = null;
+        }
+
+        super.close();
     }
 }

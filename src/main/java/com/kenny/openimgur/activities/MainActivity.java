@@ -196,6 +196,10 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                     SnackBar.show(this, R.string.cant_launch_intent);
                 }
                 break;
+
+            case NavAdapter.PAGE_TOPICS:
+                // TODO
+                break;
         }
 
         if (fragment != null) {

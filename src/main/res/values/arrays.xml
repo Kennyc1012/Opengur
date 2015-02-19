@@ -12,6 +12,7 @@
     <string-array name="nav_items">
         <item>Profile</item>
         <item>Gallery</item>
+        <item>Topics</item>
         <item>Subreddit</item>
         <item>Random</item>
         <item>Uploads</item>

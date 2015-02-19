@@ -25,12 +25,13 @@ import butterknife.InjectView;
 public class NavAdapter extends BaseAdapter {
     public static final int PAGE_PROFILE = 0;
     public static final int PAGE_GALLERY = 1;
-    public static final int PAGE_SUBREDDIT = 2;
-    public static final int PAGE_RANDOM = 3;
-    public static final int PAGE_UPLOADS = 4;
-    public static final int PAGE_DIVIDER = 5;
-    public static final int PAGE_SETTINGS = 6;
-    public static final int PAGE_FEEDBACK = 7;
+    public static final int PAGE_TOPICS = 2;
+    public static final int PAGE_SUBREDDIT = 3;
+    public static final int PAGE_RANDOM = 4;
+    public static final int PAGE_UPLOADS = 5;
+    public static final int PAGE_DIVIDER = 6;
+    public static final int PAGE_SETTINGS = 7;
+    public static final int PAGE_FEEDBACK = 8;
     private static final int VIEW_TYPE_PRIMARY = 0;
     private static final int VIEW_TYPE_DIVIDER = 1;
     private static final int VIEW_TYPE_PROFILE = 2;
@@ -191,10 +192,14 @@ public class NavAdapter extends BaseAdapter {
             case PAGE_FEEDBACK:
                 drawable = res.getDrawable(R.drawable.ic_action_email).mutate();
                 break;
+
+            case PAGE_TOPICS:
+                drawable = res.getDrawable(R.drawable.ic_action_quotes).mutate();
+                break;
         }
 
         if (drawable != null) {
-            drawable.setColorFilter(isSelected ? mSelectedColor : mDefaultColor, PorterDuff.Mode.SRC_ATOP);
+            drawable.setColorFilter(isSelected ? mSelectedColor : mDefaultColor, PorterDuff.Mode.SRC_IN);
         }
 
         return drawable;

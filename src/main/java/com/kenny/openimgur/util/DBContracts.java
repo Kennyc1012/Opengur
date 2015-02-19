@@ -90,9 +90,13 @@ public class DBContracts {
 
     public static class UploadContract implements BaseColumns {
         public static final String TABLE_NAME = "uploads";
+
         public static final String COLUMN_URL = "url";
+
         public static final String COLUMN_DATE = "date";
+
         public static final String COLUMN_DELETE_HASH = "delete_hash";
+
         public static final int COLUMN_INDEX_ID = 0;
 
         public static final int COLUMN_INDEX_URL = 1;
@@ -112,5 +116,31 @@ public class DBContracts {
 
         public static final String DELETE_PHOTO_SQL = " DELETE FROM " + TABLE_NAME +
                 " WHERE " + _ID + "=%d";
+    }
+
+    public static class TopicsContract implements BaseColumns {
+        public static final String TABLE_NAME = "topics";
+
+        public static final String COLUMN_TOPIC_ID = "topic_id";
+
+        public static final String COLUMN_NAME = "name";
+
+        public static final String COLUMN_DESC = "description";
+
+        public static final int COLUMN_INDEX_ID = 0;
+
+        public static final int COLUMN_INDEX_TOPIC_ID = 1;
+
+        public static final int COLUMN_INDEX_NAME = 2;
+
+        public static final int COLUMN_INDEX_DESC = 2;
+
+        public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
+                " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
+                COLUMN_TOPIC_ID + " INTEGER, " +
+                COLUMN_NAME + " TEXT NOT NULL, " +
+                COLUMN_DESC + " TEXT NOT NULL);";
+
+        public static final String GET_TOPICS_SQL = "SELECT * FROM " + TABLE_NAME;
     }
 }
