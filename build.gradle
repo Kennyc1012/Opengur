@@ -64,7 +64,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
     compile 'com.github.kennyc1012:snackbar:1.0.4-SNAPSHOT:api11Release@aar'
-    compile 'com.squareup.okhttp:okhttp:2.0.0'
+    compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.cocosw:bottomsheet:0.6@aar'
     compile 'com.jpardogo.materialtabstrip:library:1.0.8'

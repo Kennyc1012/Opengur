@@ -271,6 +271,11 @@ public class SqlHelper extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Returns a list of all the cached topics
+     *
+     * @return
+     */
     public List<ImgurTopic> getTopics() {
         List<ImgurTopic> topics = new ArrayList<>();
 
@@ -281,7 +286,27 @@ public class SqlHelper extends SQLiteOpenHelper {
             topics.add(new ImgurTopic(cursor));
         }
 
+        cursor.close();
         return topics;
+    }
+
+    /**
+     * Returns a single topic given its id
+     *
+     * @param id
+     * @return
+     */
+    public ImgurTopic getTopic(int id) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(String.format(TopicsContract.GET_TOPIC_SQL, id), null);
+        ImgurTopic topic = null;
+
+        if (cursor.moveToFirst()) {
+            topic = new ImgurTopic(cursor);
+        }
+
+        cursor.close();
+        return topic;
     }
 
     @Override

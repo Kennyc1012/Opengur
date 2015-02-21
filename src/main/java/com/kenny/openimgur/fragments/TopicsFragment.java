@@ -19,11 +19,11 @@ import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurBaseObject;
-import com.kenny.openimgur.classes.ImgurFilters.GallerySection;
-import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
-import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
+import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurHandler;
+import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -32,28 +32,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by kcampagna on 8/14/14.
+ * Created by kcampagna on 2/19/15.
  */
-public class GalleryFragment extends BaseGridFragment implements GalleryFilterFragment.FilterListener {
-    private static final String KEY_SECTION = "section";
+public class TopicsFragment extends BaseGridFragment implements TopicsFilterFragment.FilterListener {
+    private static final String KEY_TOPIC_ID = "topics_id";
 
-    private static final String KEY_SORT = "sort";
+    private static final String KEY_SORT = "topics_sort";
 
-    private static final String KEY_TOP_SORT = "galleryTopSort";
+    private static final String KEY_TOP_SORT = "topics_topSort";
 
-    private static final String KEY_SHOW_VIRAL = "showViral";
+    private static final String KEY_TOPIC = "topics_topic";
 
-    private GallerySection mSection = GallerySection.HOT;
+    private ImgurTopic mTopic;
 
-    private GallerySort mSort = GallerySort.TIME;
+    private ImgurFilters.GallerySort mSort = ImgurFilters.GallerySort.TIME;
 
-    private TimeSort mTimeSort = TimeSort.DAY;
-
-    private boolean mShowViral = true;
-
-    public static GalleryFragment createInstance() {
-        return new GalleryFragment();
-    }
+    private ImgurFilters.TimeSort mTimeSort = ImgurFilters.TimeSort.DAY;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,11 +62,6 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     }
 
     @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        startActivity(ViewActivity.createIntent(getActivity(), items, position));
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.gallery, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -82,14 +71,13 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                refresh();
                 return true;
 
             case R.id.filter:
                 if (mListener != null) mListener.onUpdateActionBar(false);
 
-                GalleryFilterFragment fragment = GalleryFilterFragment.createInstance(mSort, mSection, mTimeSort, mShowViral);
-                fragment.setFilterListener(this);
+                TopicsFilterFragment fragment = TopicsFilterFragment.createInstance(mTopic, mSort, mTimeSort);
+                fragment.setListener(this);
                 getFragmentManager().beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .add(android.R.id.content, fragment, "filter")
@@ -100,51 +88,72 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Returns the URL based on the selected sort and section
-     *
-     * @return
-     */
-    private String getGalleryUrl() {
-        if (mSort == GallerySort.HIGHEST_SCORING) {
-            return String.format(Endpoints.GALLERY_TOP.getUrl(), mSection.getSection(), mSort.getSort(),
-                    mTimeSort.getSort(), mCurrentPage, mShowViral);
-        }
-
-        return String.format(Endpoints.GALLERY.getUrl(), mSection.getSection(), mSort.getSort(), mCurrentPage, mShowViral);
-    }
-
     @Override
-    public void onFilterChange(GallerySection section, GallerySort sort, TimeSort timeSort, boolean showViral) {
+    public void onFilterChange(ImgurTopic topic, ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort) {
         FragmentManager fm = getFragmentManager();
         fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
         if (mListener != null) mListener.onUpdateActionBar(true);
 
-        // Null values represent that the filter was canceled
-        if (section == null || sort == null || timeSort == null ||
-                (section == mSection && mSort == sort && mShowViral == showViral && timeSort == mTimeSort)) {
+        if (topic == null || sort == null || timeSort == null ||
+                (topic.equals(mTopic) && sort == mSort && mTimeSort == timeSort)) {
+            LogUtil.v(TAG, "Filters have not been updated");
             return;
         }
 
-        if (getAdapter() != null) {
-            getAdapter().clear();
-        }
-
-        mSection = section;
+        LogUtil.v(TAG, "Filters updated, Topic: " + topic.getName() + " Sort: " + sort.getSort() + " TimeSort: " + timeSort.getSort());
+        mTopic = topic;
         mSort = sort;
         mTimeSort = timeSort;
-        mShowViral = showViral;
         mCurrentPage = 0;
         mIsLoading = true;
         mHasMore = true;
+        if (getAdapter() != null) getAdapter().clear();
         mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
 
         if (mListener != null) {
             mListener.onLoadingStarted();
-            mListener.onUpdateActionBarTitle(getString(mSection.getResourceId()));
+            mListener.onUpdateActionBarTitle(mTopic.getName());
         }
 
         fetchGallery();
+    }
+
+    @Override
+    protected void saveFilterSettings() {
+        app.getPreferences().edit()
+                .putInt(KEY_TOPIC_ID, mTopic != null ? mTopic.getId() : -1)
+                .putString(KEY_TOP_SORT, mTimeSort.getSort())
+                .putString(KEY_SORT, mSort.getSort()).apply();
+    }
+
+    @Override
+    public ImgurBusEvent.EventType getEventType() {
+        return ImgurBusEvent.EventType.TOPICS;
+    }
+
+    @Override
+    protected void fetchGallery() {
+        if (mTopic == null) return;
+
+        String url;
+
+        if (mSort == ImgurFilters.GallerySort.HIGHEST_SCORING) {
+            url = String.format(Endpoints.TOPICS_TOP.getUrl(), mTopic.getId(), mSort.getSort(), mTimeSort.getSort(), mCurrentPage);
+        } else {
+            url = String.format(Endpoints.TOPICS.getUrl(), mTopic.getId(), mSort.getSort(), mCurrentPage);
+        }
+
+        makeRequest(url);
+    }
+
+    @Override
+    protected ImgurHandler getHandler() {
+        return mHandler;
+    }
+
+    @Override
+    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
+        startActivity(ViewActivity.createIntent(getActivity(), items, position));
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {
@@ -202,7 +211,6 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                 case MESSAGE_EMPTY_RESULT:
                 default:
                     mIsLoading = false;
-                    super.handleMessage(msg);
                     break;
             }
 
@@ -211,56 +219,40 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     };
 
     @Override
-    protected void fetchGallery() {
-        makeRequest(getGalleryUrl());
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(KEY_SECTION, mSection.getSection());
-        outState.putString(KEY_SORT, mSort.getSort());
-        outState.putBoolean(KEY_SHOW_VIRAL, mShowViral);
-        outState.putString(KEY_TOP_SORT, mTimeSort.getSort());
-    }
-
-    @Override
     protected void onRestoreSavedInstance(Bundle savedInstanceState) {
         super.onRestoreSavedInstance(savedInstanceState);
 
         if (savedInstanceState == null) {
             SharedPreferences pref = app.getPreferences();
-            mSection = GallerySection.getSectionFromString(pref.getString(KEY_SECTION, null));
-            mSort = GallerySort.getSortFromString(pref.getString(KEY_SORT, null));
-            mTimeSort = TimeSort.getSortFromString(pref.getString(KEY_TOP_SORT, null));
-            mShowViral = pref.getBoolean(KEY_SHOW_VIRAL, true);
+            mSort = ImgurFilters.GallerySort.getSortFromString(pref.getString(KEY_SORT, null));
+            mTimeSort = ImgurFilters.TimeSort.getSortFromString(pref.getString(KEY_TOP_SORT, null));
+            mTopic = app.getSql().getTopic(pref.getInt(KEY_TOPIC_ID, -1));
         } else {
-            mSort = GallerySort.getSortFromString(savedInstanceState.getString(KEY_SORT, GallerySort.TIME.getSort()));
-            mSection = GallerySection.getSectionFromString(savedInstanceState.getString(KEY_SECTION, GallerySection.HOT.getSection()));
-            mTimeSort = TimeSort.getSortFromString(savedInstanceState.getString(KEY_TOP_SORT, null));
-            mShowViral = savedInstanceState.getBoolean(KEY_SHOW_VIRAL, true);
+            mSort = ImgurFilters.GallerySort.getSortFromString(savedInstanceState.getString(KEY_SORT, ImgurFilters.GallerySort.TIME.getSort()));
+            mTimeSort = ImgurFilters.TimeSort.getSortFromString(savedInstanceState.getString(KEY_TOP_SORT, null));
+            mTopic = savedInstanceState.getParcelable(KEY_TOPIC);
         }
 
-        if (mListener != null)
-            mListener.onUpdateActionBarTitle(getString(mSection.getResourceId()));
+        if (mTopic == null) {
+            if (mListener != null) mListener.onUpdateActionBarTitle(getString(R.string.topics));
+
+            mMultiStateView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mMultiStateView.setErrorText(R.id.errorMessage, R.string.topics_empty_message);
+                    mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+                }
+            });
+        } else if (mListener != null) {
+            mListener.onUpdateActionBarTitle(mTopic.getName());
+        }
     }
 
     @Override
-    protected void saveFilterSettings() {
-        app.getPreferences().edit()
-                .putString(KEY_SECTION, mSection.getSection())
-                .putBoolean(KEY_SHOW_VIRAL, mShowViral)
-                .putString(KEY_TOP_SORT, mTimeSort.getSort())
-                .putString(KEY_SORT, mSort.getSort()).apply();
-    }
-
-    @Override
-    public ImgurBusEvent.EventType getEventType() {
-        return ImgurBusEvent.EventType.GALLERY;
-    }
-
-    @Override
-    protected ImgurHandler getHandler() {
-        return mHandler;
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_TOPIC, mTopic);
+        outState.putString(KEY_SORT, mSort.getSort());
+        outState.putString(KEY_TOP_SORT, mTimeSort.getSort());
     }
 }

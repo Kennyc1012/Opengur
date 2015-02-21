@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_material_light">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_with_section_height"
+            android:minHeight="?actionBarSize"
+            android:gravity="bottom"
+            android:background="?colorPrimary"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha">
+
+            <com.kenny.openimgur.ui.TextViewRoboto
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textColor="@android:color/white"
+                android:text="@string/topics_filter"
+                android:paddingRight="@dimen/content_padding"
+                android:paddingBottom="@dimen/content_padding"
+                app:robotoFont="regular" />
+
+        </android.support.v7.widget.Toolbar>
+
+        <com.kenny.openimgur.ui.MultiStateView
+            android:id="@+id/multiView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:errorView="@layout/error_view"
+            app:loadingView="@layout/loading_view"
+            app:contentView="@layout/topics_filter"
+            app:viewState="loading" />
+
+    </LinearLayout>
+
+</ScrollView>

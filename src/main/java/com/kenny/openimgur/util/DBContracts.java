@@ -141,6 +141,10 @@ public class DBContracts {
                 COLUMN_NAME + " TEXT NOT NULL, " +
                 COLUMN_DESC + " TEXT NOT NULL);";
 
-        public static final String GET_TOPICS_SQL = "SELECT * FROM " + TABLE_NAME;
+        public static final String GET_TOPICS_SQL = "SELECT * FROM " + TABLE_NAME
+                + " ORDER BY " + COLUMN_NAME + " COLLATE NOCASE ASC";
+
+        public static final String GET_TOPIC_SQL = "SELECT * FROM " + TABLE_NAME + " WHERE " +
+                COLUMN_TOPIC_ID + " = %d";
     }
 }

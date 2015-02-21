@@ -56,6 +56,8 @@ public class ImgurBaseObject implements Parcelable {
 
     private static final String KEY_MP4 = "mp4";
 
+    private static final String KEY_TOPIC = "topic";
+
     private int mUpVotes;
 
     private int mDownVotes;
@@ -85,6 +87,8 @@ public class ImgurBaseObject implements Parcelable {
     private String mVote;
 
     private String mDeleteHash;
+
+    private String mTopic;
 
     private long mDate;
 
@@ -179,6 +183,10 @@ public class ImgurBaseObject implements Parcelable {
 
             if (!json.isNull(KEY_MP4)) {
                 mMP4Link = json.getString(KEY_MP4);
+            }
+
+            if (!json.isNull(KEY_TOPIC)) {
+                mTopic = json.getString(KEY_TOPIC);
             }
 
         } catch (JSONException ex) {
@@ -323,6 +331,7 @@ public class ImgurBaseObject implements Parcelable {
         out.writeString(mDeleteHash);
         out.writeString(mGifVLink);
         out.writeString(mMP4Link);
+        out.writeString(mTopic);
         out.writeInt(mIsFavorited ? 1 : 0);
         out.writeInt(mIsNSFW ? 1 : 0);
         out.writeLong(mDate);
@@ -360,6 +369,7 @@ public class ImgurBaseObject implements Parcelable {
         mDeleteHash = in.readString();
         mGifVLink = in.readString();
         mMP4Link = in.readString();
+        mTopic = in.readString();
         mIsFavorited = in.readInt() == 1;
         mIsNSFW = in.readInt() == 1;
         mDate = in.readLong();

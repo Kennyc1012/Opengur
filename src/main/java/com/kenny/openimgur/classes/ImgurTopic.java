@@ -97,4 +97,21 @@ public class ImgurTopic implements Parcelable {
             return new ImgurTopic[size];
         }
     };
+
+    @Override
+    public int hashCode() {
+        int result = mId;
+        result = 31 * result + mName.hashCode();
+        result = 31 * result + mDesc.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ImgurTopic that = (ImgurTopic) o;
+        return mId == that.getId();
+    }
 }

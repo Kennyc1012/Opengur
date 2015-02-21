@@ -35,7 +35,10 @@ public class TextViewRoboto extends TextView {
 
     public TextViewRoboto(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(attrs);
+
+        if (!isInEditMode()) {
+            init(attrs);
+        }
     }
 
     private void init(AttributeSet attrs) {
