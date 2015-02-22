@@ -58,9 +58,9 @@ public class ImgurBaseObject implements Parcelable {
 
     private static final String KEY_TOPIC = "topic";
 
-    private int mUpVotes;
+    private int mUpVotes = Integer.MIN_VALUE;
 
-    private int mDownVotes;
+    private int mDownVotes = Integer.MIN_VALUE;
 
     private int mViews;
 
@@ -286,6 +286,10 @@ public class ImgurBaseObject implements Parcelable {
         mDate = date;
     }
 
+    public String getTopic() {
+        return mTopic;
+    }
+
     public void setVote(String vote) {
         // If the user had previously voted on the item, we need to update the score
         if (!TextUtils.isEmpty(mVote)) {
@@ -396,5 +400,11 @@ public class ImgurBaseObject implements Parcelable {
     @Override
     public int hashCode() {
         return mId.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "ID :" + mId
+                + "Title :" + mTitle;
     }
 }

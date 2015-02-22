@@ -108,10 +108,18 @@ public class ImgurAlbum extends ImgurBaseObject {
      */
     public void addPhotoToAlbum(ImgurPhoto photo) {
         if (mAlbumPhotos == null) {
-            mAlbumPhotos = new ArrayList<ImgurPhoto>();
+            mAlbumPhotos = new ArrayList<>();
         }
 
         mAlbumPhotos.add(photo);
+    }
+
+    public void addPhotosToAlbum(List<ImgurPhoto> photos) {
+        if (mAlbumPhotos == null) {
+            mAlbumPhotos = photos;
+        } else {
+            mAlbumPhotos.addAll(photos);
+        }
     }
 
     public List<ImgurPhoto> getAlbumPhotos() {

@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,6 +28,7 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -105,6 +109,11 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
         super.onDetach();
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -119,6 +128,7 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
         if (args == null || args.isEmpty()) throw new IllegalStateException("No arguments passed to filter");
         if (!EventBus.getDefault().isRegistered(this)) EventBus.getDefault().register(this);
 
+        configToolBar((Toolbar) view.findViewById(R.id.toolBar));
         ImgurFilters.GallerySort sort = ImgurFilters.GallerySort.getSortFromString(args.getString(KEY_SORT, null));
         ImgurFilters.TimeSort timeSort = ImgurFilters.TimeSort.getSortFromString(args.getString(KEY_TIME_SORT, null));
         ImgurTopic topic = args.getParcelable(KEY_TOPIC);
@@ -177,6 +187,33 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
         // I've never found fragment transaction animations to work properly, so we will animate the view
         // when it is added to the fragment manager
         view.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.filter_appear));
+    }
+
+    private void configToolBar(Toolbar tb) {
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tb.getLayoutParams();
+        lp.setMargins(0, ViewUtils.getStatusBarHeight(getActivity()), 0, 0);
+        tb.setLayoutParams(lp);
+        tb.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss(null, null, null);
+            }
+        });
+
+        tb.inflateMenu(R.menu.topics);
+        tb.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.refresh:
+                        fetchTopics();
+                        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+                        return true;
+                }
+
+                return false;
+            }
+        });
     }
 
     @Override
