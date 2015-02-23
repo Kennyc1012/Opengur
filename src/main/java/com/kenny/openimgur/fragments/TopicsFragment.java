@@ -209,6 +209,15 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
                     break;
 
                 case MESSAGE_EMPTY_RESULT:
+                    if (getAdapter() == null || getAdapter().isEmpty()) {
+                        /* No results came back from the api, topic must have been removed.
+                         This needs to be confirmed that this can happen */
+                        String message = getString(R.string.topics_empty_result, mTopic.getName());
+                        app.getSql().deleteTopic(mTopic.getId());
+                        mMultiStateView.setErrorText(R.id.errorMessage, message);
+                        mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+                    }
+
                 default:
                     mIsLoading = false;
                     break;

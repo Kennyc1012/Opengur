@@ -27,7 +27,7 @@ public class ImgurTopic implements Parcelable {
     private String mDesc;
 
     public ImgurTopic(Cursor cursor) {
-        mId = cursor.getInt(DBContracts.TopicsContract.COLUMN_INDEX_TOPIC_ID);
+        mId = cursor.getInt(DBContracts.TopicsContract.COLUMN_INDEX_ID);
         mName = cursor.getString(DBContracts.TopicsContract.COLUMN_INDEX_NAME);
         mDesc = cursor.getString(DBContracts.TopicsContract.COLUMN_INDEX_DESC);
     }

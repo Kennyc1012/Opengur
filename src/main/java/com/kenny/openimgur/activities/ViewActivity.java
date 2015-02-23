@@ -471,7 +471,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             if (!TextUtils.isEmpty(mGalleryId)) {
                 mApiClient = new ApiClient(String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mGalleryId), ApiClient.HttpRequest.GET);
                 mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, mGalleryId, null);
-                mGalleryId = null;
             } else {
                 mViewPager.setAdapter(mPagerAdapter);
 
@@ -696,6 +695,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 case GALLERY_ITEM_INFO:
                     if (!TextUtils.isEmpty(mGalleryId) && mGalleryId.equals(event.id)) {
+                        mGalleryId = null;
+
                         if (statusCode == ApiClient.STATUS_OK) {
                             JSONObject json = event.json.getJSONObject(ApiClient.KEY_DATA);
                             Object imgurObject;

@@ -121,23 +121,18 @@ public class DBContracts {
     public static class TopicsContract implements BaseColumns {
         public static final String TABLE_NAME = "topics";
 
-        public static final String COLUMN_TOPIC_ID = "topic_id";
-
         public static final String COLUMN_NAME = "name";
 
         public static final String COLUMN_DESC = "description";
 
         public static final int COLUMN_INDEX_ID = 0;
 
-        public static final int COLUMN_INDEX_TOPIC_ID = 1;
-
-        public static final int COLUMN_INDEX_NAME = 2;
+        public static final int COLUMN_INDEX_NAME = 1;
 
         public static final int COLUMN_INDEX_DESC = 2;
 
         public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
                 " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
-                COLUMN_TOPIC_ID + " INTEGER, " +
                 COLUMN_NAME + " TEXT NOT NULL, " +
                 COLUMN_DESC + " TEXT NOT NULL);";
 
@@ -145,6 +140,9 @@ public class DBContracts {
                 + " ORDER BY " + COLUMN_NAME + " COLLATE NOCASE ASC";
 
         public static final String GET_TOPIC_SQL = "SELECT * FROM " + TABLE_NAME + " WHERE " +
-                COLUMN_TOPIC_ID + " = %d";
+                _ID + " = %d";
+
+        public static final String DELETE_TOPIC_SQL = "DELETE FROM " + TABLE_NAME + " WHERE " +
+                _ID + " =%d";
     }
 }

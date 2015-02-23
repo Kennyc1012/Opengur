@@ -264,7 +264,7 @@ public class SqlHelper extends SQLiteOpenHelper {
 
         for (ImgurTopic topic : topics) {
             values.clear();
-            values.put(TopicsContract.COLUMN_TOPIC_ID, topic.getId());
+            values.put(TopicsContract._ID, topic.getId());
             values.put(TopicsContract.COLUMN_NAME, topic.getName());
             values.put(TopicsContract.COLUMN_DESC, topic.getDescription());
             db.insertWithOnConflict(TopicsContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
@@ -307,6 +307,16 @@ public class SqlHelper extends SQLiteOpenHelper {
 
         cursor.close();
         return topic;
+    }
+
+    /**
+     * Deletes a topic from the databse given its id
+     *
+     * @param id
+     */
+    public void deleteTopic(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL(String.format(TopicsContract.DELETE_TOPIC_SQL, id));
     }
 
     @Override

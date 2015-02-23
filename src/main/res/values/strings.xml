@@ -196,5 +196,6 @@
     <string name="topic">Topic</string>
     <string name="topics">Topics</string>
     <string name="topics_empty_message">Select a topic from the filter to begin browsing</string>
+    <string name="topics_empty_result">Did not find any results for %s. Select a different filter and try again.</string>
 
 </resources>
