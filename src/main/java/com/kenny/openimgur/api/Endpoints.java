@@ -5,8 +5,11 @@ package com.kenny.openimgur.api;
  * https://api.imgur.com/endpoints
  */
 public enum Endpoints {
-    // section/sort/page/show viral bool
+    // section/sort/page/show viral
     GALLERY("https://api.imgur.com/3/gallery/%s/%s/%d?showViral=%s"),
+
+    // section/sort/time sort/page
+    GALLERY_TOP("https://api.imgur.com/3/gallery/%s/%s/%s/%d"),
 
     // item id
     IMAGE_DETAILS("https://api.imgur.com/3/image/%s"),
@@ -88,7 +91,15 @@ public enum Endpoints {
     // Username
     CONVO_REPORT("https://api.imgur.com/3/conversations/report/%s"),
 
-    CONVO_BLOCK("https://api.imgur.com/3/conversations/block/%s");
+    CONVO_BLOCK("https://api.imgur.com/3/conversations/block/%s"),
+
+    TOPICS_DEFAULTS("https://api.imgur.com/3/topics/defaults"),
+
+    // topic id/sort/page
+    TOPICS("https://api.imgur.com/3/topics/%d/%s/%d"),
+
+    // topic id/sort/time sort/page
+    TOPICS_TOP("https://api.imgur.com/3/topics/%d/%s/%s/%d");
 
     private final String mUrl;
 

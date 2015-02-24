@@ -5,7 +5,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.1'
+        classpath 'com.android.tools.build:gradle:1.1.0'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -31,8 +31,8 @@ android {
         applicationId "com.kennyc.open.imgur"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 13
-        versionName "2.0"
+        versionCode 14
+        versionName "2.1"
     }
 
     buildTypes {
@@ -64,7 +64,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
     compile 'com.github.kennyc1012:snackbar:1.0.4-SNAPSHOT:api11Release@aar'
-    compile 'com.squareup.okhttp:okhttp:2.0.0'
+    compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.cocosw:bottomsheet:0.6@aar'
     compile 'com.jpardogo.materialtabstrip:library:1.0.8'

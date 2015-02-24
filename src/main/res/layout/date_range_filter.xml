@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="?colorPrimaryDark"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:text="@string/date_range" />
 

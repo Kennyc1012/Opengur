@@ -132,6 +132,7 @@
     <string name="filter_show_viral">Show Viral</string>
     <string name="gallery_filter">Gallery Filter</string>
     <string name="reddit_filter">Subreddit Filter</string>
+    <string name="topics_filter">Topics Filter</string>
     <string name="sort_new">New</string>
     <string name="sort_best">Best</string>
     <string name="sort_top">Top</string>
@@ -190,5 +191,11 @@
     <string name="pref_crashlytics_title">Anonymous Usage Statistics</string>
     <string name="pref_crashlytics_on">Anonymous usage statistics will be reported</string>
     <string name="pref_crashlytics_off">Anonymous usage statistics will not be reported</string>
+
+    <!-- Topics -->
+    <string name="topic">Topic</string>
+    <string name="topics">Topics</string>
+    <string name="topics_empty_message">Select a topic from the filter to begin browsing</string>
+    <string name="topics_empty_result">Did not find any results for %s. Select a different filter and try again.</string>
 
 </resources>

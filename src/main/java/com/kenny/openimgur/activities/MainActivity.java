@@ -32,6 +32,7 @@ import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.NavFragment;
 import com.kenny.openimgur.fragments.RandomFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
+import com.kenny.openimgur.fragments.TopicsFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.util.ViewUtils;
@@ -195,6 +196,11 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 } else {
                     SnackBar.show(this, R.string.cant_launch_intent);
                 }
+                break;
+
+            case NavAdapter.PAGE_TOPICS:
+                fragment = new TopicsFragment();
+                mCurrentPage = position;
                 break;
         }
 
