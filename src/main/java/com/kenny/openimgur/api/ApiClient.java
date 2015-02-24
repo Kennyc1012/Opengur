@@ -158,7 +158,7 @@ public class ApiClient {
         Response response = mClient.newCall(request).execute();
 
         if (response.isSuccessful()) {
-            LogUtil.v(TAG, "Request Successful with status code " + response.code());
+            LogUtil.v(TAG, "Request to " + request.urlString() + " Successful with status code " + response.code());
             String serverResponse = response.body().string();
             response.body().close();
 
@@ -173,7 +173,7 @@ public class ApiClient {
             }
         } else {
             int statusCode = response.code();
-            LogUtil.w(TAG, "Request Failed with status code " + statusCode);
+            LogUtil.w(TAG, "Request to " + request.urlString() + "Failed with status code " + statusCode);
             json = new JSONObject();
             json.put(KEY_SUCCESS, false);
             json.put(KEY_STATUS, statusCode);

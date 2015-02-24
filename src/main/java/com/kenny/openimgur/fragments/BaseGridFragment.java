@@ -255,7 +255,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
      * @param event
      */
     public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == getEventType() && mRequestId.equals(event.id)) {
+        if (event.eventType == getEventType() && event.id.equals(mRequestId)) {
             try {
                 int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
                 List<ImgurBaseObject> objects;

@@ -26,18 +26,13 @@ public class NavAdapter extends BaseAdapter {
     public static final int PAGE_PROFILE = 0;
 
     public static final int PAGE_GALLERY = 1;
-
-    public static final int PAGE_SUBREDDIT = 2;
-
-    public static final int PAGE_RANDOM = 3;
-
-    public static final int PAGE_UPLOADS = 4;
-
-    public static final int PAGE_DIVIDER = 5;
-
-    public static final int PAGE_SETTINGS = 6;
-
-    public static final int PAGE_FEEDBACK = 7;
+    public static final int PAGE_TOPICS = 2;
+    public static final int PAGE_SUBREDDIT = 3;
+    public static final int PAGE_RANDOM = 4;
+    public static final int PAGE_UPLOADS = 5;
+    public static final int PAGE_DIVIDER = 6;
+    public static final int PAGE_SETTINGS = 7;
+    public static final int PAGE_FEEDBACK = 8;
 
     private static final int VIEW_TYPE_PRIMARY = 0;
 
@@ -203,6 +198,10 @@ public class NavAdapter extends BaseAdapter {
 
             case PAGE_FEEDBACK:
                 drawableId = R.drawable.ic_action_email;
+                break;
+
+            case PAGE_TOPICS:
+                drawableId = R.drawable.ic_action_quotes;
                 break;
         }
 

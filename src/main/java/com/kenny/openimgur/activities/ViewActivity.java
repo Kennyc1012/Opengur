@@ -469,8 +469,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             // Check if the activity was opened externally by a link click
             if (!TextUtils.isEmpty(mGalleryId)) {
                 mApiClient = new ApiClient(String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mGalleryId), ApiClient.HttpRequest.GET);
-                mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, null, null);
-                mGalleryId = null;
+                mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, mGalleryId, null);
             } else {
                 mViewPager.setAdapter(mPagerAdapter);
 
@@ -694,27 +693,31 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     break;
 
                 case GALLERY_ITEM_INFO:
-                    if (statusCode == ApiClient.STATUS_OK) {
-                        JSONObject json = event.json.getJSONObject(ApiClient.KEY_DATA);
-                        Object imgurObject;
+                    if (!TextUtils.isEmpty(mGalleryId) && mGalleryId.equals(event.id)) {
+                        mGalleryId = null;
 
-                        if (json.has("is_album") && json.getBoolean("is_album")) {
-                            imgurObject = new ImgurAlbum(json);
+                        if (statusCode == ApiClient.STATUS_OK) {
+                            JSONObject json = event.json.getJSONObject(ApiClient.KEY_DATA);
+                            Object imgurObject;
 
-                            if (json.has("images")) {
-                                JSONArray array = json.getJSONArray("images");
+                            if (json.has("is_album") && json.getBoolean("is_album")) {
+                                imgurObject = new ImgurAlbum(json);
 
-                                for (int i = 0; i < array.length(); i++) {
-                                    ((ImgurAlbum) imgurObject).addPhotoToAlbum(new ImgurPhoto(array.getJSONObject(i)));
+                                if (json.has("images")) {
+                                    JSONArray array = json.getJSONArray("images");
+
+                                    for (int i = 0; i < array.length(); i++) {
+                                        ((ImgurAlbum) imgurObject).addPhotoToAlbum(new ImgurPhoto(array.getJSONObject(i)));
+                                    }
                                 }
+                            } else {
+                                imgurObject = new ImgurPhoto(json);
                             }
-                        } else {
-                            imgurObject = new ImgurPhoto(json);
-                        }
 
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ITEM_DETAILS, imgurObject);
-                    } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ITEM_DETAILS, imgurObject);
+                        } else {
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
+                        }
                     }
                     break;
 
@@ -974,8 +977,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                                     String vote = which == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
                                     String url = String.format(Endpoints.COMMENT_VOTE.getUrl(), mSelectedComment.getId(), vote);
                                     RequestBody body = new FormEncodingBuilder().add("id", mSelectedComment.getId()).build();
-                                    mApiClient.setUrl(url);
-                                    mApiClient.setRequestType(ApiClient.HttpRequest.POST);
+
+                                    if (mApiClient == null) {
+                                        mApiClient = new ApiClient(url, ApiClient.HttpRequest.POST);
+                                    } else {
+                                        mApiClient.setUrl(url);
+                                        mApiClient.setRequestType(ApiClient.HttpRequest.POST);
+                                    }
+
                                     mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
                                 } else {
                                     SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);

@@ -129,12 +129,19 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         mImgurObject = object;
 
         if (mImgurObject instanceof ImgurPhoto) {
-            List<ImgurPhoto> photo = new ArrayList<ImgurPhoto>(1);
-            photo.add(((ImgurPhoto) mImgurObject));
-            mPhotoAdapter = new PhotoAdapter(getActivity(), photo, this);
-            createHeader();
-            mListView.setAdapter(mPhotoAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            if (mImgurObject.getUpVotes() != Integer.MIN_VALUE) {
+                List<ImgurPhoto> photo = new ArrayList<>(1);
+                photo.add(((ImgurPhoto) mImgurObject));
+                mPhotoAdapter = new PhotoAdapter(getActivity(), photo, this);
+                createHeader();
+                mListView.setAdapter(mPhotoAdapter);
+                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            } else {
+                LogUtil.v(TAG, "Item does not contain scores, fetching from api");
+                String url = String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mImgurObject.getId());
+                ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
+                api.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, mImgurObject.getId(), null);
+            }
         } else if (((ImgurAlbum) mImgurObject).getAlbumPhotos() == null || ((ImgurAlbum) mImgurObject).getAlbumPhotos().isEmpty()) {
             String url = String.format(Endpoints.ALBUM.getUrl(), mImgurObject.getId());
             ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
@@ -156,6 +163,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         TextView author = (TextView) mHeaderView.findViewById(R.id.author);
         PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
         TextView pointText = (TextView) mHeaderView.findViewById(R.id.pointText);
+        TextView topic = (TextView) mHeaderView.findViewById(R.id.topic);
 
         if (!TextUtils.isEmpty(mImgurObject.getTitle())) {
             title.setText(mImgurObject.getTitle());
@@ -167,6 +175,9 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             author.setText("- ?????");
         }
 
+        if (!TextUtils.isEmpty(mImgurObject.getTopic())) {
+            topic.setText(mImgurObject.getTopic());
+        }
 
         int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
         pointText.setText((mImgurObject.getUpVotes() - mImgurObject.getDownVotes()) + " " + getString(R.string.points));
@@ -242,18 +253,31 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         try {
             switch (event.eventType) {
                 case ALBUM_DETAILS:
-                    if (mImgurObject.getId().equals(event.id) && mPhotoAdapter == null) {
+                    if (mImgurObject.getId().equals(event.id)) {
                         int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
 
                         if (statusCode == ApiClient.STATUS_OK) {
                             JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
+                            List<ImgurPhoto> photos = new ArrayList<>();
 
                             for (int i = 0; i < arr.length(); i++) {
-                                ImgurPhoto photo = new ImgurPhoto(arr.getJSONObject(i));
-                                ((ImgurAlbum) mImgurObject).addPhotoToAlbum(photo);
+                                photos.add(new ImgurPhoto(arr.getJSONObject(i)));
                             }
 
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, mImgurObject);
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photos);
+                        } else {
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
+                        }
+                    }
+                    break;
+
+                case GALLERY_ITEM_INFO:
+                    if (mImgurObject.getId().equals(event.id)) {
+                        int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
+
+                        if (statusCode == ApiClient.STATUS_OK) {
+                            ImgurPhoto photo = new ImgurPhoto(event.json.getJSONObject(ApiClient.KEY_DATA));
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photo);
                         } else {
                             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
                         }
@@ -440,11 +464,18 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
-                    mImgurObject = ((ImgurBaseObject) msg.obj);
-                    mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), ImgurViewFragment.this);
-                    createHeader();
-                    mListView.setAdapter(mPhotoAdapter);
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    if (msg.obj instanceof ImgurBaseObject) {
+                        setupFragmentWithObject((ImgurBaseObject) msg.obj);
+                    } else if (msg.obj instanceof List && mImgurObject instanceof ImgurAlbum) {
+                        ((ImgurAlbum) mImgurObject).addPhotosToAlbum((List<ImgurPhoto>) msg.obj);
+                        mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), ImgurViewFragment.this);
+                        createHeader();
+                        mListView.setAdapter(mPhotoAdapter);
+                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    } else {
+                        mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    }
                     break;
 
                 case MESSAGE_ACTION_FAILED:

@@ -121,7 +121,13 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
             displayImage(holder.image, ((ImgurAlbum) obj).getCoverUrl(ImgurPhoto.THUMBNAIL_GALLERY));
         }
 
-        holder.score.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.score.getContext().getString(R.string.points));
+        // Galelry Items from topics don't have score values, so don't display them until its fixed
+        if (obj.getUpVotes() != Integer.MIN_VALUE) {
+            holder.score.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.score.getContext().getString(R.string.points));
+            holder.score.setVisibility(View.VISIBLE);
+        } else {
+            holder.score.setVisibility(View.GONE);
+        }
 
         if (obj.isFavorited() || ImgurBaseObject.VOTE_UP.equals(obj.getVote())) {
             holder.score.setTextColor(mUpvoteColor);
