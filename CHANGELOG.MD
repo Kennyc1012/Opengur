@@ -1,5 +1,16 @@
 #Open Imgur Changelog
 
+<b>2.1</b>
+- Topics added
+
+- New Icon
+
+- Database calls will use a singleton for read and write databases
+
+- Updated OKHttp to 2.2.0 release
+
+- Bug fixes
+
 <b>2.0</b>
 - New Profile Layout. Users can now view submissions, favorites, and comments of other users as well as messages and uploads for
 their own account.
