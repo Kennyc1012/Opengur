@@ -141,17 +141,17 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
                 break;
 
             case TIME:
-                mViral.setTextColor(getResources().getColor(theme.accentColor));
-                mSortSeekBar.setProgress(100);
-                mViral.setTypeface(null, Typeface.BOLD);
+                mDay.setTextColor(getResources().getColor(theme.accentColor));
+                mSortSeekBar.setProgress(0);
+                mDay.setTypeface(null, Typeface.BOLD);
                 mDateContainer.setAlpha(0);
                 break;
 
             default:
             case VIRAL:
-                mSortSeekBar.setProgress(0);
-                mTime.setTextColor(getResources().getColor(theme.accentColor));
-                mTime.setTypeface(null, Typeface.BOLD);
+                mSortSeekBar.setProgress(100);
+                mViral.setTextColor(getResources().getColor(theme.accentColor));
+                mViral.setTypeface(null, Typeface.BOLD);
                 mDateContainer.setAlpha(0);
                 break;
         }
