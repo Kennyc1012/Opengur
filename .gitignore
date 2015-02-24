@@ -11,3 +11,5 @@ gradlew.bat
 /app
 OpenImgur.iml
 openimgur.keystore
+crashlytics.properties
+/src/main/assets/crashlytics-build.properties
