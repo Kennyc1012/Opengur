@@ -2,6 +2,7 @@ package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
@@ -55,6 +56,10 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mListView.addHeaderView(ViewUtils.getFooterViewForComments(getActivity()));
+        }
+
         mListView.setAdapter(mAdapter = new NavAdapter(getActivity(), app.getUser()));
         mListView.setOnItemClickListener(this);
         mListView.setPadding(0, ViewUtils.getStatusBarHeight(getActivity()), 0, 0);

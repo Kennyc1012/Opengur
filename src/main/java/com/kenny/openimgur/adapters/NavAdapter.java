@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
@@ -26,12 +27,19 @@ public class NavAdapter extends BaseAdapter {
     public static final int PAGE_PROFILE = 0;
 
     public static final int PAGE_GALLERY = 1;
+
     public static final int PAGE_TOPICS = 2;
+
     public static final int PAGE_SUBREDDIT = 3;
+
     public static final int PAGE_RANDOM = 4;
+
     public static final int PAGE_UPLOADS = 5;
+
     public static final int PAGE_DIVIDER = 6;
+
     public static final int PAGE_SETTINGS = 7;
+
     public static final int PAGE_FEEDBACK = 8;
 
     private static final int VIEW_TYPE_PRIMARY = 0;
@@ -53,8 +61,6 @@ public class NavAdapter extends BaseAdapter {
     private int mDefaultColor;
 
     private int mProfileColor;
-
-    ;
 
     public NavAdapter(Context context, ImgurUser user) {
         ImgurTheme theme = OpenImgurApp.getInstance(context).getImgurTheme();
@@ -127,6 +133,23 @@ public class NavAdapter extends BaseAdapter {
         name.setTextColor(mSelectedPosition == position ? mSelectedColor : Color.WHITE);
         TextView rep = (TextView) view.findViewById(R.id.reputation);
         rep.setText(mUser != null ? mUser.getNotoriety().getStringId() : R.string.login_msg);
+        ImageView img = (ImageView) view.findViewById(R.id.profileImg);
+
+        if (mUser != null) {
+            int size = img.getResources().getDimensionPixelSize(R.dimen.avatar_size);
+            String firstLetter = mUser.getUsername().substring(0, 1);
+
+            img.setImageDrawable(TextDrawable.builder()
+                    .beginConfig()
+                    .toUpperCase()
+                    .width(size)
+                    .height(size)
+                    .endConfig()
+                    .buildRound(firstLetter, mSelectedColor));
+        } else {
+            img.setImageResource(R.drawable.ic_account_circle);
+        }
+
         view.setBackgroundColor(mProfileColor);
         return view;
     }

@@ -9,9 +9,9 @@
     android:paddingTop="8dp">
 
     <ImageView
+        android:id="@+id/profileImg"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_account_circle" />
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/profileName"

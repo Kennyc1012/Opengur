@@ -25,6 +25,9 @@ public class LinkUtils {
     private static final String REGEX_IMGUR_USER = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
             "(m.imgur.com|imgur.com|i.imgur.com)\\/user\\/(?!=\\/)\\w+$";
 
+    private static final String REGEX_IMGUR_ALBUM = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
+            "(m.imgur.com|imgur.com|i.imgur.com)\\/a\\/(?!=\\/)\\w+$";
+
     // Pattern used to extra an ID from a url
     private static final Pattern ID_PATTERN = Pattern.compile(".com\\/(.*)\\W");
 
@@ -34,6 +37,7 @@ public class LinkUtils {
         IMAGE,
         GALLERY,
         USER,
+        ALBUM,
         NONE
     }
 
@@ -57,6 +61,8 @@ public class LinkUtils {
                 match = LinkMatch.GALLERY;
             } else if (url.matches(REGEX_IMGUR_USER)) {
                 match = LinkMatch.USER;
+            }else if (url.matches(REGEX_IMGUR_ALBUM)){
+                return LinkMatch.ALBUM;
             }
         }
 

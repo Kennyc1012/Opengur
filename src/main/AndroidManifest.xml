@@ -156,7 +156,7 @@
             android:theme="@style/Imgur_Theme_Base" />
         <service android:name=".DownloaderService" />
 
-        <meta-data android:name="com.crashlytics.ApiKey" android:value="CRASHLYTICS_KEY"/>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="${fabric_key}"/>
     </application>
 
 </manifest>

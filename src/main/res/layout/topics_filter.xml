@@ -47,8 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            android:text="@string/filter_time"
-            android:textColor="@android:color/black" />
+            android:text="@string/filter_time" />
 
         <TextView
             android:id="@+id/optionalSort"
@@ -57,7 +56,6 @@
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:text="@string/filter_highest_scoring"
-            android:textColor="@android:color/black"
             android:gravity="center" />
 
         <TextView
@@ -67,7 +65,6 @@
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:text="@string/filter_popular"
-            android:textColor="@android:color/black"
             android:gravity="right" />
 
     </LinearLayout>

@@ -8,6 +8,7 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import android.view.Window;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.ImgurTheme;
+import com.kenny.openimgur.classes.OpenImgurApp;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -74,6 +77,9 @@ public class LoadingDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.inject(this, view);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        CardView cardView = (CardView) view;
+        ImgurTheme theme = OpenImgurApp.getInstance(getActivity()).getImgurTheme();
+        cardView.setCardBackgroundColor(getResources().getColor(theme.isDarkTheme ? R.color.background_material_dark : R.color.background_material_light));
         setCancelable(getArguments().getBoolean(KEY_CANCELABLE, true));
         mMessage.setText(getArguments().getInt(KEY_MESSAGE));
         set = new AnimatorSet();
