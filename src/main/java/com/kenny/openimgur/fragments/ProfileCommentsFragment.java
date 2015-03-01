@@ -1,9 +1,7 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
@@ -19,6 +17,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.ProfileCommentAdapter;
@@ -128,11 +127,12 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
             case R.id.sort:
                 final String[] items = getResources().getStringArray(R.array.comments_sort);
 
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.sort_by)
-                        .setItems(items, new DialogInterface.OnClickListener() {
+                new MaterialDialog.Builder(getActivity())
+                        .title(R.string.sort_by)
+                        .items(items)
+                        .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onSelection(MaterialDialog materialDialog, View view, int which, CharSequence charSequence) {
                                 mSort = CommentSort.getSortType(items[which]);
                                 if (mAdapter != null) mAdapter.clear();
                                 mPage = 0;

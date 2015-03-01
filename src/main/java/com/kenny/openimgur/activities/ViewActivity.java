@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -36,6 +35,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
@@ -598,11 +598,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case R.id.sortComments:
-                new AlertDialog.Builder(ViewActivity.this)
-                        .setTitle(R.string.sort_by)
-                        .setItems(CommentSort.getItemsForArray(getApplicationContext()), new DialogInterface.OnClickListener() {
+                new MaterialDialog.Builder(ViewActivity.this)
+                        .title(R.string.sort_by)
+                        .items(CommentSort.getItemsForArray(getApplicationContext()))
+                        .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onSelection(MaterialDialog materialDialog, View view, int which, CharSequence charSequence) {
                                 CommentSort sort = CommentSort.getSortFromPosition(which);
 
                                 if (sort != mCommentSort) {

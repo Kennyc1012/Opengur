@@ -1,10 +1,8 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Message;
@@ -20,6 +18,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewPhotoActivity;
 import com.kenny.openimgur.adapters.PhotoAdapter;
@@ -323,14 +322,16 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         final int position = mListView.getPositionForView(view) - mListView.getHeaderViewsCount();
 
         if (position >= 0) {
-            new AlertDialog.Builder(getActivity()).setItems(new String[]{getString(R.string.copy_link)}, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    ImgurBaseObject obj = mPhotoAdapter.getItem(position);
-                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                    clipboard.setPrimaryClip(ClipData.newPlainText("link", obj.getLink()));
-                }
-            }).show();
+            new MaterialDialog.Builder(getActivity())
+                    .items(new String[]{getString(R.string.copy_link)})
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                            ImgurBaseObject obj = mPhotoAdapter.getItem(position);
+                            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                            clipboard.setPrimaryClip(ClipData.newPlainText("link", obj.getLink()));
+                        }
+                    }).show();
         }
     }
 

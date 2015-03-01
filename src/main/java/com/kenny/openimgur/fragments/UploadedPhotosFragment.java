@@ -1,12 +1,10 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,6 +15,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.UploadActivity;
 import com.kenny.openimgur.activities.ViewPhotoActivity;
@@ -123,10 +122,11 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
         if (adapterPosition >= 0) {
             final UploadedPhoto photo = mAdapter.getItem(adapterPosition);
 
-            new AlertDialog.Builder(getActivity())
-                    .setItems(R.array.uploaded_photos_options, new DialogInterface.OnClickListener() {
+            new MaterialDialog.Builder(getActivity())
+                    .items(R.array.uploaded_photos_options)
+                    .itemsCallback(new MaterialDialog.ListCallback() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onSelection(MaterialDialog materialDialog, View view, int which, CharSequence charSequence) {
                             // 0. Share 1. Copy Link 2. Delete
 
                             switch (which) {
@@ -152,11 +152,12 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                                     View deleteView = LayoutInflater.from(getActivity()).inflate(R.layout.upload_delete_confirm, null);
                                     final CheckBox cb = (CheckBox) deleteView.findViewById(R.id.imgurDelete);
 
-                                    new AlertDialog.Builder(getActivity())
-                                            .setNegativeButton(R.string.cancel, null)
-                                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                    new MaterialDialog.Builder(getActivity())
+                                            .negativeText(R.string.cancel)
+                                            .positiveText(R.string.yes)
+                                            .callback(new MaterialDialog.ButtonCallback() {
                                                 @Override
-                                                public void onClick(DialogInterface dialog, int which) {
+                                                public void onPositive(MaterialDialog dialog) {
                                                     if (cb.isChecked()) {
                                                         String url = String.format(Endpoints.IMAGE_DELETE.getUrl(), photo.getDeleteHash());
                                                         // We don't care about any conformation here
@@ -172,8 +173,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                                                             mListener.onUpdateActionBar(true);
                                                     }
                                                 }
-                                            }).setView(deleteView).show();
-                                    break;
+                                            }).customView(deleteView, false).show();
                             }
                         }
                     }).show();

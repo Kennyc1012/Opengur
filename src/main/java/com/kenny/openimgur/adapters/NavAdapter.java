@@ -74,12 +74,6 @@ public class NavAdapter extends BaseAdapter {
 
     }
 
-    public void onUpdateTheme(ImgurTheme theme, Resources res) {
-        mSelectedColor = res.getColor(theme.accentColor);
-        mProfileColor = res.getColor(theme.primaryColor);
-        notifyDataSetChanged();
-    }
-
     @Override
     public int getCount() {
         return mTitles != null ? mTitles.length : 0;
@@ -92,7 +86,7 @@ public class NavAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return Math.abs(getItem(position).hashCode());
     }
 
     @Override

@@ -1,8 +1,6 @@
 package com.kenny.openimgur.activities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -33,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -446,12 +445,14 @@ public class UploadActivity extends BaseActivity {
                         View nagView = LayoutInflater.from(UploadActivity.this).inflate(R.layout.no_user_nag, null);
                         final CheckBox cb = (CheckBox) nagView.findViewById(R.id.dontNotify);
 
-                        new AlertDialog.Builder(UploadActivity.this)
-                                .setTitle(R.string.not_logged_in)
-                                .setNegativeButton(R.string.cancel, null)
-                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        new MaterialDialog.Builder(UploadActivity.this)
+                                .title(R.string.not_logged_in)
+                                .negativeText(R.string.cancel)
+                                .positiveText(R.string.yes)
+                                .customView(nagView, false)
+                                .callback(new MaterialDialog.ButtonCallback() {
                                     @Override
-                                    public void onClick(DialogInterface dialog, int which) {
+                                    public void onPositive(MaterialDialog dialog) {
                                         if (cb.isChecked()) {
                                             app.getPreferences().edit().putBoolean(PREF_NOTIFY_NO_USER, false).apply();
                                         }
@@ -463,7 +464,7 @@ public class UploadActivity extends BaseActivity {
                                                     mTempFile : mCameraFile, false);
                                         }
                                     }
-                                }).setView(nagView).show();
+                                }).show();
                     } else {
                         String title = mTitle.getText().toString();
                         String desc = mDesc.getText().toString();
@@ -613,25 +614,23 @@ public class UploadActivity extends BaseActivity {
                     }
 
                     String message = getString(R.string.upload_success, url);
-                    Dialog dialog = new AlertDialog.Builder(UploadActivity.this)
-                            .setTitle(R.string.upload_complete)
-                            .setMessage(message).setNegativeButton(R.string.dismiss, null)
-                            .setPositiveButton(R.string.copy_link, new DialogInterface.OnClickListener() {
+                    new MaterialDialog.Builder(UploadActivity.this)
+                            .title(R.string.upload_complete)
+                            .content(message)
+                            .negativeText(R.string.dismiss)
+                            .positiveText(R.string.copy_link)
+                            .dismissListener(new DialogInterface.OnDismissListener() {
                                 @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", url));
+                                public void onDismiss(DialogInterface dialog) {
+                                    finish();
                                 }
-                            }).create();
-
-                    dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            }).callback(new MaterialDialog.ButtonCallback() {
                         @Override
-                        public void onDismiss(DialogInterface dialog) {
-                            finish();
+                        public void onPositive(MaterialDialog dialog) {
+                            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                            clipboard.setPrimaryClip(ClipData.newPlainText("link", url));
                         }
-                    });
-
-                    dialog.show();
+                    }).show();
                     break;
 
                 case MESSAGE_ACTION_FAILED:

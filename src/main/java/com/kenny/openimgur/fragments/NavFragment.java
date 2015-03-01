@@ -57,7 +57,7 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mListView.addHeaderView(ViewUtils.getFooterViewForComments(getActivity()));
+            mListView.addFooterView(ViewUtils.getFooterViewForComments(getActivity()));
         }
 
         mListView.setAdapter(mAdapter = new NavAdapter(getActivity(), app.getUser()));
@@ -131,9 +131,11 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (mListener != null) mListener.onNavigationItemSelected(i);
-        setSelectedPage(i);
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        if (id > 0) {
+            if (mListener != null) mListener.onNavigationItemSelected(position);
+            setSelectedPage(position);
+        }
     }
 
     /**
@@ -143,11 +145,6 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
      */
     public void setSelectedPage(int position) {
         mAdapter.setSelectedPosition(position);
-    }
-
-    public void onUpdateTheme(ImgurTheme theme) {
-        this.theme = theme;
-        if (mAdapter != null) mAdapter.onUpdateTheme(theme, getResources());
     }
 
     public static interface NavigationListener {

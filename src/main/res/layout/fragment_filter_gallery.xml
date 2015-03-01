@@ -148,6 +148,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/cancel"
                 android:textAllCaps="true"
+                android:textColor="?android:textColor"
                 style="@style/Widget.AppCompat.ActionButton" />
 
             <Button
@@ -156,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/accept"
                 android:textAllCaps="true"
-                android:textColor="@color/dialog_accept"
+                android:textColor="?colorAccent"
                 style="@style/Widget.AppCompat.ActionButton" />
 
         </LinearLayout>
