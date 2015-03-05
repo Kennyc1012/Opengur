@@ -145,4 +145,23 @@ public class DBContracts {
         public static final String DELETE_TOPIC_SQL = "DELETE FROM " + TABLE_NAME + " WHERE " +
                 _ID + " =%d";
     }
+
+    public static class SubRedditContract implements BaseColumns {
+        public static final String TABLE_NAME = "subreddits";
+
+        public static final String COLUMN_NAME = "name";
+
+        public static final int COLUMN_INDEX_ID = 0;
+
+        public static final int COLUMN_INDEX_NAME = 1;
+
+        public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
+                " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
+                COLUMN_NAME + " TEXT NOT NULL UNIQUE)";
+
+        public static final String GET_SUBREDDITS_SQL = "SELECT * FROM " + TABLE_NAME;
+
+        public static final String SEARCH_SUBREDDIT_SQL = "SELECT * FROM " + TABLE_NAME + " WHERE " +
+                COLUMN_NAME + " LIKE '%";
+    }
 }

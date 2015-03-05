@@ -1,6 +1,5 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.Window;
 import android.webkit.WebView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -52,6 +50,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
+        findPreference("redditHistory").setOnPreferenceClickListener(this);
         findPreference(SettingsActivity.KEY_ADB).setOnPreferenceChangeListener(this);
         findPreference(SettingsActivity.KEY_DARK_THEME).setOnPreferenceChangeListener(this);
     }
@@ -143,7 +142,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             WebView webView = new WebView(getActivity());
             new MaterialDialog.Builder(getActivity())
                     .negativeText(R.string.dismiss)
-                    .customView(webView,true).show();
+                    .customView(webView, true).show();
 
             webView.loadUrl("file:///android_asset/licenses.html");
             return true;
@@ -154,6 +153,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             } else {
                 SnackBar.show(getActivity(), R.string.cant_launch_intent);
             }
+        } else if (preference.getKey().equals("redditHistory")) {
+            mApp.getSql().deleteSubReddits();
+            SnackBar.show(getActivity(), R.string.pref_reddit_deleted);
         }
 
         return false;
@@ -161,6 +163,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     private static class DeleteCacheTask extends AsyncTask<Void, Void, Long> {
         private WeakReference<SettingsFragment> mFragment;
+
         private String mCacheDirKey;
 
         public DeleteCacheTask(SettingsFragment fragment, String cacheDirKey) {

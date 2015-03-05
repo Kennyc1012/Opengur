@@ -31,4 +31,8 @@
         <item name="android:textColor">@color/primary_text_default_material_dark</item>
     </style>
 
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="layout">@layout/search_view</item>
+    </style>
+
 </resources>
