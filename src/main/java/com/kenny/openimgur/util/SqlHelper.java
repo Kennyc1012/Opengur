@@ -14,6 +14,7 @@ import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.DBContracts.ProfileContract;
+import com.kenny.openimgur.util.DBContracts.SubRedditContract;
 import com.kenny.openimgur.util.DBContracts.TopicsContract;
 import com.kenny.openimgur.util.DBContracts.UploadContract;
 import com.kenny.openimgur.util.DBContracts.UserContract;
@@ -27,7 +28,7 @@ import java.util.List;
 public class SqlHelper extends SQLiteOpenHelper {
     private static final String TAG = "SqlHelper";
 
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
 
     private static final String DB_NAME = "open_imgur.db";
 
@@ -45,12 +46,14 @@ public class SqlHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(ProfileContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(UploadContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(TopicsContract.CREATE_TABLE_SQL);
+        sqLiteDatabase.execSQL(SubRedditContract.CREATE_TABLE_SQL);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
-        // V2 Added uploads Table
-        // V3 Added topics Table
+        /* V2 Added uploads Table
+         V3 Added topics Table
+         v4 Added Subreddits Table */
         onCreate(db);
     }
 
@@ -69,7 +72,7 @@ public class SqlHelper extends SQLiteOpenHelper {
             mWritableDatabase = super.getWritableDatabase();
         }
 
-        return mReadableDatabase;
+        return mWritableDatabase;
     }
 
     /**
@@ -317,6 +320,47 @@ public class SqlHelper extends SQLiteOpenHelper {
     public void deleteTopic(int id) {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL(String.format(TopicsContract.DELETE_TOPIC_SQL, id));
+    }
+
+    /**
+     * Inserts a subreddit into the database
+     *
+     * @param name
+     */
+    public void addSubReddit(String name) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues(1);
+        values.put(SubRedditContract.COLUMN_NAME, name);
+        db.insertWithOnConflict(SubRedditContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+    }
+
+    /**
+     * Returns a cursor containing all the search subreddits
+     *
+     * @return
+     */
+    public Cursor getSubReddits() {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(SubRedditContract.GET_SUBREDDITS_SQL, null);
+        return cursor;
+    }
+
+    /**
+     * Returns subreddits that match the given name
+     *
+     * @param name
+     * @return
+     */
+    public Cursor getSubReddits(CharSequence name) {
+        String sql = SubRedditContract.SEARCH_SUBREDDIT_SQL + name + "%'";
+        return getReadableDatabase().rawQuery(sql, null);
+    }
+
+    /**
+     * Deletes all searched subreddits
+     */
+    public void deleteSubReddits() {
+        getWritableDatabase().delete(SubRedditContract.TABLE_NAME, null, null);
     }
 
     @Override

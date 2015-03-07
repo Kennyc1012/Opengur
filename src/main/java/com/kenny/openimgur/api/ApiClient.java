@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 
+import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpenImgurApp;
@@ -64,9 +65,9 @@ public class ApiClient {
 
     public static final String KEY_DATA = "data";
 
-    public static final String CLIENT_ID = "YOUR API KEY";
+    public static final String CLIENT_ID = BuildConfig.API_CLIENT_ID;
 
-    public static final String CLIENT_SECRET = "YOUR API KEY";
+    public static final String CLIENT_SECRET = BuildConfig.API_CLIENT_SECRET;
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
 

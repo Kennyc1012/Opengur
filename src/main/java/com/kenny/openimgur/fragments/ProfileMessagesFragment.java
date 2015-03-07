@@ -1,8 +1,6 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +14,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
 import com.kenny.openimgur.adapters.ConvoAdapter;
@@ -147,13 +146,14 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
 
         if (position >= 0) {
             final ImgurConvo convo = mAdapter.getItem(position);
-            new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.convo_delete)
-                    .setMessage(R.string.convo_delete_message)
-                    .setNegativeButton(R.string.cancel, null)
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            new MaterialDialog.Builder(getActivity())
+                    .title(R.string.convo_delete)
+                    .content(R.string.convo_delete_message)
+                    .negativeText(R.string.cancel)
+                    .positiveText(R.string.yes)
+                    .callback(new MaterialDialog.ButtonCallback() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onPositive(MaterialDialog dialog) {
                             deleteConvo(convo);
                         }
                     }).show();

@@ -1,10 +1,8 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Message;
@@ -18,7 +16,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewPhotoActivity;
 import com.kenny.openimgur.adapters.PhotoAdapter;
@@ -34,7 +34,6 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.PointsBar;
-import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
@@ -159,11 +158,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
      */
     private void createHeader() {
         mHeaderView = View.inflate(getActivity(), R.layout.image_header, null);
-        TextViewRoboto title = (TextViewRoboto) mHeaderView.findViewById(R.id.title);
-        TextViewRoboto author = (TextViewRoboto) mHeaderView.findViewById(R.id.author);
+        TextView title = (TextView) mHeaderView.findViewById(R.id.title);
+        TextView author = (TextView) mHeaderView.findViewById(R.id.author);
         PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
-        TextViewRoboto pointText = (TextViewRoboto) mHeaderView.findViewById(R.id.pointText);
-        TextViewRoboto topic = (TextViewRoboto) mHeaderView.findViewById(R.id.topic);
+        TextView pointText = (TextView) mHeaderView.findViewById(R.id.pointText);
+        TextView topic = (TextView) mHeaderView.findViewById(R.id.topic);
 
         if (!TextUtils.isEmpty(mImgurObject.getTitle())) {
             title.setText(mImgurObject.getTitle());
@@ -197,7 +196,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         mImgurObject.setVote(vote);
 
         if (mHeaderView != null) {
-            TextViewRoboto pointText = (TextViewRoboto) mHeaderView.findViewById(R.id.pointText);
+            TextView pointText = (TextView) mHeaderView.findViewById(R.id.pointText);
             PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
 
             int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
@@ -323,14 +322,16 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         final int position = mListView.getPositionForView(view) - mListView.getHeaderViewsCount();
 
         if (position >= 0) {
-            new AlertDialog.Builder(getActivity()).setItems(new String[]{getString(R.string.copy_link)}, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    ImgurBaseObject obj = mPhotoAdapter.getItem(position);
-                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                    clipboard.setPrimaryClip(ClipData.newPlainText("link", obj.getLink()));
-                }
-            }).show();
+            new MaterialDialog.Builder(getActivity())
+                    .items(new String[]{getString(R.string.copy_link)})
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                            ImgurBaseObject obj = mPhotoAdapter.getItem(position);
+                            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                            clipboard.setPrimaryClip(ClipData.newPlainText("link", obj.getLink()));
+                        }
+                    }).show();
         }
     }
 

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,24 +9,24 @@
     android:paddingTop="8dp">
 
     <ImageView
+        android:id="@+id/profileImg"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_account_circle" />
+        android:layout_height="wrap_content" />
 
-    <com.kenny.openimgur.ui.TextViewRoboto
+    <TextView
         android:id="@+id/profileName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textColor="@android:color/white"
         android:textSize="14sp"
-        app:robotoFont="medium" />
+        android:textAppearance="@style/TextAppearance.Medium" />
 
-    <com.kenny.openimgur.ui.TextViewRoboto
+    <TextView
         android:id="@+id/reputation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:robotoFont="regular"
+        android:textAppearance="@style/TextAppearance.Regular"
         android:textSize="14sp"
         android:textColor="@android:color/white" />
 

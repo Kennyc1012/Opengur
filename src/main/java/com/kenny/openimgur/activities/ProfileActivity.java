@@ -3,11 +3,9 @@ package com.kenny.openimgur.activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -27,6 +25,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.astuetz.PagerSlidingTabStrip;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
@@ -202,13 +202,14 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.logout:
-                new AlertDialog.Builder(ProfileActivity.this)
-                        .setTitle(R.string.logout)
-                        .setMessage(R.string.logout_confirm)
-                        .setNegativeButton(R.string.cancel, null)
-                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                new MaterialDialog.Builder(ProfileActivity.this)
+                        .title(R.string.logout)
+                        .content(R.string.logout_confirm)
+                        .negativeText(R.string.cancel)
+                        .positiveText(R.string.yes)
+                        .callback(new MaterialDialog.ButtonCallback() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onPositive(MaterialDialog dialog) {
                                 onUserLogout();
                             }
                         }).show();

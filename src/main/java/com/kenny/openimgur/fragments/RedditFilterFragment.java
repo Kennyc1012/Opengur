@@ -85,9 +85,14 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if (theme.isDarkTheme) {
+            view.setBackgroundColor(getResources().getColor(R.color.background_material_dark));
+        } else {
+            view.setBackgroundColor(getResources().getColor(R.color.background_material_light));
+        }
+
         configToolBar((Toolbar) view.findViewById(R.id.toolBar));
-        ((TextView) view.findViewById(R.id.sortTitle)).setTextColor(getResources().getColor(theme.darkColor));
-        ((TextView) view.findViewById(R.id.dateTitle)).setTextColor(getResources().getColor(theme.darkColor));
         Bundle args = getArguments();
         RedditSort sort = (RedditSort) args.getSerializable(KEY_SORT);
         ImgurFilters.TimeSort topSort = (ImgurFilters.TimeSort) args.getSerializable(KEY_TOP_SORT);
@@ -144,7 +149,6 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
                 dismiss(null, null);
             }
         });
-        tb.setBackgroundColor(getResources().getColor(theme.primaryColor));
     }
 
     @Override
@@ -222,19 +226,19 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
      */
     private void updateTextView(ImgurFilters.TimeSort topSort) {
         int selected = getResources().getColor(theme.accentColor);
-        int black = Color.BLACK;
+        int defaultColor = theme.isDarkTheme ? Color.WHITE : Color.BLACK;
         int tfNormal = Typeface.NORMAL;
         int tfBold = Typeface.BOLD;
 
-        mDay.setTextColor(topSort == ImgurFilters.TimeSort.DAY ? selected : black);
+        mDay.setTextColor(topSort == ImgurFilters.TimeSort.DAY ? selected : defaultColor);
         mDay.setTypeface(null, topSort == ImgurFilters.TimeSort.DAY ? tfBold : tfNormal);
-        mWeek.setTextColor(topSort == ImgurFilters.TimeSort.WEEK ? selected : black);
+        mWeek.setTextColor(topSort == ImgurFilters.TimeSort.WEEK ? selected : defaultColor);
         mWeek.setTypeface(null, topSort == ImgurFilters.TimeSort.WEEK ? tfBold : tfNormal);
-        mMonth.setTextColor(topSort == ImgurFilters.TimeSort.MONTH ? selected : black);
+        mMonth.setTextColor(topSort == ImgurFilters.TimeSort.MONTH ? selected : defaultColor);
         mMonth.setTypeface(null, topSort == ImgurFilters.TimeSort.MONTH ? tfBold : tfNormal);
-        mYear.setTextColor(topSort == ImgurFilters.TimeSort.YEAR ? selected : black);
+        mYear.setTextColor(topSort == ImgurFilters.TimeSort.YEAR ? selected : defaultColor);
         mYear.setTypeface(null, topSort == ImgurFilters.TimeSort.YEAR ? tfBold : tfNormal);
-        mAll.setTextColor(topSort == ImgurFilters.TimeSort.ALL ? selected : black);
+        mAll.setTextColor(topSort == ImgurFilters.TimeSort.ALL ? selected : defaultColor);
         mAll.setTypeface(null, topSort == ImgurFilters.TimeSort.ALL ? tfBold : tfNormal);
     }
 

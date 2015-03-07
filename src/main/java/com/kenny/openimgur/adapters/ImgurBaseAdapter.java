@@ -29,10 +29,13 @@ public abstract class ImgurBaseAdapter<T> extends BaseAdapter {
 
     protected LayoutInflater mInflater;
 
+    protected boolean mIsDarkTheme;
+
     public ImgurBaseAdapter(Context context, List<T> collection, boolean hasImageLoader) {
         if (hasImageLoader) mImageLoader = OpenImgurApp.getInstance(context).getImageLoader();
         mItems = collection;
         mInflater = LayoutInflater.from(context);
+        mIsDarkTheme = OpenImgurApp.getInstance(context).getImgurTheme().isDarkTheme;
     }
 
     public ImgurBaseAdapter(Context context, List<T> collection) {

@@ -8,13 +8,16 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.ui.TextViewRoboto;
+import com.kenny.openimgur.classes.ImgurTheme;
+import com.kenny.openimgur.classes.OpenImgurApp;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -24,14 +27,18 @@ import butterknife.InjectView;
  */
 public class LoadingDialogFragment extends DialogFragment {
     private static final String KEY_MESSAGE = "message";
+
     private static final String KEY_CANCELABLE = "cancelable";
 
     @InjectView(R.id.message)
-    TextViewRoboto mMessage;
+    TextView mMessage;
+
     @InjectView(R.id.circleOne)
     View mCircleOne;
+
     @InjectView(R.id.circleTwo)
     View mCircleTwo;
+
     @InjectView(R.id.circleThree)
     View mCircleThree;
 
@@ -57,7 +64,7 @@ public class LoadingDialogFragment extends DialogFragment {
     public void onDestroyView() {
         ButterKnife.reset(this);
 
-        if(set!=null) {
+        if (set != null) {
             set.cancel();
             set = null;
         }
@@ -68,8 +75,11 @@ public class LoadingDialogFragment extends DialogFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.inject(this,view);
+        ButterKnife.inject(this, view);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        CardView cardView = (CardView) view;
+        ImgurTheme theme = OpenImgurApp.getInstance(getActivity()).getImgurTheme();
+        cardView.setCardBackgroundColor(getResources().getColor(theme.isDarkTheme ? R.color.background_material_dark : R.color.background_material_light));
         setCancelable(getArguments().getBoolean(KEY_CANCELABLE, true));
         mMessage.setText(getArguments().getInt(KEY_MESSAGE));
         set = new AnimatorSet();

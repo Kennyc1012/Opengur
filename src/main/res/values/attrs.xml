@@ -23,14 +23,11 @@
         <attr name="shadowColor" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="TextViewRoboto">
-        <attr name="robotoFont" format="enum">
-            <enum name="light" value="0" />
-            <enum name="regular" value="1" />
-            <enum name="bold" value="2" />
-            <enum name="thin" value="3" />
-            <enum name="medium" value="4" />
-        </attr>
-    </declare-styleable>
+    <!-- Theme attributes -->
+    <attr name="errorDrawable" format="reference" />
+    <attr name="emptyDrawableUploads" format="reference" />
+    <attr name="emptyDrawableMessages" format="reference" />
+    <attr name="repliesDrawable" format="reference" />
+    <attr name="cardBG" format="color" />
 
 </resources>

@@ -13,58 +13,159 @@
 
     <style name="Imgur_Theme_Base" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
     </style>
 
     <style name="Theme_Translucent_Main" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="android:windowBackground">@color/background_material_light</item>
     </style>
 
-    <!-- Override styles -->
-    <style name="Theme_Blue">
+    <!-- Override styles (Light) -->
+    <style name="Theme_Light">
+        <item name="android:windowBackground">@color/background_material_light</item>
+        <item name="android:textColorSecondary">@color/secondary_text_default_material_light</item>
+        <item name="android:textColor">@color/primary_text_default_material_light</item>
+        <item name="android:textColorHint">@color/secondary_text_default_material_light</item>
+        <item name="android:editTextColor">@color/primary_text_default_material_light</item>
+        <item name="android:textColorLink">?colorAccent</item>
+        <item name="android:radioButtonStyle">@style/RadioButton.Style.Light</item>
+        <item name="android:checkboxStyle">@style/CheckBox.Style.Light</item>
+        <item name="cardBG">@color/cardview_light_background</item>
+        <item name="emptyDrawableUploads">@drawable/empty_uploads_light</item>
+        <item name="emptyDrawableMessages">@drawable/no_comments_light</item>
+        <item name="errorDrawable">@drawable/error_light</item>
+        <item name="repliesDrawable">@drawable/ic_action_replies_light</item>
+        <item name="md_dark_theme">false</item>
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+        <item name="md_negative_color">@color/primary_text_default_material_light</item>
+    </style>
+
+    <style name="Theme_Blue" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_blue_primary</item>
         <item name="colorPrimaryDark">@color/theme_blue_dark</item>
         <item name="colorAccent">@color/theme_blue_accent</item>
     </style>
-    <style name="Theme_Orange">
+
+    <style name="Theme_Orange" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_orange_primary</item>
         <item name="colorPrimaryDark">@color/theme_orange_dark</item>
         <item name="colorAccent">@color/theme_light_blue_accent</item>
     </style>
-    <style name="Theme_Cyan">
+
+    <style name="Theme_Cyan" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_cyan_primary</item>
         <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
         <item name="colorAccent">@color/theme_cyan_accent</item>
     </style>
-    <style name="Theme_Green">
+
+    <style name="Theme_Green" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_green_primary</item>
         <item name="colorPrimaryDark">@color/theme_green_dark</item>
         <item name="colorAccent">@color/theme_green_accent</item>
     </style>
-    <style name="Theme_Teal">
+
+    <style name="Theme_Teal" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_teal_primary</item>
         <item name="colorPrimaryDark">@color/theme_teal_dark</item>
         <item name="colorAccent">@color/theme_teal_accent</item>
     </style>
-    <style name="Theme_Red">
+
+    <style name="Theme_Red" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_red_primary</item>
         <item name="colorPrimaryDark">@color/theme_red_dark</item>
         <item name="colorAccent">@color/theme_red_accent</item>
     </style>
-    <style name="Theme_Pink">
+
+    <style name="Theme_Pink" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_pink_primary</item>
         <item name="colorPrimaryDark">@color/theme_pink_dark</item>
         <item name="colorAccent">@color/theme_pink_accent</item>
     </style>
-    <style name="Theme_Purple">
+
+    <style name="Theme_Purple" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_purple_primary</item>
         <item name="colorPrimaryDark">@color/theme_purple_dark</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
     </style>
-    <style name="Theme_Grey">
+
+    <style name="Theme_Grey" parent="@style/Theme_Light">
+        <item name="colorPrimary">@color/theme_grey_primary</item>
+        <item name="colorPrimaryDark">@color/theme_grey_dark</item>
+        <item name="colorAccent">@color/theme_grey_accent</item>
+    </style>
+
+    <!-- Override styles (Dark) -->
+    <style name="Theme_Dark">
+        <item name="android:windowBackground">@color/background_material_dark</item>
+        <item name="android:textColorSecondary">@color/secondary_text_default_material_dark</item>
+        <item name="android:textColor">@color/primary_text_default_material_dark</item>
+        <item name="android:textColorHint">@color/secondary_text_default_material_dark</item>
+        <item name="android:editTextColor">@color/primary_text_default_material_dark</item>
+        <item name="android:textColorLink">?colorAccent</item>
+        <item name="android:radioButtonStyle">@style/RadioButton.Style.Dark</item>
+        <item name="android:checkboxStyle">@style/CheckBox.Style.Dark</item>
+        <item name="cardBG">@color/card_bg_dark</item>
+        <item name="emptyDrawableUploads">@drawable/empty_uploads_dark</item>
+        <item name="emptyDrawableMessages">@drawable/no_comments_dark</item>
+        <item name="errorDrawable">@drawable/error_dark</item>
+        <item name="repliesDrawable">@drawable/ic_action_replies_dark</item>
+        <item name="snack_bar_background_color">@color/background_floating_material_light</item>
+        <item name="snack_bar_text_color">@android:color/black</item>
+        <item name="md_dark_theme">true</item>
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+        <item name="md_negative_color">@color/primary_text_default_material_dark</item>
+    </style>
+
+    <style name="Theme_Blue_Dark" parent="@style/Theme_Dark">
+        <item name="colorPrimary">@color/theme_blue_primary</item>
+        <item name="colorPrimaryDark">@color/theme_blue_dark</item>
+        <item name="colorAccent">@color/theme_blue_accent</item>
+    </style>
+
+    <style name="Theme_Orange_Dark" parent="@style/Theme_Dark">
+        <item name="colorPrimary">@color/theme_orange_primary</item>
+        <item name="colorPrimaryDark">@color/theme_orange_dark</item>
+        <item name="colorAccent">@color/theme_light_blue_accent</item>
+    </style>
+
+    <style name="Theme_Cyan_Dark" parent="@style/Theme_Dark">
+        <item name="colorPrimary">@color/theme_cyan_primary</item>
+        <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
+        <item name="colorAccent">@color/theme_cyan_accent</item>
+    </style>
+
+    <style name="Theme_Green_Dark" parent="@style/Theme_Dark">
+        <item name="colorPrimary">@color/theme_green_primary</item>
+        <item name="colorPrimaryDark">@color/theme_green_dark</item>
+        <item name="colorAccent">@color/theme_green_accent</item>
+    </style>
+
+    <style name="Theme_Teal_Dark" parent="@style/Theme_Dark">
+        <item name="colorPrimary">@color/theme_teal_primary</item>
+        <item name="colorPrimaryDark">@color/theme_teal_dark</item>
+        <item name="colorAccent">@color/theme_teal_accent</item>
+    </style>
+
+    <style name="Theme_Red_Dark" parent="@style/Theme_Dark">
+        <item name="colorPrimary">@color/theme_red_primary</item>
+        <item name="colorPrimaryDark">@color/theme_red_dark</item>
+        <item name="colorAccent">@color/theme_red_accent</item>
+    </style>
+
+    <style name="Theme_Pink_Dark" parent="@style/Theme_Dark">
+        <item name="colorPrimary">@color/theme_pink_primary</item>
+        <item name="colorPrimaryDark">@color/theme_pink_dark</item>
+        <item name="colorAccent">@color/theme_pink_accent</item>
+    </style>
+
+    <style name="Theme_Purple_Dark" parent="@style/Theme_Dark">
+        <item name="colorPrimary">@color/theme_purple_primary</item>
+        <item name="colorPrimaryDark">@color/theme_purple_dark</item>
+        <item name="colorAccent">@color/theme_purple_accent</item>
+    </style>
+
+    <style name="Theme_Grey_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>

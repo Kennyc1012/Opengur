@@ -28,7 +28,6 @@
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:text="@string/reddit_top_filter_day"
-            android:textColor="@android:color/black"
             android:gravity="center" />
 
         <TextView
@@ -38,7 +37,6 @@
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:text="@string/reddit_top_filter_week"
-            android:textColor="@android:color/black"
             android:gravity="center" />
 
         <TextView
@@ -48,7 +46,6 @@
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:text="@string/reddit_top_filter_month"
-            android:textColor="@android:color/black"
             android:gravity="center" />
 
         <TextView
@@ -58,7 +55,6 @@
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:text="@string/reddit_top_filter_year"
-            android:textColor="@android:color/black"
             android:gravity="center" />
 
         <TextView
@@ -68,7 +64,6 @@
             android:layout_weight="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:text="@string/reddit_top_filter_all"
-            android:textColor="@android:color/black"
             android:gravity="center" />
 
     </LinearLayout>

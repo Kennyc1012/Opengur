@@ -3,12 +3,19 @@
 
     <PreferenceCategory android:title="@string/pref_category_title">
 
-        <ListPreference
+        <com.afollestad.materialdialogs.prefs.MaterialListPreference
             android:key="app_theme"
             android:title="@string/pref_theme_title"
             android:entries="@array/pref_themes_items"
             android:entryValues="@array/pref_theme_keys"
             android:defaultValue="grey" />
+
+        <CheckBoxPreference
+            android:key="darkTheme"
+            android:defaultValue="false"
+            android:summaryOn="@string/pref_dark_theme_on"
+            android:summaryOff="@string/pref_dark_theme_off"
+            android:title="@string/pref_dark_theme_title" />
 
     </PreferenceCategory>
 
@@ -39,7 +46,7 @@
 
     <PreferenceCategory android:title="@string/pref_cache_title">
 
-        <ListPreference
+        <com.afollestad.materialdialogs.prefs.MaterialListPreference
             android:key="cacheLoc"
             android:title="@string/pref_cache_loc_title"
             android:entries="@array/pref_cache_loc_items"
@@ -50,7 +57,12 @@
             android:key="currentCacheSize"
             android:title="@string/pref_current_cache_size" />
 
-        <ListPreference
+        <Preference
+            android:key="redditHistory"
+            android:title="@string/pref_reddit_title"
+            android:summary="@string/pref_reddit_desc" />
+
+        <com.afollestad.materialdialogs.prefs.MaterialListPreference
             android:key="cacheSize"
             android:title="@string/pref_cache_size_title"
             android:entries="@array/pref_cache_size_items"
@@ -87,7 +99,8 @@
 
         <Preference
             android:key="version"
-            android:title="@string/version" />
+            android:title="@string/version"
+            android:enabled="false" />
 
     </PreferenceCategory>
 
