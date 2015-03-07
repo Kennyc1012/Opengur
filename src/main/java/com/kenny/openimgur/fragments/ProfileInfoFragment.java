@@ -29,7 +29,6 @@ import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.ViewUtils;
@@ -50,16 +49,16 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     TextView mUserName;
 
     @InjectView(R.id.notoriety)
-    TextViewRoboto mNotoriety;
+    TextView mNotoriety;
 
     @InjectView(R.id.rep)
-    TextViewRoboto mRep;
+    TextView mRep;
 
     @InjectView(R.id.bio)
-    TextViewRoboto mBio;
+    TextView mBio;
 
     @InjectView(R.id.date)
-    TextViewRoboto mDate;
+    TextView mDate;
 
     @InjectView(R.id.container)
     ScrollView mContainer;
@@ -198,6 +197,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
             switch (match) {
                 case GALLERY:
+                case ALBUM:
                     Intent intent = ViewActivity.createIntent(getActivity(), url).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;

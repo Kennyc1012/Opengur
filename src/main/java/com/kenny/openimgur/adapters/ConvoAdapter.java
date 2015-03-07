@@ -4,13 +4,12 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurConvo;
-import com.kenny.openimgur.ui.TextViewRoboto;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
 
@@ -25,11 +24,6 @@ public class ConvoAdapter extends ImgurBaseAdapter<ImgurConvo> {
     public ConvoAdapter(Context context, List<ImgurConvo> convos) {
         super(context, convos);
         mCircleSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
-    }
-
-    @Override
-    protected DisplayImageOptions getDisplayOptions() {
-        return null;
     }
 
     @Override
@@ -74,10 +68,10 @@ public class ConvoAdapter extends ImgurBaseAdapter<ImgurConvo> {
 
     static class ConvoViewHolder extends ImgurViewHolder {
         @InjectView(R.id.author)
-        TextViewRoboto author;
+        TextView author;
 
         @InjectView(R.id.comment)
-        TextViewRoboto message;
+        TextView message;
 
         @InjectView(R.id.image)
         ImageView image;

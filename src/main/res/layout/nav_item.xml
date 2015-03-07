@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?attr/listPreferredItemHeight">
@@ -13,14 +12,13 @@
         android:layout_marginLeft="@dimen/content_padding"
         android:adjustViewBounds="true" />
 
-    <com.kenny.openimgur.ui.TextViewRoboto
+    <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        app:robotoFont="medium"
+        android:textAppearance="@style/TextAppearance.Medium"
         android:textSize="14sp"
-        android:textColor="@color/abc_primary_text_material_light"
         android:layout_marginLeft="@dimen/keyline_margin"
         android:paddingRight="@dimen/content_padding"
         android:layout_gravity="center_vertical" />

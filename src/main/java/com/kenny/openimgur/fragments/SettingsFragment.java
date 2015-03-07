@@ -1,9 +1,7 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -15,9 +13,9 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.Window;
 import android.webkit.WebView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
@@ -52,7 +50,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
+        findPreference("redditHistory").setOnPreferenceClickListener(this);
         findPreference(SettingsActivity.KEY_ADB).setOnPreferenceChangeListener(this);
+        findPreference(SettingsActivity.KEY_DARK_THEME).setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -90,7 +90,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             }
 
             if (preference.getKey().equals(SettingsActivity.THEME_KEY)) {
+                boolean isDarkTheme = mApp.getImgurTheme().isDarkTheme;
                 ImgurTheme theme = ImgurTheme.getThemeFromString(listPreference.getEntries()[prefIndex].toString());
+                theme.isDarkTheme = isDarkTheme;
                 mApp.setImgurTheme(theme);
 
                 if (!mFirstLaunch) {
@@ -104,10 +106,15 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
             return true;
         } else if (preference instanceof CheckBoxPreference) {
-            // Ignore if its a debug build
-            if (!BuildConfig.DEBUG) {
-                LogUtil.SHOULD_WRITE_LOGS = (Boolean) object;
-                mApp.setAllowLogs((Boolean) object);
+            if (preference.getKey().equals(SettingsActivity.KEY_ADB)) {
+                // Ignore if its a debug build
+                if (!BuildConfig.DEBUG) {
+                    LogUtil.SHOULD_WRITE_LOGS = (Boolean) object;
+                    mApp.setAllowLogs((Boolean) object);
+                }
+            } else if (preference.getKey().equals(SettingsActivity.KEY_DARK_THEME)) {
+                mApp.getImgurTheme().isDarkTheme = (Boolean) object;
+                getActivity().recreate();
             }
 
             return true;
@@ -119,25 +126,25 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     @Override
     public boolean onPreferenceClick(final Preference preference) {
         if (preference.getKey().equals(SettingsActivity.CURRENT_CACHE_SIZE_KEY)) {
-            new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.clear_cache)
-                    .setMessage(R.string.clear_cache_message)
-                    .setNegativeButton(R.string.cancel, null)
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            new MaterialDialog.Builder(getActivity())
+                    .title(R.string.clear_cache)
+                    .content(R.string.clear_cache_message)
+                    .negativeText(R.string.cancel)
+                    .positiveText(R.string.yes)
+                    .callback(new MaterialDialog.ButtonCallback() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onPositive(MaterialDialog dialog) {
                             new DeleteCacheTask(SettingsFragment.this, null).execute();
                         }
                     }).show();
             return true;
         } else if (preference.getKey().equals("licenses")) {
-            AlertDialog dialog = new AlertDialog.Builder(getActivity())
-                    .setNegativeButton(R.string.dismiss, null).create();
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
             WebView webView = new WebView(getActivity());
+            new MaterialDialog.Builder(getActivity())
+                    .negativeText(R.string.dismiss)
+                    .customView(webView, true).show();
+
             webView.loadUrl("file:///android_asset/licenses.html");
-            dialog.setView(webView);
-            dialog.show();
             return true;
         } else if (preference.getKey().equals("openSource")) {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Kennyc1012/OpenImgur"));
@@ -146,6 +153,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             } else {
                 SnackBar.show(getActivity(), R.string.cant_launch_intent);
             }
+        } else if (preference.getKey().equals("redditHistory")) {
+            mApp.getSql().deleteSubReddits();
+            SnackBar.show(getActivity(), R.string.pref_reddit_deleted);
         }
 
         return false;
@@ -153,6 +163,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     private static class DeleteCacheTask extends AsyncTask<Void, Void, Long> {
         private WeakReference<SettingsFragment> mFragment;
+
         private String mCacheDirKey;
 
         public DeleteCacheTask(SettingsFragment fragment, String cacheDirKey) {

@@ -5,5 +5,4 @@
     android:choiceMode="singleChoice"
     android:drawSelectorOnTop="true"
     android:divider="@null"
-    android:dividerHeight="0dp"
-    android:background="@android:color/white" />
+    android:dividerHeight="0dp" />

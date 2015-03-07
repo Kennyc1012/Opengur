@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -13,9 +14,11 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.CardView
+            android:id="@+id/photoContainer"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="?cardBG">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -48,7 +51,7 @@
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:layout_marginRight="@dimen/activity_horizontal_margin"
                         android:text="@string/add_to_gallery"
-                        android:textColor="@android:color/black"
+
                         android:checked="false" />
 
                     <Button
@@ -58,8 +61,8 @@
                         android:layout_weight="1"
                         android:text="@string/upload"
                         android:textAllCaps="true"
-                        style="@style/Widget.AppCompat.ActionButton"
-                        android:visibility="visible" />
+                        android:textColor="?colorAccent"
+                        style="@style/Widget.AppCompat.ActionButton" />
 
 
                 </LinearLayout>
@@ -69,10 +72,12 @@
 
 
         <android.support.v7.widget.CardView
+            android:id="@+id/infoContainer"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            app:cardBackgroundColor="?cardBG">
 
             <LinearLayout
                 android:layout_width="match_parent"

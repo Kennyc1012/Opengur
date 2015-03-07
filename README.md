@@ -10,8 +10,21 @@ Open source Imgur Android App
 - Native support for both Gifs and GifV image formats
 - Tablet Support
 - Material Design
+- Dark Theme
 - Support for Api 15+
 
+
+#Building
+When forking and building OpenImgur, you must use your own API keys. You can obtain them for free from Imgur. To use them, either create a gradle.properties file and add them with the keys API_CLIENT_ID and API_CLIENT_SECRET
+```groovy
+API_CLIENT_ID = "YOUR CLIENT ID"
+API_CLIENT_SECRET ="YOUR CLIENT SECRET"
+```
+Or you can hard code them into the ApiClient.java class 
+```java
+public static final String CLIENT_ID = "YOUR CLIENT ID";
+public static final String CLIENT_SECRET = "YOUR CLIENT SECRET";
+```
 
 #Contribution
 Pull requests are welcomed and encouraged. If you experience any bugs, please [file an issue](https://github.com/Kennyc1012/OpenImgur/issues/new)

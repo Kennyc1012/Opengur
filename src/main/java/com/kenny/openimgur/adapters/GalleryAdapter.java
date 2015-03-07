@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
@@ -12,7 +13,6 @@ import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
-import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -145,7 +145,7 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
         ImageView image;
 
         @InjectView(R.id.score)
-        TextViewRoboto score;
+        TextView score;
 
         public GalleryHolder(View view) {
             super(view);

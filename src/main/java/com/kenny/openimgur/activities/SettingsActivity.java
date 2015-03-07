@@ -46,6 +46,8 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String KEY_NSFW_THUMBNAILS = "NSFWThumbnails";
 
+    public static final String KEY_DARK_THEME = "darkTheme";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

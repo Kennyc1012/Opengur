@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <com.kenny.openimgur.ui.TextViewRoboto
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/not_logged_in_msg"
         android:textColor="@android:color/black"
         android:textSize="18sp"
-        app:robotoFont="regular" />
+        android:textAppearance="@style/TextAppearance.Regular" />
 
     <CheckBox
         android:id="@+id/dontNotify"
@@ -21,6 +20,6 @@
         android:layout_marginTop="8dp"
         android:text="@string/dont_ask_again"
         android:textSize="16sp"
-        android:textColor="@android:color/black"/>
+        android:textColor="@android:color/black" />
 
 </LinearLayout>

@@ -255,19 +255,19 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
      */
     private void updateTextView(ImgurFilters.TimeSort topSort) {
         int selected = getResources().getColor(theme.accentColor);
-        int black = Color.BLACK;
+        int defaultColor = theme.isDarkTheme ? Color.WHITE : Color.BLACK;
         int tfNormal = Typeface.NORMAL;
         int tfBold = Typeface.BOLD;
 
-        mDay.setTextColor(topSort == ImgurFilters.TimeSort.DAY ? selected : black);
+        mDay.setTextColor(topSort == ImgurFilters.TimeSort.DAY ? selected : defaultColor);
         mDay.setTypeface(null, topSort == ImgurFilters.TimeSort.DAY ? tfBold : tfNormal);
-        mWeek.setTextColor(topSort == ImgurFilters.TimeSort.WEEK ? selected : black);
+        mWeek.setTextColor(topSort == ImgurFilters.TimeSort.WEEK ? selected : defaultColor);
         mWeek.setTypeface(null, topSort == ImgurFilters.TimeSort.WEEK ? tfBold : tfNormal);
-        mMonth.setTextColor(topSort == ImgurFilters.TimeSort.MONTH ? selected : black);
+        mMonth.setTextColor(topSort == ImgurFilters.TimeSort.MONTH ? selected : defaultColor);
         mMonth.setTypeface(null, topSort == ImgurFilters.TimeSort.MONTH ? tfBold : tfNormal);
-        mYear.setTextColor(topSort == ImgurFilters.TimeSort.YEAR ? selected : black);
+        mYear.setTextColor(topSort == ImgurFilters.TimeSort.YEAR ? selected : defaultColor);
         mYear.setTypeface(null, topSort == ImgurFilters.TimeSort.YEAR ? tfBold : tfNormal);
-        mAll.setTextColor(topSort == ImgurFilters.TimeSort.ALL ? selected : black);
+        mAll.setTextColor(topSort == ImgurFilters.TimeSort.ALL ? selected : defaultColor);
         mAll.setTypeface(null, topSort == ImgurFilters.TimeSort.ALL ? tfBold : tfNormal);
     }
 
@@ -284,21 +284,22 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         int position = seekBar.getProgress();
+        int defaultColor = theme.isDarkTheme ? Color.WHITE : Color.BLACK;
 
         if (seekBar == mSortSeekBar) {
             if (position <= 33) {
                 mSortSeekBar.setProgress(0);
                 mTime.setTextColor(getResources().getColor(theme.accentColor));
-                mViral.setTextColor(Color.BLACK);
-                mHighestScoring.setTextColor(Color.BLACK);
+                mViral.setTextColor(defaultColor);
+                mHighestScoring.setTextColor(defaultColor);
                 mTime.setTypeface(null, Typeface.BOLD);
                 mViral.setTypeface(null, Typeface.NORMAL);
                 mHighestScoring.setTypeface(null, Typeface.NORMAL);
                 mDateContainer.animate().alpha(0.0f).setDuration(250L);
             } else if (position <= 66) {
                 mSortSeekBar.setProgress(50);
-                mTime.setTextColor(Color.BLACK);
-                mViral.setTextColor(Color.BLACK);
+                mTime.setTextColor(defaultColor);
+                mViral.setTextColor(defaultColor);
                 mHighestScoring.setTextColor(getResources().getColor(theme.accentColor));
                 mTime.setTypeface(null, Typeface.NORMAL);
                 mViral.setTypeface(null, Typeface.NORMAL);
@@ -306,9 +307,9 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
                 mDateContainer.animate().alpha(1.0f).setDuration(250L);
             } else {
                 mSortSeekBar.setProgress(100);
-                mTime.setTextColor(Color.BLACK);
+                mTime.setTextColor(defaultColor);
                 mViral.setTextColor(getResources().getColor(theme.accentColor));
-                mHighestScoring.setTextColor(Color.BLACK);
+                mHighestScoring.setTextColor(defaultColor);
                 mTime.setTypeface(null, Typeface.NORMAL);
                 mViral.setTypeface(null, Typeface.BOLD);
                 mHighestScoring.setTypeface(null, Typeface.NORMAL);

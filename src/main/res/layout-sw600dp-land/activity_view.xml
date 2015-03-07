@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
-        app:umanoPanelHeight="?attr/actionBarSize"
+        app:umanoPanelHeight="?actionBarSize"
         app:umanoShadowHeight="4dp"
         app:umanoDragView="@+id/topContainer"
         android:layout_weight="1">
@@ -31,7 +31,7 @@
                 android:id="@+id/topContainer"
                 layout="@layout/sliding_tab_buttons"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize" />
+                android:layout_height="?actionBarSize" />
 
             <com.kenny.openimgur.ui.MultiStateView
                 android:id="@+id/multiView"
@@ -41,7 +41,7 @@
                 app:loadingView="@layout/loading_view"
                 app:emptyView="@layout/empty_comment_view"
                 app:errorView="@layout/error_view"
-                app:viewState="loading"/>
+                app:viewState="loading" />
 
         </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
@@ -51,6 +51,6 @@
         android:name="com.kenny.openimgur.fragments.SideGalleryFragment"
         android:layout_width="200dp"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize" />
+        android:layout_marginTop="?actionBarSize" />
 
 </LinearLayout>

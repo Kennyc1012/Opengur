@@ -112,19 +112,19 @@
 
                 <data
                     android:host="www.imgur.com"
-                    android:path="/gallery/"
+                    android:pathPrefix="/gallery/"
                     android:scheme="http" />
                 <data
                     android:host="imgur.com"
-                    android:path="/gallery/"
+                    android:pathPrefix="/gallery/"
                     android:scheme="http" />
                 <data
                     android:host="imgur.com"
-                    android:path="/gallery/"
+                    android:pathPrefix="/gallery/"
                     android:scheme="https" />
                 <data
                     android:host="www.imgur.com"
-                    android:path="/gallery/"
+                    android:pathPrefix="/gallery/"
                     android:scheme="https" />
             </intent-filter>
             <intent-filter>
@@ -150,13 +150,60 @@
                     android:pathPrefix="/gallery/"
                     android:scheme="https" />
             </intent-filter>
+            <!-- Albums-->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="www.imgur.com"
+                    android:pathPrefix="/a/"
+                    android:scheme="http" />
+                <data
+                    android:host="imgur.com"
+                    android:pathPrefix="/a/"
+                    android:scheme="http" />
+                <data
+                    android:host="imgur.com"
+                    android:pathPrefix="/a/"
+                    android:scheme="https" />
+                <data
+                    android:host="www.imgur.com"
+                    android:pathPrefix="/a/"
+                    android:scheme="https" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="www.m.imgur.com"
+                    android:pathPrefix="/a/"
+                    android:scheme="http" />
+                <data
+                    android:host="m.imgur.com"
+                    android:pathPrefix="/a/"
+                    android:scheme="http" />
+                <data
+                    android:host="m.imgur.com"
+                    android:pathPrefix="/a/"
+                    android:scheme="https" />
+                <data
+                    android:host="www.m.imgur.com"
+                    android:pathPrefix="/a/"
+                    android:scheme="https" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activities.ConvoThreadActivity"
             android:theme="@style/Imgur_Theme_Base" />
         <service android:name=".DownloaderService" />
 
-        <meta-data android:name="com.crashlytics.ApiKey" android:value="CRASHLYTICS_KEY"/>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="${fabric_key}"/>
     </application>
 
 </manifest>

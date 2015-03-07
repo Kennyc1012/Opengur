@@ -1,15 +1,14 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.UploadedPhoto;
-import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
@@ -51,7 +50,7 @@ public class UploadAdapter extends ImgurBaseAdapter<UploadedPhoto> {
         ImageView image;
 
         @InjectView(R.id.score)
-        TextViewRoboto score;
+        TextView score;
 
         public UploadHolder(View view) {
             super(view);

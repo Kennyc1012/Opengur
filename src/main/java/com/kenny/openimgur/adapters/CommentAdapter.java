@@ -9,14 +9,13 @@ import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurListener;
-import com.kenny.openimgur.ui.TextViewRoboto;
 
 import java.util.List;
 
@@ -149,13 +148,13 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
 
     static class CommentViewHolder extends ImgurViewHolder {
         @InjectView(R.id.author)
-        TextViewRoboto author;
+        TextView author;
 
         @InjectView(R.id.comment)
-        TextViewRoboto comment;
+        TextView comment;
 
         @InjectView(R.id.score)
-        TextViewRoboto score;
+        TextView score;
 
         @InjectView(R.id.replies)
         ImageButton replies;

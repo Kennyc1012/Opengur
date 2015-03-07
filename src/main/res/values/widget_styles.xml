@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
+    </style>
+
+    <style name="BottomSheet.StyleDialog" parent="BottomSheet.Dialog">
+        <item name="android:backgroundDimAmount">0.5</item>
+        <item name="android:windowAnimationStyle">@style/BottomSheet.Animation</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/white</item>
+        <item name="bs_dialogBackground">?colorPrimaryDark</item>
+    </style>
+
+    <style name="RadioButton.Style.Light" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:textColor">@color/primary_text_default_material_light</item>
+    </style>
+
+    <style name="RadioButton.Style.Dark" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:textColor">@color/primary_text_default_material_dark</item>
+    </style>
+
+    <style name="CheckBox.Style.Light" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:textColor">@color/primary_text_default_material_light</item>
+    </style>
+
+    <style name="CheckBox.Style.Dark" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:textColor">@color/primary_text_default_material_dark</item>
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="layout">@layout/search_view</item>
+    </style>
+
+</resources>

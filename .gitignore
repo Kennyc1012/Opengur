@@ -5,6 +5,7 @@
 bin/
 gen/
 /gradle
+gradle.properties
 gradlew
 gradlew.bat
 openimgur.keystore

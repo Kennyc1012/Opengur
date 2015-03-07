@@ -3,20 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="?cardBG">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.kenny.openimgur.ui.TextViewRoboto
+        <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#000000"
+            android:textStyle="bold"
             android:padding="8dp"
-            app:robotoFont="bold"
             android:autoLink="web"
             android:linksClickable="true" />
 
@@ -54,17 +54,14 @@
 
         </RelativeLayout>
 
-
-        <com.kenny.openimgur.ui.TextViewRoboto
+        <TextView
             android:id="@+id/desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:textColor="#000000"
-            app:robotoFont="regular"
+            android:textAppearance="@style/TextAppearance.Regular"
             android:autoLink="web"
             android:linksClickable="true" />
-
 
     </LinearLayout>
 

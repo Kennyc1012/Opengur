@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -34,7 +33,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
@@ -54,7 +55,6 @@ import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.ui.TextViewRoboto;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
@@ -169,7 +169,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private CommentAdapter mCommentAdapter;
 
-    private TextViewRoboto mCommentListHeader;
+    private TextView mCommentListHeader;
 
     // Keeps track of the previous list of comments as we progress in the stack
     private LongSparseArray<ArrayList<ImgurComment>> mCommentArray = new LongSparseArray<>();
@@ -216,8 +216,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         setContentView(R.layout.activity_view);
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
         mMultiView.setErrorButtonText(R.id.errorButton, R.string.load_comments);
-        findViewById(R.id.topContainer).setBackgroundColor(getResources().getColor(theme.primaryColor));
-        mCommentListHeader = (TextViewRoboto) View.inflate(getApplicationContext(), R.layout.previous_comments_header, null);
+        mCommentListHeader = (TextView) View.inflate(this, R.layout.previous_comments_header, null);
         Drawable[] drawables = mCommentListHeader.getCompoundDrawables();
 
         // Sets the previous comment button color to the themes accent color
@@ -498,7 +497,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             List<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_COMMENT);
 
             if (comments != null) {
-                mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, this);
+                mCommentAdapter = new CommentAdapter(this, comments, this);
                 mCommentList.setAdapter(mCommentAdapter);
                 mCommentList.removeHeaderView(mCommentListHeader);
             }
@@ -599,11 +598,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case R.id.sortComments:
-                new AlertDialog.Builder(ViewActivity.this)
-                        .setTitle(R.string.sort_by)
-                        .setItems(CommentSort.getItemsForArray(getApplicationContext()), new DialogInterface.OnClickListener() {
+                new MaterialDialog.Builder(ViewActivity.this)
+                        .title(R.string.sort_by)
+                        .items(CommentSort.getItemsForArray(getApplicationContext()))
+                        .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onSelection(MaterialDialog materialDialog, View view, int which, CharSequence charSequence) {
                                 CommentSort sort = CommentSort.getSortFromPosition(which);
 
                                 if (sort != mCommentSort) {
@@ -774,6 +774,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             switch (match) {
                 case GALLERY:
+                case ALBUM:
                     Intent intent = ViewActivity.createIntent(getApplicationContext(), url).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;
@@ -1051,7 +1052,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         ImgurBaseObject imgurObject = mPagerAdapter.getImgurItem(mCurrentPosition);
 
                         if (mCommentAdapter == null) {
-                            mCommentAdapter = new CommentAdapter(getApplicationContext(), comments, ViewActivity.this);
+                            mCommentAdapter = new CommentAdapter(ViewActivity.this, comments, ViewActivity.this);
                             mCommentAdapter.setOP(imgurObject.getAccount());
                             mCommentList.setAdapter(mCommentAdapter);
                             mCommentList.removeHeaderView(mCommentListHeader);
@@ -1078,7 +1079,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     mMultiView.setErrorButtonText(R.id.errorButton, R.string.retry);
                     mMultiView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
                         @Override
@@ -1086,6 +1086,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             loadComments();
                         }
                     });
+
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
 
                 case MESSAGE_COMMENT_POSTED:
