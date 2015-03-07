@@ -117,6 +117,7 @@ public class NavAdapter extends BaseAdapter {
         boolean isSelected = mSelectedPosition == position;
         holder.icon.setImageDrawable(getDrawable(position, convertView.getResources(), isSelected));
         holder.title.setText(getItem(position));
+        holder.title.setTextColor(isSelected ? mSelectedColor : mDefaultColor);
         return convertView;
     }
 
