@@ -774,6 +774,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             switch (match) {
                 case GALLERY:
+                case ALBUM:
                     Intent intent = ViewActivity.createIntent(getApplicationContext(), url).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;

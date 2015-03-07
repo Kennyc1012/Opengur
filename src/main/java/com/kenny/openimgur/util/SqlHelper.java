@@ -72,7 +72,7 @@ public class SqlHelper extends SQLiteOpenHelper {
             mWritableDatabase = super.getWritableDatabase();
         }
 
-        return mReadableDatabase;
+        return mWritableDatabase;
     }
 
     /**
