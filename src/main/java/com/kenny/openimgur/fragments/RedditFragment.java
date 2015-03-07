@@ -252,10 +252,10 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
                     if (mCurrentPage == 0) {
                         if (mCursorAdapter == null) {
-                            mCursorAdapter = new RedditSearchAdapter(getActivity(), app.getSql().getSubReddits());
+                            mCursorAdapter = new RedditSearchAdapter(getActivity(), app.getSql().getSubReddits(mQuery));
                             mSearchView.setSuggestionsAdapter(mCursorAdapter);
                         } else {
-                            mCursorAdapter.changeCursor(app.getSql().getSubReddits());
+                            mCursorAdapter.changeCursor(app.getSql().getSubReddits(mQuery));
                         }
 
                         mCursorAdapter.notifyDataSetChanged();
