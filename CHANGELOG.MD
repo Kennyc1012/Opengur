@@ -1,35 +1,30 @@
 #Open Imgur Changelog
 
+<b>2.2</b>
+- Dark Theme added
+- Subreddit searchs will be saved and used as future suggestions
+- Handle album links
+- Bug fixes
+- Updated several libraries 
+
 <b>2.1</b>
 - Topics added
-
 - New Icon
-
 - Database calls will use a singleton for read and write databases
-
 - Updated OKHttp to 2.2.0 release
-
 - Bug fixes
 
 <b>2.0</b>
 - New Profile Layout. Users can now view submissions, favorites, and comments of other users as well as messages and uploads for
 their own account.
-
 - Random mode added
-
 - Highest Scoring Filter added
-
 - Task Descriptions updated for Lollipop devices
-
 - Better scroll detection
-
 - Various bug fixes 
-
 <b>1.6.3</b>
 - Fix trying to use a recycled bitmap crash when viewing an image full screen.
-
 - Added null and empty check for adding items in an adapter
-
 - Made sure the device can handle the photo/gallery intent before
 launching
 
@@ -40,29 +35,22 @@ empty, you will then go through the login flow on that website.
 <b>1.6.1</b>
 - Fixed rare chance of not having items from savedInstance in
 ViewActivity
-
 - Upload to gallery bug fix
-
 - Settings Fragment fix
 
 <b>1.6</b>
 - All uploads done within the app will now appear in the Uploads tab
 which can be accessed via the Navigation Drawer.
-
 - Fix Issues with parceling.
-
 - Fork the byakugallery library and fix the issue of it throwing an
 exception if decoding fails. If failure occurs, photos will use the
 PhotoViewAttacher for zooming the image.
 
 - Turn off crashlytics logging for caught exceptions, most were just
 network issues.
-
 - Allows users to not get prompted when uploading an image when they are
 not logged in.
-
 - Allow the DownloadService to accept URLs for downloads.
-
 - Removed stylized dialogs in favor of the system dialogs.
 
 <b>1.5.1</b>
