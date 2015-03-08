@@ -834,10 +834,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
+            LogUtil.w(TAG, "Unable to retrieve Imgur object from adapter");
+            return false;
+        }
+
+        final ImgurBaseObject imgurObj = mPagerAdapter.getImgurItem(mCurrentPosition);
+
         switch (item.getItemId()) {
             case R.id.favorite:
                 if (user != null) {
-                    final ImgurBaseObject imgurObj = mPagerAdapter.getImgurItem(mCurrentPosition);
                     String url;
 
                     if (imgurObj instanceof ImgurAlbum) {
@@ -862,11 +868,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 return true;
 
             case R.id.profile:
-                startActivity(ProfileActivity.createIntent(getApplicationContext(), mPagerAdapter.getImgurItem(mCurrentPosition).getAccount()));
+                startActivity(ProfileActivity.createIntent(getApplicationContext(), imgurObj.getAccount()));
                 return true;
 
             case R.id.reddit:
-                String url = String.format("http://reddit.com%s", mPagerAdapter.getImgurItem(mCurrentPosition).getRedditLink());
+                String url = String.format("http://reddit.com%s", imgurObj.getRedditLink());
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 if (browserIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(browserIntent);
@@ -1187,6 +1193,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         public ImgurBaseObject getImgurItem(int position) {
+            if (objects == null || position >= objects.size()) return null;
             return objects.get(position);
         }
 
