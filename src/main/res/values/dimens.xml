@@ -15,6 +15,12 @@
     <dimen name="upload_button_margin_bottom">16dp</dimen>
     <dimen name="upload_image_margin">0dp</dimen>
 
+    <!-- Meme text sizes -->
+    <dimen name="meme_text_small">26sp</dimen>
+    <dimen name="meme_text_medium">34sp</dimen>
+    <dimen name="meme_text_large">42sp</dimen>
+    <dimen name="meme_text_xlarge">50sp</dimen>
+
     <!-- Material Design Guidlines -->
     <dimen name="keyline_margin">72dp</dimen>
     <dimen name="content_padding">16dp</dimen>

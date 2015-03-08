@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.activities.MemeActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
@@ -89,7 +90,7 @@ public class MemeFragment extends BaseGridFragment {
 
     @Override
     protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        // TODO Send to new activity
+        startActivity(MemeActivity.createIntent(getActivity(), items.get(position)));
     }
 
     @Override

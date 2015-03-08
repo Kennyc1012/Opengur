@@ -32,6 +32,7 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import pl.droidsonroids.gif.GifDrawable;
@@ -288,5 +289,28 @@ public class ImageUtil {
         Drawable drawable = resources.getDrawable(drawableId).mutate();
         drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         return drawable;
+    }
+
+    /**
+     * Saves a bitmap to a local file
+     *
+     * @param bitmap
+     * @return
+     */
+    public static File saveBitmap(@NonNull Bitmap bitmap) {
+        File file = FileUtil.createFile(".jpeg");
+        FileOutputStream out = null;
+
+        try {
+            out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+        } catch (Exception e) {
+            e.printStackTrace();
+            file = null;
+        } finally {
+            FileUtil.closeStream(out);
+        }
+
+        return file;
     }
 }
