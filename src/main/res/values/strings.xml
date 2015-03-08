@@ -204,4 +204,9 @@
     <string name="topics_empty_message">Select a topic from the filter to begin browsing</string>
     <string name="topics_empty_result">Did not find any results for %s. Select a different filter and try again.</string>
 
+    <!-- Meme Generator-->
+    <string name="meme_gen">Meme Generator</string>
+    <string name="meme_top_text">TOP TEXT TAP TO CHANGE</string>
+    <string name="meme_bottom_text">BOTTOM TEXT TAP TO CHANGE</string>
+
 </resources>

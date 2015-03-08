@@ -2,6 +2,7 @@ package com.kenny.openimgur.classes;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.util.LogUtil;
@@ -97,6 +98,12 @@ public class ImgurBaseObject implements Parcelable {
     private boolean mIsFavorited;
 
     private boolean mIsNSFW = false;
+
+    public ImgurBaseObject(String id, String title, String link) {
+        mId = id;
+        mTitle = title;
+        mLink = link;
+    }
 
     protected ImgurBaseObject(JSONObject json) {
         parseJson(json);
@@ -406,5 +413,17 @@ public class ImgurBaseObject implements Parcelable {
     public String toString() {
         return "ID :" + mId
                 + "Title :" + mTitle;
+    }
+
+    /**
+     * Returns a thumbnailed version of an image
+     *
+     * @param id   The id of the image
+     * @param link The link of the image
+     * @param size The size key to use for the thumbnail
+     * @return
+     */
+    public static String getThumbnail(@NonNull String id, @NonNull String link, @NonNull String size) {
+        return link.replace(id, id + size);
     }
 }

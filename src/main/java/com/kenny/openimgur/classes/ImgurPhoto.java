@@ -135,7 +135,7 @@ public class ImgurPhoto extends ImgurBaseObject {
             if (recreateLink) {
                 return "http://i.imgur.com/" + getId() + size + ext;
             } else {
-                return getLink().replace(getId(), getId() + size);
+                return getThumbnail(getId(), getLink(), size);
             }
         }
 

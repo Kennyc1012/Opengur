@@ -30,17 +30,19 @@ public class NavAdapter extends BaseAdapter {
 
     public static final int PAGE_TOPICS = 2;
 
-    public static final int PAGE_SUBREDDIT = 3;
+    public static final int PAGE_MEME = 3;
 
-    public static final int PAGE_RANDOM = 4;
+    public static final int PAGE_SUBREDDIT = 4;
 
-    public static final int PAGE_UPLOADS = 5;
+    public static final int PAGE_RANDOM = 5;
 
-    public static final int PAGE_DIVIDER = 6;
+    public static final int PAGE_UPLOADS = 6;
 
-    public static final int PAGE_SETTINGS = 7;
+    public static final int PAGE_DIVIDER = 7;
 
-    public static final int PAGE_FEEDBACK = 8;
+    public static final int PAGE_SETTINGS = 8;
+
+    public static final int PAGE_FEEDBACK = 9;
 
     private static final int VIEW_TYPE_PRIMARY = 0;
 
@@ -220,6 +222,10 @@ public class NavAdapter extends BaseAdapter {
 
             case PAGE_TOPICS:
                 drawableId = R.drawable.ic_action_quotes;
+                break;
+
+            case PAGE_MEME:
+                drawableId = R.drawable.ic_action_meme;
                 break;
         }
 
