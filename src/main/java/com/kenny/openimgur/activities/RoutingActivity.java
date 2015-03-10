@@ -47,7 +47,7 @@ public class RoutingActivity extends BaseActivity {
             case GALLERY:
             case IMAGE:
             case ALBUM:
-                routingIntent = ViewActivity.createIntent(getApplicationContext(), link);
+                routingIntent = ViewActivity.createIntent(getApplicationContext(), link, match == LinkUtils.LinkMatch.ALBUM);
                 break;
         }
 

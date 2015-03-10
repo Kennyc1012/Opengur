@@ -198,7 +198,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
             switch (match) {
                 case GALLERY:
                 case ALBUM:
-                    Intent intent = ViewActivity.createIntent(getActivity(), url).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    Intent intent = ViewActivity.createIntent(getActivity(), url, match == LinkUtils.LinkMatch.ALBUM).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;
 
