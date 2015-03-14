@@ -90,7 +90,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             return;
         }
 
-        ButterKnife.inject(this,view);
+        ButterKnife.inject(this, view);
         mImageUrl = bundle.getString(KEY_URL, null);
         boolean isAnimated = bundle.getBoolean(KEY_ANIMATED, false);
         boolean isDirectLink = bundle.getBoolean(KEY_DIRECT_LINK, true);
@@ -323,6 +323,8 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
 
     @Override
     public void onVideoDownloadComplete(File file) {
-        displayVideo(file);
+        if (isAdded() && isResumed()) {
+            displayVideo(file);
+        }
     }
 }

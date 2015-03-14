@@ -34,6 +34,10 @@ public class ImgurAlbum extends ImgurBaseObject {
 
     private List<ImgurPhoto> mAlbumPhotos;
 
+    public ImgurAlbum(String id, String title, String link) {
+        super(id, title, link);
+    }
+
     public ImgurAlbum(JSONObject json) {
         super(json);
         parseJson(json);

@@ -201,6 +201,8 @@
         <activity
             android:name=".activities.ConvoThreadActivity"
             android:theme="@style/Imgur_Theme_Base" />
+        <activity android:name=".activities.MemeActivity"
+            android:theme="@style/Theme_Not_Translucent"/>
         <service android:name=".DownloaderService" />
 
         <meta-data android:name="com.crashlytics.ApiKey" android:value="${fabric_key}"/>

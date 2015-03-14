@@ -30,6 +30,7 @@ import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
+import com.kenny.openimgur.fragments.MemeFragment;
 import com.kenny.openimgur.fragments.NavFragment;
 import com.kenny.openimgur.fragments.RandomFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
@@ -207,6 +208,11 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
             case NavAdapter.PAGE_TOPICS:
                 fragment = new TopicsFragment();
+                mCurrentPage = position;
+                break;
+
+            case NavAdapter.PAGE_MEME:
+                fragment = new MemeFragment();
                 mCurrentPage = position;
                 break;
         }

@@ -117,11 +117,13 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
 
             displayImage(holder.image, photoUrl);
 
-        } else {
+        } else if (obj instanceof ImgurAlbum) {
             displayImage(holder.image, ((ImgurAlbum) obj).getCoverUrl(ImgurPhoto.THUMBNAIL_GALLERY));
+        } else {
+            String url = ImgurBaseObject.getThumbnail(obj.getId(), obj.getLink(), ImgurPhoto.THUMBNAIL_GALLERY);
+            displayImage(holder.image, url);
         }
 
-        // Galelry Items from topics don't have score values, so don't display them until its fixed
         if (obj.getUpVotes() != Integer.MIN_VALUE) {
             holder.score.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.score.getContext().getString(R.string.points));
             holder.score.setVisibility(View.VISIBLE);

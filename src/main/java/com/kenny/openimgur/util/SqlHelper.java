@@ -9,10 +9,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.UploadedPhoto;
+import com.kenny.openimgur.util.DBContracts.MemeContract;
 import com.kenny.openimgur.util.DBContracts.ProfileContract;
 import com.kenny.openimgur.util.DBContracts.SubRedditContract;
 import com.kenny.openimgur.util.DBContracts.TopicsContract;
@@ -28,7 +30,7 @@ import java.util.List;
 public class SqlHelper extends SQLiteOpenHelper {
     private static final String TAG = "SqlHelper";
 
-    private static final int DB_VERSION = 4;
+    private static final int DB_VERSION = 5;
 
     private static final String DB_NAME = "open_imgur.db";
 
@@ -47,13 +49,15 @@ public class SqlHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(UploadContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(TopicsContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(SubRedditContract.CREATE_TABLE_SQL);
+        sqLiteDatabase.execSQL(MemeContract.CREATE_TABLE_SQL);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
         /* V2 Added uploads Table
          V3 Added topics Table
-         v4 Added Subreddits Table */
+         v4 Added Subreddits Table
+         V5 Added Meme table*/
         onCreate(db);
     }
 
@@ -361,6 +365,56 @@ public class SqlHelper extends SQLiteOpenHelper {
      */
     public void deleteSubReddits() {
         getWritableDatabase().delete(SubRedditContract.TABLE_NAME, null, null);
+    }
+
+    /**
+     * Delets all memes from the database
+     */
+    public void deleteMemes() {
+        getWritableDatabase().delete(MemeContract.TABLE_NAME, null, null);
+    }
+
+    /**
+     * Adds a list of Memes to the database
+     *
+     * @param memes
+     */
+    public void addMemes(List<ImgurBaseObject> memes) {
+        if (memes == null || memes.isEmpty()) {
+            LogUtil.w(TAG, "Memes list null or is empty");
+            return;
+        }
+
+        ContentValues values = new ContentValues();
+        SQLiteDatabase db = getWritableDatabase();
+
+        for (ImgurBaseObject i : memes) {
+            values.clear();
+            values.put(MemeContract._ID, i.getId());
+            values.put(MemeContract.COLUMN_TITLE, i.getTitle());
+            values.put(MemeContract.COLUMN_LINK, i.getLink());
+            db.insert(MemeContract.TABLE_NAME, null, values);
+        }
+    }
+
+    /**
+     * Returns all Memes in the database
+     *
+     * @return
+     */
+    public List<ImgurBaseObject> getMemes() {
+        List<ImgurBaseObject> memes = new ArrayList<>();
+        Cursor cursor = getReadableDatabase().rawQuery(MemeContract.GET_MEMES_SQL, null);
+
+        while (cursor.moveToNext()) {
+            String id = cursor.getString(MemeContract.COLUMN_INDEX_ID);
+            String title = cursor.getString(MemeContract.COLUMN_INDEX_TITLE);
+            String link = cursor.getString(MemeContract.COLUMN_INDEX_LINK);
+            memes.add(new ImgurBaseObject(id, title, link));
+        }
+
+        cursor.close();
+        return memes;
     }
 
     @Override

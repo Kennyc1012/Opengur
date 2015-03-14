@@ -99,7 +99,9 @@ public enum Endpoints {
     TOPICS("https://api.imgur.com/3/topics/%d/%s/%d"),
 
     // topic id/sort/time sort/page
-    TOPICS_TOP("https://api.imgur.com/3/topics/%d/%s/%s/%d");
+    TOPICS_TOP("https://api.imgur.com/3/topics/%d/%s/%s/%d"),
+
+    MEME("https://api.imgur.com/3/memegen/defaults");
 
     private final String mUrl;
 

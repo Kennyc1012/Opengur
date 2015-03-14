@@ -164,4 +164,20 @@ public class DBContracts {
         public static final String SEARCH_SUBREDDIT_SQL = "SELECT * FROM " + TABLE_NAME + " WHERE " +
                 COLUMN_NAME + " LIKE '%";
     }
+
+    public static class MemeContract implements BaseColumns {
+        public static final String TABLE_NAME = "meme";
+        public static final String COLUMN_TITLE = "title";
+        public static final String COLUMN_LINK = "link";
+        public static final int COLUMN_INDEX_ID = 0;
+        public static final int COLUMN_INDEX_TITLE = 1;
+        public static final int COLUMN_INDEX_LINK = 2;
+
+        public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
+                " (" + _ID + " TEXT, " +
+                COLUMN_TITLE + " TEXT, " +
+                COLUMN_LINK + " TEXT)";
+
+        public static final String GET_MEMES_SQL = "SELECT * FROM " + TABLE_NAME;
+    }
 }

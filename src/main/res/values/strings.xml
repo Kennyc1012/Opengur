@@ -89,6 +89,8 @@
     <string name="options">Options</string>
     <string name="login_msg">Tap to login</string>
     <string name="dont_ask_again">Don\'t ask me again.</string>
+    <string name="save">Save</string>
+    <string name="close">Close</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -203,5 +205,16 @@
     <string name="topics">Topics</string>
     <string name="topics_empty_message">Select a topic from the filter to begin browsing</string>
     <string name="topics_empty_result">Did not find any results for %s. Select a different filter and try again.</string>
+
+    <!-- Meme Generator-->
+    <string name="meme_gen">Meme Generator</string>
+    <string name="meme_top_text">TOP TEXT TAP TO CHANGE</string>
+    <string name="meme_bottom_text">BOTTOM TEXT TAP TO CHANGE</string>
+    <string name="meme_loading">Loading Meme, one moment&#8230;</string>
+    <string name="meme_font_size">Change font size</string>
+    <string name="meme_input_title">Enter caption</string>
+    <string name="meme_saving">Saving Meme, one moment&#8230;</string>
+    <string name="meme_failed">Unable to save Meme, please try again.</string>
+    <string name="meme_success">Meme saved successfully</string>
 
 </resources>

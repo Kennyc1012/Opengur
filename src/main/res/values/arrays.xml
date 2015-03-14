@@ -13,6 +13,7 @@
         <item>Profile</item>
         <item>Gallery</item>
         <item>Topics</item>
+        <item>Meme Generator</item>
         <item>Subreddit</item>
         <item>Random</item>
         <item>Uploads</item>
@@ -58,6 +59,13 @@
         <item>Oldest</item>
         <item>Best</item>
         <item>Worst</item>
+    </string-array>
+
+    <string-array name="meme_font_sizes">
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+        <item>X-Large</item>
     </string-array>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->

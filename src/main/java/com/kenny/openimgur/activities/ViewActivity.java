@@ -134,6 +134,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
+    private static final String KEY_VIEW_FOR_ALBUM = "view_link_for_album";
+
     private static final String DIALOG_LOADING = "loading";
 
     private static final String KEY_COMMENT = "comments";
@@ -206,8 +208,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         return intent;
     }
 
-    public static Intent createIntent(Context context, String url) {
-        return new Intent(context, ViewActivity.class).setAction(Intent.ACTION_VIEW).setData(Uri.parse(url));
+    public static Intent createIntent(Context context, String url, boolean isAlbumLink) {
+        return new Intent(context, ViewActivity.class).setAction(Intent.ACTION_VIEW)
+                .setData(Uri.parse(url)).putExtra(KEY_VIEW_FOR_ALBUM, isAlbumLink);
     }
 
     @Override
@@ -468,8 +471,20 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             // Check if the activity was opened externally by a link click
             if (!TextUtils.isEmpty(mGalleryId)) {
-                mApiClient = new ApiClient(String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mGalleryId), ApiClient.HttpRequest.GET);
-                mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, mGalleryId, null);
+                boolean isAlbumLink = getIntent().getBooleanExtra(KEY_VIEW_FOR_ALBUM, false);
+                String url;
+                ImgurBusEvent.EventType eventType;
+
+                if (isAlbumLink) {
+                    url = String.format(Endpoints.ALBUM.getUrl(), mGalleryId);
+                    eventType = ImgurBusEvent.EventType.ALBUM_DETAILS;
+                } else {
+                    url = String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mGalleryId);
+                    eventType = ImgurBusEvent.EventType.GALLERY_ITEM_INFO;
+                }
+
+                mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
+                mApiClient.doWork(eventType, mGalleryId, null);
             } else {
                 mViewPager.setAdapter(mPagerAdapter);
 
@@ -729,6 +744,26 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         invalidateOptionsMenu();
                     }
                     break;
+
+                case ALBUM_DETAILS:
+                    if (!TextUtils.isEmpty(mGalleryId) && mGalleryId.equals(event.id)) {
+                        ImgurAlbum album = new ImgurAlbum(mGalleryId, null, getIntent().getData().toString());
+                        mGalleryId = null;
+
+                        if (statusCode == ApiClient.STATUS_OK) {
+                            JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
+
+                            for (int i = 0; i < arr.length(); i++) {
+                                album.addPhotoToAlbum(new ImgurPhoto(arr.getJSONObject(i)));
+                            }
+
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ITEM_DETAILS, album);
+                        } else {
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
+                        }
+                    }
+
+                    break;
             }
         } catch (JSONException e) {
             LogUtil.e(TAG, "Error Decoding JSON", e);
@@ -769,13 +804,13 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onLinkTap(View view, String url) {
-        if (!TextUtils.isEmpty(url)) {
+        if (!TextUtils.isEmpty(url) && !isFinishing()) {
             LinkUtils.LinkMatch match = LinkUtils.findImgurLinkMatch(url);
 
             switch (match) {
                 case GALLERY:
                 case ALBUM:
-                    Intent intent = ViewActivity.createIntent(getApplicationContext(), url).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    Intent intent = ViewActivity.createIntent(getApplicationContext(), url, match == LinkUtils.LinkMatch.ALBUM).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;
 
@@ -834,10 +869,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
+            LogUtil.w(TAG, "Unable to retrieve Imgur object from adapter");
+            return false;
+        }
+
+        final ImgurBaseObject imgurObj = mPagerAdapter.getImgurItem(mCurrentPosition);
+
         switch (item.getItemId()) {
             case R.id.favorite:
                 if (user != null) {
-                    final ImgurBaseObject imgurObj = mPagerAdapter.getImgurItem(mCurrentPosition);
                     String url;
 
                     if (imgurObj instanceof ImgurAlbum) {
@@ -862,11 +903,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 return true;
 
             case R.id.profile:
-                startActivity(ProfileActivity.createIntent(getApplicationContext(), mPagerAdapter.getImgurItem(mCurrentPosition).getAccount()));
+                startActivity(ProfileActivity.createIntent(getApplicationContext(), imgurObj.getAccount()));
                 return true;
 
             case R.id.reddit:
-                String url = String.format("http://reddit.com%s", mPagerAdapter.getImgurItem(mCurrentPosition).getRedditLink());
+                if (TextUtils.isEmpty(imgurObj.getRedditLink())) {
+                    LogUtil.w(TAG, "Item does not have a reddit link");
+                    return false;
+                }
+
+                String url = String.format("http://reddit.com%s", imgurObj.getRedditLink());
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 if (browserIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(browserIntent);
@@ -1187,6 +1233,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         public ImgurBaseObject getImgurItem(int position) {
+            if (objects == null || position >= objects.size()) return null;
             return objects.get(position);
         }
 
