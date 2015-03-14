@@ -804,7 +804,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onLinkTap(View view, String url) {
-        if (!TextUtils.isEmpty(url)) {
+        if (!TextUtils.isEmpty(url) && !isFinishing()) {
             LinkUtils.LinkMatch match = LinkUtils.findImgurLinkMatch(url);
 
             switch (match) {
@@ -907,6 +907,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 return true;
 
             case R.id.reddit:
+                if (TextUtils.isEmpty(imgurObj.getRedditLink())) {
+                    LogUtil.w(TAG, "Item does not have a reddit link");
+                    return false;
+                }
+
                 String url = String.format("http://reddit.com%s", imgurObj.getRedditLink());
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 if (browserIntent.resolveActivity(getPackageManager()) != null) {
