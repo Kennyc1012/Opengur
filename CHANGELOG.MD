@@ -1,5 +1,13 @@
 #Open Imgur Changelog
 
+<b>2.3</b>
+- Meme Generator Activitiy added
+- Fixed album link handling 
+- Various bug fixes relating to the ViewActivity
+- Updated SDK to version 22
+- Updated Appcompat to version 22
+- Update Material Dialogs to version 0.6.4.0
+
 <b>2.2</b>
 - Dark Theme added
 - Subreddit searchs will be saved and used as future suggestions
