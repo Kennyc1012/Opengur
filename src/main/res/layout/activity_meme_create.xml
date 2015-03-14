@@ -27,6 +27,7 @@
             android:gravity="center"
             android:layout_gravity="top"
             android:text="@string/meme_top_text"
+            android:textAllCaps="true"
             android:shadowColor="#000000"
             android:shadowDx="1"
             android:shadowDy="1"
@@ -41,11 +42,19 @@
             android:gravity="center"
             android:layout_gravity="bottom"
             android:text="@string/meme_bottom_text"
+            android:textAllCaps="true"
             android:shadowColor="#000000"
             android:shadowDx="1"
             android:shadowDy="1"
             android:shadowRadius="1" />
 
     </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

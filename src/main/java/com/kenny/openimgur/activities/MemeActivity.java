@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -53,6 +54,9 @@ public class MemeActivity extends BaseActivity {
 
     @InjectView(R.id.content)
     View mView;
+
+    @InjectView(R.id.progressBar)
+    ProgressBar mProgressBar;
 
     private ImgurBaseObject mObject;
 
@@ -151,7 +155,7 @@ public class MemeActivity extends BaseActivity {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 super.onLoadingComplete(imageUri, view, loadedImage);
-                dismissDialogFragment("loading");
+                mProgressBar.setVisibility(View.GONE);
                 mTopText.setVisibility(View.VISIBLE);
                 mBottomText.setVisibility(View.VISIBLE);
             }
@@ -159,7 +163,7 @@ public class MemeActivity extends BaseActivity {
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
                 super.onLoadingFailed(imageUri, view, failReason);
-                dismissDialogFragment("loading");
+                mProgressBar.setVisibility(View.GONE);
                 finish();
                 // Toast error message
             }
@@ -167,13 +171,13 @@ public class MemeActivity extends BaseActivity {
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
                 super.onLoadingCancelled(imageUri, view);
-                dismissDialogFragment("loading");
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onLoadingStarted(String imageUri, View view) {
                 super.onLoadingStarted(imageUri, view);
-                LoadingDialogFragment.createInstance(R.string.meme_loading, false).show(getFragmentManager(), "loading");
+                mProgressBar.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -220,16 +224,16 @@ public class MemeActivity extends BaseActivity {
 
     @OnClick({R.id.topText, R.id.bottomText})
     public void onClick(final View view) {
-        final EditText editText = new EditText(this);
         new MaterialDialog.Builder(this)
                 .title(R.string.meme_input_title)
-                .customView(editText, false)
+                .customView(R.layout.meme_caption, false)
                 .negativeText(R.string.cancel)
                 .positiveText(R.string.save)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         super.onPositive(dialog);
+                        EditText editText = (EditText) dialog.getCustomView().findViewById(R.id.memeCaption);
                         String text = editText.getText().toString();
 
                         if (view == mBottomText) {
