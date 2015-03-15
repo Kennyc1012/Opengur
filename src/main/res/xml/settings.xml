@@ -42,6 +42,13 @@
             android:summaryOff="@string/pref_nsfw_thumb_off"
             android:defaultValue="false" />
 
+        <CheckBoxPreference
+            android:key="confirmExit"
+            android:title="@string/pref_exit_title"
+            android:summaryOn="@string/pref_exit_on"
+            android:summaryOff="@string/pref_exit_off"
+            android:defaultValue="true"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_cache_title">

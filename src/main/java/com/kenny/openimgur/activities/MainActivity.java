@@ -21,8 +21,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NavAdapter;
 import com.kenny.openimgur.classes.FragmentListener;
@@ -88,6 +90,8 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
     private boolean mIsDarkTheme;
 
+    private boolean mNagOnExit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +107,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         mGalleryUpload.setColor(accentColor);
         mUploadButtonHeight = getResources().getDimension(R.dimen.fab_button_radius);
         mUploadMenuButtonHeight = getResources().getDimension(R.dimen.fab_button_radius_smaller);
+        mNagOnExit = app.getPreferences().getBoolean(SettingsActivity.KEY_CONFIRM_EXIT, true);
     }
 
     /**
@@ -423,9 +428,33 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             }
 
             return;
+        } else if (mNagOnExit) {
+            showExitNag();
+            return;
         }
 
         super.onBackPressed();
+    }
+
+    private void showExitNag() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.exit)
+                .customView(R.layout.exit_nag, false)
+                .negativeText(R.string.cancel)
+                .positiveText(R.string.yes)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        CheckBox cb = (CheckBox) dialog.getCustomView().findViewById(R.id.askAgainCB);
+
+                        if (cb != null && cb.isChecked()) {
+                            app.getPreferences().edit().putBoolean(SettingsActivity.KEY_CONFIRM_EXIT, false).apply();
+                        }
+                        
+                        finish();
+                    }
+                }).show();
     }
 
     @Override
@@ -434,12 +463,13 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             // Set the theme if coming from the settings activity
             case SettingsActivity.REQUEST_CODE:
                 ImgurTheme theme = OpenImgurApp.getInstance(getApplicationContext()).getImgurTheme();
+                mNagOnExit = app.getPreferences().getBoolean(SettingsActivity.KEY_CONFIRM_EXIT, true);
+
                 if (mSavedTheme == null || theme != mSavedTheme || mIsDarkTheme != theme.isDarkTheme) {
                     Intent intent = getIntent();
                     overridePendingTransition(0, 0);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     finish();
-
                     overridePendingTransition(0, 0);
                     startActivity(intent);
                 }
