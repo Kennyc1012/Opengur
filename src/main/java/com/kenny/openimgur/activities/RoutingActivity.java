@@ -49,6 +49,10 @@ public class RoutingActivity extends BaseActivity {
             case ALBUM:
                 routingIntent = ViewActivity.createIntent(getApplicationContext(), link, match == LinkUtils.LinkMatch.ALBUM);
                 break;
+
+            case DIRECT_LINK:
+                routingIntent = ViewPhotoActivity.createIntent(getApplicationContext(), link, LinkUtils.isVideoLink(link));
+                break;
         }
 
         if (routingIntent != null) {

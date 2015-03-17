@@ -192,6 +192,12 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
             mVideoView.setVideoPath(file.getAbsolutePath());
             mVideoView.start();
         } else {
+            if (mUrl.endsWith(".gifv")) {
+                mUrl = mUrl.replace("gifv", "mp4");
+            } else if (mUrl.endsWith(".webm")) {
+                mUrl = mUrl.replace("webm", "mp4");
+            }
+
             VideoCache.getInstance().putVideo(mUrl, new VideoCache.VideoCacheListener() {
                 @Override
                 public void onVideoDownloadStart(String key, String url) {
