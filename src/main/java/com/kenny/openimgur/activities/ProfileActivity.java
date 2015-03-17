@@ -26,7 +26,6 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.astuetz.PagerSlidingTabStrip;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
@@ -226,6 +225,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
         WebView webView = (WebView) mMultiView.getView(MultiStateView.ViewState.EMPTY).findViewById(R.id.loginWebView);
         webView.loadUrl(Endpoints.LOGIN.getUrl());
+        webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
