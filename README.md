@@ -11,8 +11,11 @@ Open source Imgur Android App
 - Tablet Support
 - Material Design
 - Dark Theme
+- Meme Generator
 - Support for Api 15+
 
+#What's New
+Check the [Changelog](https://github.com/Kennyc1012/OpenImgur/blob/master/CHANGELOG.MD) for the changes of each version
 
 #Building
 When forking and building OpenImgur, you must use your own API keys. You can obtain them for free from Imgur. To use them, either create a gradle.properties file and add them with the keys API_CLIENT_ID and API_CLIENT_SECRET
