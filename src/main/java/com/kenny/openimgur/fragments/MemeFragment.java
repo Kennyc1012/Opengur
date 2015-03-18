@@ -19,7 +19,6 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -102,7 +101,7 @@ public class MemeFragment extends BaseGridFragment {
 
             if (memes != null && !memes.isEmpty()) {
                 LogUtil.v(TAG, "Memes found in database");
-                mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
+                setUpGridTop();
                 setAdapter(new MemeAdapter(getActivity(), SetUniqueList.decorate(memes)));
                 mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
                 mHasMore = false;
@@ -113,6 +112,7 @@ public class MemeFragment extends BaseGridFragment {
     private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
+            mRefreshLayout.setRefreshing(false);
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
                     // There is only one page for memes
@@ -120,7 +120,7 @@ public class MemeFragment extends BaseGridFragment {
                     List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
 
                     if (getAdapter() == null) {
-                        mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
+                        setUpGridTop();
                         setAdapter(new MemeAdapter(getActivity(), SetUniqueList.decorate(gallery)));
                     } else {
                         getAdapter().addItems(gallery);

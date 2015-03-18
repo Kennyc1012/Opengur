@@ -25,7 +25,6 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -172,13 +171,14 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
     private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
+            mRefreshLayout.setRefreshing(false);
             switch (msg.what) {
                 case ImgurHandler.MESSAGE_ACTION_COMPLETE:
                     List<ImgurBaseObject> items = (List<ImgurBaseObject>) msg.obj;
                     GalleryAdapter adapter = getAdapter();
 
                     if (adapter == null) {
-                        mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getAdditionalHeaderSpace()));
+                        setUpGridTop();
                         setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items)));
                     } else {
                         adapter.addItems(items);

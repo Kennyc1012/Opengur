@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -59,6 +61,9 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
     @InjectView(R.id.grid)
     protected HeaderGridView mGrid;
+
+    @InjectView(R.id.refreshLayout)
+    protected SwipeRefreshLayout mRefreshLayout;
 
     protected FragmentListener mListener;
 
@@ -134,6 +139,12 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     protected void setAdapter(GalleryAdapter adapter) {
         mAdapter = adapter;
         mGrid.setAdapter(mAdapter);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
     }
 
     protected GalleryAdapter getAdapter() {
@@ -216,7 +227,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getAdditionalHeaderSpace()));
+                setUpGridTop();
                 setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items)));
                 mGrid.setSelection(currentPosition);
 
@@ -338,6 +349,27 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
         mRequestId = url;
         mApiClient.doWork(getEventType(), mRequestId, null);
+    }
+
+    /**
+     * Handles setting the header of the grid to an empty view and padding the refresh
+     * layout to appear below that same header
+     */
+    protected void setUpGridTop() {
+        View emptyView = ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getAdditionalHeaderSpace());
+        mGrid.addHeaderView(emptyView);
+        padRefreshBelowView(emptyView);
+    }
+
+    private void padRefreshBelowView(final View headerView) {
+        ViewUtils.onPreDraw(headerView, new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "setting the thing");
+                mRefreshLayout.setProgressViewOffset(false, headerView.getBottom(),
+                        headerView.getBottom() + getResources().getDimensionPixelSize(R.dimen.refresh_pull_amount));
+            }
+        });
     }
 
     /**
