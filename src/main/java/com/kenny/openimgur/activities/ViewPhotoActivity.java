@@ -240,7 +240,7 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
             if (TextUtils.isEmpty(photo.getRedditLink())) {
                 link += photo.getGalleryLink();
             } else {
-                link += String.format("http://reddit.com%s", photo.getRedditLink());
+                link += String.format("https://reddit.com%s", photo.getRedditLink());
             }
         } else {
             link = mUrl;

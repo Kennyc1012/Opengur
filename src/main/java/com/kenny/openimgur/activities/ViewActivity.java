@@ -912,7 +912,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     return false;
                 }
 
-                String url = String.format("http://reddit.com%s", imgurObj.getRedditLink());
+                String url = String.format("https://reddit.com%s", imgurObj.getRedditLink());
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 if (browserIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(browserIntent);
@@ -963,7 +963,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         if (TextUtils.isEmpty(imgurBaseObject.getRedditLink())) {
             link += imgurBaseObject.getGalleryLink();
         } else {
-            link += String.format("http://reddit.com%s", imgurBaseObject.getRedditLink());
+            link += String.format("https://reddit.com%s", imgurBaseObject.getRedditLink());
         }
 
         shareIntent.putExtra(Intent.EXTRA_TEXT, link);
