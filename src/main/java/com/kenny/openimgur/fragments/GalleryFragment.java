@@ -155,7 +155,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                 LogUtil.w(TAG, "Fragment is being removed, or activity is finishing, not delivering message");
                 return;
             }
-            
+
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
                     List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;

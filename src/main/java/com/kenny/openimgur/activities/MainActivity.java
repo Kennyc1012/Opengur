@@ -35,6 +35,7 @@ import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.MemeFragment;
 import com.kenny.openimgur.fragments.NavFragment;
 import com.kenny.openimgur.fragments.RandomFragment;
+import com.kenny.openimgur.fragments.RedditFilterFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.fragments.TopicsFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
@@ -423,6 +424,8 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
             if (fragment instanceof GalleryFilterFragment) {
                 ((GalleryFilterFragment) fragment).dismiss(null, null, null);
+            } else if (fragment instanceof RedditFilterFragment) {
+                ((RedditFilterFragment) fragment).dismiss(null, null);
             } else {
                 fm.beginTransaction().remove(fragment).commit();
             }
@@ -451,7 +454,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                         if (cb != null && cb.isChecked()) {
                             app.getPreferences().edit().putBoolean(SettingsActivity.KEY_CONFIRM_EXIT, false).apply();
                         }
-                        
+
                         finish();
                     }
                 }).show();
