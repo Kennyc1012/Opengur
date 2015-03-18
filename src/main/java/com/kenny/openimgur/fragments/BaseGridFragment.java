@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -365,7 +364,6 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         ViewUtils.onPreDraw(headerView, new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "setting the thing");
                 mRefreshLayout.setProgressViewOffset(false, headerView.getBottom(),
                         headerView.getBottom() + getResources().getDimensionPixelSize(R.dimen.refresh_pull_amount));
             }
