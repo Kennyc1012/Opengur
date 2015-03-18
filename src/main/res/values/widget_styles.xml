@@ -35,4 +35,8 @@
         <item name="layout">@layout/search_view</item>
     </style>
 
+    <style name="PopupMenuStyle.Dark" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:background">@color/background_material_dark</item>
+    </style>
+
 </resources>

@@ -10,6 +10,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -46,6 +49,7 @@ import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,6 +91,12 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         return fragment;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -97,6 +107,28 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         handleArguments(getArguments(), savedInstanceState);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.view_fragment, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                if (mPhotoAdapter != null) mPhotoAdapter.clear();
+                if (mListView != null && mListView.getHeaderViewsCount() > 0 && mHeaderView != null) mListView.removeHeaderView(mHeaderView);
+                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                String url = String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mImgurObject.getId());
+                ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
+                api.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, mImgurObject.getId(), null);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -157,7 +189,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
      * Creates the header for the photo/album. This MUST be called before settings the adapter for pre 4.4 devices
      */
     private void createHeader() {
-        mHeaderView = View.inflate(getActivity(), R.layout.image_header, null);
+        if (mHeaderView == null) mHeaderView = View.inflate(getActivity(), R.layout.image_header, null);
         TextView title = (TextView) mHeaderView.findViewById(R.id.title);
         TextView author = (TextView) mHeaderView.findViewById(R.id.author);
         PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
@@ -275,8 +307,16 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                         int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
 
                         if (statusCode == ApiClient.STATUS_OK) {
-                            ImgurPhoto photo = new ImgurPhoto(event.json.getJSONObject(ApiClient.KEY_DATA));
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photo);
+                            ImgurBaseObject object;
+                            JSONObject data =event.json.getJSONObject(ApiClient.KEY_DATA);
+
+                            if (data.has("is_album") && data.getBoolean("is_album")) {
+                                object = new ImgurAlbum(data);
+                            } else {
+                                object = new ImgurPhoto(data);
+                            }
+
+                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, object);
                         } else {
                             mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
                         }
