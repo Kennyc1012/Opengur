@@ -29,6 +29,8 @@ public static final String CLIENT_ID = "YOUR CLIENT ID";
 public static final String CLIENT_SECRET = "YOUR CLIENT SECRET";
 ```
 
+When registering for an API key from Imgur, you need to specify a redirect url to handle logins. The url that the app currently uses is https://com.kenny.openimgur/ . You can use that or provide your own and update the url in ProfileActivity.java 
+
 #Contribution
 Pull requests are welcomed and encouraged. If you experience any bugs, please [file an issue](https://github.com/Kennyc1012/OpenImgur/issues/new)
 
