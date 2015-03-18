@@ -133,7 +133,7 @@ public class ImgurPhoto extends ImgurBaseObject {
         if (getLink() != null && getId() != null) {
 
             if (recreateLink) {
-                return "http://i.imgur.com/" + getId() + size + ext;
+                return "https://i.imgur.com/" + getId() + size + ext;
             } else {
                 return getThumbnail(getId(), getLink(), size);
             }
