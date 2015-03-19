@@ -151,7 +151,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
                     client.doWork(ImgurBusEvent.EventType.COMMENT_POSTED, null, new FormEncodingBuilder().add("comment", comment).build());
                     dismiss();
                 } else {
-                    // Shake the edit text to show that they have not enetered any text
+                    // Shake the edit text to show that they have not entered any text
                     ObjectAnimator.ofFloat(mComment, "translationX", 0, 25, -25, 25, -25, 15, -15, 6, -6, 0).setDuration(750L).start();
                 }
                 break;
