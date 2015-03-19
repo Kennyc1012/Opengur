@@ -163,6 +163,9 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                         .add(android.R.id.content, fragment, "filter")
                         .commit();
                 return true;
+            case R.id.refresh:
+                refresh();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
