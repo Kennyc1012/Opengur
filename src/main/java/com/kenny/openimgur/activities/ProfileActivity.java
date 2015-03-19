@@ -56,6 +56,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  * Created by kcampagna on 12/14/14.
  */
 public class ProfileActivity extends BaseActivity implements FragmentListener {
+    private static final String REDIRECT_URL = "https://com.kenny.openimgur";
     public static final int REQUEST_CODE = 101;
 
     public static final String KEY_LOGGED_IN = "logged_in";
@@ -229,7 +230,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith("https://com.kenny.openimgur/")) {
+                if (url.startsWith(REDIRECT_URL)) {
                     // We will extract the info from the callback url
                     mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                     String[] outerSplit = url.split("\\#")[1].split("\\&");
