@@ -55,6 +55,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
     private RedditSearchAdapter mCursorAdapter;
 
+    private MenuItem mSearchMenuItem;
     private SearchView mSearchView;
 
     public static RedditFragment createInstance() {
@@ -87,12 +88,14 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.reddit, menu);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
+        mSearchMenuItem = menu.findItem(R.id.search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
         mSearchView.setQueryHint(getString(R.string.enter_sub_reddit));
 
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String text) {
+                mSearchMenuItem.collapseActionView();
                 return search(text);
             }
 
