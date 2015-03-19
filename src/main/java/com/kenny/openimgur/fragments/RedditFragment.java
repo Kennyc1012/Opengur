@@ -95,7 +95,6 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String text) {
-                mSearchMenuItem.collapseActionView();
                 return search(text);
             }
 
@@ -148,6 +147,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
             }
 
             fetchGallery();
+            mSearchMenuItem.collapseActionView();
             return true;
         }
 
