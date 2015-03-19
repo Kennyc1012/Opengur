@@ -339,6 +339,13 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     }
 
     @Override
+    public void onDestroyView() {
+        mSearchMenuItem = null;
+        mSearchView = null;
+        super.onDestroyView();
+    }
+
+    @Override
     public ImgurBusEvent.EventType getEventType() {
         return ImgurBusEvent.EventType.REDDIT_SEARCH;
     }
