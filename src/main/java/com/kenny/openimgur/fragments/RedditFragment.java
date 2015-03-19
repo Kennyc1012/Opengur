@@ -164,7 +164,9 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                         .commit();
                 return true;
             case R.id.refresh:
-                refresh();
+                if (mQuery != null) {
+                    refresh();
+                }
                 return true;
         }
 

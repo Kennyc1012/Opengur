@@ -70,6 +70,9 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
+                if (mTopic != null) {
+                    refresh();
+                }
                 return true;
 
             case R.id.filter:
