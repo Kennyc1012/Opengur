@@ -1,5 +1,15 @@
 #Open Imgur Changelog
 
+<b>2.4</b>
+- Ability to open direct photo links from imgur 
+- Confirmation when exiting the app
+- Enable Javascript for Login Webview
+- Ability to refresh a gallery item added
+- Collapse search view when submitting a search for subreddits, thanks [Jawnnypoo](https://github.com/Jawnnypoo)
+- Handle video download links better 
+- Various bug fixes
+- Update Material Dialogs to version 0.6.4.6
+
 <b>2.3</b>
 - Meme Generator Activitiy added
 - Fixed album link handling 
