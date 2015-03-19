@@ -147,7 +147,7 @@ public class VideoCache {
         protected Object doInBackground(File... file) {
             InputStream in = null;
             BufferedOutputStream buffer = null;
-            mUrl = mUrl.replace(".gif", ".mp4");
+            mUrl = mUrl.replace(".gifv", ".mp4");
             LogUtil.v(TAG, "Download video from " + mUrl);
 
             try {
