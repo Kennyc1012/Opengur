@@ -197,15 +197,43 @@
                     android:pathPrefix="/a/"
                     android:scheme="https" />
             </intent-filter>
+            <!-- Direct links to images -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="www.i.imgur.com"
+                    android:scheme="http"
+                    android:pathPattern=".*\\..*" />
+                <data
+                    android:host="i.imgur.com"
+                    android:scheme="http"
+                    android:pathPattern=".*\\..*" />
+                <data
+                    android:host="i.imgur.com"
+                    android:scheme="https"
+                    android:pathPattern=".*\\..*" />
+                <data
+                    android:host="www.i.imgur.com"
+                    android:scheme="https"
+                    android:pathPattern=".*\\..*" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activities.ConvoThreadActivity"
             android:theme="@style/Imgur_Theme_Base" />
-        <activity android:name=".activities.MemeActivity"
-            android:theme="@style/Theme_Not_Translucent"/>
+        <activity
+            android:name=".activities.MemeActivity"
+            android:theme="@style/Theme_Not_Translucent" />
+
         <service android:name=".DownloaderService" />
 
-        <meta-data android:name="com.crashlytics.ApiKey" android:value="${fabric_key}"/>
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="${fabric_key}" />
     </application>
 
 </manifest>

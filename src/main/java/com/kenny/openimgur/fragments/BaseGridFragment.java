@@ -1,6 +1,7 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -109,6 +110,11 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     @Override
     public void onResume() {
         super.onResume();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean nsfwThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
+        mAllowNSFW = pref.getBoolean(SettingsActivity.NSFW_KEY, false);
+        if (getAdapter() != null) getAdapter().setAllowNSFW(nsfwThumb);
+
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }

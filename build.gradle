@@ -32,8 +32,8 @@ android {
         applicationId "com.kennyc.open.imgur"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 16
-        versionName "2.3"
+        versionCode 17
+        versionName "2.4"
         buildConfigField "String", "API_CLIENT_ID", project.API_CLIENT_ID
         buildConfigField "String", "API_CLIENT_SECRET", project.API_CLIENT_SECRET
     }
@@ -74,7 +74,7 @@ dependencies {
     compile 'com.cocosw:bottomsheet:0.8@aar'
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
-    compile 'com.afollestad:material-dialogs:0.6.4.0'
+    compile 'com.afollestad:material-dialogs:0.6.4.6'
     compile(name: 'photo_zoom', ext: 'aar')
     compile(name: 'sliding_panel', ext: 'aar')
     compile project(':libraries:EventBus')

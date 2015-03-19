@@ -48,6 +48,8 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String KEY_DARK_THEME = "darkTheme";
 
+    public static final String KEY_CONFIRM_EXIT = "confirmExit";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

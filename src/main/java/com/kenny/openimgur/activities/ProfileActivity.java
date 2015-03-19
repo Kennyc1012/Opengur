@@ -26,7 +26,6 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.astuetz.PagerSlidingTabStrip;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
@@ -57,6 +56,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  * Created by kcampagna on 12/14/14.
  */
 public class ProfileActivity extends BaseActivity implements FragmentListener {
+    private static final String REDIRECT_URL = "https://com.kenny.openimgur";
     public static final int REQUEST_CODE = 101;
 
     public static final String KEY_LOGGED_IN = "logged_in";
@@ -226,10 +226,11 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
         WebView webView = (WebView) mMultiView.getView(MultiStateView.ViewState.EMPTY).findViewById(R.id.loginWebView);
         webView.loadUrl(Endpoints.LOGIN.getUrl());
+        webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith("https://com.kenny.openimgur/")) {
+                if (url.startsWith(REDIRECT_URL)) {
                     // We will extract the info from the callback url
                     mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                     String[] outerSplit = url.split("\\#")[1].split("\\&");

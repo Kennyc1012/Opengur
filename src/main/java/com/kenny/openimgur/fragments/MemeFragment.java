@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.MemeActivity;
-import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.adapters.MemeAdapter;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
@@ -142,7 +141,7 @@ public class MemeFragment extends BaseGridFragment {
                         mMultiStateView.post(new Runnable() {
                             @Override
                             public void run() {
-                                mGrid.setSelection(0);
+                                if (mGrid != null) mGrid.setSelection(0);
                             }
                         });
                     }

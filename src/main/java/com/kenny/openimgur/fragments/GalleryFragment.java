@@ -24,6 +24,7 @@ import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
 import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -150,6 +151,11 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
+            if (isRemoving() || getActivity().isFinishing()) {
+                LogUtil.w(TAG, "Fragment is being removed, or activity is finishing, not delivering message");
+                return;
+            }
+
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
                     List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;

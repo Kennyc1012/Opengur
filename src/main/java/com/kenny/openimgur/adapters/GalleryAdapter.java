@@ -89,6 +89,11 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
         return removed;
     }
 
+    public void setAllowNSFW(boolean allowNSFW) {
+        mAllowNSFWThumb = allowNSFW;
+        notifyDataSetChanged();
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         GalleryHolder holder;

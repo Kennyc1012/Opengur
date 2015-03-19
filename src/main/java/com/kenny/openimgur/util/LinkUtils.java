@@ -1,5 +1,6 @@
 package com.kenny.openimgur.util;
 
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -13,9 +14,6 @@ import java.util.regex.Pattern;
 public class LinkUtils {
     private static final String REGEX_IMAGE_URL = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://\\S+(.jpg|.jpeg|.gif|.png)$";
 
-    private static final String REGEX_VIDEO_URL = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\S+(.mp4|.gifv)$";
-
     private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
             "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+$";
 
@@ -28,16 +26,19 @@ public class LinkUtils {
     private static final String REGEX_IMGUR_ALBUM = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
             "(m.imgur.com|imgur.com|i.imgur.com)\\/a\\/(?!=\\/)\\w+$";
 
+    private static final String REGEX_IMGUR_DIRECT_LINK = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
+            "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+(.jpg|.jpeg|.gif|.png|.gifv|.mp4|.webm)$";
+
     // Pattern used to extra an ID from a url
     private static final Pattern ID_PATTERN = Pattern.compile(".com\\/(.*)\\W");
 
-    public static enum LinkMatch {
+    public enum LinkMatch {
         IMAGE_URL,
-        VIDEO_URL,
         IMAGE,
         GALLERY,
         USER,
         ALBUM,
+        DIRECT_LINK,
         NONE
     }
 
@@ -51,17 +52,17 @@ public class LinkUtils {
         LinkMatch match = LinkMatch.NONE;
 
         if (!TextUtils.isEmpty(url)) {
-            if (url.matches(REGEX_IMAGE_URL)) {
+            if (url.matches(REGEX_IMGUR_DIRECT_LINK)) {
+                match = LinkMatch.DIRECT_LINK;
+            } else if (url.matches(REGEX_IMAGE_URL)) {
                 match = LinkMatch.IMAGE_URL;
-            } else if (url.matches(REGEX_VIDEO_URL)) {
-                match = LinkMatch.VIDEO_URL;
             } else if (url.matches(REGEX_IMGUR_IMAGE)) {
                 match = LinkMatch.IMAGE;
             } else if (url.matches(REGEX_IMGUR_GALLERY)) {
                 match = LinkMatch.GALLERY;
             } else if (url.matches(REGEX_IMGUR_USER)) {
                 match = LinkMatch.USER;
-            }else if (url.matches(REGEX_IMGUR_ALBUM)){
+            } else if (url.matches(REGEX_IMGUR_ALBUM)) {
                 return LinkMatch.ALBUM;
             }
         }
@@ -118,6 +119,21 @@ public class LinkUtils {
         if (TextUtils.isEmpty(url)) return false;
 
         url = url.toLowerCase();
-        return url.endsWith("mp4");
+        return url.endsWith(".gifv") || url.endsWith("mp4") || url.endsWith(".webm");
+    }
+
+    /**
+     * Returns if the url link is animated (gif/gifv/webm)
+     *
+     * @param url
+     * @return
+     */
+    public static boolean isLinkAnimated(@Nullable String url) {
+        if (!TextUtils.isEmpty(url)) {
+            url = url.toLowerCase();
+            return url.endsWith(".gif") || url.endsWith(".gifv") || url.endsWith(".webm");
+        }
+
+        return false;
     }
 }

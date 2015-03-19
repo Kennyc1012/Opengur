@@ -1,6 +1,7 @@
 package com.kenny.openimgur.classes;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -47,7 +48,7 @@ public class VideoCache {
         mKeyGenerator = new Md5FileNameGenerator();
     }
 
-    public void setCacheDirectory(File dir){
+    public void setCacheDirectory(File dir) {
         mCacheDir = new File(dir, "video_cache");
         mCacheDir.mkdirs();
     }
@@ -58,14 +59,15 @@ public class VideoCache {
      * @param url      The url of the video
      * @param listener Optional VideoCacheListener
      */
-    public void putVideo(String url, @Nullable VideoCacheListener listener) {
+    public void putVideo(@Nullable String url, @Nullable VideoCacheListener listener) {
         if (TextUtils.isEmpty(url)) {
-            Exception e = new NullPointerException("Url is null");
+            Exception e = new IllegalArgumentException("Url is null");
             LogUtil.e(TAG, "Invalid url", e);
             if (listener != null) listener.onVideoDownloadFailed(e, url);
             return;
         }
 
+        url = getMP4Url(url);
         String key = mKeyGenerator.generate(url);
         File file = getVideoFile(key);
 
@@ -103,7 +105,8 @@ public class VideoCache {
     public File getVideoFile(String url) {
         if (TextUtils.isEmpty(url)) return null;
 
-        String key = mKeyGenerator.generate(url);
+
+        String key = mKeyGenerator.generate(getMP4Url(url));
         File file = new File(mCacheDir, key + ".mp4");
         return FileUtil.isFileValid(file) ? file : null;
     }
@@ -113,7 +116,7 @@ public class VideoCache {
         mCacheDir.mkdirs();
     }
 
-    public static interface VideoCacheListener {
+    public interface VideoCacheListener {
         // Called when the Video download starts
         void onVideoDownloadStart(String key, String url);
 
@@ -182,5 +185,22 @@ public class VideoCache {
                 mListener.onVideoDownloadFailed((Exception) o, mUrl);
             }
         }
+    }
+
+    /**
+     * Removes either a .gifv or .webm extension in favor for .mp4
+     *
+     * @param url
+     * @return
+     */
+    @NonNull
+    private String getMP4Url(@NonNull String url) {
+        if (url.endsWith(".gifv")) {
+            return url.replace(".gifv", ".mp4");
+        } else if (url.endsWith(".webm")) {
+            return url.replace(".webm", ".mp4");
+        }
+
+        return url;
     }
 }

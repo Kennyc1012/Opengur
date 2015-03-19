@@ -48,15 +48,21 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  */
 public class PopupImageDialogFragment extends DialogFragment implements VideoCache.VideoCacheListener {
     private static final long PHOTO_SIZE_LIMIT = 1024 * 1024 * 5;
+
     private static final String KEY_URL = "url";
+
     private static final String KEY_ANIMATED = "animated";
+
     private static final String KEY_DIRECT_LINK = "direct_link";
+
     private static final String KEY_IS_VIDEO = "video";
 
     @InjectView(R.id.multiView)
     MultiStateView mMultiView;
+
     @InjectView(R.id.image)
     ImageView mImage;
+
     @InjectView(R.id.video)
     VideoView mVideo;
 
@@ -243,7 +249,6 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
      * @param url
      */
     public void displayVideo(String url) {
-        if (url.endsWith(".gifv")) url = url.replace("gifv", "mp4");
         File file = VideoCache.getInstance().getVideoFile(url);
 
         if (FileUtil.isFileValid(file)) {

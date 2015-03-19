@@ -332,6 +332,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private void loadComments() {
         if (mLoadComments && mPagerAdapter != null) {
             ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
+
+            if (imgurBaseObject == null) {
+                LogUtil.w(TAG, "Object returned is null, can not load comments");
+                return;
+            }
+
             String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId(), mCommentSort.getSort());
 
             if (mApiClient == null) {
@@ -819,8 +825,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             .show(getFragmentManager(), "popup");
                     break;
 
-                case VIDEO_URL:
-                    PopupImageDialogFragment.getInstance(url, true, true, true)
+                case DIRECT_LINK:
+                    boolean isAnimated = LinkUtils.isLinkAnimated(url);
+                    boolean isVideo = LinkUtils.isVideoLink(url);
+                    PopupImageDialogFragment.getInstance(url, isAnimated, true, isVideo)
                             .show(getFragmentManager(), "popup");
                     break;
 
