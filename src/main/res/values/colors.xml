@@ -45,4 +45,8 @@
     <color name="theme_grey_primary">#616161</color>
     <color name="theme_grey_dark">#424242</color>
     <color name="theme_grey_accent">#00E676</color>
+
+    <color name="theme_black_primary">#242424</color>
+    <color name="theme_black_dark">#000000</color>
+    <color name="theme_black_accent">#ee9a00</color>
 </resources>

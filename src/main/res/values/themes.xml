@@ -95,6 +95,12 @@
         <item name="colorAccent">@color/theme_grey_accent</item>
     </style>
 
+    <style name="Theme_Black" parent="@style/Theme_Light">
+        <item name="colorPrimary">@color/theme_black_primary</item>
+        <item name="colorPrimaryDark">@color/theme_black_dark</item>
+        <item name="colorAccent">@color/theme_black_accent</item>
+    </style>
+
     <!-- Override styles (Dark) -->
     <style name="Theme_Dark">
         <item name="android:windowBackground">@color/background_material_dark</item>
@@ -170,6 +176,12 @@
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
+    </style>
+
+    <style name="Theme_Black_Dark" parent="@style/Theme_Dark">
+        <item name="colorPrimary">@color/theme_black_primary</item>
+        <item name="colorPrimaryDark">@color/theme_black_dark</item>
+        <item name="colorAccent">@color/theme_black_accent</item>
     </style>
 
 </resources>
