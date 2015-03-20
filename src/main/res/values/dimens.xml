@@ -14,6 +14,7 @@
     <dimen name="upload_button_margin_right">16dp</dimen>
     <dimen name="upload_button_margin_bottom">16dp</dimen>
     <dimen name="upload_image_margin">0dp</dimen>
+    <dimen name="refresh_pull_amount">32dp</dimen>
 
     <!-- Meme text sizes -->
     <dimen name="meme_text_small">26sp</dimen>

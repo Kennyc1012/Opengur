@@ -25,7 +25,6 @@ import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -156,12 +155,13 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                 return;
             }
 
+            mRefreshLayout.setRefreshing(false);
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
                     List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
 
                     if (getAdapter() == null) {
-                        mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
+                        setUpGridTop();
                         setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(gallery)));
                     } else {
                         getAdapter().addItems(gallery);
