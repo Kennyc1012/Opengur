@@ -55,6 +55,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     private RedditSearchAdapter mCursorAdapter;
 
     private MenuItem mSearchMenuItem;
+
     private SearchView mSearchView;
 
     public static RedditFragment createInstance() {
@@ -167,9 +168,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                         .commit();
                 return true;
             case R.id.refresh:
-                if (mQuery != null) {
-                    refresh();
-                }
+                if (!TextUtils.isEmpty(mQuery)) refresh();
                 return true;
         }
 
