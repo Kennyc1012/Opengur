@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -84,7 +85,7 @@ public class DownloaderService extends IntentService {
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setContentTitle(getString(R.string.image_downloading))
                     .setContentText(getString(R.string.downloading_msg)).setAutoCancel(true).setProgress(0, 0, true).setLargeIcon(icon)
-                    .setSmallIcon(R.drawable.ic_launcher);
+                    .setSmallIcon(Build.VERSION.SDK_INT < 21 ? R.drawable.ic_launcher : R.drawable.ic_i);
             manager.notify(notificationId, builder.build());
 
             boolean saved;
