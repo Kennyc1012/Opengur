@@ -35,6 +35,7 @@ public class DownloaderService extends IntentService {
     private static final String TAG = DownloaderService.class.getSimpleName();
 
     private static final String KEY_IMAGE = "image";
+
     private static final String KEY_IMAGE_URL = "image_url";
 
     public DownloaderService() {
@@ -81,7 +82,7 @@ public class DownloaderService extends IntentService {
             File photoFile = new File(file.getAbsolutePath(), photoFileName);
             LogUtil.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
             int notificationId = photoId.hashCode();
-            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification);
+            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setContentTitle(getString(R.string.image_downloading))
                     .setContentText(getString(R.string.downloading_msg)).setAutoCancel(true).setProgress(0, 0, true).setLargeIcon(icon)
