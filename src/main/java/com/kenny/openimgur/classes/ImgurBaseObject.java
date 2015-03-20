@@ -322,7 +322,7 @@ public class ImgurBaseObject implements Parcelable {
      * @return
      */
     public String getGalleryLink() {
-        return "http://imgur.com/gallery/" + getId();
+        return "https://imgur.com/gallery/" + getId();
     }
 
     @Override
