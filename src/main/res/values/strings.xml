@@ -222,4 +222,7 @@
     <string name="meme_failed">Unable to save Meme, please try again.</string>
     <string name="meme_success">Meme saved successfully</string>
 
+    <!-- Gallery Search -->
+    <string name="gallery_search_hint">Search Imgur</string>
+
 </resources>

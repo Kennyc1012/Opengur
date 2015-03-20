@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,6 +54,8 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
 
     private boolean mShowViral = true;
 
+    private SearchView mSearchView;
+
     public static GalleryFragment createInstance() {
         return new GalleryFragment();
     }
@@ -75,6 +80,25 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.gallery, menu);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
+        mSearchView.setQueryHint(getString(R.string.gallery_search_hint));
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String text) {
+                if (!TextUtils.isEmpty(text)) {
+                    // TODO search activity
+                }
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
+        // TODO Search Suggestion Adapter
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -98,6 +122,12 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroyView() {
+        mSearchView = null;
+        super.onDestroyView();
     }
 
     /**
