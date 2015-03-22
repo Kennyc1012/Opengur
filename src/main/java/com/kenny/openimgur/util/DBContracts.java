@@ -140,7 +140,7 @@ public class DBContracts {
                 + " ORDER BY " + COLUMN_NAME + " COLLATE NOCASE ASC";
 
         public static final String GET_TOPIC_SQL = "SELECT * FROM " + TABLE_NAME + " WHERE " +
-                _ID + " = %d";
+                _ID + " = %d LIMIT 0,1";
 
         public static final String DELETE_TOPIC_SQL = "DELETE FROM " + TABLE_NAME + " WHERE " +
                 _ID + " =%d";
