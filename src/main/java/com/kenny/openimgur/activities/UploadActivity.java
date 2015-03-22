@@ -270,10 +270,10 @@ public class UploadActivity extends BaseActivity {
                         // If our id is true, that means we need to upload the resulting id to the gallery
                         if (String.valueOf(true).equals(event.id)) {
                             // If the image was to be uploaded to the gallery, send it there
-                            ApiClient client = new ApiClient(String.format(Endpoints.GALLERY_UPLOAD.getUrl(), photo.getId()),
-                                    ApiClient.HttpRequest.POST);
+                            ApiClient client = new ApiClient(String.format(Endpoints.GALLERY_UPLOAD.getUrl(), photo.getId()), ApiClient.HttpRequest.POST);
                             RequestBody body = new FormEncodingBuilder()
                                     .add("title", photo.getTitle())
+                                    .add("description", photo.getDescription())
                                     .add("terms", "1").build();
 
                             client.doWork(ImgurBusEvent.EventType.GALLERY_SUBMISSION, photo.getLink(), body);

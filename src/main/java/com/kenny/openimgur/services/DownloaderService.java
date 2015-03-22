@@ -1,4 +1,4 @@
-package com.kenny.openimgur;
+package com.kenny.openimgur.services;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -17,6 +17,7 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.util.FileUtil;
