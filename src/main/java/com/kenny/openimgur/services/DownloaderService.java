@@ -151,7 +151,6 @@ public class DownloaderService extends IntentService {
         } catch (Exception e) {
             LogUtil.e(TAG, "Exception while downloading image", e);
         }
-
     }
 
     public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {

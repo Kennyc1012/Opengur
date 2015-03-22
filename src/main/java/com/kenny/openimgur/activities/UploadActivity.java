@@ -23,6 +23,8 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -39,6 +41,7 @@ import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
+import com.kenny.openimgur.services.UploadService;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -58,6 +61,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import butterknife.InjectView;
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 import pl.droidsonroids.gif.GifDrawable;
@@ -67,6 +71,8 @@ import pl.droidsonroids.gif.GifDrawable;
  */
 public class UploadActivity extends BaseActivity {
     public static final int REQUEST_CODE = 100;
+
+    private static final String PREF_BG_UPLOAD = "upload_in_background";
 
     private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
 
@@ -107,12 +113,10 @@ public class UploadActivity extends BaseActivity {
     @InjectView(R.id.galleryUpload)
     CheckBox mGalleryCB;
 
-    @InjectView(R.id.uploadButton)
-    Button mUploadButton;
+    @InjectView(R.id.backgroundUpload)
+    CheckBox mBackgroundCB;
 
-    private File mTempFile = null;
-
-    private File mCameraFile = null;
+    private File mUploadFile = null;
 
     private boolean mIsValidLink = false;
 
@@ -133,6 +137,42 @@ public class UploadActivity extends BaseActivity {
 
         if (theme.isDarkTheme) {
             mPreviewImage.setImageDrawable(ImageUtil.tintDrawable(R.drawable.photo_placeholder, getResources(), Color.WHITE));
+        }
+
+        boolean uploadInBG = app.getPreferences().getBoolean(PREF_BG_UPLOAD, false);
+        mBackgroundCB.setChecked(uploadInBG);
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        mPreviewImage.setMaxHeight(metrics.widthPixels / 2);
+        mPreviewImage.setMaxWidth(metrics.widthPixels / 2);
+    }
+
+    @OnClick({R.id.uploadButton})
+    public void onUploadClick() {
+        if (!mIsValidLink && !FileUtil.isFileValid(mUploadFile)) {
+            // Nothing selected yet
+            SnackBar.show(UploadActivity.this, R.string.empty_upload);
+        } else {
+            if (user == null && mNotifyNoUser) {
+                View nagView = LayoutInflater.from(UploadActivity.this).inflate(R.layout.no_user_nag, null);
+                final CheckBox cb = (CheckBox) nagView.findViewById(R.id.dontNotify);
+
+                new MaterialDialog.Builder(UploadActivity.this)
+                        .title(R.string.not_logged_in)
+                        .negativeText(R.string.cancel)
+                        .positiveText(R.string.yes)
+                        .customView(nagView, false)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                if (cb.isChecked())
+                                    app.getPreferences().edit().putBoolean(PREF_NOTIFY_NO_USER, false).apply();
+                                onPreUpload();
+                            }
+                        }).show();
+            } else {
+                onPreUpload();
+            }
         }
     }
 
@@ -185,14 +225,9 @@ public class UploadActivity extends BaseActivity {
 
             switch (uploadType) {
                 case UPLOAD_TYPE_CAMERA:
-                    mCameraFile = new File(savedInstanceState.getString(KEY_FILE_PATH));
-                    new LoadImageTask(this).execute(mCameraFile);
-                    mLink.setVisibility(View.GONE);
-                    break;
-
                 case UPLOAD_TYPE_GALLERY:
-                    mTempFile = new File(savedInstanceState.getString(KEY_FILE_PATH));
-                    new LoadImageTask(this).execute(mTempFile);
+                    mUploadFile = new File(savedInstanceState.getString(KEY_FILE_PATH));
+                    new LoadImageTask(this).execute(mUploadFile);
                     mLink.setVisibility(View.GONE);
                     break;
 
@@ -212,12 +247,12 @@ public class UploadActivity extends BaseActivity {
     private void decodeUri(Uri uri) {
         DialogFragment fragment = LoadingDialogFragment.createInstance(R.string.decoding_image, true);
         showDialogFragment(fragment, DFRAGMENT_DECODING);
-        mTempFile = FileUtil.createFile(uri, getContentResolver());
+        mUploadFile = FileUtil.createFile(uri, getContentResolver());
 
-        if (FileUtil.isFileValid(mTempFile)) {
-            if (mTempFile.getAbsolutePath().endsWith(".gif")) {
+        if (FileUtil.isFileValid(mUploadFile)) {
+            if (mUploadFile.getAbsolutePath().endsWith(".gif")) {
                 try {
-                    mPreviewImage.setImageDrawable(new GifDrawable(mTempFile));
+                    mPreviewImage.setImageDrawable(new GifDrawable(mUploadFile));
                     // Not using dismissDialogFragment due to fast gif decoding before the fragment
                     // gets added to the view
                     fragment.dismiss();
@@ -225,10 +260,10 @@ public class UploadActivity extends BaseActivity {
                 } catch (IOException ex) {
                     LogUtil.e(TAG, "Unable to play gif, falling back to still image", ex);
                     // Load the image without playing it if the gif fails
-                    new LoadImageTask(this).execute(mTempFile);
+                    new LoadImageTask(this).execute(mUploadFile);
                 }
             } else {
-                new LoadImageTask(this).execute(mTempFile);
+                new LoadImageTask(this).execute(mUploadFile);
             }
 
         } else {
@@ -322,6 +357,42 @@ public class UploadActivity extends BaseActivity {
     }
 
     /**
+     * Called before the upload is initiated to determine if it should occur in the background
+     */
+    private void onPreUpload() {
+        String title = mTitle.getText().toString();
+        String desc = mDesc.getText().toString();
+        String link = mLink.getText().toString();
+
+        if (mGalleryCB.isChecked() && TextUtils.isEmpty(title)) {
+            SnackBar.show(UploadActivity.this, R.string.gallery_upload_no_title);
+        } else {
+
+            if (mBackgroundCB.isChecked()) {
+                LogUtil.v(TAG, "Upload will happen in background");
+                Intent intent;
+
+                if (mIsValidLink) {
+                    intent = UploadService.createIntent(getApplicationContext(), title, desc, link, -1);
+                } else {
+                    intent = UploadService.createIntent(getApplicationContext(), title, desc, mUploadFile, -1);
+                }
+
+                startService(intent);
+                finish();
+            } else {
+                LogUtil.v(TAG, "Uploading will not occur in background");
+
+                if (mIsValidLink) {
+                    upload(title, desc, link, mGalleryCB.isChecked());
+                } else {
+                    upload(title, desc, mUploadFile, mGalleryCB.isChecked());
+                }
+            }
+        }
+    }
+
+    /**
      * Uploads the url to Imgur
      *
      * @param title           Optional title for image. Required if uploading to gallery
@@ -411,7 +482,7 @@ public class UploadActivity extends BaseActivity {
                 public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
                     // Only when these files are null will we listen for the text change
                     mIsValidLink = false;
-                    if (mTempFile == null && mCameraFile == null && !TextUtils.isEmpty(charSequence)) {
+                    if (mUploadFile == null && !TextUtils.isEmpty(charSequence)) {
                         mHandler.removeMessages(ImgurHandler.MESSAGE_SEARCH_URL);
                         mHandler.sendMessageDelayed(mHandler.obtainMessage(ImgurHandler.MESSAGE_SEARCH_URL, charSequence.toString()), TEXT_DELAY);
                     }
@@ -434,59 +505,6 @@ public class UploadActivity extends BaseActivity {
                 }
             }
         });
-
-
-        mUploadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mIsValidLink && mTempFile == null && mCameraFile == null) {
-                    // Nothing selected yet
-                    SnackBar.show(UploadActivity.this, R.string.empty_upload);
-                } else {
-                    if (user == null && mNotifyNoUser) {
-                        View nagView = LayoutInflater.from(UploadActivity.this).inflate(R.layout.no_user_nag, null);
-                        final CheckBox cb = (CheckBox) nagView.findViewById(R.id.dontNotify);
-
-                        new MaterialDialog.Builder(UploadActivity.this)
-                                .title(R.string.not_logged_in)
-                                .negativeText(R.string.cancel)
-                                .positiveText(R.string.yes)
-                                .customView(nagView, false)
-                                .callback(new MaterialDialog.ButtonCallback() {
-                                    @Override
-                                    public void onPositive(MaterialDialog dialog) {
-                                        if (cb.isChecked()) {
-                                            app.getPreferences().edit().putBoolean(PREF_NOTIFY_NO_USER, false).apply();
-                                        }
-
-                                        if (mIsValidLink) {
-                                            upload(mTitle.getText().toString(), mDesc.getText().toString(), mLink.getText().toString(), false);
-                                        } else {
-                                            upload(mTitle.getText().toString(), mDesc.getText().toString(), mTempFile != null ?
-                                                    mTempFile : mCameraFile, false);
-                                        }
-                                    }
-                                }).show();
-                    } else {
-                        String title = mTitle.getText().toString();
-                        String desc = mDesc.getText().toString();
-                        String link = mLink.getText().toString();
-
-                        if (mGalleryCB.isChecked() && TextUtils.isEmpty(title)) {
-                            SnackBar.show(UploadActivity.this, R.string.gallery_upload_no_title);
-                            return;
-                        }
-
-                        if (mIsValidLink) {
-                            upload(title, desc, link, mGalleryCB.isChecked());
-                        } else {
-                            upload(title, desc, mTempFile != null ?
-                                    mTempFile : mCameraFile, mGalleryCB.isChecked());
-                        }
-                    }
-                }
-            }
-        });
     }
 
     @Override
@@ -494,10 +512,10 @@ public class UploadActivity extends BaseActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CODE_CAMERA:
-                    if (FileUtil.isFileValid(mCameraFile)) {
+                    if (FileUtil.isFileValid(mUploadFile)) {
                         showDialogFragment(LoadingDialogFragment.createInstance(R.string.decoding_image, true), DFRAGMENT_DECODING);
-                        FileUtil.scanFile(Uri.fromFile(mCameraFile), getApplicationContext());
-                        new LoadImageTask(this).execute(mCameraFile);
+                        FileUtil.scanFile(Uri.fromFile(mUploadFile), getApplicationContext());
+                        new LoadImageTask(this).execute(mUploadFile);
                     } else {
                         SnackBar.show(this, R.string.upload_camera_error);
                     }
@@ -515,23 +533,16 @@ public class UploadActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        // Delete the temporary file if one exists
-        if (FileUtil.isFileValid(mTempFile) && isFinishing()) {
-            mTempFile.delete();
-        }
-
         mHandler.removeCallbacksAndMessages(null);
+        app.getPreferences().edit().putBoolean(PREF_BG_UPLOAD, mBackgroundCB.isChecked()).apply();
         super.onDestroy();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        if (FileUtil.isFileValid(mTempFile)) {
-            outState.putString(KEY_FILE_PATH, mTempFile.getAbsolutePath());
+        if (FileUtil.isFileValid(mUploadFile)) {
+            outState.putString(KEY_FILE_PATH, mUploadFile.getAbsolutePath());
             outState.putInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_GALLERY);
-        } else if (FileUtil.isFileValid(mCameraFile)) {
-            outState.putString(KEY_FILE_PATH, mCameraFile.getAbsolutePath());
-            outState.putInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_CAMERA);
         } else {
             outState.putInt(KEY_UPLOAD_TYPE, UPLOAD_TYPE_LINK);
         }
@@ -550,12 +561,12 @@ public class UploadActivity extends BaseActivity {
         Intent intent = null;
         switch (uploadType) {
             case UPLOAD_TYPE_CAMERA:
-                mCameraFile = FileUtil.createFile(FileUtil.EXTENSION_JPEG);
+                mUploadFile = FileUtil.createFile(FileUtil.EXTENSION_JPEG);
 
-                if (mCameraFile != null) {
+                if (FileUtil.isFileValid(mUploadFile)) {
                     intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                            Uri.fromFile(mCameraFile));
+                            Uri.fromFile(mUploadFile));
                 }
 
                 break;
@@ -668,8 +679,8 @@ public class UploadActivity extends BaseActivity {
                 }
 
                 int orientation = ImageUtil.getImageRotation(file);
-                int width = mMetrics.widthPixels > 720 ? 720 : mMetrics.widthPixels;
-                int height = mMetrics.heightPixels > 1024 ? 1024 : mMetrics.heightPixels;
+                int width = mMetrics.widthPixels / 2;
+                int height = width;
                 Bitmap bitmap = ImageUtil.decodeSampledBitmapFromResource(file, width, height);
 
                 // If the orientation is normal or not defined, return the original bitmap
@@ -738,12 +749,8 @@ public class UploadActivity extends BaseActivity {
                 if (bitmap != null) {
                     activity.mPreviewImage.setImageBitmap(bitmap);
                     activity.mLink.setVisibility(View.GONE);
-                    activity.mUploadButton.setVisibility(View.VISIBLE);
                 } else {
                     SnackBar.show(activity, R.string.upload_decode_error);
-                    if (FileUtil.isFileValid(activity.mTempFile)) {
-                        activity.mTempFile.delete();
-                    }
                 }
 
                 activity.dismissDialogFragment(DFRAGMENT_DECODING);

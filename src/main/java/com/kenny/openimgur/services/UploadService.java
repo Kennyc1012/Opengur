@@ -209,7 +209,8 @@ public class UploadService extends IntentService implements ProgressRequestBody.
         PendingIntent pIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
         mBuilder.setContentTitle(getString(R.string.upload_complete))
                 .setContentText(getString(R.string.upload_success, url))
-                .addAction(R.drawable.ic_action_copy, getString(R.string.copy_link), pIntent);
+                .addAction(R.drawable.ic_action_copy, getString(R.string.copy_link), pIntent)
+                .setProgress(0, 0, false);
         mManager.notify(mNotificationId, mBuilder.build());
     }
 
@@ -222,7 +223,8 @@ public class UploadService extends IntentService implements ProgressRequestBody.
      */
     private void onUploadFailed(@Nullable String title, @Nullable String description, @Nullable String content, boolean wasFile) {
         mBuilder.setContentTitle(getString(R.string.error))
-                .setContentText(getString(R.string.upload_error));
+                .setContentText(getString(R.string.upload_error))
+                .setProgress(0, 0, false);
 
         if (!TextUtils.isEmpty(content)) {
             Intent intent = NotificationReceiver.createRetryUploadIntent(getApplicationContext(), content, title, description, mNotificationId, wasFile);

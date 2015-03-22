@@ -69,7 +69,7 @@
     <string name="copy_link">Copy Link</string>
     <string name="open_source">Open Source</string>
     <string name="view_source">View Source Code</string>
-    <string name="upload_success">Image uploaded to %s</string>
+    <string name="upload_success">Uploaded to %s</string>
     <string name="upload_complete">Upload Complete</string>
     <string name="view_licenses">View Open Source Licenses</string>
     <string name="comments_off">Comments set not to load</string>
@@ -150,6 +150,7 @@
     <string name="uploaded_photos_title">Uploads</string>
     <string name="uploaded_remove_message">Are you sure you want to remove this photo?</string>
     <string name="uploaded_remove_imgur">Remove from Imgur</string>
+    <string name="upload_in_background">Upload In Background</string>
 
     <!-- Convos -->
     <string name="convo_message_hint">Enter a message</string>
