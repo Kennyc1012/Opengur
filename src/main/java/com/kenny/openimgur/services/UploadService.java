@@ -38,14 +38,21 @@ import java.io.IOException;
  */
 public class UploadService extends IntentService implements ProgressRequestBody.ProgressListener {
     private static final String TAG = "UploadService";
+
     private static final String KEY_TITLE = "title";
+
     private static final String KEY_DESC = "description";
+
     private static final String KEY_URL = "url";
+
     private static final String KEY_FILE = "file";
+
     private static final String KEY_NOTIF_ID = "notification_id";
 
     private NotificationManager mManager;
+
     NotificationCompat.Builder mBuilder;
+
     private int mNotificationId;
 
     public static Intent createIntent(Context context, @Nullable String title, @Nullable String description, @NonNull File file, int notificationId) {
@@ -237,8 +244,8 @@ public class UploadService extends IntentService implements ProgressRequestBody.
     }
 
     @Override
-    public void onTransferred(long transferred, long totalSize) {
-        mBuilder.setProgress((int) totalSize, (int) transferred, false);
+    public void onTransferred(int percentage) {
+        mBuilder.setProgress(100, percentage, false);
         mManager.notify(mNotificationId, mBuilder.build());
     }
 
