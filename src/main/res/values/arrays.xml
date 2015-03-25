@@ -23,6 +23,7 @@
     </string-array>
 
     <string-array name="pref_themes_items">
+        <item>Black</item>
         <item>Blue</item>
         <item>Cyan</item>
         <item>Green</item>
@@ -78,6 +79,7 @@
     </string-array>
 
     <string-array name="pref_theme_keys" translatable="false">
+        <item>Black</item>
         <item>blue</item>
         <item>cyan</item>
         <item>green</item>

@@ -18,7 +18,8 @@ public enum ImgurTheme {
     RED("red", R.style.Theme_Red, R.style.Theme_Red_Dark, R.color.theme_red_primary, R.color.theme_red_dark, R.color.theme_red_accent),
     PINK("pink", R.style.Theme_Pink, R.style.Theme_Pink_Dark, R.color.theme_pink_primary, R.color.theme_pink_dark, R.color.theme_pink_accent),
     PURPLE("purple", R.style.Theme_Purple, R.style.Theme_Purple_Dark, R.color.theme_purple_primary, R.color.theme_purple_dark, R.color.theme_purple_accent),
-    GREY("gray", R.style.Theme_Grey, R.style.Theme_Grey_Dark, R.color.theme_grey_primary, R.color.theme_grey_dark, R.color.theme_grey_accent);
+    GREY("gray", R.style.Theme_Grey, R.style.Theme_Grey_Dark, R.color.theme_grey_primary, R.color.theme_grey_dark, R.color.theme_grey_accent),
+    BLACK("black", R.style.Theme_Black, R.style.Theme_Black_Dark, R.color.theme_black_primary, R.color.theme_black_dark, R.color.theme_black_accent);
 
     public final String themeName;
 
@@ -34,7 +35,7 @@ public enum ImgurTheme {
 
     public boolean isDarkTheme = false;
 
-    private ImgurTheme(String themeName, @StyleRes int theme, @StyleRes int darkTheme, @ColorRes int primaryColor, @ColorRes int darkColor, @ColorRes int accentColor) {
+    ImgurTheme(String themeName, @StyleRes int theme, @StyleRes int darkTheme, @ColorRes int primaryColor, @ColorRes int darkColor, @ColorRes int accentColor) {
         this.themeName = themeName;
         this.darkTheme = darkTheme;
         this.theme = theme;
@@ -124,6 +125,8 @@ public enum ImgurTheme {
             theme = PURPLE;
         } else if (BLUE.themeName.equalsIgnoreCase(themeName)) {
             theme = BLUE;
+        } else if (BLACK.themeName.equalsIgnoreCase(themeName)) {
+            theme = BLACK;
         }
 
         return theme;

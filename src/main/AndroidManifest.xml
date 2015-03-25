@@ -229,7 +229,10 @@
             android:name=".activities.MemeActivity"
             android:theme="@style/Theme_Not_Translucent" />
 
-        <service android:name=".DownloaderService" />
+        <service android:name=".services.DownloaderService" />
+        <service android:name=".services.UploadService" />
+
+        <receiver android:name=".services.NotificationReceiver" />
 
         <meta-data
             android:name="com.crashlytics.ApiKey"

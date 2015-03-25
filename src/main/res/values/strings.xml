@@ -69,7 +69,7 @@
     <string name="copy_link">Copy Link</string>
     <string name="open_source">Open Source</string>
     <string name="view_source">View Source Code</string>
-    <string name="upload_success">Upload successful. Image can be viewed at %s</string>
+    <string name="upload_success">Uploaded to %s</string>
     <string name="upload_complete">Upload Complete</string>
     <string name="view_licenses">View Open Source Licenses</string>
     <string name="comments_off">Comments set not to load</string>
@@ -93,6 +93,9 @@
     <string name="close">Close</string>
     <string name="exit">Exit</string>
     <string name="exit_confirm">Are you sure you want to exit Open Imgur?</string>
+    <string name="image_uploading">Uploading Image</string>
+    <string name="link_copied">Link copied</string>
+    <string name="link_copy_failed">Unable to copy link</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -108,6 +111,7 @@
     <string name="upload_camera_error">An error occurred while capturing your photo. Please try again</string>
     <string name="upload_gallery_error">An error occurred while opening the selected image. Please try again</string>
     <string name="upload_decode_error">An error occurred while decoding image. Please try again</string>
+    <string name="upload_error">An error occurred while uploading.</string>
 
     <!-- Notoriety -->
     <string name="notoriety_forever_alone">Forever Alone</string>
@@ -146,6 +150,7 @@
     <string name="uploaded_photos_title">Uploads</string>
     <string name="uploaded_remove_message">Are you sure you want to remove this photo?</string>
     <string name="uploaded_remove_imgur">Remove from Imgur</string>
+    <string name="upload_in_background">Upload In Background</string>
 
     <!-- Convos -->
     <string name="convo_message_hint">Enter a message</string>

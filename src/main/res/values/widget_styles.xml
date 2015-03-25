@@ -39,4 +39,8 @@
         <item name="android:background">@color/background_material_dark</item>
     </style>
 
+    <style name="PopupMenuStyle.Light" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:background">@color/background_material_light</item>
+    </style>
+
 </resources>

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -13,63 +12,17 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/photoContainer"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
+        <!-- TODO Wrap in Horizontal Scroll View for Album Support -->
+        <ImageView
+            android:id="@+id/previewImage"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="?cardBG">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/previewImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/upload_image_margin"
-                    android:layout_marginRight="@dimen/upload_image_margin"
-                    android:adjustViewBounds="true"
-                    android:scaleType="centerCrop"
-                    android:layout_gravity="center_horizontal"
-                    android:src="@drawable/photo_placeholder" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp">
-
-                    <CheckBox
-                        android:id="@+id/galleryUpload"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                        android:layout_marginRight="@dimen/activity_horizontal_margin"
-                        android:text="@string/add_to_gallery"
-
-                        android:checked="false" />
-
-                    <Button
-                        android:id="@+id/uploadButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/upload"
-                        android:textAllCaps="true"
-                        android:textColor="?colorAccent"
-                        style="@style/Widget.AppCompat.ActionButton" />
-
-
-                </LinearLayout>
-
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
-
+            android:layout_marginLeft="@dimen/upload_image_margin"
+            android:layout_marginRight="@dimen/upload_image_margin"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/photo_placeholder" />
 
         <android.support.v7.widget.CardView
             android:id="@+id/infoContainer"
@@ -83,6 +36,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <CheckBox
+                    android:id="@+id/galleryUpload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_to_gallery"
+                    android:checked="false"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin" />
+
+                <CheckBox
+                    android:id="@+id/backgroundUpload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/upload_in_background"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin" />
 
                 <EditText
                     android:id="@+id/url"
@@ -116,6 +86,15 @@
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
+
+        <Button
+            android:id="@+id/uploadButton"
+            style="?android:borderlessButtonStyle"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/upload"
+            android:textColor="?colorAccent"/>
 
     </LinearLayout>
 </ScrollView>
