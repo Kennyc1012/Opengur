@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.activities.GallerySearchActivity;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.Endpoints;
@@ -48,13 +49,15 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
 
     private GallerySection mSection = GallerySection.HOT;
 
-    private GallerySort mSort = GallerySort.TIME;
+    protected GallerySort mSort = GallerySort.TIME;
 
-    private TimeSort mTimeSort = TimeSort.DAY;
+    protected TimeSort mTimeSort = TimeSort.DAY;
 
     private boolean mShowViral = true;
 
-    private SearchView mSearchView;
+    protected SearchView mSearchView;
+
+    protected MenuItem mSearchMenuItem;
 
     public static GalleryFragment createInstance() {
         return new GalleryFragment();
@@ -80,13 +83,16 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.gallery, menu);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
+        mSearchMenuItem = menu.findItem(R.id.search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
         mSearchView.setQueryHint(getString(R.string.gallery_search_hint));
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String text) {
                 if (!TextUtils.isEmpty(text)) {
-                    // TODO search activity
+                    startActivity(GallerySearchActivity.createIntent(getActivity(), text));
+                    mSearchMenuItem.collapseActionView();
+                    return true;
                 }
 
                 return false;
@@ -135,7 +141,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
      *
      * @return
      */
-    private String getGalleryUrl() {
+    protected String getGalleryUrl() {
         if (mSort == GallerySort.HIGHEST_SCORING) {
             return String.format(Endpoints.GALLERY_TOP.getUrl(), mSection.getSection(), mSort.getSort(),
                     mTimeSort.getSort(), mCurrentPage, mShowViral);
@@ -236,6 +242,9 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                     break;
 
                 case MESSAGE_EMPTY_RESULT:
+                    // TODO
+                    break;
+
                 default:
                     mIsLoading = false;
                     super.handleMessage(msg);
