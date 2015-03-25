@@ -232,7 +232,10 @@
             android:name=".activities.GallerySearchActivity"
             android:theme="@style/Theme_Translucent_Main" />
 
-        <service android:name=".DownloaderService" />
+        <service android:name=".services.DownloaderService" />
+        <service android:name=".services.UploadService" />
+
+        <receiver android:name=".services.NotificationReceiver" />
 
         <meta-data
             android:name="com.crashlytics.ApiKey"

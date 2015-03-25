@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -304,16 +305,22 @@ public class SqlHelper extends SQLiteOpenHelper {
      * @return
      */
     public ImgurTopic getTopic(int id) {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(String.format(TopicsContract.GET_TOPIC_SQL, id), null);
-        ImgurTopic topic = null;
+        // Wrap in a try/catch to avoid a crash that can occur when a '?' is passed as id
+        try {
+            SQLiteDatabase db = getReadableDatabase();
+            Cursor cursor = db.rawQuery(String.format(TopicsContract.GET_TOPIC_SQL, id), null);
+            ImgurTopic topic = null;
 
-        if (cursor.moveToFirst()) {
-            topic = new ImgurTopic(cursor);
+            if (cursor.moveToFirst()) {
+                topic = new ImgurTopic(cursor);
+            }
+
+            cursor.close();
+            return topic;
+        } catch (SQLiteException ex) {
+            LogUtil.e(TAG, "Unable to find topic", ex);
+            return null;
         }
-
-        cursor.close();
-        return topic;
     }
 
     /**
