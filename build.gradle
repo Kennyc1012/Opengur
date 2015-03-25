@@ -26,7 +26,7 @@ repositories {
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "22.0.0"
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "com.kennyc.open.imgur"
@@ -70,11 +70,11 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
     compile 'com.github.kennyc1012:snackbar:1.1-SNAPSHOT:api11Release@aar'
     compile 'com.squareup.okhttp:okhttp:2.3.0'
-    compile 'com.jakewharton:butterknife:6.0.0'
-    compile 'com.cocosw:bottomsheet:0.8@aar'
+    compile 'com.jakewharton:butterknife:6.1.0'
+    compile 'com.cocosw:bottomsheet:0.9@aar'
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
-    compile 'com.afollestad:material-dialogs:0.6.4.7'
+    compile 'com.afollestad:material-dialogs:0.6.5.2'
     compile(name: 'photo_zoom', ext: 'aar')
     compile(name: 'sliding_panel', ext: 'aar')
     compile project(':libraries:EventBus')
