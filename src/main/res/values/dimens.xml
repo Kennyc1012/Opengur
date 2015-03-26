@@ -30,4 +30,8 @@
     <dimen name="avatar_size">48dp</dimen>
     <dimen name="tab_bar_height">48dp</dimen>
 
+    <!--General padding-->
+    <dimen name="padding_small">4dp</dimen>
+    <dimen name="padding_medium">8dp</dimen>
+
 </resources>
