@@ -345,6 +345,10 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     public void onDestroyView() {
         mSearchMenuItem = null;
         mSearchView = null;
+        if (mCursorAdapter != null && mCursorAdapter.getCursor() != null &&
+                !mCursorAdapter.getCursor().isClosed()) {
+            mCursorAdapter.getCursor().close();
+        }
         super.onDestroyView();
     }
 
