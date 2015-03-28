@@ -217,7 +217,8 @@ public class UploadService extends IntentService implements ProgressRequestBody.
         mBuilder.setContentTitle(getString(R.string.upload_complete))
                 .setContentText(getString(R.string.upload_success, url))
                 .addAction(R.drawable.ic_action_copy, getString(R.string.copy_link), pIntent)
-                .setProgress(0, 0, false);
+                .setProgress(0, 0, false)
+                .setContentInfo(null);
         mManager.notify(mNotificationId, mBuilder.build());
     }
 
@@ -246,6 +247,7 @@ public class UploadService extends IntentService implements ProgressRequestBody.
     @Override
     public void onTransferred(int percentage) {
         mBuilder.setProgress(100, percentage, false);
+        mBuilder.setContentInfo(percentage + "%");
         mManager.notify(mNotificationId, mBuilder.build());
     }
 
