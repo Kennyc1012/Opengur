@@ -100,7 +100,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                     retryIntent = UploadService.createIntent(context, title, desc, path, notificationId);
                 }
 
-                context.startActivity(retryIntent);
+                context.startService(retryIntent);
                 break;
 
             default:

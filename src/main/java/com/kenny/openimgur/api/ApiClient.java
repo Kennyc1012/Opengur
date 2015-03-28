@@ -174,7 +174,7 @@ public class ApiClient {
             }
         } else {
             int statusCode = response.code();
-            LogUtil.w(TAG, "Request to " + request.urlString() + "Failed with status code " + statusCode);
+            LogUtil.w(TAG, "Request to " + request.urlString() + " Failed with status code " + statusCode);
             json = new JSONObject();
             json.put(KEY_SUCCESS, false);
             json.put(KEY_STATUS, statusCode);
