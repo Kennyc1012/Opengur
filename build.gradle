@@ -74,7 +74,7 @@ dependencies {
     compile 'com.cocosw:bottomsheet:0.9@aar'
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
-    compile 'com.afollestad:material-dialogs:0.6.5.2'
+    compile 'com.afollestad:material-dialogs:0.6.6.1'
     compile(name: 'photo_zoom', ext: 'aar')
     compile(name: 'sliding_panel', ext: 'aar')
     compile project(':libraries:EventBus')
