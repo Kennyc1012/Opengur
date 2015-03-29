@@ -17,9 +17,14 @@ import okio.Source;
  */
 public class ProgressRequestBody extends RequestBody {
     private static final int SEGMENT_SIZE = 2048;
+
     private File mFile;
+
     private MediaType mType;
+
     private ProgressListener mListener;
+
+    private int mPercentage = -1;
 
     public ProgressRequestBody(File file, MediaType type, ProgressListener listener) {
         mFile = file;
@@ -28,7 +33,7 @@ public class ProgressRequestBody extends RequestBody {
     }
 
     public interface ProgressListener {
-        void onTransferred(long transferred, long totalSize);
+        void onTransferred(int percentage);
     }
 
     @Override
@@ -41,13 +46,18 @@ public class ProgressRequestBody extends RequestBody {
         Source source = null;
         try {
             source = Okio.source(mFile);
-            long total = 0;
-            long read;
+            float total = 0;
+            float read;
 
             while ((read = source.read(sink.buffer(), SEGMENT_SIZE)) != -1) {
                 total += read;
                 sink.flush();
-                if (mListener != null) mListener.onTransferred(total, contentLength());
+                float percentage = total / contentLength() * 100;
+
+                if ((int) percentage > mPercentage) {
+                    mPercentage = (int) percentage;
+                    if (mListener != null) mListener.onTransferred(mPercentage);
+                }
             }
         } finally {
             FileUtil.closeStream(source);

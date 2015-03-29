@@ -235,13 +235,13 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         SharedPreferences.Editor edit = pref.edit();
         long lastClear = app.getPreferences().getLong("lastClear", 0);
 
-        // We will clear the cache every 7 days
+        // We will clear the cache every 4 days
         if (lastClear == 0) {
             edit.putLong("lastClear", System.currentTimeMillis());
         } else {
             long currentTime = System.currentTimeMillis();
 
-            if (currentTime - lastClear >= DateUtils.DAY_IN_MILLIS * 7) {
+            if (currentTime - lastClear >= DateUtils.DAY_IN_MILLIS * 4) {
                 app.deleteAllCache();
                 edit.putLong("lastClear", currentTime);
             }

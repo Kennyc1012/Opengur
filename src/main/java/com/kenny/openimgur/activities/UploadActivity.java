@@ -23,10 +23,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -61,6 +58,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import butterknife.InjectView;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
@@ -69,7 +67,7 @@ import pl.droidsonroids.gif.GifDrawable;
 /**
  * Created by kcampagna on 8/2/14.
  */
-public class UploadActivity extends BaseActivity {
+public class UploadActivity extends BaseActivity{
     public static final int REQUEST_CODE = 100;
 
     private static final String PREF_BG_UPLOAD = "upload_in_background";
@@ -494,17 +492,6 @@ public class UploadActivity extends BaseActivity {
                 }
             });
         }
-
-        mGalleryCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton button, boolean checked) {
-                // Don't allow uploads to gallery when they are not logged in
-                if (checked && user == null) {
-                    SnackBar.show(UploadActivity.this, R.string.gallery_no_user);
-                    button.setChecked(false);
-                }
-            }
-        });
     }
 
     @Override
@@ -549,6 +536,27 @@ public class UploadActivity extends BaseActivity {
 
         outState.putBoolean(KEY_IS_UPLOADING, mIsUploading);
         super.onSaveInstanceState(outState);
+    }
+
+    @OnCheckedChanged({R.id.backgroundUpload, R.id.galleryUpload})
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        // Don't allow background uploads if uploading to imgur gallery
+        switch (buttonView.getId()) {
+            case R.id.backgroundUpload:
+                if (isChecked) mGalleryCB.setChecked(false);
+                break;
+
+            case R.id.galleryUpload:
+                // Don't allow uploads to gallery when they are not logged in
+                if (isChecked && user == null) {
+                    SnackBar.show(UploadActivity.this, R.string.gallery_no_user);
+                    buttonView.setChecked(false);
+                    return;
+                }
+
+                if (isChecked && mBackgroundCB.isChecked()) mBackgroundCB.setChecked(false);
+                break;
+        }
     }
 
     /**

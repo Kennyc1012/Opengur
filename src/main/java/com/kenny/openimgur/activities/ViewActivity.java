@@ -148,6 +148,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private static final String KEY_LOAD_COMMENTS = "autoLoadComments";
 
+    private static final String KEY_PANEL_EXPANDED = "panelExpanded";
+
     @InjectView(R.id.pager)
     ViewPager mViewPager;
 
@@ -529,6 +531,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
                 mMultiView.setViewState(MultiStateView.ViewState.ERROR);
             }
+
+            if (savedInstanceState.getBoolean(KEY_PANEL_EXPANDED, false)) getSupportActionBar().hide();
         }
     }
 
@@ -997,9 +1001,13 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
             outState.putParcelableArrayList(KEY_OBJECTS, mPagerAdapter.retainItems());
         }
+
+        if (mSlidingPane != null) outState.putBoolean(KEY_PANEL_EXPANDED, mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
     private void onListItemClick(int position) {
+        if (mCommentAdapter == null) return;
+
         if (position >= 0) {
             boolean shouldClose = mCommentAdapter.setSelectedIndex(position);
 

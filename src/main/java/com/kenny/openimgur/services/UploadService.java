@@ -38,14 +38,21 @@ import java.io.IOException;
  */
 public class UploadService extends IntentService implements ProgressRequestBody.ProgressListener {
     private static final String TAG = "UploadService";
+
     private static final String KEY_TITLE = "title";
+
     private static final String KEY_DESC = "description";
+
     private static final String KEY_URL = "url";
+
     private static final String KEY_FILE = "file";
+
     private static final String KEY_NOTIF_ID = "notification_id";
 
     private NotificationManager mManager;
+
     NotificationCompat.Builder mBuilder;
+
     private int mNotificationId;
 
     public static Intent createIntent(Context context, @Nullable String title, @Nullable String description, @NonNull File file, int notificationId) {
@@ -111,7 +118,13 @@ public class UploadService extends IntentService implements ProgressRequestBody.
             if (mNotificationId <= 0) mNotificationId = url.hashCode();
             onUploadStarted();
             JSONObject json = client.doWork(body);
-            handleResponse(json.getInt(ApiClient.KEY_STATUS), json.getJSONObject(ApiClient.KEY_DATA));
+            int status = json.getInt(ApiClient.KEY_STATUS);
+
+            if (status == ApiClient.STATUS_OK) {
+                handleResponse(json.getJSONObject(ApiClient.KEY_DATA));
+            } else {
+                onUploadFailed(title, description, url, false);
+            }
         } catch (IOException | JSONException e) {
             LogUtil.e(TAG, "Error uploading url", e);
             onUploadFailed(title, description, url, false);
@@ -162,7 +175,13 @@ public class UploadService extends IntentService implements ProgressRequestBody.
             if (mNotificationId <= 0) mNotificationId = file.hashCode();
             onUploadStarted();
             JSONObject json = client.doWork(body);
-            handleResponse(json.getInt(ApiClient.KEY_STATUS), json.getJSONObject(ApiClient.KEY_DATA));
+            int status = json.getInt(ApiClient.KEY_STATUS);
+
+            if (status == ApiClient.STATUS_OK) {
+                handleResponse(json.getJSONObject(ApiClient.KEY_DATA));
+            } else {
+                onUploadFailed(title, description, filePath, true);
+            }
         } catch (IOException | JSONException e) {
             LogUtil.e(TAG, "Error uploading file", e);
             onUploadFailed(title, description, filePath, true);
@@ -172,16 +191,9 @@ public class UploadService extends IntentService implements ProgressRequestBody.
     /**
      * Handles the result of the upload
      *
-     * @param status Status received from the upload
-     * @param json   JSON object received from the upload
+     * @param json JSON object received from the upload
      */
-    private void handleResponse(int status, @Nullable JSONObject json) {
-        if (status != ApiClient.STATUS_OK || json == null) {
-            LogUtil.w(TAG, "Error received while uploading, status code: " + status + " JSON: " + json);
-            onUploadFailed(null, null, null, false);
-            return;
-        }
-
+    private void handleResponse(JSONObject json) {
         ImgurPhoto photo = new ImgurPhoto(json);
         OpenImgurApp.getInstance(getApplicationContext()).getSql().insertUploadedPhoto(photo);
         onUploadComplete(photo.getLink());
@@ -206,11 +218,12 @@ public class UploadService extends IntentService implements ProgressRequestBody.
      */
     private void onUploadComplete(String url) {
         Intent intent = NotificationReceiver.createCopyIntent(getApplicationContext(), url, mNotificationId);
-        PendingIntent pIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         mBuilder.setContentTitle(getString(R.string.upload_complete))
                 .setContentText(getString(R.string.upload_success, url))
                 .addAction(R.drawable.ic_action_copy, getString(R.string.copy_link), pIntent)
-                .setProgress(0, 0, false);
+                .setProgress(0, 0, false)
+                .setContentInfo(null);
         mManager.notify(mNotificationId, mBuilder.build());
     }
 
@@ -224,11 +237,12 @@ public class UploadService extends IntentService implements ProgressRequestBody.
     private void onUploadFailed(@Nullable String title, @Nullable String description, @Nullable String content, boolean wasFile) {
         mBuilder.setContentTitle(getString(R.string.error))
                 .setContentText(getString(R.string.upload_error))
-                .setProgress(0, 0, false);
+                .setProgress(0, 0, false)
+                .setContentInfo(null);
 
         if (!TextUtils.isEmpty(content)) {
             Intent intent = NotificationReceiver.createRetryUploadIntent(getApplicationContext(), content, title, description, mNotificationId, wasFile);
-            PendingIntent pIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent pIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
             mBuilder.addAction(R.drawable.ic_action_upload, getString(R.string.retry), pIntent);
         }
 
@@ -237,8 +251,9 @@ public class UploadService extends IntentService implements ProgressRequestBody.
     }
 
     @Override
-    public void onTransferred(long transferred, long totalSize) {
-        mBuilder.setProgress((int) totalSize, (int) transferred, false);
+    public void onTransferred(int percentage) {
+        mBuilder.setProgress(100, percentage, false);
+        mBuilder.setContentInfo(percentage + "%");
         mManager.notify(mNotificationId, mBuilder.build());
     }
 
