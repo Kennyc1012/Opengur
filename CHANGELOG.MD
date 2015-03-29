@@ -1,5 +1,21 @@
 #Open Imgur Changelog
 
+<b>2.5</b>
+- Pull to refresh added to grid fragments, thanks [Jawnnypoo](https://github.com/Jawnnypoo)
+- Background uploads added
+- Link protoctols changed to HTTPS thanks, [zamabe](https://github.com/zamabe)
+- Black Theme added
+- Notification icon fixed for Lollipop devices, thanks [Jawnnypoo](https://github.com/Jawnnypoo)
+- Crash fix for SQL Exception when querying topics [#52](https://github.com/Kennyc1012/OpenImgur/issues/52)
+- Login view fixed thanks, [Jawnnypoo](https://github.com/Jawnnypoo)
+- Close cursor for subreddit search adapter when fragment is destroyed, thanks [Jawnnypoo](https://github.com/Jawnnypoo)
+- Fix wrong text color for share widget
+- Cache will be clear every 4 days instead of 7
+- Update OKHTTP to 2.3.0 release
+- Update Butterknife to 6.1.0 release
+- Update Bottomsheet to 0.9 release
+- Update Material Dialogs to 0.6.6.1 release
+
 <b>2.4</b>
 - Ability to open direct photo links from imgur 
 - Confirmation when exiting the app
