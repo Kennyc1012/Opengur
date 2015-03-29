@@ -619,6 +619,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case R.id.sortComments:
+                if (mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    mSlidingPane.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                }
                 new MaterialDialog.Builder(ViewActivity.this)
                         .title(R.string.sort_by)
                         .items(CommentSort.getItemsForArray(getApplicationContext()))
@@ -648,6 +651,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 break;
         }
     }
+
 
     /**
      * Event Method that receives events from the Bus
