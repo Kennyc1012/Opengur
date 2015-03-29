@@ -29,7 +29,6 @@ import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -56,6 +55,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     private RedditSearchAdapter mCursorAdapter;
 
     private MenuItem mSearchMenuItem;
+
     private SearchView mSearchView;
 
     public static RedditFragment createInstance() {
@@ -167,6 +167,9 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                         .add(android.R.id.content, fragment, "filter")
                         .commit();
                 return true;
+            case R.id.refresh:
+                if (!TextUtils.isEmpty(mQuery)) refresh();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -219,8 +222,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
     private void setupAdapter(List<ImgurBaseObject> objects) {
         if (getAdapter() == null) {
-            View header = ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0);
-            mGrid.addHeaderView(header);
+            setUpGridTop();
             setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(objects)));
         } else {
             getAdapter().addItems(objects);
@@ -230,6 +232,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
+            mRefreshLayout.setRefreshing(false);
             switch (msg.what) {
 
                 case MESSAGE_EMPTY_RESULT:
@@ -342,6 +345,10 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     public void onDestroyView() {
         mSearchMenuItem = null;
         mSearchView = null;
+        if (mCursorAdapter != null && mCursorAdapter.getCursor() != null &&
+                !mCursorAdapter.getCursor().isClosed()) {
+            mCursorAdapter.getCursor().close();
+        }
         super.onDestroyView();
     }
 

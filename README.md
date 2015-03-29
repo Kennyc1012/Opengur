@@ -1,4 +1,4 @@
-[OpenImgur](http://kennyc1012.github.io/OpenImgur/)
+[OpenImgur](https://kennyc1012.github.io/OpenImgur/)
 =========
 
 Open source Imgur Android App

@@ -24,7 +24,6 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -71,6 +70,9 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
+                if (mTopic != null) {
+                    refresh();
+                }
                 return true;
 
             case R.id.filter:
@@ -159,12 +161,13 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
     private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
+            mRefreshLayout.setRefreshing(false);
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
                     List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
 
                     if (getAdapter() == null) {
-                        mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
+                        setUpGridTop();
                         setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(gallery)));
                     } else {
                         getAdapter().addItems(gallery);

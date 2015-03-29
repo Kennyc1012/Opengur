@@ -39,6 +39,7 @@
         <item name="md_dark_theme">false</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
         <item name="md_negative_color">@color/primary_text_default_material_light</item>
+        <item name="dropDownListViewStyle">@style/PopupMenuStyle.Light</item>
     </style>
 
     <style name="Theme_Blue" parent="@style/Theme_Light">
@@ -93,6 +94,12 @@
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
+    </style>
+
+    <style name="Theme_Black" parent="@style/Theme_Light">
+        <item name="colorPrimary">@color/theme_black_primary</item>
+        <item name="colorPrimaryDark">@color/theme_black_dark</item>
+        <item name="colorAccent">@color/theme_black_accent</item>
     </style>
 
     <!-- Override styles (Dark) -->
@@ -170,6 +177,12 @@
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
+    </style>
+
+    <style name="Theme_Black_Dark" parent="@style/Theme_Dark">
+        <item name="colorPrimary">@color/theme_black_primary</item>
+        <item name="colorPrimaryDark">@color/theme_black_dark</item>
+        <item name="colorAccent">@color/theme_black_accent</item>
     </style>
 
 </resources>

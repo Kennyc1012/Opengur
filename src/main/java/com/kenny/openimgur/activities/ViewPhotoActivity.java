@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import com.diegocarloslima.byakugallery.lib.TileBitmapDrawable;
 import com.diegocarloslima.byakugallery.lib.TouchImageView;
-import com.kenny.openimgur.DownloaderService;
+import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
@@ -240,7 +240,7 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
             if (TextUtils.isEmpty(photo.getRedditLink())) {
                 link += photo.getGalleryLink();
             } else {
-                link += String.format("http://reddit.com%s", photo.getRedditLink());
+                link += String.format("https://reddit.com%s", photo.getRedditLink());
             }
         } else {
             link = mUrl;

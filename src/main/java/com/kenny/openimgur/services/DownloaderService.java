@@ -1,4 +1,4 @@
-package com.kenny.openimgur;
+package com.kenny.openimgur.services;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.util.FileUtil;
@@ -34,6 +36,7 @@ public class DownloaderService extends IntentService {
     private static final String TAG = DownloaderService.class.getSimpleName();
 
     private static final String KEY_IMAGE = "image";
+
     private static final String KEY_IMAGE_URL = "image_url";
 
     public DownloaderService() {
@@ -80,11 +83,11 @@ public class DownloaderService extends IntentService {
             File photoFile = new File(file.getAbsolutePath(), photoFileName);
             LogUtil.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
             int notificationId = photoId.hashCode();
-            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification);
+            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setContentTitle(getString(R.string.image_downloading))
                     .setContentText(getString(R.string.downloading_msg)).setAutoCancel(true).setProgress(0, 0, true).setLargeIcon(icon)
-                    .setSmallIcon(R.drawable.ic_launcher);
+                    .setSmallIcon(Build.VERSION.SDK_INT < 21 ? R.drawable.ic_launcher : R.drawable.ic_i);
             manager.notify(notificationId, builder.build());
 
             boolean saved;
@@ -148,7 +151,6 @@ public class DownloaderService extends IntentService {
         } catch (Exception e) {
             LogUtil.e(TAG, "Exception while downloading image", e);
         }
-
     }
 
     public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {

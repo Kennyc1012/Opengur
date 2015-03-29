@@ -7,6 +7,7 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 
 import com.kenny.openimgur.R;
@@ -123,5 +124,23 @@ public class ViewUtils {
         AbsListView.LayoutParams lp = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         v.setLayoutParams(lp);
         return v;
+    }
+
+    /**
+     * Pass in a runnable to run before the view starts drawing. Good for running code after
+     * drawing has complete
+     * @param view
+     * @param runnable
+     */
+    public static void onPreDraw(final View view, final Runnable runnable) {
+        view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                view.getViewTreeObserver().removeOnPreDrawListener(this);
+                view.post(runnable);
+                //Dont draw this time, since we are posting the runnable
+                return false;
+            }
+        });
     }
 }

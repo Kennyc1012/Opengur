@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.OpenImgurApp;
 
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -197,7 +198,10 @@ public class FileUtil {
             return null;
         }
 
-        File tempFile = createFile(extension);
+        // Create files from a uri in our cache directory so they eventually get deleted
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File cacheDir = OpenImgurApp.getInstance().getImageLoader().getDiskCache().getDirectory();
+        File tempFile = new File(cacheDir,timeStamp+extension);
 
         if (tempFile != null && writeInputStreamToFile(in, tempFile)) {
             return tempFile;

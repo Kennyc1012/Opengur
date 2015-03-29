@@ -148,6 +148,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private static final String KEY_LOAD_COMMENTS = "autoLoadComments";
 
+    private static final String KEY_PANEL_EXPANDED = "panelExpanded";
+
     @InjectView(R.id.pager)
     ViewPager mViewPager;
 
@@ -529,6 +531,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
                 mMultiView.setViewState(MultiStateView.ViewState.ERROR);
             }
+
+            if (savedInstanceState.getBoolean(KEY_PANEL_EXPANDED, false)) getSupportActionBar().hide();
         }
     }
 
@@ -920,7 +924,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     return false;
                 }
 
-                String url = String.format("http://reddit.com%s", imgurObj.getRedditLink());
+                String url = String.format("https://reddit.com%s", imgurObj.getRedditLink());
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 if (browserIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(browserIntent);
@@ -971,7 +975,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         if (TextUtils.isEmpty(imgurBaseObject.getRedditLink())) {
             link += imgurBaseObject.getGalleryLink();
         } else {
-            link += String.format("http://reddit.com%s", imgurBaseObject.getRedditLink());
+            link += String.format("https://reddit.com%s", imgurBaseObject.getRedditLink());
         }
 
         shareIntent.putExtra(Intent.EXTRA_TEXT, link);
@@ -997,9 +1001,13 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
             outState.putParcelableArrayList(KEY_OBJECTS, mPagerAdapter.retainItems());
         }
+
+        if (mSlidingPane != null) outState.putBoolean(KEY_PANEL_EXPANDED, mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
     private void onListItemClick(int position) {
+        if (mCommentAdapter == null) return;
+
         if (position >= 0) {
             boolean shouldClose = mCommentAdapter.setSelectedIndex(position);
 
