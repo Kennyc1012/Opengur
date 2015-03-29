@@ -9,7 +9,7 @@
     tools:layout_height="120dp">
 
     <TextView
-        android:id="@+id/score"
+        android:id="@+id/like_score"
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
         android:layout_marginLeft="@dimen/content_padding"

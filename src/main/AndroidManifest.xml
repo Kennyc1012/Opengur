@@ -231,8 +231,11 @@
 
         <service android:name=".DownloaderService" />
 
-        <meta-data
+        <!--<meta-data
             android:name="com.crashlytics.ApiKey"
+            android:value="${fabric_key}" />-->
+        <meta-data
+            android:name="io.fabric.ApiKey"
             android:value="${fabric_key}" />
     </application>
 

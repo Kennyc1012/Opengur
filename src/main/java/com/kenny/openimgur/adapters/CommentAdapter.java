@@ -153,7 +153,7 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
         @InjectView(R.id.comment)
         TextView comment;
 
-        @InjectView(R.id.score)
+        @InjectView(R.id.like_score)
         TextView score;
 
         @InjectView(R.id.replies)

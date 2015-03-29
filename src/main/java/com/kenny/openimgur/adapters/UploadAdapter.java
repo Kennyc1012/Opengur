@@ -49,7 +49,7 @@ public class UploadAdapter extends ImgurBaseAdapter<UploadedPhoto> {
         @InjectView(R.id.image)
         ImageView image;
 
-        @InjectView(R.id.score)
+        @InjectView(R.id.like_score)
         TextView score;
 
         public UploadHolder(View view) {
