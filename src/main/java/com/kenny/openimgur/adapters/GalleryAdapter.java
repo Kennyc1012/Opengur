@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
@@ -15,6 +16,7 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.ScoreUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -129,30 +131,37 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
             displayImage(holder.image, url);
         }
 
-        if (obj.getUpVotes() != Integer.MIN_VALUE) {
-            holder.score.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.score.getContext().getString(R.string.points));
-            holder.score.setVisibility(View.VISIBLE);
+        if(obj.getUpVotes() != Integer.MIN_VALUE) {
+            holder.content.setVisibility(View.VISIBLE);
+            holder.likeScore.setText(ScoreUtil.getCounterScore(obj.getUpVotes()));
+            holder.dislikeScore.setText(ScoreUtil.getCounterScore(obj.getDownVotes()));
         } else {
-            holder.score.setVisibility(View.GONE);
+            holder.content.setVisibility(View.GONE);
         }
 
         if (obj.isFavorited() || ImgurBaseObject.VOTE_UP.equals(obj.getVote())) {
-            holder.score.setTextColor(mUpvoteColor);
+            holder.likeScore.setTextColor(mUpvoteColor);
         } else if (ImgurBaseObject.VOTE_DOWN.equals(obj.getVote())) {
-            holder.score.setTextColor(mDownVoteColor);
+            holder.likeScore.setTextColor(mDownVoteColor);
         } else {
-            holder.score.setTextColor(Color.WHITE);
+            holder.likeScore.setTextColor(Color.WHITE);
         }
 
         return convertView;
     }
 
     static class GalleryHolder extends ImgurViewHolder {
+        @InjectView(R.id.score_content)
+        LinearLayout content;
+
         @InjectView(R.id.image)
         ImageView image;
 
-        @InjectView(R.id.score)
-        TextView score;
+        @InjectView(R.id.like_score)
+        TextView likeScore;
+
+        @InjectView(R.id.dislike_score)
+        TextView dislikeScore;
 
         public GalleryHolder(View view) {
             super(view);
