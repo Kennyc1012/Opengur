@@ -367,8 +367,10 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         ViewUtils.onPreDraw(headerView, new Runnable() {
             @Override
             public void run() {
-                mRefreshLayout.setProgressViewOffset(false, headerView.getBottom(),
-                        headerView.getBottom() + getResources().getDimensionPixelSize(R.dimen.refresh_pull_amount));
+                if (isAdded()) {
+                    mRefreshLayout.setProgressViewOffset(false, headerView.getBottom(),
+                            headerView.getBottom() + getResources().getDimensionPixelSize(R.dimen.refresh_pull_amount));
+                }
             }
         });
     }
