@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pref_cache_size_items">
+        <item>256MB</item>
+        <item>512MB</item>
+        <item>1GB</item>
+        <item>2GB</item>
+        <item>Unlimited</item>
+    </string-array>
+
+    <string-array name="nav_items">
+        <item>Perfil</item>
+        <item>Galeria</item>
+        <item>Temas de Discusión</item>
+        <item>Generador de Meme</item>
+        <item>Subreddit</item>
+        <item>Aleatorio</item>
+        <item>Publicaciones</item>
+        <item>Divider</item>
+        <item>Opciones</item>
+        <item>Comentarios</item>
+    </string-array>
+
+    <string-array name="pref_themes_items">
+        <item>Negro</item>
+        <item>Azul</item>
+        <item>Cyan</item>
+        <item>Verde</item>
+        <item>Gris</item>
+        <item>Naranja</item>
+        <item>Rosado</item>
+        <item>Morado</item>
+        <item>Rojo</item>
+        <item>VerdeAzulado</item>
+    </string-array>
+
+    <string-array name="pref_cache_loc_items">
+        <item>Partición InternaInternal</item>
+        <item>Partición Externa</item>
+    </string-array>
+
+    <string-array name="profile_tabs">
+        <item>Info</item>
+        <item>Publicaciones</item>
+        <item>Favoritos</item>
+        <item>Comentarios</item>
+        <item>Subidas</item>
+        <item>Mensajes</item>
+    </string-array>
+
+    <string-array name="uploaded_photos_options">
+        <item>Compartir Link</item>
+        <item>Copiar Link</item>
+        <item>Eliminar Foto</item>
+    </string-array>
+
+    <string-array name="comments_sort">
+        <item>Nuevos</item>
+        <item>Viejos</item>
+        <item>Los Mejores</item>
+        <item>El Peor</item>
+    </string-array>
+
+    <string-array name="meme_font_sizes">
+        <item>Pequeño</item>
+        <item>Mediano</item>
+        <item>Grande</item>
+        <item>Extra Grande</item>
+    </string-array>
+
+    <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
+    <string-array name="pref_cache_size_keys" translatable="false">
+        <item>256</item>
+        <item>512</item>
+        <item>1024</item>
+        <item>2048</item>
+        <item>Ilimitado</item>
+    </string-array>
+
+    <string-array name="pref_theme_keys" translatable="false">
+        <item>negro</item>
+        <item>azul</item>
+        <item>cyan</item>
+        <item>verde</item>
+        <item>gris</item>
+        <item>naranja</item>
+        <item>rosado</item>
+        <item>morado</item>
+        <item>rojo</item>
+        <item>verdeazulado</item>
+    </string-array>
+
+    <string-array name="pref_cache_loc_keys">
+        <item>interno</item>
+        <item>externo</item>
+    </string-array>
+
+</resources>
