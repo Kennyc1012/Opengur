@@ -29,8 +29,7 @@ public class GallerySearchFragment extends GalleryFragment {
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String text) {
-                setQuery(text);
-                return true;
+                return setQuery(text);
             }
 
             @Override
@@ -59,11 +58,14 @@ public class GallerySearchFragment extends GalleryFragment {
 
     @Override
     protected String getGalleryUrl() {
+        // Format spaces to use HTML encoded values
+        String formattedQuery = mQuery.replace(" ", "%20");
+
         if (mSort == ImgurFilters.GallerySort.HIGHEST_SCORING) {
-            return String.format(Endpoints.GALLERY_SEARCH_TOP.getUrl(), mSort.getSort(), mTimeSort.getSort(), mCurrentPage, mQuery);
+            return String.format(Endpoints.GALLERY_SEARCH_TOP.getUrl(), mSort.getSort(), mTimeSort.getSort(), mCurrentPage, formattedQuery);
         }
 
-        return String.format(Endpoints.GALLERY_SEARCH.getUrl(), mSort.getSort(), mCurrentPage, mQuery);
+        return String.format(Endpoints.GALLERY_SEARCH.getUrl(), mSort.getSort(), mCurrentPage, formattedQuery);
     }
 
     @Override
@@ -84,15 +86,25 @@ public class GallerySearchFragment extends GalleryFragment {
         if (savedInstanceState != null) mQuery = savedInstanceState.getString(KEY_QUERY, null);
     }
 
-    public void setQuery(String query) {
+    public boolean setQuery(String query) {
         if (!TextUtils.isEmpty(query) && !query.equalsIgnoreCase(mQuery)) {
             LogUtil.v(TAG, "setQuery :" + query);
             mQuery = query;
             if (mListener != null) mListener.onUpdateActionBarTitle(mQuery);
-            if (getAdapter() != null) getAdapter().clear();
             if (mSearchMenuItem != null) mSearchMenuItem.collapseActionView();
-            mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
-            fetchGallery();
+            // Refresh will reset all the needed data and call fetchGallery
+            refresh();
+            return true;
+        }
+
+        return false;
+    }
+
+    public void onEmptyResults() {
+        if (getAdapter() == null || getAdapter().isEmpty()) {
+            mMultiStateView.setErrorText(R.id.errorMessage, getString(R.string.reddit_empty, mQuery));
+            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+            if (mListener != null) mListener.onUpdateActionBar(true);
         }
     }
 }

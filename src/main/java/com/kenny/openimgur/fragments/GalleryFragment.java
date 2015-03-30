@@ -192,6 +192,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
             }
 
             mRefreshLayout.setRefreshing(false);
+
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
                     List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
@@ -203,10 +204,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                         getAdapter().addItems(gallery);
                     }
 
-                    if (mListener != null) {
-                        mListener.onLoadingComplete();
-                    }
-
+                    if (mListener != null) mListener.onLoadingComplete();
                     mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
 
                     // Due to MultiStateView setting the views visibility to GONE, the list will not reset to the top
@@ -242,11 +240,11 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                     break;
 
                 case MESSAGE_EMPTY_RESULT:
-                    // TODO
+                    // We only care about empty messages when searching
+                    if (GalleryFragment.this instanceof GallerySearchFragment) ((GallerySearchFragment) GalleryFragment.this).onEmptyResults();
                     break;
 
                 default:
-                    mIsLoading = false;
                     super.handleMessage(msg);
                     break;
             }
