@@ -1,6 +1,7 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -71,7 +72,7 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
         holder.score.setBackgroundResource(comment.getPoints() >= 0 ? R.drawable.positive_circle : R.drawable.negative_circle);
         holder.replies.setVisibility(comment.getReplyCount() > 0 ? View.VISIBLE : View.GONE);
 
-        convertView.setBackgroundColor(position == mSelectedIndex ?
+        holder.card.setCardBackgroundColor(position == mSelectedIndex ?
                 convertView.getResources().getColor(R.color.comment_bg_selected) :
                 convertView.getResources().getColor(android.R.color.transparent));
 
@@ -112,7 +113,7 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
             spanLength += 3;
         }
 
-        sb.append(" : ").append(date);
+        sb.append(": ").append(date);
         Spannable span = new SpannableString(sb.toString());
 
         int green = context.getResources().getColor(R.color.notoriety_positive);
@@ -147,6 +148,10 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
     }
 
     static class CommentViewHolder extends ImgurViewHolder {
+
+        @InjectView(R.id.card)
+        CardView card;
+
         @InjectView(R.id.author)
         TextView author;
 
