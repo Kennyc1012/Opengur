@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Generic -->
+    <string name="app_name">Open Imgur</string>
+    <string name="points">puntos</string>
+    <string name="action_settings">opcioes</string>
+    <string name="random">Aleatorio</string>
+    <string name="refresh">Actualizar</string>
+    <string name="clear_cache">Limpiar Cache</string>
+    <string name="clear_cache_message">Estas segur de eliminar el cache de imágenes?</string>
+    <string name="yes">Si</string>
+    <string name="cancel">Cancelar</string>
+    <string name="download">Descargar</string>
+    <string name="image_downloading">Descargando Imagen</string>
+    <string name="downloading_msg">Dscaga en progreso</string>
+    <string name="download_complete">Descarga completa</string>
+    <string name="tap_to_view">Toca para ver</string>
+    <string name="share">Compartir</string>
+    <string name="dismiss">Descartar</string>
+    <string name="empty_comment_message">No tienes comentarios publicados aun.</string>
+    <string name="cant_launch_intent">Tu dispositio no puede abrir este link</string>
+    <string name="loading_image_error">Imposible cargar imagen.</string>
+    <string name="moments_ago">Hace un momento</string>
+    <string name="profile">Perfil</string>
+    <string name="favorites">Favoritos</string>
+    <string name="favorite">Favorito</string>
+    <string name="submissions">Publicaciones</string>
+    <string name="upload">Publicar</string>
+    <string name="link_upload_desc">Ingresa una URL para publicar desde la web</string>
+    <string name="upload_desc">Descripcion</string>
+    <string name="upload_title">Titulo</string>
+    <string name="logout">Desloguearse</string>
+    <string name="logout_confirm">Estas seguro de querer desloguearte?</string>
+    <string name="user_not_logged_in">Necesitas loguearte para completar esta funcion</string>
+    <string name="invalid_url">Parece que la url no es una imagen</string>
+    <string name="comment_hint">Ingresa tu comentario (Max 140)</string>
+    <string name="comment">Comentario</string>
+    <string name="post">Post</string>
+    <string name="up_vote">Up Vote</string>
+    <string name="down_vote">Down Vote</string>
+    <string name="reply">Contestar</string>
+    <string name="view_user">Ver el perfil del usuario</string>
+    <string name="enter_sub_reddit">Ingresa Subreddit</string>
+    <string name="subreddit_desc">Ingresaun subreddit para ver las imagenes</string>
+    <string name="reddit_empty">No se encontro nigun resultado %s</string>
+    <string name="view_reddit">Ver en Reddit</string>
+    <string name="accept">Aceptar</string>
+    <string name="previous_comments">Comentarios anteriores</string>
+    <string name="profile_no_favorites">%s no tienes galerias favoritas</string>
+    <string name="profile_no_submissions">%s no haz compartido imagenes en Imgur</string>
+    <string name="profile_no_comments">%s no haz publicado comentarios en Imgur</string>
+    <string name="profile_no_convos">No tienes conversaciones activas</string>
+    <string name="sort_by">Ordenar por</string>
+    <string name="developer">Desarrollador</string>
+    <string name="version">Versión</string>
+    <string name="open_src_licenses">Licencias de código abierto</string>
+    <string name="posting_comment">Publicando comentario...</string>
+    <string name="comment_post_successful">Comentario publicado</string>
+    <string name="comment_post_unsuccessful">No se pudo publicar tu comentario. porfavor intentalo de nuevo</string>
+    <string name="vote_cast">Voto realizado</string>
+    <string name="one_moment">Un momento...</string>
+    <string name="uploading">Subiendo, un momento...</string>
+    <string name="decoding_image">Decodificando Imagen, un momento...</string>
+    <string name="add_to_gallery">Agregar a Galeria</string>
+    <string name="gallery_no_user">Necesitar estar logueado para subir imagenes a la galeria.</string>
+    <string name="not_logged_in">Aun no estas logueado</string>
+    <string name="not_logged_in_msg">Estas seguro de querer publicar esta imagen sin loguearte primero?</string>
+    <string name="copy_link">Copiar link</string>
+    <string name="open_source">Código Abierto</string>
+    <string name="view_source">Ver Código</string>
+    <string name="upload_success">Publicación exitosa. La imagen podra ser vista en %s</string>
+    <string name="upload_complete">Publicación Completa</string>
+    <string name="view_licenses">Ver Licencias de Código Abierto</string>
+    <string name="comments_off">Los comentarios no se puedieron cargar</string>
+    <string name="load_comments">Comentarios cargados</string>
+    <string name="retry">Intentar</string>
+    <string name="empty_upload">Esta foto no puede ser seleccionada para publicar</string>
+    <string name="gallery_upload_no_title">La publicación de la Galeria necesita tener un titulo</string>
+    <string name="gallery">Galeria</string>
+    <string name="nav_open">Abierto</string>
+    <string name="nav_close">Cerrado</string>
+    <string name="subreddit">Subreddit</string>
+    <string name="login">Loguearse</string>
+    <string name="send_feedback">Enviar Sugerencias</string>
+    <string name="search">Buscar</string>
+    <string name="section">Sección</string>
+    <string name="date_range">Rango de Fecha</string>
+    <string name="options">Opciones</string>
+    <string name="login_msg">Toca para loguearte</string>
+    <string name="dont_ask_again">No preguntar de nuevo.</string>
+    <string name="save">Guardar</string>
+    <string name="close">Cerrar</string>
+    <string name="exit">Salir</string>
+    <string name="exit_confirm">Estas seguro que quieres salir de Open Imgur?</string>
+
+    <!-- Errors -->
+    <string name="error_generic">Un error inesperado a ocurrido, porfavor intenta de nuevo.</string>
+    <string name="error_401">Necesitas estar logueado para realizar esta acción. Porfavor intenta de nuevo.</string>
+    <string name="error_403">No tienes suficientes permisos para realizar esta acción. Necesitas loguearte de nuevo.</string>
+    <string name="error_429">El limite de Open Imgur ha llegado a su limite. No podemos hacer nada, porfavor revisa mas tarde.</string>
+    <string name="error_503">Imgur sobre paso su limite. Boo…</string>
+    <string name="error_600">Imposible connectarse a Imgur. Revisa tu conexión e intenta de nuevo.</string>
+    <string name="error_800">La API ha enviado una respuesta vacía debido a una Excepción de JSON.</string>
+    <string name="download_error">Un error ha ocurrido en la descarga.</string>
+    <string name="error">Error</string>
+    <string name="upload_camera_error">Un error ha ocurrido mientras capturamos tu foto. Porfavor intenta de nuevo.</string>
+    <string name="upload_gallery_error">Un error ha ocurrido mientras abriamos la imagen seleccionada. Porfavor intenta de nuevo.</string>
+    <string name="upload_decode_error">Un error ha ocurrido mientras se decodificaba la imagen. Porfavor intenta de nuevo.</string>
+
+    <!-- Notoriety -->
+    <!-- don't need change to spanish because is a title-->
+    <string name="notoriety_forever_alone">Forever Alone</string>
+    <string name="notoriety_neutral">Neutral</string>
+    <string name="notoriety_liked">Liked</string>
+    <string name="notoriety_accepted">Accepted</string>
+    <string name="notoriety_glorious">Glorious</string>
+    <string name="notoriety_renowned">Renowned</string>
+    <string name="notoriety_idolized">Idolized</string>
+    <string name="notoriety_trusted">Trusted</string>
+
+    <!-- Filters -->
+    <string name="filter">Filtros</string>
+    <string name="filter_popular">Popularidad</string>
+    <string name="filter_time">Lo mas nuevo</string>
+    <string name="filter_rising">Prometedor</string>
+    <string name="filter_top">Top</string>
+    <string name="filter_highest_scoring">Mayor puntuación</string>
+    <string name="filter_viral">Viral</string>
+    <string name="filter_user_sub">Publicado por el Usuario</string>
+    <string name="reddit_top_filter_day">Día</string>
+    <string name="reddit_top_filter_week">Semana</string>
+    <string name="reddit_top_filter_month">Mes</string>
+    <string name="reddit_top_filter_year">año</string>
+    <string name="reddit_top_filter_all">Todos</string>
+    <string name="filter_show_viral">Mostrar imagenes virales</string>
+    <string name="gallery_filter">Filtro de Galeria</string>
+    <string name="reddit_filter">Filtro Subreddit</string>
+    <string name="topics_filter">Filtrar Temas</string>
+    <string name="sort_new">Nuevo</string>
+    <string name="sort_best">El Mejor</string>
+    <string name="sort_top">Top</string>
+
+    <!-- Uploaded Photos-->
+    <string name="uploaded_photos_empty">No haz publicado ninguna foto desde este dispositivo.</string>
+    <string name="uploaded_photos_title">Publicaciones</string>
+    <string name="uploaded_remove_message">Estas seguro de eliminar esta foto?</string>
+    <string name="uploaded_remove_imgur">Eliminar de Imgur</string>
+
+    <!-- Convos -->
+    <string name="convo_message_hint">Ingresa tu mensaje</string>
+    <string name="convo_check_for_messages">Revisar por mensajes</string>
+    <string name="convo_block">Bloquear</string>
+    <string name="convo_report">Reportar</string>
+    <string name="convo_message_sending">Enviando&#8230;</string>
+    <string name="convo_message_failed">Error al enviar el mensaje</string>
+    <string name="convo_delete">Eliminar Conversación</string>
+    <string name="convo_delete_message">Estas seguro de eliminar esta conversación?</string>
+    <string name="convo_report_title">Reportar a %s</string>
+    <string name="convo_block_title">Bloquear a %s</string>
+    <string name="convo_report_message">Estas seguro de querer reportar a %s?</string>
+    <string name="convo_block_message">Estas seguro de querer bloquear a %s?</string>
+    <string name="convo_user_blocked">%s ha sido bloqueado</string>
+    <string name="convo_user_reported">%s ha sido reportado</string>
+
+    <!-- Profile -->
+    <string name="profile_no_uploads">No tienes publicada ninguna imagen</string>
+    <string name="profile_delete_image">Estas seguro que quieres eliminar esta imagen?</string>
+    <string name="profile_delete_success">Imagen borrada</string>
+    <string name="profile_delete_failure">Imposible borrar imagen, porfavor intenta de nuevo.</string>
+    <string name="profile_send_message">Mensaje enviado.</string>
+    <string name="profile_rep">%d Reputación</string>
+    <string name="profile_date">Desde %s</string>
+    <string name="profile_bio_empty">%s no tiene una biografia publicada.</string>
+
+    <!-- Preferences -->
+    <string name="pref_cache_title">Cache</string>
+    <string name="pref_current_cache_size">Tamaño de CacheCurrent Cache Size</string>
+    <string name="pref_comment_title">Cargar Comentarios</string>
+    <string name="pref_comments_on">Cargar Comentarios Automaticamente</string>
+    <string name="pref_comments_off">No Cargar Comentarios Automaticamente</string>
+    <string name="pref_category_title">Tema</string>
+    <string name="pref_theme_title">Color Tema de Aplicación</string>
+    <string name="pref_adb_title">Reportes ADB</string>
+    <string name="pref_adb_disabled">Desactivar reportes ADB</string>
+    <string name="pref_adb_enabled">Activar reportes ADB </string>
+    <string name="pref_cache_loc_title">Localización de Cache </string>
+    <string name="pref_cache_size_title">Maximo tamaño de Cache</string>
+    <string name="pref_nsfw_title">Imagenes NSFW</string>
+    <string name="pref_nsfw_on">Permitir imagenes NSFW</string>
+    <string name="pref_nsfw_off">No Permitir imagenes NSFW</string>
+    <string name="pref_nsfw_thumb_title">NSFW Thumbnail</string>
+    <string name="pref_nsfw_thumb_on">Permitir NSFW thumbnails</string>
+    <string name="pref_nsfw_thumb_off">No permitir NSFW thumbnails</string>
+    <string name="pref_crashlytics_title">Estadisticas de uso anonimo</string>
+    <string name="pref_crashlytics_on">Las estadisticas de uso anonimo seran enviadas</string>
+    <string name="pref_crashlytics_off">Las estadisticas de uso anonimo no seran enviadas</string>
+    <string name="pref_dark_theme_title">Tema oscuro</string>
+    <string name="pref_dark_theme_on">Usar tema oscuro</string>
+    <string name="pref_dark_theme_off">No usar tema oscuro</string>
+    <string name="pref_reddit_title">Historial de busqueda Subreddit</string>
+    <string name="pref_reddit_desc">Eliminar historial de busqueda de Subreddit</string>
+    <string name="pref_reddit_deleted">Historial de Subreddit eliminado</string>
+    <string name="pref_exit_title">Confirmar salida de aplicación</string>
+    <string name="pref_exit_on">Preguntar antes de cerrar Open Imgur</string>
+    <string name="pref_exit_off">No preguntar antes de cerrar Open Imgur</string>
+
+    <!-- Topics -->
+    <string name="topic">Tema</string>
+    <string name="topics">Temas</string>
+    <string name="topics_empty_message">Seleccionar un tema de conversación antes de comenzar la busqueda.</string>
+    <string name="topics_empty_result">No se encontro ningun resultado. Selecciona un diferente tema e intenta de nuevo.</string>
+
+    <!-- Meme Generator-->
+    <string name="meme_gen">Generador de Memes</string>
+    <string name="meme_top_text">TOCA EL TEXTO SUPERIOR PARA CAMBIAR</string>
+    <string name="meme_bottom_text">Toca EL TEXTO INFERIOR PARA CAMBIAR</string>
+    <string name="meme_loading">Cargando Meme, un momento&#8230;</string>
+    <string name="meme_font_size">Cambiar tamaño de letra</string>
+    <string name="meme_input_title">Ingresar titulo</string>
+    <string name="meme_saving">Guardando Meme, un momento&#8230;</string>
+    <string name="meme_failed">Imposible guardar meme, porfavor intenta de nuevo.</string>
+    <string name="meme_success">Meme Guardado</string>
+
+</resources>
