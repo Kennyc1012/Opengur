@@ -9,9 +9,10 @@ import com.kenny.openimgur.R;
  */
 public class ImgurFilters {
 
-    public static enum GallerySection {
+    public enum GallerySection {
         HOT("hot"),
         USER("user");
+
         private final String mSection;
 
         private GallerySection(String s) {
@@ -29,11 +30,11 @@ public class ImgurFilters {
          * @return
          */
         public static GallerySection getSectionFromString(String section) {
-            if (HOT.getSection().equals(section)) {
-                return HOT;
+            if (USER.getSection().equals(section)) {
+                return USER;
             }
 
-            return USER;
+            return HOT;
         }
 
         /**
@@ -55,7 +56,7 @@ public class ImgurFilters {
         }
     }
 
-    public static enum GallerySort {
+    public enum GallerySort {
         TIME("time"),
         RISING("rising"),
         VIRAL("viral"),
@@ -90,7 +91,7 @@ public class ImgurFilters {
         }
     }
 
-    public static enum RedditSort {
+    public enum RedditSort {
         TIME("time"),
         TOP("top");
 
@@ -115,7 +116,7 @@ public class ImgurFilters {
         }
     }
 
-    public static enum TimeSort {
+    public enum TimeSort {
         DAY("day"),
         WEEK("week"),
         MONTH("month"),
@@ -143,7 +144,7 @@ public class ImgurFilters {
         }
     }
 
-    public static enum CommentSort {
+    public enum CommentSort {
         BEST("best"),
         WORST("worst"),
         NEWEST("newest"),
