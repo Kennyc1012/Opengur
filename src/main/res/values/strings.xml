@@ -3,7 +3,7 @@
 
     <!-- Generic -->
     <string name="app_name">Open Imgur</string>
-    <string name="points">points</string>
+    <string name="points">Points</string>
     <string name="action_settings">Settings</string>
     <string name="random">Random</string>
     <string name="refresh">Refresh</string>
