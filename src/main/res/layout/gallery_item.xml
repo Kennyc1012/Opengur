@@ -13,18 +13,68 @@
         android:id="@+id/image"
         tools:src="@drawable/place_holder" />
 
-    <TextView
-        android:id="@+id/score"
+    <LinearLayout
+        android:id="@+id/score_content"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:textColor="#FFFFFF"
-        android:background="#80000000"
-        android:textSize="14sp"
+        android:layout_height="@dimen/minimum_size"
         android:layout_gravity="bottom"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:gravity="center_vertical"
-        android:textAppearance="@style/TextAppearance.Regular"
-        tools:text="160 Points" />
+        android:background="#80000000"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_marginLeft="4dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:src="@drawable/ic_like"/>
+
+            <TextView
+                android:id="@+id/like_score"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:textColor="#FFFFFF"
+                android:gravity="center_vertical"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:textAppearance="@style/TextAppearance.Regular"
+                tools:text="160 k" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginRight="4dp">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:src="@drawable/ic_dislike"/>
+
+            <TextView
+                android:id="@+id/dislike_score"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:textColor="#FFFFFF"
+                android:gravity="center_vertical"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:textAppearance="@style/TextAppearance.Regular"
+                tools:text="160 k" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </FrameLayout>
