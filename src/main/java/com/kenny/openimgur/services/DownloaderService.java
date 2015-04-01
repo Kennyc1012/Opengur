@@ -119,7 +119,7 @@ public class DownloaderService extends IntentService {
                 shareIntent.setType(photoType);
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), 0, shareIntent, PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), 0, Intent.createChooser(shareIntent, getString(R.string.share)), PendingIntent.FLAG_ONE_SHOT);
 
                 Intent viewIntent = new Intent(Intent.ACTION_VIEW);
                 viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

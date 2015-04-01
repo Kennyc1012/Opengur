@@ -130,7 +130,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
 
-            return NEW;
+            return BEST;
         }
     }
 
@@ -474,7 +474,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (savedInstanceState == null) {
-            mCommentSort = CommentSort.getSortFromString(app.getPreferences().getString(KEY_SORT, CommentSort.NEW.getSort()));
+            mCommentSort = CommentSort.getSortFromString(app.getPreferences().getString(KEY_SORT, null));
             mLoadComments = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(KEY_LOAD_COMMENTS, true);
 
             // Check if the activity was opened externally by a link click
