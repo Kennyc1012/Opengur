@@ -11,7 +11,7 @@
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
         android:id="@+id/image"
-        tools:src="@drawable/place_holder" />
+        tools:src="@drawable/ic_launcher" />
 
     <TextView
         android:id="@+id/score"
