@@ -1,5 +1,16 @@
 #Open Imgur Changelog
 
+<b>2.5.1</b>
+- Crash fix for P2R [#68](https://github.com/Kennyc1012/OpenImgur/issues/68), thanks [Jawnnypoo](https://github.com/Jawnnypoo)
+- Set defeaults to the same as Imgur [#70](https://github.com/Kennyc1012/OpenImgur/issues/70)
+- Remove the options from the share Intent 
+- Remove default loading image
+- Use AppCompat theme for comment dialog, thanks [Jawnnypoo](https://github.com/Jawnnypoo)
+- Update fabric to 2.2.2
+- Update Gif Drawable to 1.1.3
+- Update Material Dialogs to 0.6.7.0
+- Update Bottom Sheet to 1.0
+
 <b>2.5</b>
 - Pull to refresh added to grid fragments, thanks [Jawnnypoo](https://github.com/Jawnnypoo)
 - Background uploads added
