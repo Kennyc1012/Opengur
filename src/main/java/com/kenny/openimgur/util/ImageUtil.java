@@ -5,10 +5,12 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.os.Environment;
@@ -19,7 +21,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
@@ -196,7 +197,7 @@ public class ImageUtil {
      */
     public static DisplayImageOptions.Builder getDisplayOptionsForView() {
         return getDefaultDisplayOptions()
-                .showImageOnLoading(R.drawable.place_holder);
+                .showImageOnLoading(new ColorDrawable(Color.TRANSPARENT));
     }
 
     public static DisplayImageOptions.Builder getDisplayOptionsForComments() {

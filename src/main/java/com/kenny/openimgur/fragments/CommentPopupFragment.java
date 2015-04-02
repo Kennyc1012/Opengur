@@ -87,7 +87,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         int style = OpenImgurApp.getInstance(getActivity()).getImgurTheme().isDarkTheme ?
-                android.R.style.Theme_DeviceDefault_Dialog : android.R.style.Theme_DeviceDefault_Light_Dialog;
+                R.style.Theme_AppCompat_Dialog : R.style.Theme_AppCompat_Light_Dialog;
         setStyle(DialogFragment.STYLE_NO_TITLE, style);
     }
 
