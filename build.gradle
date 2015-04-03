@@ -71,12 +71,12 @@ dependencies {
     compile 'com.github.kennyc1012:snackbar:1.1-SNAPSHOT:api11Release@aar'
     compile 'com.squareup.okhttp:okhttp:2.3.0'
     compile 'com.jakewharton:butterknife:6.1.0'
-    compile 'com.cocosw:bottomsheet:1.0@aar'
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'com.afollestad:material-dialogs:0.6.7.0'
     compile(name: 'photo_zoom', ext: 'aar')
     compile(name: 'sliding_panel', ext: 'aar')
+    compile(name: 'bottom-sheet-1.0', ext: 'aar')
     compile project(':libraries:EventBus')
     compile('com.crashlytics.sdk.android:crashlytics:2.2.2@aar') {
         transitive = true;

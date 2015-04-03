@@ -1,7 +1,6 @@
 package com.kenny.openimgur.activities;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
+import com.cocosw.bottomsheet.BottomSheetListener;
 import com.diegocarloslima.byakugallery.lib.TileBitmapDrawable;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurBaseObject;
@@ -191,10 +191,16 @@ public class MemeActivity extends BaseActivity {
             new BottomSheet.Builder(this, R.style.BottomSheet_StyleDialog)
                     .title(R.string.meme_success)
                     .sheet(R.menu.meme_saved)
-                    .listener(new DialogInterface.OnClickListener() {
+                    .listener(new BottomSheetListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
+                        public void onSheetDismissed(@Nullable Object o) {
+                            finish();
+                        }
+
+                        @Override
+                        public void onItemClicked(int id, @Nullable Object o) {
+                            switch (id) {
+
                                 case R.id.share:
                                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                                     shareIntent.setType(ImgurPhoto.IMAGE_TYPE_JPEG);
@@ -211,12 +217,12 @@ public class MemeActivity extends BaseActivity {
                                     break;
                             }
                         }
-                    }).setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    finish();
-                }
-            }).show();
+
+                        @Override
+                        public void onSheetShown(@Nullable Object o) {
+
+                        }
+                    }).show();
         } else {
             SnackBar.show(this, R.string.meme_failed);
         }
@@ -247,6 +253,7 @@ public class MemeActivity extends BaseActivity {
 
     private static class SaveMemeTask extends AsyncTask<MemeActivity, Void, File> {
         private static final String TAG = "SaveMemeTask";
+
         WeakReference<MemeActivity> mActivity;
 
         @Override
