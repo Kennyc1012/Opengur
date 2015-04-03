@@ -233,8 +233,10 @@
 
         <service android:name=".services.DownloaderService" />
         <service android:name=".services.UploadService" />
-        <service android:name=".widget.GalleryWidgetService"/>
-        
+        <service android:name=".widget.GalleryWidgetRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" />
+
         <receiver android:name=".services.NotificationReceiver" />
 
         <receiver android:name=".widget.GalleryWidgetProvider" android:label="@string/app_name">
