@@ -16,6 +16,8 @@ import com.kenny.openimgur.R;
  */
 public class GalleryWidgetProvider extends AppWidgetProvider {
 
+    public static final String ACTION_NEXT = "action_next";
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int widgetId : appWidgetIds) {
@@ -29,6 +31,8 @@ public class GalleryWidgetProvider extends AppWidgetProvider {
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
             rv.setRemoteAdapter(R.id.widget_list, intent);
+
+
 
             // The empty view is displayed when the collection has no items. It should be a sibling
             // of the collection view.
@@ -54,12 +58,17 @@ public class GalleryWidgetProvider extends AppWidgetProvider {
     //TODO onclick of image
     @Override
     public void onReceive(Context context, Intent intent) {
-        AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-        if (intent.getAction().equals("ASDF")) {
-            int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    AppWidgetManager.INVALID_APPWIDGET_ID);
-            //int viewIndex = intent.getIntExtra(EXTRA_ITEM, 0);
-            //Toast.makeText(context, "Touched view " + viewIndex, Toast.LENGTH_SHORT).show();
+        switch (intent.getAction()) {
+            case ACTION_NEXT:
+                RemoteViews rv = new RemoteViews(context.getPackageName(),
+                        R.layout.widget_layout);
+
+                rv.showNext(R.id.widget_list);
+
+                AppWidgetManager.getInstance(context).partiallyUpdateAppWidget(
+                        intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                                AppWidgetManager.INVALID_APPWIDGET_ID), rv);
+                break;
         }
         super.onReceive(context, intent);
     }

@@ -1,5 +1,6 @@
 package com.kenny.openimgur.widget;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -78,6 +79,15 @@ public class GalleryWidgetRemoteViewsFactory implements RemoteViewsService.Remot
         fillInIntent.putExtras(extras);
         updateViews.setOnClickFillInIntent(R.id.widget_image, fillInIntent);
 
+        // Bind the click intent for the next button on the widget
+        final Intent nextIntent = new Intent(mApplication,
+                GalleryWidgetProvider.class);
+        nextIntent.setAction(GalleryWidgetProvider.ACTION_NEXT);
+        nextIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+        final PendingIntent nextPendingIntent = PendingIntent
+                .getBroadcast(mApplication, 0, nextIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+        updateViews.setOnClickPendingIntent(R.id.widget_next, nextPendingIntent);
         // You can do heaving lifting in here, synchronously. For example, if you need to
         // process an image, fetch something from the network, etc., it is ok to do it here,
         // synchronously. A loading view will show up in lieu of the actual contents in the
