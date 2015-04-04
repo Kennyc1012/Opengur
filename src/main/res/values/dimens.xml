@@ -26,7 +26,6 @@
     <dimen name="keyline_margin">72dp</dimen>
     <dimen name="content_padding">16dp</dimen>
     <dimen name="drawer_max_width">320dp</dimen>
-    <dimen name="toolbar_with_section_height">128dp</dimen>
     <dimen name="avatar_size">48dp</dimen>
     <dimen name="tab_bar_height">48dp</dimen>
 

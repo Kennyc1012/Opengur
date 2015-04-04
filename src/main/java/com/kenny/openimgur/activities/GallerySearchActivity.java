@@ -1,5 +1,7 @@
 package com.kenny.openimgur.activities;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.widget.RelativeLayout;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.FragmentListener;
+import com.kenny.openimgur.fragments.GallerySearchFilterFragment;
 import com.kenny.openimgur.fragments.GallerySearchFragment;
 import com.kenny.openimgur.util.ViewUtils;
 
@@ -86,6 +89,24 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
 
     @Override
     public void onError(int errorCode) {
+        // NOOP
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().findFragmentByTag("filter") != null) {
+            FragmentManager fm = getFragmentManager();
+            Fragment fragment = fm.findFragmentByTag("filter");
+
+            if (fragment instanceof GallerySearchFilterFragment) {
+                ((GallerySearchFilterFragment) fragment).dismiss(null, null);
+            } else {
+                fm.beginTransaction().remove(fragment).commit();
+            }
+
+            return;
+        }
+
+        super.onBackPressed();
     }
 }

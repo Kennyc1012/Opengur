@@ -20,41 +20,6 @@
             app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha" />
 
         <TextView
-            android:id="@+id/sectionTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:text="@string/section"
-            android:textColor="?colorPrimaryDark"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_marginBottom="8dp" />
-
-        <RadioGroup
-            android:id="@+id/sectionGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin">
-
-            <RadioButton
-                android:id="@+id/userSubRB"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="@string/filter_user_sub"
-                android:layout_weight="1" />
-
-            <RadioButton
-                android:id="@+id/viralRB"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="@string/filter_viral"
-                android:layout_weight="1" />
-
-        </RadioGroup>
-
-        <TextView
             android:id="@+id/sortTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                android:text="@string/filter_rising"
+                android:text="@string/filter_highest_scoring"
                 android:gravity="center" />
 
             <TextView
@@ -106,15 +71,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:max="100"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin" />
-
-        <CheckBox
-            android:id="@+id/showViral"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/filter_show_viral"
-            android:layout_marginTop="8dp"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin" />
 

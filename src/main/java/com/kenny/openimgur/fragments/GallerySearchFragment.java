@@ -1,5 +1,7 @@
 package com.kenny.openimgur.fragments;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
@@ -17,7 +19,7 @@ import com.kenny.openimgur.util.LogUtil;
 /**
  * Created by kcampagna on 3/21/15.
  */
-public class GallerySearchFragment extends GalleryFragment {
+public class GallerySearchFragment extends GalleryFragment implements GallerySearchFilterFragment.FilterListener {
     private static final String KEY_QUERY = "query";
 
     private String mQuery;
@@ -44,7 +46,13 @@ public class GallerySearchFragment extends GalleryFragment {
         switch (item.getItemId()) {
             case R.id.filter:
                 if (mListener != null) mListener.onUpdateActionBar(false);
-                // TODO Show filter
+
+                GallerySearchFilterFragment fragment = GallerySearchFilterFragment.createInstance(mSort, mTimeSort);
+                fragment.setListener(this);
+                getFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .add(android.R.id.content, fragment, "filter")
+                        .commit();
                 return true;
         }
 
@@ -106,5 +114,30 @@ public class GallerySearchFragment extends GalleryFragment {
             mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
             if (mListener != null) mListener.onUpdateActionBar(true);
         }
+    }
+
+    @Override
+    public void onFilterChange(ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort) {
+        FragmentManager fm = getFragmentManager();
+        fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
+        if (mListener != null) mListener.onUpdateActionBar(true);
+
+        // Null values represent that the filter was canceled
+        if (sort == null || timeSort == null || (mSort == sort && timeSort == mTimeSort)) {
+            return;
+        }
+
+        if (getAdapter() != null) {
+            getAdapter().clear();
+        }
+
+        mSort = sort;
+        mTimeSort = timeSort;
+        mCurrentPage = 0;
+        mIsLoading = true;
+        mHasMore = true;
+        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+        if (mListener != null) mListener.onLoadingStarted();
+        fetchGallery();
     }
 }
