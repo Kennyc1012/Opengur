@@ -8,7 +8,6 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -37,6 +36,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
+import com.cocosw.bottomsheet.BottomSheetListener;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -80,7 +80,8 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 /**
  * Created by kcampagna on 7/12/14.
  */
-public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener, SideGalleryFragment.SideGalleryListener {
+public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener,
+        SideGalleryFragment.SideGalleryListener, BottomSheetListener {
     private enum CommentSort {
         BEST("best"),
         NEW("new"),
@@ -186,8 +187,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private ApiClient mApiClient;
 
     private boolean mIsActionBarShowing = true;
-
-    private ImgurComment mSelectedComment;
 
     private String mGalleryId = null;
 
@@ -370,7 +369,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         if (mIsCommentsAnimating) return;
 
         mIsCommentsAnimating = true;
-        mSelectedComment = null;
         mCommentAdapter.setSelectedIndex(-1);
 
         mCommentList.animate().translationX(-mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
@@ -419,7 +417,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         mIsCommentsAnimating = true;
-        mSelectedComment = null;
         mCommentAdapter.setSelectedIndex(-1);
 
         mCommentList.animate().translationX(mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
@@ -1011,11 +1008,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         if (position >= 0) {
             boolean shouldClose = mCommentAdapter.setSelectedIndex(position);
 
-            if (shouldClose) {
-                mSelectedComment = null;
-            } else {
-                mSelectedComment = mCommentAdapter.getItem(position);
-                showCommentSheet();
+            if (!shouldClose) {
+                new BottomSheet.Builder(this, R.style.BottomSheet_StyleDialog)
+                        .title(R.string.options)
+                        .grid()
+                        .sheet(R.menu.comment_menu)
+                        .listener(this)
+                        .object(mCommentAdapter.getItem(position))
+                        .show();
             }
         } else {
             // Header view
@@ -1023,60 +1023,62 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    /**
-     * Shows the Sheet for selecting an option on the selected comment
-     */
-    private void showCommentSheet() {
-        new BottomSheet.Builder(this, R.style.BottomSheet_StyleDialog)
-                .title(R.string.options)
-                .grid()
-                .sheet(R.menu.comment_menu)
-                .listener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int which) {
-                        switch (which) {
-                            case R.id.upVote:
-                            case R.id.downVote:
-                                if (user != null) {
-                                    String vote = which == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
-                                    String url = String.format(Endpoints.COMMENT_VOTE.getUrl(), mSelectedComment.getId(), vote);
-                                    RequestBody body = new FormEncodingBuilder().add("id", mSelectedComment.getId()).build();
+    @Override
+    public void onSheetDismissed(Object object) {
 
-                                    if (mApiClient == null) {
-                                        mApiClient = new ApiClient(url, ApiClient.HttpRequest.POST);
-                                    } else {
-                                        mApiClient.setUrl(url);
-                                        mApiClient.setRequestType(ApiClient.HttpRequest.POST);
-                                    }
+        mCommentAdapter.setSelectedIndex(-1);
+    }
 
-                                    mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
-                                } else {
-                                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
-                                }
-                                break;
+    @Override
+    public void onItemClicked(int id, Object object) {
+        if (!(object instanceof ImgurComment)) {
+            LogUtil.w(TAG, "onItemClicked did not yield an ImgurComment");
+            return;
+        }
 
-                            case R.id.profile:
-                                startActivity(ProfileActivity.createIntent(ViewActivity.this, mSelectedComment.getAuthor()));
-                                break;
+        ImgurComment comment = (ImgurComment) object;
 
-                            case R.id.reply:
-                                if (user != null) {
-                                    DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), mSelectedComment.getId());
-                                    showDialogFragment(fragment, "comment");
-                                } else {
-                                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
-                                }
-                                break;
-                        }
+        switch (id) {
+            case R.id.upVote:
+            case R.id.downVote:
+                if (user != null) {
+                    String vote = id == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
+                    String url = String.format(Endpoints.COMMENT_VOTE.getUrl(), comment.getId(), vote);
+                    RequestBody body = new FormEncodingBuilder().add("id", comment.getId()).build();
+
+                    if (mApiClient == null) {
+                        mApiClient = new ApiClient(url, ApiClient.HttpRequest.POST);
+                    } else {
+                        mApiClient.setUrl(url);
+                        mApiClient.setRequestType(ApiClient.HttpRequest.POST);
                     }
-                })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialogInterface) {
-                        mSelectedComment = null;
-                        mCommentAdapter.setSelectedIndex(-1);
-                    }
-                }).show();
+
+                    mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
+                } else {
+                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                }
+                break;
+
+            case R.id.profile:
+                startActivity(ProfileActivity.createIntent(ViewActivity.this, comment.getAuthor()));
+                break;
+
+            case R.id.reply:
+                if (user != null) {
+                    DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), comment.getId());
+                    showDialogFragment(fragment, "comment");
+                } else {
+                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onSheetShown(Object object) {
+        if (object instanceof ImgurComment) {
+            LogUtil.v(TAG, "ImgurComment Selected " + object);
+        }
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {
