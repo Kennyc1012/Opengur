@@ -3,6 +3,7 @@ package com.kenny.openimgur.fragments;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.Nullable;
@@ -15,11 +16,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FilterQueryProvider;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.GallerySearchActivity;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
+import com.kenny.openimgur.adapters.SearchAdapter;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurBaseObject;
@@ -28,6 +31,7 @@ import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
 import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -58,6 +62,8 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     protected SearchView mSearchView;
 
     protected MenuItem mSearchMenuItem;
+
+    protected SearchAdapter mSearchAdapter;
 
     public static GalleryFragment createInstance() {
         return new GalleryFragment();
@@ -104,7 +110,41 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
             }
         });
 
-        // TODO Search Suggestion Adapter
+        mSearchAdapter = new SearchAdapter(getActivity(), app.getSql().getPreviousGallerySearches(), DBContracts.GallerySearchContract.COLUMN_NAME);
+        mSearchAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+            @Override
+            public Cursor runQuery(CharSequence constraint) {
+                return app.getSql().getPreviousGallerySearches(constraint);
+            }
+        });
+        mSearchView.setSuggestionsAdapter(mSearchAdapter);
+        mSearchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                String query = mSearchAdapter.getTitle(position);
+
+                if (GalleryFragment.this instanceof GallerySearchFragment) {
+                    ((GallerySearchFragment) GalleryFragment.this).setQuery(query);
+                } else {
+                    startActivity(GallerySearchActivity.createIntent(getActivity(), query));
+                }
+
+                return true;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                String query = mSearchAdapter.getTitle(position);
+
+                if (GalleryFragment.this instanceof GallerySearchFragment) {
+                    ((GallerySearchFragment) GalleryFragment.this).setQuery(query);
+                } else {
+                    startActivity(GallerySearchActivity.createIntent(getActivity(), query));
+                }
+
+                return true;
+            }
+        });
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -133,6 +173,13 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     @Override
     public void onDestroyView() {
         mSearchView = null;
+        mSearchMenuItem = null;
+
+        if (mSearchAdapter != null && mSearchAdapter.getCursor() != null
+                && !mSearchAdapter.getCursor().isClosed()) {
+            mSearchAdapter.getCursor().close();
+        }
+
         super.onDestroyView();
     }
 
@@ -210,6 +257,10 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                     // Due to MultiStateView setting the views visibility to GONE, the list will not reset to the top
                     // If they change the filter or refresh
                     if (mCurrentPage == 0) {
+                        if (GalleryFragment.this instanceof GallerySearchFragment) {
+                            ((GallerySearchFragment) GalleryFragment.this).onSuccessfulSearch();
+                        }
+
                         mMultiStateView.post(new Runnable() {
                             @Override
                             public void run() {
@@ -241,7 +292,9 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
 
                 case MESSAGE_EMPTY_RESULT:
                     // We only care about empty messages when searching
-                    if (GalleryFragment.this instanceof GallerySearchFragment) ((GallerySearchFragment) GalleryFragment.this).onEmptyResults();
+                    if (GalleryFragment.this instanceof GallerySearchFragment) {
+                        ((GallerySearchFragment) GalleryFragment.this).onEmptyResults();
+                    }
                     break;
 
                 default:

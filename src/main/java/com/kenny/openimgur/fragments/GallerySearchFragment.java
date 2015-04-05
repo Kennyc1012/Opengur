@@ -10,10 +10,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.adapters.SearchAdapter;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
 
 /**
@@ -108,12 +110,31 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
         return false;
     }
 
+    /**
+     * Called when we receive no results from the API
+     */
     public void onEmptyResults() {
         if (getAdapter() == null || getAdapter().isEmpty()) {
             mMultiStateView.setErrorText(R.id.errorMessage, getString(R.string.reddit_empty, mQuery));
             mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
             if (mListener != null) mListener.onUpdateActionBar(true);
         }
+    }
+
+    /**
+     * Called when a successful search has been completed by the API
+     */
+    public void onSuccessfulSearch(){
+        app.getSql().addPreviousGallerySearch(mQuery);
+
+        if (mSearchAdapter == null) {
+            mSearchAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(mQuery), DBContracts.GallerySearchContract.COLUMN_NAME);
+            mSearchView.setSuggestionsAdapter(mSearchAdapter);
+        } else {
+            mSearchAdapter.changeCursor(app.getSql().getSubReddits(mQuery));
+        }
+
+        mSearchAdapter.notifyDataSetChanged();
     }
 
     @Override

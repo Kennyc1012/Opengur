@@ -65,6 +65,11 @@
             android:title="@string/pref_current_cache_size" />
 
         <Preference
+            android:key="gallerySearchHistory"
+            android:title="@string/pref_search_title"
+            android:summary="@string/pref_search_desc" />
+
+        <Preference
             android:key="redditHistory"
             android:title="@string/pref_reddit_title"
             android:summary="@string/pref_reddit_desc" />
