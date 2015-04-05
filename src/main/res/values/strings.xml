@@ -43,7 +43,7 @@
     <string name="view_user">View User Profile</string>
     <string name="enter_sub_reddit">Enter Subreddit</string>
     <string name="subreddit_desc">Enter a subreddit above to view images</string>
-    <string name="reddit_empty">Did not find any result for %s</string>
+    <string name="reddit_empty">Did not find any results for %s</string>
     <string name="view_reddit">View on Reddit</string>
     <string name="accept">Accept</string>
     <string name="previous_comments">Previous Comments</string>
@@ -209,6 +209,9 @@
     <string name="pref_exit_title">Confirm App Exit</string>
     <string name="pref_exit_on">Prompt me before exiting Open Imgur</string>
     <string name="pref_exit_off">Do not prompt me when exiting Open Imgur</string>
+    <string name="pref_search_title">Gallery Search History</string>
+    <string name="pref_search_desc">Clear Gallery Search History</string>
+    <string name="pref_search_deleted">Gallery search history cleared</string>
 
     <!-- Topics -->
     <string name="topic">Topic</string>
@@ -226,5 +229,8 @@
     <string name="meme_saving">Saving Meme, one moment&#8230;</string>
     <string name="meme_failed">Unable to save Meme, please try again.</string>
     <string name="meme_success">Meme saved successfully</string>
+
+    <!-- Gallery Search -->
+    <string name="gallery_search_hint">Search Imgur</string>
 
 </resources>

@@ -85,10 +85,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
-        if (activity instanceof FragmentListener) {
-            mListener = (FragmentListener) activity;
-        }
+        if (activity instanceof FragmentListener) mListener = (FragmentListener) activity;
     }
 
     @Override
@@ -207,15 +204,8 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         mHasMore = true;
         mCurrentPage = 0;
         mIsLoading = true;
-
-        if (getAdapter() != null) {
-            getAdapter().clear();
-        }
-
-        if (mListener != null) {
-            mListener.onLoadingStarted();
-        }
-
+        if (getAdapter() != null) getAdapter().clear();
+        if (mListener != null) mListener.onLoadingStarted();
         mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
         fetchGallery();
     }

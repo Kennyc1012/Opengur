@@ -228,6 +228,9 @@
         <activity
             android:name=".activities.MemeActivity"
             android:theme="@style/Theme_Not_Translucent" />
+        <activity
+            android:name=".activities.GallerySearchActivity"
+            android:theme="@style/Theme_Translucent_Main" />
 
         <service android:name=".services.DownloaderService" />
         <service android:name=".services.UploadService" />

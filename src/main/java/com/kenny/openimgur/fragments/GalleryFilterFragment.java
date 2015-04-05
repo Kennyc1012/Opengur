@@ -440,7 +440,7 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
         mListener = listener;
     }
 
-    public static interface FilterListener {
+    public interface FilterListener {
         void onFilterChange(GallerySection section, GallerySort sort, TimeSort timeSort, boolean showViral);
     }
 

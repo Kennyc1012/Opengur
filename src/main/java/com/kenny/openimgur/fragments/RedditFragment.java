@@ -20,7 +20,7 @@ import android.widget.FilterQueryProvider;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
-import com.kenny.openimgur.adapters.RedditSearchAdapter;
+import com.kenny.openimgur.adapters.SearchAdapter;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurBaseObject;
@@ -28,6 +28,7 @@ import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -52,7 +53,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
     private ImgurFilters.TimeSort mTopSort;
 
-    private RedditSearchAdapter mCursorAdapter;
+    private SearchAdapter mCursorAdapter;
 
     private MenuItem mSearchMenuItem;
 
@@ -104,7 +105,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
             }
         });
 
-        mCursorAdapter = new RedditSearchAdapter(getActivity(), app.getSql().getSubReddits());
+        mCursorAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(), DBContracts.SubRedditContract.COLUMN_NAME);
         mCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
             public Cursor runQuery(CharSequence constraint) {
@@ -258,13 +259,14 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
                     if (mCurrentPage == 0) {
                         if (mCursorAdapter == null) {
-                            mCursorAdapter = new RedditSearchAdapter(getActivity(), app.getSql().getSubReddits(mQuery));
+                            mCursorAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(mQuery), DBContracts.SubRedditContract.COLUMN_NAME);
                             mSearchView.setSuggestionsAdapter(mCursorAdapter);
                         } else {
                             mCursorAdapter.changeCursor(app.getSql().getSubReddits(mQuery));
                         }
 
                         mCursorAdapter.notifyDataSetChanged();
+
                         mGrid.post(new Runnable() {
                             @Override
                             public void run() {
@@ -345,10 +347,12 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     public void onDestroyView() {
         mSearchMenuItem = null;
         mSearchView = null;
-        if (mCursorAdapter != null && mCursorAdapter.getCursor() != null &&
-                !mCursorAdapter.getCursor().isClosed()) {
+
+        if (mCursorAdapter != null && mCursorAdapter.getCursor() != null
+                && !mCursorAdapter.getCursor().isClosed()) {
             mCursorAdapter.getCursor().close();
         }
+
         super.onDestroyView();
     }
 

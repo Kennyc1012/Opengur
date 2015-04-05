@@ -21,6 +21,7 @@ import com.kenny.openimgur.util.DBContracts.SubRedditContract;
 import com.kenny.openimgur.util.DBContracts.TopicsContract;
 import com.kenny.openimgur.util.DBContracts.UploadContract;
 import com.kenny.openimgur.util.DBContracts.UserContract;
+import com.kenny.openimgur.util.DBContracts.GallerySearchContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.List;
 public class SqlHelper extends SQLiteOpenHelper {
     private static final String TAG = "SqlHelper";
 
-    private static final int DB_VERSION = 5;
+    private static final int DB_VERSION = 6;
 
     private static final String DB_NAME = "open_imgur.db";
 
@@ -51,6 +52,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(TopicsContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(SubRedditContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(MemeContract.CREATE_TABLE_SQL);
+        sqLiteDatabase.execSQL(GallerySearchContract.CREATE_TABLE_SQL);
     }
 
     @Override
@@ -58,7 +60,8 @@ public class SqlHelper extends SQLiteOpenHelper {
         /* V2 Added uploads Table
          V3 Added topics Table
          v4 Added Subreddits Table
-         V5 Added Meme table*/
+         V5 Added Meme Table
+         V6 Added GallerySearch Table */
         onCreate(db);
     }
 
@@ -351,9 +354,7 @@ public class SqlHelper extends SQLiteOpenHelper {
      * @return
      */
     public Cursor getSubReddits() {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(SubRedditContract.GET_SUBREDDITS_SQL, null);
-        return cursor;
+        return getReadableDatabase().rawQuery(SubRedditContract.GET_SUBREDDITS_SQL, null);
     }
 
     /**
@@ -422,6 +423,26 @@ public class SqlHelper extends SQLiteOpenHelper {
 
         cursor.close();
         return memes;
+    }
+
+    public Cursor getPreviousGallerySearches() {
+        return getReadableDatabase().rawQuery(GallerySearchContract.GET_PREVIOUS_SEARCHES_SQL, null);
+    }
+
+    public Cursor getPreviousGallerySearches(CharSequence name) {
+        String sql = GallerySearchContract.SEARCH_GALLERY_SQL + name + "%'";
+        return getReadableDatabase().rawQuery(sql, null);
+    }
+
+    public void addPreviousGallerySearch(String name) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues(1);
+        values.put(GallerySearchContract.COLUMN_NAME, name);
+        db.insertWithOnConflict(GallerySearchContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+    }
+
+    public void deletePreviousGallerySearch(){
+        getWritableDatabase().delete(GallerySearchContract.TABLE_NAME, null, null);
     }
 
     @Override
