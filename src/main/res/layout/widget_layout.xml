@@ -1,15 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:layout_width="match_parent"
-android:layout_height="match_parent">
+android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/material_blue_grey_800">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher"
+            android:padding="@dimen/grid_padding"
+            android:contentDescription="@null"/>
+
+        <ImageView
+            android:id="@+id/widget_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_left"
+            android:contentDescription="@null"
+            android:layout_toLeftOf="@+id/widget_next"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@id/widget_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_right"
+            android:contentDescription="@null"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
+
+        </RelativeLayout>
 
     <AdapterViewFlipper
         android:id="@+id/widget_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:loopViews="true"/>
+        android:loopViews="true"
+        android:flipInterval="86000000"/>
 
     <TextView
         android:id="@+id/widget_empty"
@@ -19,4 +54,4 @@ android:layout_height="match_parent">
         android:gravity="center"
         android:background="@color/black_60"/>
 
-</FrameLayout>
+</LinearLayout>

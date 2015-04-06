@@ -19,6 +19,7 @@
         android:background="@color/black_60"
         android:ellipsize="end"
         android:gravity="center"
+        android:layout_gravity="bottom"
         android:lines="2"
         android:textColor="#ffffff"
         android:textSize="18sp"

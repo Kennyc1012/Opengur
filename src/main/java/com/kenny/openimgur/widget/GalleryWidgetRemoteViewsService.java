@@ -104,10 +104,10 @@ class GalleryWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
         Bundle extras = new Bundle();
-        extras.putInt(GalleryWidgetProvider.EXTRA_ITEM, position);
+        extras.putString(GalleryWidgetProvider.EXTRA_ITEM, object.getLink());
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
-        rv.setOnClickFillInIntent(R.id.widget_caption, fillInIntent);
+        rv.setOnClickFillInIntent(R.id.widget_image, fillInIntent);
 
         // You can do heaving lifting in here, synchronously. For example, if you need to
         // process an image, fetch something from the network, etc., it is ok to do it here,
