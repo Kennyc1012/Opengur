@@ -32,6 +32,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 
 import org.json.JSONArray;
@@ -114,17 +115,39 @@ class GalleryWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         // interim.
 
         rv.setImageViewBitmap(R.id.widget_image,
-                mApplication.getImageLoader().loadImageSync(object.getLink()));
+                mApplication.getImageLoader().loadImageSync(getImageUrl(object)));
 
         // Return the remote views object.
         return rv;
+    }
+
+    private String getImageUrl(ImgurBaseObject obj) {
+        //TODO adjust image we load based on widget size?
+        if (obj instanceof ImgurPhoto) {
+            ImgurPhoto photoObject = ((ImgurPhoto) obj);
+            String photoUrl;
+
+            // Check if the link is a thumbed version of a large gif
+            if (photoObject.hasMP4Link() && photoObject.isLinkAThumbnail() && ImgurPhoto.IMAGE_TYPE_GIF.equals(photoObject.getType())) {
+                photoUrl = photoObject.getThumbnail(ImgurPhoto.THUMBNAIL_GALLERY, true, FileUtil.EXTENSION_GIF);
+            } else {
+                photoUrl = ((ImgurPhoto) obj).getThumbnail(ImgurPhoto.THUMBNAIL_GALLERY, false, null);
+            }
+
+            return photoUrl;
+
+        } else if (obj instanceof ImgurAlbum) {
+            return ((ImgurAlbum) obj).getCoverUrl(ImgurPhoto.THUMBNAIL_GALLERY);
+        } else {
+            return ImgurBaseObject.getThumbnail(obj.getId(), obj.getLink(), ImgurPhoto.THUMBNAIL_GALLERY);
+        }
     }
 
     @Override
     public RemoteViews getLoadingView() {
         // You can create a custom loading view (for instance when getViewAt() is slow.) If you
         // return null here, you will get the default loading view.
-        return null;
+        return new RemoteViews(mApplication.getPackageName(), R.layout.widget_loading);
     }
 
     @Override

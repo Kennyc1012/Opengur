@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 
@@ -17,8 +16,10 @@ import com.kenny.openimgur.R;
  */
 public class GalleryWidgetProvider extends AppWidgetProvider {
 
-    public static final String TOAST_ACTION = "com.example.android.stackwidget.TOAST_ACTION";
-    public static final String EXTRA_ITEM = "com.example.android.stackwidget.EXTRA_ITEM";
+    public static final String ACTION_NEXT = "ACTION_NEXT";
+    public static final String ACTION_VIEW = "ACTION_VIEW";
+
+    public static final String EXTRA_ITEM = "EXTRA_ITEM";
 
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
@@ -37,12 +38,17 @@ public class GalleryWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-        if (intent.getAction().equals(TOAST_ACTION)) {
-            int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    AppWidgetManager.INVALID_APPWIDGET_ID);
-            int viewIndex = intent.getIntExtra(EXTRA_ITEM, 0);
-            Toast.makeText(context, "Touched view " + viewIndex, Toast.LENGTH_SHORT).show();
+        if (intent.getAction().equals(ACTION_NEXT)) {
+            RemoteViews rv = new RemoteViews(context.getPackageName(),
+                    R.layout.widget_layout);
+
+            rv.showNext(R.id.widget_list);
+
+            AppWidgetManager.getInstance(context).partiallyUpdateAppWidget(
+                    intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                            AppWidgetManager.INVALID_APPWIDGET_ID), rv);
+        } else if (intent.getAction().equals(ACTION_VIEW)) {
+
         }
         super.onReceive(context, intent);
     }
@@ -71,7 +77,7 @@ public class GalleryWidgetProvider extends AppWidgetProvider {
             // setup a pending intent template, and the individual items can set a fillInIntent
             // to create unique before on an item to item basis.
             Intent toastIntent = new Intent(context, GalleryWidgetProvider.class);
-            toastIntent.setAction(GalleryWidgetProvider.TOAST_ACTION);
+            toastIntent.setAction(GalleryWidgetProvider.ACTION_NEXT);
             toastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
             PendingIntent toastPendingIntent = PendingIntent.getBroadcast(context, 0, toastIntent,
