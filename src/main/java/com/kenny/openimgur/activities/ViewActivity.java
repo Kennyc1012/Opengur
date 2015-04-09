@@ -811,7 +811,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onLinkTap(View view, String url) {
-        if (!TextUtils.isEmpty(url) && !isFinishing()) {
+        if (!TextUtils.isEmpty(url) && canDoFragmentTransaction()) {
             LinkUtils.LinkMatch match = LinkUtils.findImgurLinkMatch(url);
 
             switch (match) {
@@ -1025,7 +1025,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onSheetDismissed(Object object) {
-
         mCommentAdapter.setSelectedIndex(-1);
     }
 

@@ -233,7 +233,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
-            if (getActivity() == null || getActivity().isFinishing() || isRemoving()) {
+            if (!canDoFragmentTransaction()) {
                 LogUtil.w(TAG, "Fragment is being removed, or activity is finishing, not delivering message");
                 return;
             }
