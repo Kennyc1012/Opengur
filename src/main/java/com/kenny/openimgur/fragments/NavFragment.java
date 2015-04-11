@@ -64,18 +64,10 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
         mListView.setOnItemClickListener(this);
         mListView.setPadding(0, ViewUtils.getStatusBarHeight(getActivity()), 0, 0);
         mListView.setBackgroundColor(theme.isDarkTheme ? getResources().getColor(R.color.background_material_dark) : getResources().getColor(R.color.background_material_light));
-
-        // Set the width of the drawer for non tablets (screen width - actionbar height)
-        if (!getResources().getBoolean(R.bool.is_tablet)) {
-            int width = getResources().getDisplayMetrics().widthPixels - ViewUtils.getActionBarHeight(getActivity());
-            DrawerLayout.LayoutParams lp = new DrawerLayout.LayoutParams(width, DrawerLayout.LayoutParams.MATCH_PARENT);
-            view.setLayoutParams(lp);
-        }
     }
 
     @Override
     public void onDestroyView() {
-        mListView = null;
         mToggle = null;
         super.onDestroyView();
     }
@@ -147,7 +139,7 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
         mAdapter.setSelectedPosition(position);
     }
 
-    public static interface NavigationListener {
+    public interface NavigationListener {
         void onNavigationItemSelected(int position);
 
         void onDrawerToggle(boolean isOpen);

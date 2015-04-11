@@ -3,9 +3,6 @@
 
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="gallery_column_height">160dp</dimen>
-    <dimen name="fab_button_radius">72dp</dimen>
-    <dimen name="fab_button_radius_smaller">64dp</dimen>
-    <dimen name="fab_button_half">36dp</dimen>
     <dimen name="dialog_content_margin">24dp</dimen>
     <dimen name="dialog_button_margin">16dp</dimen>
     <dimen name="grid_padding">4dp</dimen>
