@@ -11,17 +11,18 @@
         android:layout_alignParentBottom="true"
         android:paddingLeft="16dp">
 
-        <com.kenny.openimgur.ui.FloatingActionButton
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/sendBtn"
-            android:layout_width="@dimen/fab_button_radius"
-            android:layout_height="@dimen/fab_button_radius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            app:drawable="@drawable/ic_action_send"
-            app:shadowColor="@android:color/white"
-            app:shadowRadius="0"
-            app:shadowDx="0"
-            app:shadowDy="0" />
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/ic_action_send"
+            app:fab_colorNormal="?colorAccent"
+            app:fab_colorPressed="?fabPressed"
+            app:fab_showShadow="false"/>
 
         <EditText
             android:id="@+id/messageInput"

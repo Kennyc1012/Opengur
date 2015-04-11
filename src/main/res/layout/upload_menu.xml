@@ -1,43 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.github.clans.fab.FloatingActionMenu
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/uploadMenu"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    app:menu_colorNormal="?colorAccent"
+    app:menu_colorPressed="?fabPressed">
 
-    <com.kenny.openimgur.ui.FloatingActionButton
-        android:id="@+id/cameraUpload"
-        android:layout_width="@dimen/fab_button_radius_smaller"
-        android:layout_height="@dimen/fab_button_radius_smaller"
-        android:layout_gravity="center_horizontal|bottom"
-        android:visibility="gone"
-        app:drawable="@drawable/ic_action_camera"
-        app:shadowColor="@android:color/black" />
-
-    <com.kenny.openimgur.ui.FloatingActionButton
-        android:id="@+id/galleryUpload"
-        android:layout_width="@dimen/fab_button_radius_smaller"
-        android:layout_height="@dimen/fab_button_radius_smaller"
-        android:layout_gravity="center_horizontal|bottom"
-        android:visibility="gone"
-        app:drawable="@drawable/ic_action_picture"
-        app:shadowColor="@android:color/black" />
-
-    <com.kenny.openimgur.ui.FloatingActionButton
+    <com.github.clans.fab.FloatingActionButton
         android:id="@+id/linkUpload"
-        android:layout_width="@dimen/fab_button_radius_smaller"
-        android:layout_height="@dimen/fab_button_radius_smaller"
-        android:layout_gravity="center_horizontal|bottom"
-        android:visibility="gone"
-        app:drawable="@drawable/ic_action_web"
-        app:shadowColor="@android:color/black" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_link"
+        app:fab_size="mini"
+        app:fab_label="@string/fab_link"
+        app:fab_colorNormal="?colorAccent"
+        app:fab_colorPressed="?fabPressed" />
 
-    <com.kenny.openimgur.ui.FloatingActionButton
-        android:id="@+id/uploadButton"
-        android:layout_width="@dimen/fab_button_radius"
-        android:layout_height="@dimen/fab_button_radius"
-        android:layout_gravity="bottom"
-        app:drawable="@drawable/ic_action_add"
-        app:shadowColor="@android:color/black"/>
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/galleryUpload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_picture"
+        app:fab_size="mini"
+        app:fab_label="@string/fab_gallery"
+        app:fab_colorNormal="?colorAccent"
+        app:fab_colorPressed="?fabPressed" />
 
-</FrameLayout>
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/cameraUpload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_camera"
+        app:fab_size="mini"
+        app:fab_label="@string/fab_camera"
+        app:fab_colorNormal="?colorAccent"
+        app:fab_colorPressed="?fabPressed" />
+
+</com.github.clans.fab.FloatingActionMenu>

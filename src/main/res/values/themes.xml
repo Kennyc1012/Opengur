@@ -46,60 +46,70 @@
         <item name="colorPrimary">@color/theme_blue_primary</item>
         <item name="colorPrimaryDark">@color/theme_blue_dark</item>
         <item name="colorAccent">@color/theme_blue_accent</item>
+        <item name="fabPressed">@color/theme_blue_accent_dark</item>
     </style>
 
     <style name="Theme_Orange" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_orange_primary</item>
         <item name="colorPrimaryDark">@color/theme_orange_dark</item>
         <item name="colorAccent">@color/theme_light_blue_accent</item>
+        <item name="fabPressed">@color/theme_light_blue_accent_dark</item>
     </style>
 
     <style name="Theme_Cyan" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_cyan_primary</item>
         <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
         <item name="colorAccent">@color/theme_cyan_accent</item>
+        <item name="fabPressed">@color/theme_cyan_accent_dark</item>
     </style>
 
     <style name="Theme_Green" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_green_primary</item>
         <item name="colorPrimaryDark">@color/theme_green_dark</item>
         <item name="colorAccent">@color/theme_green_accent</item>
+        <item name="fabPressed">@color/theme_green_accent_dark</item>
     </style>
 
     <style name="Theme_Teal" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_teal_primary</item>
         <item name="colorPrimaryDark">@color/theme_teal_dark</item>
         <item name="colorAccent">@color/theme_teal_accent</item>
+        <item name="fabPressed">@color/theme_teal_accent_dark</item>
     </style>
 
     <style name="Theme_Red" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_red_primary</item>
         <item name="colorPrimaryDark">@color/theme_red_dark</item>
         <item name="colorAccent">@color/theme_red_accent</item>
+        <item name="fabPressed">@color/theme_red_accent_dark</item>
     </style>
 
     <style name="Theme_Pink" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_pink_primary</item>
         <item name="colorPrimaryDark">@color/theme_pink_dark</item>
         <item name="colorAccent">@color/theme_pink_accent</item>
+        <item name="fabPressed">@color/theme_pink_accent_dark</item>
     </style>
 
     <style name="Theme_Purple" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_purple_primary</item>
         <item name="colorPrimaryDark">@color/theme_purple_dark</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
+        <item name="fabPressed">@color/theme_purple_accent_dark</item>
     </style>
 
     <style name="Theme_Grey" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
+        <item name="fabPressed">@color/theme_grey_accent_dark</item>
     </style>
 
     <style name="Theme_Black" parent="@style/Theme_Light">
         <item name="colorPrimary">@color/theme_black_primary</item>
         <item name="colorPrimaryDark">@color/theme_black_dark</item>
         <item name="colorAccent">@color/theme_black_accent</item>
+        <item name="fabPressed">@color/theme_black_accent_dark</item>
     </style>
 
     <!-- Override styles (Dark) -->
@@ -129,60 +139,70 @@
         <item name="colorPrimary">@color/theme_blue_primary</item>
         <item name="colorPrimaryDark">@color/theme_blue_dark</item>
         <item name="colorAccent">@color/theme_blue_accent</item>
+        <item name="fabPressed">@color/theme_blue_accent_dark</item>
     </style>
 
     <style name="Theme_Orange_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_orange_primary</item>
         <item name="colorPrimaryDark">@color/theme_orange_dark</item>
         <item name="colorAccent">@color/theme_light_blue_accent</item>
+        <item name="fabPressed">@color/theme_light_blue_accent_dark</item>
     </style>
 
     <style name="Theme_Cyan_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_cyan_primary</item>
         <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
         <item name="colorAccent">@color/theme_cyan_accent</item>
+        <item name="fabPressed">@color/theme_cyan_accent_dark</item>
     </style>
 
     <style name="Theme_Green_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_green_primary</item>
         <item name="colorPrimaryDark">@color/theme_green_dark</item>
         <item name="colorAccent">@color/theme_green_accent</item>
+        <item name="fabPressed">@color/theme_green_accent_dark</item>
     </style>
 
     <style name="Theme_Teal_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_teal_primary</item>
         <item name="colorPrimaryDark">@color/theme_teal_dark</item>
         <item name="colorAccent">@color/theme_teal_accent</item>
+        <item name="fabPressed">@color/theme_teal_accent_dark</item>
     </style>
 
     <style name="Theme_Red_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_red_primary</item>
         <item name="colorPrimaryDark">@color/theme_red_dark</item>
         <item name="colorAccent">@color/theme_red_accent</item>
+        <item name="fabPressed">@color/theme_red_accent_dark</item>
     </style>
 
     <style name="Theme_Pink_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_pink_primary</item>
         <item name="colorPrimaryDark">@color/theme_pink_dark</item>
         <item name="colorAccent">@color/theme_pink_accent</item>
+        <item name="fabPressed">@color/theme_pink_accent_dark</item>
     </style>
 
     <style name="Theme_Purple_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_purple_primary</item>
         <item name="colorPrimaryDark">@color/theme_purple_dark</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
+        <item name="fabPressed">@color/theme_purple_accent_dark</item>
     </style>
 
     <style name="Theme_Grey_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
+        <item name="fabPressed">@color/theme_grey_accent_dark</item>
     </style>
 
     <style name="Theme_Black_Dark" parent="@style/Theme_Dark">
         <item name="colorPrimary">@color/theme_black_primary</item>
         <item name="colorPrimaryDark">@color/theme_black_dark</item>
         <item name="colorAccent">@color/theme_black_accent</item>
+        <item name="fabPressed">@color/theme_black_accent_dark</item>
     </style>
 
 </resources>

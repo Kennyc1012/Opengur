@@ -233,4 +233,9 @@
     <!-- Gallery Search -->
     <string name="gallery_search_hint">Search Imgur</string>
 
+    <!-- FAB Menu -->
+    <string name="fab_camera">Take a picture</string>
+    <string name="fab_gallery">Select a picture</string>
+    <string name="fab_link">Enter a link</string>
+
 </resources>
