@@ -1,11 +1,11 @@
 <resources>
 
-    <style name="Theme_Translucent" parent="Imgur_Theme_Base">
+    <style name="Theme_Translucent" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowTranslucentNavigation">@bool/translucent_nav_bar</item>
         <item name="android:windowTranslucentStatus">false</item>
     </style>
 
-    <style name="Theme_Not_Translucent" parent="Imgur_Theme_Base">
+    <style name="Theme_Not_Translucent" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="windowActionBarOverlay">true</item>

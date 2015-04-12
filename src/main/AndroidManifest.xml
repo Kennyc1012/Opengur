@@ -224,7 +224,7 @@
         </activity>
         <activity
             android:name=".activities.ConvoThreadActivity"
-            android:theme="@style/Imgur_Theme_Base" />
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".activities.MemeActivity"
             android:theme="@style/Theme_Not_Translucent" />
