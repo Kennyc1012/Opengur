@@ -9,7 +9,7 @@ public class ScrollHelper {
     public final static int DIRECTION_UP = 0;
     public final static int DIRECTION_DOWN = 1;
     public final static int DIRECTION_NOT_CHANGED = -1;
-    private final static int SCROLL_THRESHOLD = 10;
+    private final static int SCROLL_THRESHOLD = 100;
 
     private int mLastScrollY = 0;
     private int mPreviousFirstItem = 0;

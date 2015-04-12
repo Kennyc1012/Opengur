@@ -204,4 +204,10 @@ public class ImgurComment extends ImgurBaseObject {
     public String getAlbumCoverId() {
         return mAlbumCoverId;
     }
+
+    @Override
+    public String toString() {
+        return "ID: " + getId() +
+                " AUTHOR: " + getAuthor();
+    }
 }

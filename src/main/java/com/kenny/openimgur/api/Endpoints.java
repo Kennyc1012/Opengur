@@ -101,7 +101,13 @@ public enum Endpoints {
     // topic id/sort/time sort/page
     TOPICS_TOP("https://api.imgur.com/3/topics/%d/%s/%s/%d"),
 
-    MEME("https://api.imgur.com/3/memegen/defaults");
+    MEME("https://api.imgur.com/3/memegen/defaults"),
+
+    // sort, page, query
+    GALLERY_SEARCH("https://api.imgur.com/3/gallery/search/%s/%d?q=%s"),
+
+    // sort, window, page, query
+    GALLERY_SEARCH_TOP("https://api.imgur.com/3/gallery/search/%s/%s/%d?q=%s");
 
     private final String mUrl;
 

@@ -29,13 +29,10 @@ public abstract class ImgurBaseAdapter<T> extends BaseAdapter {
 
     protected LayoutInflater mInflater;
 
-    protected boolean mIsDarkTheme;
-
     public ImgurBaseAdapter(Context context, List<T> collection, boolean hasImageLoader) {
         if (hasImageLoader) mImageLoader = OpenImgurApp.getInstance(context).getImageLoader();
         mItems = collection;
         mInflater = LayoutInflater.from(context);
-        mIsDarkTheme = OpenImgurApp.getInstance(context).getImgurTheme().isDarkTheme;
     }
 
     public ImgurBaseAdapter(Context context, List<T> collection) {
@@ -142,7 +139,7 @@ public abstract class ImgurBaseAdapter<T> extends BaseAdapter {
      */
     protected void displayImage(ImageView imageView, String url) {
         if (mImageLoader == null) {
-            throw new NullPointerException("Image Loader has not been created");
+            throw new IllegalStateException("Image Loader has not been created");
         }
 
         mImageLoader.cancelDisplayTask(imageView);

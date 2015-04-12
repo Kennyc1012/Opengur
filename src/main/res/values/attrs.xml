@@ -14,20 +14,12 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="FloatingActionButton">
-        <attr name="drawable" format="integer" />
-        <attr name="fabColor" format="color" />
-        <attr name="shadowRadius" format="float" />
-        <attr name="shadowDx" format="float" />
-        <attr name="shadowDy" format="float" />
-        <attr name="shadowColor" format="integer" />
-    </declare-styleable>
-
     <!-- Theme attributes -->
     <attr name="errorDrawable" format="reference" />
     <attr name="emptyDrawableUploads" format="reference" />
     <attr name="emptyDrawableMessages" format="reference" />
     <attr name="repliesDrawable" format="reference" />
     <attr name="cardBG" format="color" />
+    <attr name="fabPressed" format="color" />
 
 </resources>

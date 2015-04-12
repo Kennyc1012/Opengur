@@ -228,4 +228,13 @@ abstract public class BaseActivity extends ActionBarActivity {
             setTaskDescription(description);
         }
     }
+
+    /**
+     * Returns if the activity is able to complete a FragmentTransaction based on its lifecycle phase
+     *
+     * @return
+     */
+    protected boolean canDoFragmentTransaction() {
+        return !isFinishing() && !isChangingConfigurations();
+    }
 }

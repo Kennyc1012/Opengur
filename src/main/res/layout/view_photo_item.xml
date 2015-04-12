@@ -38,8 +38,8 @@
 
             <ImageButton
                 android:id="@+id/play"
-                android:layout_width="@dimen/fab_button_radius"
-                android:layout_height="@dimen/fab_button_radius"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:background="@drawable/black_circle"
                 android:src="@drawable/ic_action_play"
                 android:layout_centerInParent="true" />

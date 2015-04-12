@@ -20,11 +20,13 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.clans.fab.FloatingActionMenu;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NavAdapter;
 import com.kenny.openimgur.classes.FragmentListener;
@@ -39,7 +41,6 @@ import com.kenny.openimgur.fragments.RedditFilterFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.fragments.TopicsFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
-import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 
@@ -49,26 +50,14 @@ import butterknife.OnClick;
 /**
  * Created by kcampagna on 10/19/14.
  */
-public class MainActivity extends BaseActivity implements NavFragment.NavigationListener, FragmentListener, View.OnClickListener {
+public class MainActivity extends BaseActivity implements NavFragment.NavigationListener, FragmentListener {
     private static final String KEY_CURRENT_PAGE = "current_page";
 
     @InjectView(R.id.drawerLayout)
     DrawerLayout mDrawer;
 
     @InjectView(R.id.uploadMenu)
-    View mUploadMenu;
-
-    @InjectView(R.id.cameraUpload)
-    FloatingActionButton mCameraUpload;
-
-    @InjectView(R.id.galleryUpload)
-    FloatingActionButton mGalleryUpload;
-
-    @InjectView(R.id.linkUpload)
-    FloatingActionButton mLinkUpload;
-
-    @InjectView(R.id.uploadButton)
-    FloatingActionButton mUploadButton;
+    FloatingActionMenu mUploadMenu;
 
     @InjectView(R.id.toolBar)
     Toolbar mToolBar;
@@ -76,16 +65,6 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     private NavFragment mNavFragment;
 
     private int mCurrentPage = -1;
-
-    private float mUploadButtonHeight;
-
-    private float mUploadMenuButtonHeight;
-
-    private int mNavBarHeight = -1;
-
-    private boolean uploadMenuOpen = false;
-
-    private boolean uploadMenuShowing = false;
 
     private ImgurTheme mSavedTheme;
 
@@ -100,14 +79,6 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         setupToolBar();
         mNavFragment = (NavFragment) getFragmentManager().findFragmentById(R.id.navDrawer);
         mNavFragment.configDrawerLayout(mDrawer);
-        Resources res = getResources();
-        int accentColor = res.getColor(theme.accentColor);
-        mUploadButton.setColor(accentColor);
-        mLinkUpload.setColor(accentColor);
-        mCameraUpload.setColor(accentColor);
-        mGalleryUpload.setColor(accentColor);
-        mUploadButtonHeight = getResources().getDimension(R.dimen.fab_button_radius);
-        mUploadMenuButtonHeight = getResources().getDimension(R.dimen.fab_button_radius_smaller);
         mNagOnExit = app.getPreferences().getBoolean(SettingsActivity.KEY_CONFIRM_EXIT, true);
     }
 
@@ -123,7 +94,6 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             mToolBar.setLayoutParams(lp);
         }
 
-        mToolBar.setBackgroundColor(getResources().getColor(app.getImgurTheme().primaryColor));
         setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -260,25 +230,26 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     @Override
     public void onUpdateActionBar(boolean shouldShow) {
         setActionBarVisibility(mToolBar, shouldShow);
-        animateUploadMenuButton(shouldShow);
+        if (shouldShow) {
+            mUploadMenu.showMenuButton(true);
+        } else {
+            mUploadMenu.hideMenuButton(true);
+        }
     }
 
     @Override
     public void onLoadingComplete() {
-        mUploadMenu.setVisibility(View.VISIBLE);
-        uploadMenuShowing = true;
+        if (mUploadMenu.isMenuButtonHidden()) mUploadMenu.showMenuButton(false);
     }
 
     @Override
     public void onLoadingStarted() {
-        mUploadMenu.setVisibility(View.GONE);
-        uploadMenuShowing = false;
+        if (!mUploadMenu.isMenuButtonHidden()) mUploadMenu.hideMenuButton(false);
     }
 
     @Override
     public void onError(int errorCode) {
-        mUploadMenu.setVisibility(View.GONE);
-        uploadMenuShowing = false;
+        if (!mUploadMenu.isMenuButtonHidden()) mUploadMenu.hideMenuButton(false);
     }
 
     @Override
@@ -291,125 +262,23 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         // NOOP
     }
 
-    @OnClick({R.id.uploadButton, R.id.linkUpload, R.id.cameraUpload, R.id.galleryUpload})
-    @Override
+    @OnClick({R.id.linkUpload, R.id.cameraUpload, R.id.galleryUpload})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.uploadButton:
-                animateUploadMenu();
-                break;
-
             case R.id.cameraUpload:
                 startActivityForResult(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_CAMERA), UploadActivity.REQUEST_CODE);
-                animateUploadMenu();
+                mUploadMenu.close(true);
                 break;
 
             case R.id.galleryUpload:
                 startActivityForResult(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_GALLERY), UploadActivity.REQUEST_CODE);
-                animateUploadMenu();
+                mUploadMenu.close(true);
                 break;
 
             case R.id.linkUpload:
                 startActivityForResult(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_LINK), UploadActivity.REQUEST_CODE);
-                animateUploadMenu();
+                mUploadMenu.close(true);
                 break;
-        }
-    }
-
-    /**
-     * Animates the opening/closing of the Upload button
-     */
-    private void animateUploadMenu() {
-        AnimatorSet set = new AnimatorSet().setDuration(500L);
-        String translation = isLandscape() ? "translationX" : "translationY";
-
-        if (!uploadMenuOpen) {
-            uploadMenuOpen = true;
-
-            set.playTogether(
-                    ObjectAnimator.ofFloat(mCameraUpload, translation, 0, (mUploadButtonHeight + 25) * -1),
-                    ObjectAnimator.ofFloat(mLinkUpload, translation, 0, ((2 * mUploadMenuButtonHeight) + mUploadButtonHeight + 75) * -1),
-                    ObjectAnimator.ofFloat(mGalleryUpload, translation, (mUploadMenuButtonHeight + mUploadButtonHeight + 50) * -1),
-                    ObjectAnimator.ofFloat(mCameraUpload, "alpha", 0.0f, 1.0f),
-                    ObjectAnimator.ofFloat(mGalleryUpload, "alpha", 0.0f, 1.0f),
-                    ObjectAnimator.ofFloat(mLinkUpload, "alpha", 0.0f, 1.0f),
-                    ObjectAnimator.ofFloat(mUploadButton, "rotation", 0.0f, 135.0f)
-            );
-
-            set.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    super.onAnimationStart(animation);
-                    mCameraUpload.setVisibility(View.VISIBLE);
-                    mGalleryUpload.setVisibility(View.VISIBLE);
-                    mLinkUpload.setVisibility(View.VISIBLE);
-                    animation.removeAllListeners();
-                }
-            });
-
-            set.setInterpolator(new OvershootInterpolator());
-            set.start();
-        } else {
-            uploadMenuOpen = false;
-
-            set.playTogether(
-                    ObjectAnimator.ofFloat(mCameraUpload, translation, 0),
-                    ObjectAnimator.ofFloat(mLinkUpload, translation, 0),
-                    ObjectAnimator.ofFloat(mGalleryUpload, translation, 0),
-                    ObjectAnimator.ofFloat(mCameraUpload, "alpha", 1.0f, 0.0f),
-                    ObjectAnimator.ofFloat(mGalleryUpload, "alpha", 1.0f, 0.0f),
-                    ObjectAnimator.ofFloat(mLinkUpload, "alpha", 1.0f, 0.0f),
-                    ObjectAnimator.ofFloat(mUploadButton, "rotation", 135.0f, 0.0f)
-            );
-
-            set.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    super.onAnimationCancel(animation);
-                    mCameraUpload.setVisibility(View.GONE);
-                    mGalleryUpload.setVisibility(View.GONE);
-                    mLinkUpload.setVisibility(View.GONE);
-                    animation.removeAllListeners();
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    mCameraUpload.setVisibility(View.GONE);
-                    mGalleryUpload.setVisibility(View.GONE);
-                    mLinkUpload.setVisibility(View.GONE);
-                    animation.removeAllListeners();
-                }
-            });
-
-            set.setInterpolator(new AccelerateDecelerateInterpolator());
-            set.start();
-        }
-    }
-
-    /**
-     * Animates the upload button
-     *
-     * @param shouldShow If the button should be shown
-     */
-    private void animateUploadMenuButton(boolean shouldShow) {
-        if (!shouldShow && uploadMenuShowing) {
-            float hideDistance;
-            uploadMenuShowing = false;
-            hideDistance = mUploadButtonHeight + (mUploadButtonHeight / 2);
-            // Add extra distance to the hiding of the button if on KitKat due to the translucent nav bar
-            if (app.sdkVersion >= Build.VERSION_CODES.KITKAT) {
-                if (mNavBarHeight == -1)
-                    mNavBarHeight = ViewUtils.getNavigationBarHeight(getApplicationContext());
-                hideDistance += mNavBarHeight;
-            }
-
-            mUploadMenu.animate().setInterpolator(new AccelerateDecelerateInterpolator()).translationY(hideDistance).setDuration(350).start();
-            // Close the menu if it is open
-            if (uploadMenuOpen) animateUploadMenu();
-        } else if (shouldShow && !uploadMenuShowing) {
-            uploadMenuShowing = true;
-            mUploadMenu.animate().setInterpolator(new AccelerateDecelerateInterpolator()).translationY(0).setDuration(350).start();
         }
     }
 
@@ -430,6 +299,9 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 fm.beginTransaction().remove(fragment).commit();
             }
 
+            return;
+        } else if (mUploadMenu.isOpened()) {
+            mUploadMenu.close(true);
             return;
         } else if (mNagOnExit) {
             showExitNag();

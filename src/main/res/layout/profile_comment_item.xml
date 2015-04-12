@@ -16,36 +16,30 @@
         android:scaleType="centerCrop"
         tools:src="@drawable/ic_launcher" />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_marginLeft="@dimen/keyline_margin"
         android:layout_gravity="center_vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/author"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:textAppearance="@style/TextAppearance.Regular"
+            android:textSize="@dimen/abc_text_size_subhead_material"
+            tools:text="DRButtersMD 9 Hours ago" />
 
-            <TextView
-                android:id="@+id/author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.Regular"
-                android:textSize="@dimen/abc_text_size_subhead_material"
-                tools:text="DRButtersMD 9 Hours ago" />
+        <TextView
+            android:id="@+id/comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.Medium"
+            android:textSize="@dimen/abc_text_size_body_2_material"
+            tools:text="This will be a comment " />
 
-            <TextView
-                android:id="@+id/comment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textAppearance="@style/TextAppearance.Medium"
-                android:textSize="@dimen/abc_text_size_body_2_material"
-                tools:text="This will be a comment " />
-
-        </LinearLayout>
-
-    </RelativeLayout>
+    </LinearLayout>
 
 </FrameLayout>

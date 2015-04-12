@@ -51,6 +51,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
         findPreference("redditHistory").setOnPreferenceClickListener(this);
+        findPreference("gallerySearchHistory").setOnPreferenceClickListener(this);
         findPreference(SettingsActivity.KEY_ADB).setOnPreferenceChangeListener(this);
         findPreference(SettingsActivity.KEY_DARK_THEME).setOnPreferenceChangeListener(this);
     }
@@ -156,6 +157,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         } else if (preference.getKey().equals("redditHistory")) {
             mApp.getSql().deleteSubReddits();
             SnackBar.show(getActivity(), R.string.pref_reddit_deleted);
+        } else if (preference.getKey().equals("gallerySearchHistory")) {
+            mApp.getSql().deletePreviousGallerySearch();
+            SnackBar.show(getActivity(), R.string.pref_search_deleted);
         }
 
         return false;

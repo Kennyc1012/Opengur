@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
+import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -23,7 +23,6 @@ import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurMessage;
-import com.kenny.openimgur.ui.FloatingActionButton;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
@@ -55,9 +54,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
     @InjectView(R.id.convoList)
     ListView mListView;
 
-    @InjectView(R.id.sendBtn)
-    FloatingActionButton mSendBtn;
-
     @InjectView(R.id.messageInput)
     EditText mMessageInput;
 
@@ -84,8 +80,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_convo_thread);
         mListView.setOnScrollListener(this);
-        int accentColor = getResources().getColor(theme.accentColor);
-        mSendBtn.setColor(accentColor);
         handleData(savedInstanceState);
     }
 

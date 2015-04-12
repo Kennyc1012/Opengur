@@ -14,15 +14,15 @@ import com.kenny.openimgur.util.DBContracts;
 /**
  * Created by kcampagna on 3/2/15.
  */
-public class RedditSearchAdapter extends SimpleCursorAdapter {
+public class SearchAdapter extends SimpleCursorAdapter {
 
     private int mColor;
 
-    public RedditSearchAdapter(Context context, Cursor cursor) {
+    public SearchAdapter(Context context, Cursor cursor, String columnName) {
         super(context,
                 android.R.layout.simple_dropdown_item_1line,
                 cursor,
-                new String[]{DBContracts.SubRedditContract.COLUMN_NAME},
+                new String[]{columnName},
                 new int[]{android.R.id.text1},
                 FLAG_REGISTER_CONTENT_OBSERVER);
 

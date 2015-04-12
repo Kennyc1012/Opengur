@@ -57,6 +57,7 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  */
 public class ProfileActivity extends BaseActivity implements FragmentListener {
     private static final String REDIRECT_URL = "https://com.kenny.openimgur";
+
     public static final int REQUEST_CODE = 101;
 
     public static final String KEY_LOGGED_IN = "logged_in";
@@ -231,6 +232,13 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.startsWith(REDIRECT_URL)) {
+
+                    if (url.contains("/?error=")) {
+                        LogUtil.v(TAG, "Error received from URL " + url);
+                        view.loadUrl(Endpoints.LOGIN.getUrl());
+                        return true;
+                    }
+
                     // We will extract the info from the callback url
                     mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                     String[] outerSplit = url.split("\\#")[1].split("\\&");

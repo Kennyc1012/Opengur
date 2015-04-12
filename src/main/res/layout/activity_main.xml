@@ -17,6 +17,7 @@
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?colorPrimary"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
@@ -35,7 +36,7 @@
 
     <fragment
         android:id="@+id/navDrawer"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/drawer_max_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:name="com.kenny.openimgur.fragments.NavFragment" />
