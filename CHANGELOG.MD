@@ -1,5 +1,14 @@
 #Open Imgur Changelog
 
+<b>2.6</b>
+- Gallery search added
+- Switch Floating Action Button [library](https://github.com/Clans/FloatingActionButton)
+- Various crash fixes IllegalStateException regarding fragment transactions 
+- Fix for when a user pressed the "deny" button on the login page
+- Update Photoview to 1.2.3
+- Update Material Dialogs to 0.7.1.2
+- Update bottom sheet to a separate fork for custom callbacks
+
 <b>2.5.1</b>
 - Crash fix for P2R [#68](https://github.com/Kennyc1012/OpenImgur/issues/68), thanks [Jawnnypoo](https://github.com/Jawnnypoo)
 - Set defeaults to the same as Imgur [#70](https://github.com/Kennyc1012/OpenImgur/issues/70)
