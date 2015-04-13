@@ -60,7 +60,6 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
             mToolBar.setLayoutParams(lp);
         }
 
-        mToolBar.setBackgroundColor(getResources().getColor(app.getImgurTheme().primaryColor));
         mToolBar.setTitle(query);
         setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
