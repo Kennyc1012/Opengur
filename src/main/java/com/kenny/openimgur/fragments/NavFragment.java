@@ -101,6 +101,12 @@ public class NavFragment extends BaseFragment implements ListView.OnItemClickLis
                 if (!isAdded()) return;
                 if (mListener != null) mListener.onDrawerToggle(false);
             }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                // Setting the second argument to 0 disables the animation of the hamburger icon
+                super.onDrawerSlide(drawerView, 0);
+            }
         };
 
         mToggle.syncState();

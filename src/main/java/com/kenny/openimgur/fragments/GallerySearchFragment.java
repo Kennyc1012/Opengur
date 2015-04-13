@@ -33,7 +33,9 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String text) {
-                return setQuery(text);
+                boolean setQuery = setQuery(text);
+                if (setQuery) refresh();
+                return setQuery;
             }
 
             @Override
@@ -102,8 +104,6 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
             mQuery = query;
             if (mListener != null) mListener.onUpdateActionBarTitle(mQuery);
             if (mSearchMenuItem != null) mSearchMenuItem.collapseActionView();
-            // Refresh will reset all the needed data and call fetchGallery
-            refresh();
             return true;
         }
 
@@ -124,7 +124,7 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
     /**
      * Called when a successful search has been completed by the API
      */
-    public void onSuccessfulSearch(){
+    public void onSuccessfulSearch() {
         app.getSql().addPreviousGallerySearch(mQuery);
 
         if (mSearchAdapter == null) {

@@ -88,10 +88,10 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.gallery, menu);
         mSearchMenuItem = menu.findItem(R.id.search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
-        mSearchView.setQueryHint(getString(R.string.gallery_search_hint));
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String text) {
@@ -109,15 +109,6 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                 return false;
             }
         });
-
-        mSearchAdapter = new SearchAdapter(getActivity(), app.getSql().getPreviousGallerySearches(), DBContracts.GallerySearchContract.COLUMN_NAME);
-        mSearchAdapter.setFilterQueryProvider(new FilterQueryProvider() {
-            @Override
-            public Cursor runQuery(CharSequence constraint) {
-                return app.getSql().getPreviousGallerySearches(constraint);
-            }
-        });
-        mSearchView.setSuggestionsAdapter(mSearchAdapter);
         mSearchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
             @Override
             public boolean onSuggestionSelect(int position) {
@@ -125,6 +116,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
 
                 if (GalleryFragment.this instanceof GallerySearchFragment) {
                     ((GallerySearchFragment) GalleryFragment.this).setQuery(query);
+                    GalleryFragment.this.refresh();
                 } else {
                     startActivity(GallerySearchActivity.createIntent(getActivity(), query));
                 }
@@ -138,6 +130,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
 
                 if (GalleryFragment.this instanceof GallerySearchFragment) {
                     ((GallerySearchFragment) GalleryFragment.this).setQuery(query);
+                    GalleryFragment.this.refresh();
                 } else {
                     startActivity(GallerySearchActivity.createIntent(getActivity(), query));
                 }
@@ -145,7 +138,24 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                 return true;
             }
         });
-        super.onCreateOptionsMenu(menu, inflater);
+
+        // Guard against potential "Not attached to activity" exception, although I don't see how that's possible >_>
+        if (getActivity() != null) {
+            mSearchView.setQueryHint(getString(R.string.gallery_search_hint));
+
+            if (mSearchView.getSuggestionsAdapter() == null) {
+                mSearchAdapter = new SearchAdapter(getActivity(), app.getSql().getPreviousGallerySearches(), DBContracts.GallerySearchContract.COLUMN_NAME);
+                mSearchAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+                    @Override
+                    public Cursor runQuery(CharSequence constraint) {
+                        return app.getSql().getPreviousGallerySearches(constraint);
+                    }
+                });
+                mSearchView.setSuggestionsAdapter(mSearchAdapter);
+            }
+        } else {
+            LogUtil.w(TAG, "onCreateOptionsMenu: Not attached to activity yet");
+        }
     }
 
     @Override
