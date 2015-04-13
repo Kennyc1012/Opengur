@@ -2,7 +2,7 @@
 <b>2.6.1</b>
 - Fix crashes in GalleryFragment relating to null activity in onCreateOptionsMenu
 - Don't animate drawer hamburger menu 
-- 
+
 <b>2.6</b>
 - Gallery search added
 - Switch Floating Action Button [library](https://github.com/Clans/FloatingActionButton)
