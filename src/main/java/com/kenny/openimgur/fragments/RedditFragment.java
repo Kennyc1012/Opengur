@@ -91,7 +91,6 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
         inflater.inflate(R.menu.reddit, menu);
         mSearchMenuItem = menu.findItem(R.id.search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
-        mSearchView.setQueryHint(getString(R.string.enter_sub_reddit));
 
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -105,14 +104,6 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
             }
         });
 
-        mCursorAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(), DBContracts.SubRedditContract.COLUMN_NAME);
-        mCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
-            @Override
-            public Cursor runQuery(CharSequence constraint) {
-                return app.getSql().getSubReddits(constraint);
-            }
-        });
-        mSearchView.setSuggestionsAdapter(mCursorAdapter);
         mSearchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
             @Override
             public boolean onSuggestionSelect(int position) {
@@ -126,6 +117,18 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                 return search(title);
             }
         });
+
+        if (getActivity() != null) {
+            mSearchView.setQueryHint(getString(R.string.enter_sub_reddit));
+            mCursorAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(), DBContracts.SubRedditContract.COLUMN_NAME);
+            mCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+                @Override
+                public Cursor runQuery(CharSequence constraint) {
+                    return app.getSql().getSubReddits(constraint);
+                }
+            });
+            mSearchView.setSuggestionsAdapter(mCursorAdapter);
+        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
