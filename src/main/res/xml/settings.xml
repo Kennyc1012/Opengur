@@ -47,7 +47,7 @@
             android:title="@string/pref_exit_title"
             android:summaryOn="@string/pref_exit_on"
             android:summaryOff="@string/pref_exit_off"
-            android:defaultValue="true"/>
+            android:defaultValue="true" />
 
     </PreferenceCategory>
 
@@ -84,6 +84,11 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/developer">
+
+        <Preference
+            android:key="experimentalSettings"
+            android:title="@string/pref_experimental_settings"
+            android:summary="@string/pref_experimental_settings_summary" />
 
         <CheckBoxPreference
             android:key="crashlytics"

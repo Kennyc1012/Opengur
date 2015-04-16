@@ -69,6 +69,13 @@
         <item>X-Large</item>
     </string-array>
 
+    <string-array name="pref_thread_items">
+        <item>5 Threads</item>
+        <item>7 Threads</item>
+        <item>10 Threads</item>
+        <item>12 Threads</item>
+    </string-array>
+
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys" translatable="false">
         <item>256</item>
@@ -91,9 +98,18 @@
         <item>teal</item>
     </string-array>
 
-    <string-array name="pref_cache_loc_keys">
+    <string-array name="pref_cache_loc_keys" translatable="false">
         <item>internal</item>
         <item>external</item>
     </string-array>
+
+
+    <string-array name="pref_thread_keys" translatable="false">
+        <item>5</item>
+        <item>7</item>
+        <item>10</item>
+        <item>12</item>
+    </string-array>
+
 
 </resources>
