@@ -109,19 +109,17 @@ public class RandomFragment extends BaseGridFragment {
                         getAdapter().addItems(gallery);
                     }
 
-                    if (mListener != null) {
-                        mListener.onLoadingComplete();
-                    }
-
                     mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
 
                     // Due to MultiStateView setting the views visibility to GONE, the list will not reset to the top
                     // If they change the filter or refresh
                     if (mCurrentPage == 0) {
+                        if (mListener != null) mListener.onLoadingComplete();
+
                         mMultiStateView.post(new Runnable() {
                             @Override
                             public void run() {
-                                mGrid.setSelection(0);
+                                if (mGrid != null) mGrid.setSelection(0);
                             }
                         });
                     }

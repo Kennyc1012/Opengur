@@ -251,16 +251,14 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                     break;
 
                 case MESSAGE_ACTION_COMPLETE:
-                    if (mListener != null) {
-                        mListener.onLoadingComplete();
-                    }
-
                     app.getSql().addSubReddit(mQuery);
                     List<ImgurBaseObject> objects = (List<ImgurBaseObject>) msg.obj;
                     setupAdapter(objects);
                     mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
 
                     if (mCurrentPage == 0) {
+                        if (mListener != null) mListener.onLoadingComplete();
+
                         if (mCursorAdapter == null) {
                             mCursorAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(mQuery), DBContracts.SubRedditContract.COLUMN_NAME);
                             mSearchView.setSuggestionsAdapter(mCursorAdapter);
@@ -273,7 +271,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                         mGrid.post(new Runnable() {
                             @Override
                             public void run() {
-                                mGrid.setSelection(0);
+                                if (mGrid != null) mGrid.setSelection(0);
                             }
                         });
                     }
