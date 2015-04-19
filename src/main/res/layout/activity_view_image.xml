@@ -6,5 +6,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:loadingView="@layout/loading_view"
-    app:contentView="@layout/view_image"
-    app:viewState="loading" />
+    app:viewState="loading">
+
+    <com.diegocarloslima.byakugallery.lib.TouchImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <uk.co.senab.photoview.PhotoView
+        android:id="@+id/gifImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <com.kenny.openimgur.ui.VideoView
+        android:id="@+id/video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:visibility="gone" />
+
+</com.kenny.openimgur.ui.MultiStateView>

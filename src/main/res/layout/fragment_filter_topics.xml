@@ -18,7 +18,7 @@
             android:background="?colorPrimary"
             app:title="@string/topics_filter"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha"/>
+            app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha" />
 
         <com.kenny.openimgur.ui.MultiStateView
             android:id="@+id/multiView"
@@ -26,8 +26,11 @@
             android:layout_height="match_parent"
             app:errorView="@layout/error_view"
             app:loadingView="@layout/loading_view"
-            app:contentView="@layout/topics_filter"
-            app:viewState="loading" />
+            app:viewState="loading">
+
+            <include layout="@layout/topics_filter" />
+
+        </com.kenny.openimgur.ui.MultiStateView>
 
     </LinearLayout>
 
