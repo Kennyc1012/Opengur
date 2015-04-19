@@ -23,9 +23,7 @@
     <string name="loading_image_error">Unable to load image.</string>
     <string name="moments_ago">Moments Ago</string>
     <string name="profile">Profile</string>
-    <string name="favorites">Favorites</string>
     <string name="favorite">Favorite</string>
-    <string name="submissions">Submissions</string>
     <string name="upload">Upload</string>
     <string name="link_upload_desc">Enter URL to Upload From Web</string>
     <string name="upload_desc">Description</string>
@@ -81,7 +79,6 @@
     <string name="nav_open">Open</string>
     <string name="nav_close">Closed</string>
     <string name="subreddit">Subreddit</string>
-    <string name="login">Login</string>
     <string name="send_feedback">Send Feedback</string>
     <string name="search">Search</string>
     <string name="section">Section</string>
@@ -167,7 +164,6 @@
     <string name="convo_block_title">Block %s</string>
     <string name="convo_report_message">Are you sure you want to report %s?</string>
     <string name="convo_block_message">Are you sure you want to block %s?</string>
-    <string name="convo_user_blocked">%s has been blocked</string>
     <string name="convo_user_reported">%s has been reported</string>
 
     <!-- Profile -->
@@ -233,7 +229,6 @@
     <string name="meme_gen">Meme Generator</string>
     <string name="meme_top_text">TOP TEXT TAP TO CHANGE</string>
     <string name="meme_bottom_text">BOTTOM TEXT TAP TO CHANGE</string>
-    <string name="meme_loading">Loading Meme, one moment&#8230;</string>
     <string name="meme_font_size">Change font size</string>
     <string name="meme_input_title">Enter caption</string>
     <string name="meme_saving">Saving Meme, one moment&#8230;</string>
