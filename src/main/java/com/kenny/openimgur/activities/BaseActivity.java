@@ -11,7 +11,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
 /**
  * Created by kcampagna on 6/21/14.
  */
-abstract public class BaseActivity extends ActionBarActivity {
+abstract public class BaseActivity extends AppCompatActivity {
     public final String TAG = getClass().getSimpleName();
 
     public OpenImgurApp app;
