@@ -34,7 +34,7 @@ import io.fabric.sdk.android.Fabric;
 /**
  * Created by kcampagna on 6/14/14.
  */
-public class OpenImgurApp extends Application {
+public class OpenImgurApp extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "OpenImgur";
 
     private static boolean USE_STRICT_MODE = BuildConfig.DEBUG;
@@ -60,6 +60,7 @@ public class OpenImgurApp extends Application {
         super.onCreate();
         instance = this;
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mPref.registerOnSharedPreferenceChangeListener(this);
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
         checkRefreshToken();
@@ -92,9 +93,7 @@ public class OpenImgurApp extends Application {
 
     public ImageLoader getImageLoader() {
         if (mImageLoader == null || !mImageLoader.isInited()) {
-            String cacheKey = mPref.getString(SettingsActivity.KEY_CACHE_LOC, SettingsActivity.CACHE_LOC_INTERNAL);
-            File dir = ImageUtil.getCacheDirectory(getApplicationContext(), cacheKey);
-            ImageUtil.initImageLoader(getApplicationContext(), dir);
+            ImageUtil.initImageLoader(getApplicationContext());
             mImageLoader = ImageLoader.getInstance();
         }
 
@@ -246,6 +245,18 @@ public class OpenImgurApp extends Application {
                 mIsFetchingAccessToken = false;
                 return false;
             }
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        LogUtil.v(TAG, "Preference " + key + " changed");
+
+        switch (key) {
+            case SettingsActivity.KEY_THREAD_SIZE:
+            case SettingsActivity.CACHE_SIZE_KEY:
+                ImageUtil.initImageLoader(getApplicationContext());
+                break;
         }
     }
 }

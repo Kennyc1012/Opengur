@@ -3,7 +3,10 @@
     android:id="@+id/multiView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:contentView="@layout/list_view"
     app:loadingView="@layout/loading_view"
     app:errorView="@layout/error_view"
-    app:viewState="loading"/>
+    app:viewState="loading">
+
+    <include layout="@layout/list_view" />
+
+</com.kenny.openimgur.ui.MultiStateView>

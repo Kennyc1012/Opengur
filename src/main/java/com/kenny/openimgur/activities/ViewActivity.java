@@ -59,7 +59,6 @@ import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
-import com.kenny.snackbar.SnackBarItem;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -317,7 +316,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             LogUtil.v(TAG, "Received Gallery via ACTION_VIEW");
             mGalleryId = intent.getData().getPathSegments().get(1);
         } else if (!intent.hasExtra(KEY_OBJECTS) || !intent.hasExtra(KEY_POSITION)) {
-            SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString(R.string.error_generic)).build());
+            SnackBar.show(ViewActivity.this, R.string.error_generic);
             finish();
         } else {
             mCurrentPosition = intent.getIntExtra(KEY_POSITION, 0);
@@ -926,7 +925,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 if (browserIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(browserIntent);
                 } else {
-                    SnackBar.show(ViewActivity.this, new SnackBarItem.Builder().setMessage(getString(R.string.cant_launch_intent)).build());
+                    SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
                 }
 
                 return true;

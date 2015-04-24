@@ -5,7 +5,6 @@
         <attr name="loadingView" format="reference" />
         <attr name="emptyView" format="reference" />
         <attr name="errorView" format="reference" />
-        <attr name="contentView" format="reference" />
         <attr name="viewState" format="enum">
             <enum name="content" value="0" />
             <enum name="error" value="1" />

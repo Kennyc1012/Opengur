@@ -8,6 +8,7 @@ import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -47,7 +48,7 @@ public class MultiStateView extends FrameLayout {
 
     private View mEmptyView;
 
-    private ViewState mViewState = ViewState.CONTENT;
+    private ViewState mViewState;
 
     public MultiStateView(Context context) {
         this(context, null);
@@ -84,34 +85,77 @@ public class MultiStateView extends FrameLayout {
             addView(mErrorView, mErrorView.getLayoutParams());
         }
 
-        int contentViewId = a.getResourceId(R.styleable.MultiStateView_contentView, -1);
-        if (contentViewId > -1) {
-            mContentView = mInflater.inflate(contentViewId, this, false);
-            addView(mContentView, mContentView.getLayoutParams());
-        }
-
         int viewState = a.getInt(R.styleable.MultiStateView_viewState, UNKNOWN_VIEW);
         if (viewState != UNKNOWN_VIEW) {
             switch (viewState) {
                 case CONTENT_VIEW:
-                    setViewState(ViewState.CONTENT);
+                    mViewState = ViewState.CONTENT;
                     break;
 
                 case ERROR_VIEW:
-                    setViewState(ViewState.ERROR);
+                    mViewState = ViewState.EMPTY;
                     break;
 
                 case EMPTY_VIEW:
-                    setViewState(ViewState.EMPTY);
+                    mViewState = ViewState.EMPTY;
                     break;
 
                 case LOADING_VIEW:
-                    setViewState(ViewState.LOADING);
+                    mViewState = ViewState.LOADING;
                     break;
             }
         }
 
         a.recycle();
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (mContentView == null) throw new IllegalArgumentException("Content view is not defined");
+        setView();
+    }
+
+    @Override
+    public void addView(View child) {
+        if (isValidContentView(child)) mContentView = child;
+        super.addView(child);
+    }
+
+    @Override
+    public void addView(View child, int index) {
+        if (isValidContentView(child)) mContentView = child;
+        super.addView(child, index);
+    }
+
+    @Override
+    public void addView(View child, int index, ViewGroup.LayoutParams params) {
+        if (isValidContentView(child)) mContentView = child;
+        super.addView(child, index, params);
+    }
+
+    @Override
+    public void addView(View child, ViewGroup.LayoutParams params) {
+        if (isValidContentView(child)) mContentView = child;
+        super.addView(child, params);
+    }
+
+    @Override
+    public void addView(View child, int width, int height) {
+        if (isValidContentView(child)) mContentView = child;
+        super.addView(child, width, height);
+    }
+
+    @Override
+    protected boolean addViewInLayout(View child, int index, ViewGroup.LayoutParams params) {
+        if (isValidContentView(child)) mContentView = child;
+        return super.addViewInLayout(child, index, params);
+    }
+
+    @Override
+    protected boolean addViewInLayout(View child, int index, ViewGroup.LayoutParams params, boolean preventRequestLayout) {
+        if (isValidContentView(child)) mContentView = child;
+        return super.addViewInLayout(child, index, params, preventRequestLayout);
     }
 
     /**
@@ -366,5 +410,19 @@ public class MultiStateView extends FrameLayout {
 
                 break;
         }
+    }
+
+    /**
+     * Checks if the given view is valid for the Content View
+     *
+     * @param view
+     * @return
+     */
+    private boolean isValidContentView(View view) {
+        if (mContentView != null && mContentView != view) {
+            return false;
+        }
+
+        return view != mLoadingView && view != mErrorView && view != mEmptyView;
     }
 }

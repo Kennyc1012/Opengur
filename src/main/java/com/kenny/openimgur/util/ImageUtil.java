@@ -1,6 +1,7 @@
 package com.kenny.openimgur.util;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -131,39 +132,79 @@ public class ImageUtil {
      * Initializes the ImageLoader
      *
      * @param context App context
-     * @param dir     Directory for cache
      */
-    public static void initImageLoader(Context context, File dir) {
+    public static void initImageLoader(Context context) {
         long discCacheSize = 1024 * 1024;
         DiskCache discCache;
-        String discCacheAllowance = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(SettingsActivity.CACHE_SIZE_KEY, SettingsActivity.CACHE_SIZE_512MB);
+        int threadPoolSize;
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        String discCacheAllowance = pref.getString(SettingsActivity.CACHE_SIZE_KEY, SettingsActivity.CACHE_SIZE_512MB);
+        String threadSize = pref.getString(SettingsActivity.KEY_THREAD_SIZE, SettingsActivity.THREAD_SIZE_5);
+        String cacheKey = pref.getString(SettingsActivity.KEY_CACHE_LOC, SettingsActivity.CACHE_LOC_INTERNAL);
+        File dir = getCacheDirectory(context, cacheKey);
 
-        if (SettingsActivity.CACHE_SIZE_256MB.equals(discCacheAllowance)) {
-            discCacheSize *= 256;
-        } else if (SettingsActivity.CACHE_SIZE_512MB.equals(discCacheAllowance)) {
-            discCacheSize *= 512;
-        } else if (SettingsActivity.CACHE_SIZE_1GB.equals(discCacheAllowance)) {
-            discCacheSize *= 1024;
-        } else if (SettingsActivity.CACHE_SIZE_2GB.equals(discCacheAllowance)) {
-            discCacheSize *= 2048;
-        } else {
-            discCacheSize = 0;
+        switch (discCacheAllowance) {
+            case SettingsActivity.CACHE_SIZE_256MB:
+                discCacheSize *= 256;
+                break;
+
+            case SettingsActivity.CACHE_SIZE_1GB:
+                discCacheSize *= 1024;
+                break;
+
+            case SettingsActivity.CACHE_SIZE_2GB:
+                discCacheSize *= 2048;
+                break;
+
+            case SettingsActivity.CACHE_SIZE_UNLIMITED:
+                discCacheSize = -1;
+                break;
+
+            case SettingsActivity.CACHE_SIZE_512MB:
+            default:
+                discCacheSize *= 512;
+                break;
         }
 
-        try {
-            discCache = new LruDiscCache(dir, new Md5FileNameGenerator(), discCacheSize);
-            LogUtil.v(TAG, "Disc cache set to " + FileUtil.humanReadableByteCount(discCacheSize, false));
-        } catch (IOException e) {
-            LogUtil.e(TAG, "Unable to set the disc cache, falling back to unlimited", e);
+        switch (threadSize) {
+            case SettingsActivity.THREAD_SIZE_7:
+                threadPoolSize = 7;
+                break;
+
+            case SettingsActivity.THREAD_SIZE_10:
+                threadPoolSize = 10;
+                break;
+
+            case SettingsActivity.THREAD_SIZE_12:
+                threadPoolSize = 12;
+                break;
+
+            case SettingsActivity.THREAD_SIZE_5:
+            default:
+                threadPoolSize = 5;
+                break;
+        }
+
+        if (discCacheSize > 0) {
+            try {
+                discCache = new LruDiscCache(dir, new Md5FileNameGenerator(), discCacheSize);
+                LogUtil.v(TAG, "Disc cache set to " + FileUtil.humanReadableByteCount(discCacheSize, false));
+            } catch (IOException e) {
+                LogUtil.e(TAG, "Unable to set the disc cache, falling back to unlimited", e);
+                discCache = new UnlimitedDiscCache(dir);
+            }
+        } else {
+            LogUtil.v(TAG, "Disc cache set to unlimited");
             discCache = new UnlimitedDiscCache(dir);
         }
 
         final int memory = (int) (Runtime.getRuntime().maxMemory() / 8);
+        LogUtil.v(TAG, "Disc Cache located at " + discCache.getDirectory().getAbsolutePath());
         LogUtil.v(TAG, "Using " + FileUtil.humanReadableByteCount(memory, false) + "  for memory cache");
+        LogUtil.v(TAG, "Using " + threadPoolSize + " threads for image loader");
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                .threadPoolSize(5)
+                .threadPoolSize(threadPoolSize)
                 .denyCacheImageMultipleSizesInMemory()
                 .diskCache(discCache)
                 .defaultDisplayImageOptions(getDefaultDisplayOptions().build())

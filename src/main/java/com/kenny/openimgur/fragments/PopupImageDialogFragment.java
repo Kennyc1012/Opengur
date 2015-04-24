@@ -322,8 +322,10 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
 
     @Override
     public void onVideoDownloadFailed(Exception ex, String url) {
-        SnackBar.show(getActivity(), R.string.loading_image_error);
-        dismiss();
+        if (isAdded() && isResumed() && getActivity() != null) {
+            SnackBar.show(getActivity(), R.string.loading_image_error);
+            dismiss();
+        }
     }
 
     @Override

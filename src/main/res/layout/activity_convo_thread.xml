@@ -22,7 +22,7 @@
             android:src="@drawable/ic_action_send"
             app:fab_colorNormal="?colorAccent"
             app:fab_colorPressed="?fabPressed"
-            app:fab_showShadow="false"/>
+            app:fab_showShadow="false" />
 
         <EditText
             android:id="@+id/messageInput"
@@ -42,8 +42,17 @@
         android:layout_above="@id/messageInputContainer"
         app:loadingView="@layout/loading_view"
         app:errorView="@layout/profile_error"
-        app:contentView="@layout/convo_thread"
         app:emptyView="@layout/empty_comment_view"
-        app:viewState="loading" />
+        app:viewState="loading">
+
+        <ListView
+            android:id="@+id/convoList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:choiceMode="none" />
+
+    </com.kenny.openimgur.ui.MultiStateView>
 
 </RelativeLayout>

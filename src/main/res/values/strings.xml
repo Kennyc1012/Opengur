@@ -23,9 +23,7 @@
     <string name="loading_image_error">Unable to load image.</string>
     <string name="moments_ago">Moments Ago</string>
     <string name="profile">Profile</string>
-    <string name="favorites">Favorites</string>
     <string name="favorite">Favorite</string>
-    <string name="submissions">Submissions</string>
     <string name="upload">Upload</string>
     <string name="link_upload_desc">Enter URL to Upload From Web</string>
     <string name="upload_desc">Description</string>
@@ -81,7 +79,6 @@
     <string name="nav_open">Open</string>
     <string name="nav_close">Closed</string>
     <string name="subreddit">Subreddit</string>
-    <string name="login">Login</string>
     <string name="send_feedback">Send Feedback</string>
     <string name="search">Search</string>
     <string name="section">Section</string>
@@ -96,6 +93,8 @@
     <string name="image_uploading">Uploading Image</string>
     <string name="link_copied">Link copied</string>
     <string name="link_copy_failed">Unable to copy link</string>
+    <string name="caution">Caution</string>
+    <string name="okay">Okay</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -165,7 +164,6 @@
     <string name="convo_block_title">Block %s</string>
     <string name="convo_report_message">Are you sure you want to report %s?</string>
     <string name="convo_block_message">Are you sure you want to block %s?</string>
-    <string name="convo_user_blocked">%s has been blocked</string>
     <string name="convo_user_reported">%s has been reported</string>
 
     <!-- Profile -->
@@ -213,6 +211,14 @@
     <string name="pref_search_desc">Clear Gallery Search History</string>
     <string name="pref_search_deleted">Gallery search history cleared</string>
 
+    <!-- Experimental Settings -->
+    <string name="pref_experimental_settings">Experimental Settings</string>
+    <string name="pref_experimental_settings_summary">Change experimental settings at your own risk</string>
+    <string name="pref_experimental_warning_msg">WARNING! Changing any of these settings may cause the app to become unstable. Proceed with caution.</string>
+    <string name="pref_experimental_thread_size">Image Thread Pool Size</string>
+    <string name="pref_experimental_reset">Reset to defaults</string>
+    <string name="pref_experimental_reset_msg">Are you sure you want to reset all values to their defaults?</string>
+
     <!-- Topics -->
     <string name="topic">Topic</string>
     <string name="topics">Topics</string>
@@ -223,7 +229,6 @@
     <string name="meme_gen">Meme Generator</string>
     <string name="meme_top_text">TOP TEXT TAP TO CHANGE</string>
     <string name="meme_bottom_text">BOTTOM TEXT TAP TO CHANGE</string>
-    <string name="meme_loading">Loading Meme, one moment&#8230;</string>
     <string name="meme_font_size">Change font size</string>
     <string name="meme_input_title">Enter caption</string>
     <string name="meme_saving">Saving Meme, one moment&#8230;</string>

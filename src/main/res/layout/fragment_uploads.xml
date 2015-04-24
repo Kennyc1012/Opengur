@@ -4,7 +4,10 @@
     android:id="@+id/multiView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:contentView="@layout/grid_view"
     app:loadingView="@layout/loading_view"
     app:emptyView="@layout/uploads_empty"
-    app:viewState="loading" />
+    app:viewState="loading">
+
+    <include layout="@layout/grid_view" />
+
+</com.kenny.openimgur.ui.MultiStateView>

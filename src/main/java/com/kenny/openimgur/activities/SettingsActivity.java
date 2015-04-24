@@ -1,19 +1,17 @@
 package com.kenny.openimgur.activities;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.fragments.SettingsFragment;
-import com.kenny.snackbar.SnackBar;
 
 /**
  * Created by kcampagna on 6/30/14.
  */
 public class SettingsActivity extends BaseActivity {
+    private static final String KEY_IS_EXPERIMENTAL = "isExperimental";
+
     public static final int REQUEST_CODE = 200;
 
     public static final String NSFW_KEY = "allowNSFW";
@@ -50,38 +48,30 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String KEY_CONFIRM_EXIT = "confirmExit";
 
+    public static final String KEY_THREAD_SIZE = "threadSize";
+
+    public static final String THREAD_SIZE_5 = "5";
+
+    public static final String THREAD_SIZE_7 = "7";
+
+    public static final String THREAD_SIZE_10 = "10";
+
+    public static final String THREAD_SIZE_12 = "12";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
-        getFragmentManager().beginTransaction().add(R.id.container, SettingsFragment.createInstance()).commit();
-        getSupportActionBar().setTitle(R.string.action_settings);
-    }
+        boolean isExperimental = getIntent().getBooleanExtra(KEY_IS_EXPERIMENTAL, false);
+        getSupportActionBar().setTitle(isExperimental ? R.string.pref_experimental_settings : R.string.action_settings);
+        setContentView(isExperimental ? R.layout.activity_settings_experimental : R.layout.activity_settings);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        SnackBar.cancelSnackBars(this);
-        super.onDestroy();
     }
 
     public static Intent createIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
     }
 
-    @Override
-    public void recreate() {
-        Fragment fragment = getFragmentManager().findFragmentById(R.id.container);
-        if (fragment != null) getFragmentManager().beginTransaction().remove(fragment).commit();
-        super.recreate();
+    public static Intent createIntent(Context context, boolean isExperimental) {
+        return createIntent(context).putExtra(KEY_IS_EXPERIMENTAL, isExperimental);
     }
 }

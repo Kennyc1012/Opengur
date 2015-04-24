@@ -91,7 +91,6 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
         inflater.inflate(R.menu.reddit, menu);
         mSearchMenuItem = menu.findItem(R.id.search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
-        mSearchView.setQueryHint(getString(R.string.enter_sub_reddit));
 
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -105,14 +104,6 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
             }
         });
 
-        mCursorAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(), DBContracts.SubRedditContract.COLUMN_NAME);
-        mCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
-            @Override
-            public Cursor runQuery(CharSequence constraint) {
-                return app.getSql().getSubReddits(constraint);
-            }
-        });
-        mSearchView.setSuggestionsAdapter(mCursorAdapter);
         mSearchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
             @Override
             public boolean onSuggestionSelect(int position) {
@@ -126,6 +117,18 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                 return search(title);
             }
         });
+
+        if (getActivity() != null) {
+            mSearchView.setQueryHint(getString(R.string.enter_sub_reddit));
+            mCursorAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(), DBContracts.SubRedditContract.COLUMN_NAME);
+            mCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+                @Override
+                public Cursor runQuery(CharSequence constraint) {
+                    return app.getSql().getSubReddits(constraint);
+                }
+            });
+            mSearchView.setSuggestionsAdapter(mCursorAdapter);
+        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -248,16 +251,14 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                     break;
 
                 case MESSAGE_ACTION_COMPLETE:
-                    if (mListener != null) {
-                        mListener.onLoadingComplete();
-                    }
-
                     app.getSql().addSubReddit(mQuery);
                     List<ImgurBaseObject> objects = (List<ImgurBaseObject>) msg.obj;
                     setupAdapter(objects);
                     mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
 
                     if (mCurrentPage == 0) {
+                        if (mListener != null) mListener.onLoadingComplete();
+
                         if (mCursorAdapter == null) {
                             mCursorAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(mQuery), DBContracts.SubRedditContract.COLUMN_NAME);
                             mSearchView.setSuggestionsAdapter(mCursorAdapter);
@@ -270,7 +271,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                         mGrid.post(new Runnable() {
                             @Override
                             public void run() {
-                                mGrid.setSelection(0);
+                                if (mGrid != null) mGrid.setSelection(0);
                             }
                         });
                     }
