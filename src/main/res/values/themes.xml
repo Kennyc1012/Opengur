@@ -24,7 +24,7 @@
         <item name="android:textColor">@color/primary_text_default_material_light</item>
         <item name="android:textColorHint">@color/secondary_text_default_material_light</item>
         <item name="android:textColorLink">?colorAccent</item>
-        <item name="editTextColor">@color/primary_text_default_material_light</item>
+        <item name="android:editTextColor">@color/primary_text_default_material_light</item>
         <item name="radioButtonStyle">@style/RadioButton.Style.Light</item>
         <item name="checkboxStyle">@style/CheckBox.Style.Light</item>
         <item name="cardBG">@color/cardview_light_background</item>
@@ -115,7 +115,7 @@
         <item name="android:textColor">@color/primary_text_default_material_dark</item>
         <item name="android:textColorHint">@color/secondary_text_default_material_dark</item>
         <item name="android:textColorLink">?colorAccent</item>
-        <item name="editTextColor">@color/primary_text_default_material_dark</item>
+        <item name="android:editTextColor">@color/primary_text_default_material_dark</item>
         <item name="radioButtonStyle">@style/RadioButton.Style.Dark</item>
         <item name="checkboxStyle">@style/CheckBox.Style.Dark</item>
         <item name="cardBG">@color/card_bg_dark</item>
