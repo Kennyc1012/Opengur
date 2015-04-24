@@ -1,4 +1,14 @@
 #Open Imgur Changelog
+<b>2.6.2</b>
+- Experimental Settings section added
+- Several miscellaneous bug fixes 
+- Fix Floating Action Button visibility toggling when scrolling
+- Update appcompat to 22.1.0
+- Update Material Dialogs to 0.7.2.7
+- Update SnackBar to 2.0
+- Update Gif Drawable to 1.1.6
+- Update Floating Action Button to 1.4.0
+
 <b>2.6.1</b>
 - Fix crashes in GalleryFragment relating to null activity in onCreateOptionsMenu
 - Don't animate drawer hamburger menu 
