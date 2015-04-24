@@ -32,8 +32,8 @@ android {
         applicationId "com.kennyc.open.imgur"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 21
-        versionName "2.6.1"
+        versionCode 22
+        versionName "2.6.2"
         buildConfigField "String", "API_CLIENT_ID", project.API_CLIENT_ID
         buildConfigField "String", "API_CLIENT_SECRET", project.API_CLIENT_SECRET
     }
