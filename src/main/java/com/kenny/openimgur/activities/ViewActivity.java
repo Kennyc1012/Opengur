@@ -948,7 +948,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             menu.findItem(R.id.favorite).setIcon(imgurObject.isFavorited() ?
-                    R.drawable.ic_action_unfavorite : R.drawable.ic_action_favorite);
+                    R.drawable.ic_action_favorite : R.drawable.ic_action_unfavorite);
 
             updateShareProvider((ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.share)), imgurObject);
         }
