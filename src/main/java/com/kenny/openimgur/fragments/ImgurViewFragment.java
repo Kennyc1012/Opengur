@@ -196,8 +196,12 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
      * Creates the header for the photo/album. This MUST be called before settings the adapter for pre 4.4 devices
      */
     private void createHeader() {
-        if (mHeaderView == null)
+        if (mHeaderView == null) {
             mHeaderView = View.inflate(getActivity(), R.layout.image_header, null);
+        }
+
+        // Fetch the tags, except if its from reddit, they will never have tags and it isn't worth the API call
+        boolean fetchTags = TextUtils.isEmpty(mImgurObject.getRedditLink()) && !TextUtils.isEmpty(mImgurObject.getAccountId());
         TextView title = (TextView) mHeaderView.findViewById(R.id.title);
         TextView author = (TextView) mHeaderView.findViewById(R.id.author);
         PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
@@ -229,20 +233,24 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             pointText.setTextColor(getResources().getColor(R.color.notoriety_negative));
         }
 
+        if (mImgurObject.getTags() != null && mImgurObject.getTags().size() > 0) {
+            displayTags(false);
+            fetchTags = false;
+        }
+
         mListView.addHeaderView(mHeaderView);
 
-        // Fetch the tags,except if its from reddit, they will never have tags and it isn't worth the API call
-        if (TextUtils.isEmpty(mImgurObject.getRedditLink())) {
+        if (fetchTags) {
             String tagsUrl = String.format(Endpoints.TAGS.getUrl(), mImgurObject.getId());
             new ApiClient(tagsUrl, ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.TAGS, mImgurObject.getId(), null);
         }
     }
 
-    private void displayTags(ArrayList<String> tags) {
+    private void displayTags(boolean animateIn) {
         if (mHeaderView != null) {
             final TextView tagTextView = (TextView) mHeaderView.findViewById(R.id.tags);
             Drawable tagDrawable;
-            int size = tags.size();
+            int size = mImgurObject.getTags().size();
             StringBuilder builder = new StringBuilder();
 
             // Tag icon is already dark themed
@@ -253,25 +261,29 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             for (int i = 0; i < size; i++) {
-                builder.append(tags.get(i));
+                builder.append(mImgurObject.getTags().get(i));
                 if (i != size - 1) builder.append(", ");
             }
 
             tagTextView.setText(builder.toString());
             tagTextView.setCompoundDrawablesWithIntrinsicBounds(tagDrawable, null, null, null);
 
-            // Fade in the tags so they just don't appear randomly
-            ObjectAnimator anim = ObjectAnimator.ofFloat(tagTextView, "alpha", 0.0f, 1.0f)
-                    .setDuration(750);
+            if (animateIn) {
+                // Fade in the tags so they just don't appear randomly
+                ObjectAnimator anim = ObjectAnimator.ofFloat(tagTextView, "alpha", 0.0f, 1.0f)
+                        .setDuration(750);
 
-            anim.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    tagTextView.setVisibility(View.VISIBLE);
-                }
-            });
+                anim.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        tagTextView.setVisibility(View.VISIBLE);
+                    }
+                });
 
-            anim.start();
+                anim.start();
+            } else {
+                tagTextView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -385,6 +397,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                                     tagList.add(tag.getString("name"));
                                 }
 
+                                LogUtil.v(TAG, "Received " + tagList.size() + " tags");
                                 mHandler.sendMessage(ImgurHandler.MESSAGE_TAGS_RECEIVED, tagList);
                             }
                         }
@@ -597,7 +610,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     break;
 
                 case MESSAGE_TAGS_RECEIVED:
-                    if (msg.obj instanceof ArrayList) displayTags((ArrayList<String>) msg.obj);
+                    if (msg.obj instanceof ArrayList) {
+                        mImgurObject.setTags((ArrayList<String>) msg.obj);
+                        displayTags(true);
+                    }
                     break;
 
                 default:
