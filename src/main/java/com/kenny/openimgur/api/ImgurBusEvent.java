@@ -37,7 +37,8 @@ public class ImgurBusEvent {
         CONVO_BLOCK,
         TOPICS,
         MEME,
-        GALLERY_SEARCH
+        GALLERY_SEARCH,
+        TAGS
     }
 
     public JSONObject json;

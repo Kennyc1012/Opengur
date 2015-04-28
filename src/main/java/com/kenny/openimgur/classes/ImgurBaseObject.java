@@ -10,6 +10,9 @@ import com.kenny.openimgur.util.LogUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Base class to hold common values between Imgur Api responses
  */
@@ -98,6 +101,8 @@ public class ImgurBaseObject implements Parcelable {
     private boolean mIsFavorited;
 
     private boolean mIsNSFW = false;
+
+    private ArrayList<String> mTags;
 
     public ImgurBaseObject(String id, String title, String link) {
         mId = id;
@@ -316,6 +321,14 @@ public class ImgurBaseObject implements Parcelable {
         mVote = vote;
     }
 
+    public void setTags(ArrayList tags) {
+        mTags = tags;
+    }
+
+    public ArrayList getTags() {
+        return mTags;
+    }
+
     /**
      * Returns the gallery link
      *
@@ -347,6 +360,7 @@ public class ImgurBaseObject implements Parcelable {
         out.writeInt(mIsNSFW ? 1 : 0);
         out.writeLong(mDate);
         out.writeLong(mBandwidth);
+        out.writeStringList(mTags);
     }
 
     public static final Parcelable.Creator<ImgurBaseObject> CREATOR = new Parcelable.Creator<ImgurBaseObject>() {
@@ -385,6 +399,8 @@ public class ImgurBaseObject implements Parcelable {
         mIsNSFW = in.readInt() == 1;
         mDate = in.readLong();
         mBandwidth = in.readLong();
+        mTags = new ArrayList<>();
+        in.readStringList(mTags);
     }
 
     @Override
