@@ -16,6 +16,8 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://dl.bintray.com/kennyc1012/maven' }
     maven { url "http://dl.bintray.com/amulyakhare/maven" }
+    // Use if material dialogs can not be found
+    // maven { url 'https://dl.bintray.com/drummer-aidan/maven' }
     maven { url 'https://maven.fabric.io/public' }
     flatDir { dirs 'libs' }
     mavenCentral()
@@ -62,8 +64,8 @@ dependencies {
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.6'
     compile 'com.github.chrisbanes.photoview:library:1.2.3'
     compile 'com.android.support:support-annotations:21.0.3'
-    compile 'com.android.support:support-v13:21.0.3'
-    compile 'com.android.support:cardview-v7:21.0.3'
+    compile 'com.android.support:support-v13:22.1.1'
+    compile 'com.android.support:cardview-v7:22.1.1'
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
     compile 'com.kennyc:snackbar:2.0.2'
@@ -71,7 +73,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
-    compile 'com.afollestad:material-dialogs:0.7.2.8'
+    compile 'com.afollestad:material-dialogs:0.7.3.1'
     compile 'com.github.clans:fab:1.4.0'
     compile(name: 'photo_zoom', ext: 'aar')
     compile(name: 'sliding_panel', ext: 'aar')
