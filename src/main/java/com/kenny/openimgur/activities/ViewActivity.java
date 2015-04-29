@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -219,7 +220,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
-        mMultiView.setErrorButtonText(R.id.errorButton, R.string.load_comments);
+        ((Button) mMultiView.getView(MultiStateView.ViewState.ERROR).findViewById(R.id.errorButton)).setText(R.string.load_comments);
         mCommentListHeader = (TextView) View.inflate(this, R.layout.previous_comments_header, null);
         Drawable[] drawables = mCommentListHeader.getCompoundDrawables();
 
@@ -330,7 +331,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    private void loadComments() {
+    @OnClick(R.id.errorButton)
+    public void loadComments() {
         if (mLoadComments && mPagerAdapter != null) {
             ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
 
@@ -1144,14 +1146,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
-                    mMultiView.setErrorButtonText(R.id.errorButton, R.string.retry);
-                    mMultiView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            loadComments();
-                        }
-                    });
-
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
 

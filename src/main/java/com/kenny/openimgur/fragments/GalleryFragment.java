@@ -288,15 +288,6 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                         }
 
                         mMultiStateView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
-                        mMultiStateView.setErrorButtonText(R.id.errorButton, R.string.retry);
-                        mMultiStateView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
-                                fetchGallery();
-                            }
-                        });
-
                         mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                     break;

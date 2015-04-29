@@ -339,7 +339,9 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
         mListener = listner;
     }
 
-    private void fetchTopics() {
+    @OnClick(R.id.errorButton)
+    public void fetchTopics() {
+        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
         new ApiClient(Endpoints.TOPICS_DEFAULTS.getUrl(), ApiClient.HttpRequest.GET)
                 .doWork(ImgurBusEvent.EventType.TOPICS, "topics", null);
     }
@@ -464,15 +466,6 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
             switch (msg.what) {
                 case MESSAGE_ACTION_FAILED:
                     mMultiStateView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
-                    mMultiStateView.setErrorButtonText(R.id.errorButton, R.string.retry);
-                    mMultiStateView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
-                            fetchTopics();
-                        }
-                    });
-
                     mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
 
