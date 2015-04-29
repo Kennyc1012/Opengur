@@ -73,6 +73,8 @@ import pl.droidsonroids.gif.GifDrawable;
 public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private static final String KEY_IMGUR_OBJECT = "imgurobject";
 
+    private static final String KEY_DISPLAY_TAGS = "display_tags";
+
     private static final String KEY_ITEMS = "items";
 
     @InjectView(R.id.multiView)
@@ -87,12 +89,15 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     private PhotoAdapter mPhotoAdapter;
 
+    private boolean mDisplayTags = true;
+
     private static final long FIVE_MB = 5 * 1024 * 1024;
 
-    public static ImgurViewFragment createInstance(@NonNull ImgurBaseObject obj) {
+    public static ImgurViewFragment createInstance(@NonNull ImgurBaseObject obj, boolean displayTags) {
         ImgurViewFragment fragment = new ImgurViewFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_IMGUR_OBJECT, obj);
+        args.putBoolean(KEY_DISPLAY_TAGS, displayTags);
         fragment.setArguments(args);
         return fragment;
     }
@@ -147,6 +152,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void handleArguments(Bundle args, Bundle savedInstanceState) {
         // We have a savedInstanceState, use them over args
         if (savedInstanceState != null) {
+            mDisplayTags = savedInstanceState.getBoolean(KEY_DISPLAY_TAGS, true);
             mImgurObject = savedInstanceState.getParcelable(KEY_IMGUR_OBJECT);
             List<ImgurPhoto> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
             mPhotoAdapter = new PhotoAdapter(getActivity(), photos, this);
@@ -154,6 +160,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
         } else {
+            mDisplayTags = args.getBoolean(KEY_DISPLAY_TAGS, true);
             setupFragmentWithObject((ImgurBaseObject) args.getParcelable(KEY_IMGUR_OBJECT));
         }
     }
@@ -201,7 +208,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         }
 
         // Fetch the tags, except if its from reddit, they will never have tags and it isn't worth the API call
-        boolean fetchTags = TextUtils.isEmpty(mImgurObject.getRedditLink()) && !TextUtils.isEmpty(mImgurObject.getAccountId());
+        boolean fetchTags = mDisplayTags && TextUtils.isEmpty(mImgurObject.getRedditLink()) && !TextUtils.isEmpty(mImgurObject.getAccountId());
         TextView title = (TextView) mHeaderView.findViewById(R.id.title);
         TextView author = (TextView) mHeaderView.findViewById(R.id.author);
         PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
@@ -625,11 +632,13 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
         if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_ITEMS, mPhotoAdapter.retainItems());
         }
 
+        outState.putBoolean(KEY_DISPLAY_TAGS, mDisplayTags);
         outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);
-        super.onSaveInstanceState(outState);
     }
 }

@@ -179,9 +179,9 @@
     <!-- Preferences -->
     <string name="pref_cache_title">Cache</string>
     <string name="pref_current_cache_size">Current Cache Size</string>
-    <string name="pref_comment_title">Load Comments</string>
-    <string name="pref_comments_on">Automatically Load Comments</string>
-    <string name="pref_comments_off">Don\'t Automatically Load Comments</string>
+    <string name="pref_comment_title">Comments</string>
+    <string name="pref_comments_on">Display Comments</string>
+    <string name="pref_comments_off">Don\'t Display Comments</string>
     <string name="pref_category_title">Theme</string>
     <string name="pref_theme_title">App Color Theme</string>
     <string name="pref_adb_title">ADB Logs</string>
@@ -210,6 +210,9 @@
     <string name="pref_search_title">Gallery Search History</string>
     <string name="pref_search_desc">Clear Gallery Search History</string>
     <string name="pref_search_deleted">Gallery search history cleared</string>
+    <string name="pref_tags_title">Tags</string>
+    <string name="pref_tags_on">Display Tags</string>
+    <string name="pref_tags_off">Don\'t Display Tags</string>
 
     <!-- Experimental Settings -->
     <string name="pref_experimental_settings">Experimental Settings</string>

@@ -49,6 +49,7 @@ import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.CommentPopupFragment;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
@@ -321,7 +322,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         } else {
             mCurrentPosition = intent.getIntExtra(KEY_POSITION, 0);
             ArrayList<ImgurBaseObject> objects = intent.getParcelableArrayListExtra(KEY_OBJECTS);
-            mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
+            mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
 
             if (mSideGalleryFragment != null) {
                 mSideGalleryFragment.addGalleryItems(objects);
@@ -505,7 +506,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             mIsResuming = true;
             mCurrentPosition = savedInstanceState.getInt(KEY_POSITION, 0);
             ArrayList<ImgurBaseObject> objects = savedInstanceState.getParcelableArrayList(KEY_OBJECTS);
-            mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
+            mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
             mViewPager.setAdapter(mPagerAdapter);
             mViewPager.setCurrentItem(mCurrentPosition);
 
@@ -528,7 +529,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mMultiView.setViewState(MultiStateView.ViewState.ERROR);
             }
 
-            if (savedInstanceState.getBoolean(KEY_PANEL_EXPANDED, false)) getSupportActionBar().hide();
+            if (savedInstanceState.getBoolean(KEY_PANEL_EXPANDED, false))
+                getSupportActionBar().hide();
         }
     }
 
@@ -998,7 +1000,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             outState.putParcelableArrayList(KEY_OBJECTS, mPagerAdapter.retainItems());
         }
 
-        if (mSlidingPane != null) outState.putBoolean(KEY_PANEL_EXPANDED, mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
+        if (mSlidingPane != null)
+            outState.putBoolean(KEY_PANEL_EXPANDED, mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
     private void onListItemClick(int position) {
@@ -1177,7 +1180,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 case MESSAGE_ITEM_DETAILS:
                     final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
                     objects.add((ImgurBaseObject) msg.obj);
-                    mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
+                    mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
                     mViewPager.setAdapter(mPagerAdapter);
                     invalidateOptionsMenu();
                     loadComments();
@@ -1233,14 +1236,17 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private static class BrowsingAdapter extends FragmentStatePagerAdapter {
         private ArrayList<ImgurBaseObject> objects;
 
-        public BrowsingAdapter(FragmentManager fm, ArrayList<ImgurBaseObject> objects) {
+        private boolean mDisplayTags;
+
+        public BrowsingAdapter(Context context, FragmentManager fm, ArrayList<ImgurBaseObject> objects) {
             super(fm);
             this.objects = objects;
+            mDisplayTags = OpenImgurApp.getInstance(context).getPreferences().getBoolean(SettingsActivity.KEY_TAGS, true);
         }
 
         @Override
         public Fragment getItem(int position) {
-            return ImgurViewFragment.createInstance(objects.get(position));
+            return ImgurViewFragment.createInstance(objects.get(position), mDisplayTags);
         }
 
         @Override

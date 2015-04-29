@@ -58,6 +58,8 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String THREAD_SIZE_12 = "12";
 
+    public static final String KEY_TAGS = "autoLoadTags";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
