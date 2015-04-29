@@ -311,7 +311,7 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
         mListener = listener;
     }
 
-    public static interface FilterListener {
+    public interface FilterListener {
         void onFilterChanged(RedditSort sort, ImgurFilters.TimeSort topSort);
     }
 }

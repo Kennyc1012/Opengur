@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;

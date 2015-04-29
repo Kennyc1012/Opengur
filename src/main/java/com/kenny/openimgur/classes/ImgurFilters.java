@@ -15,7 +15,7 @@ public class ImgurFilters {
 
         private final String mSection;
 
-        private GallerySection(String s) {
+        GallerySection(String s) {
             mSection = s;
         }
 
@@ -64,7 +64,7 @@ public class ImgurFilters {
 
         private final String mSort;
 
-        private GallerySort(String s) {
+        GallerySort(String s) {
             mSort = s;
         }
 
@@ -152,7 +152,7 @@ public class ImgurFilters {
 
         private final String mSort;
 
-        private CommentSort(String sort) {
+        CommentSort(String sort) {
             mSort = sort;
         }
 

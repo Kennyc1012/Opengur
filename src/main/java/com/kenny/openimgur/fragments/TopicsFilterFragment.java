@@ -488,7 +488,7 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
         }
     };
 
-    public static interface FilterListener {
+    public interface FilterListener {
         void onFilterChange(ImgurTopic topic, ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort);
     }
 }
