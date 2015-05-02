@@ -207,8 +207,8 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             mHeaderView = View.inflate(getActivity(), R.layout.image_header, null);
         }
 
-        // Fetch the tags, except if its from reddit, they will never have tags and it isn't worth the API call
-        boolean fetchTags = mDisplayTags && TextUtils.isEmpty(mImgurObject.getRedditLink()) && !TextUtils.isEmpty(mImgurObject.getAccountId());
+        // Fetch the tags, except if its from searching a subreddit, they will never have tags and it isn't worth the API call
+        boolean fetchTags = mDisplayTags && TextUtils.isEmpty(mImgurObject.getRedditLink());
         TextView title = (TextView) mHeaderView.findViewById(R.id.title);
         TextView author = (TextView) mHeaderView.findViewById(R.id.author);
         PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
