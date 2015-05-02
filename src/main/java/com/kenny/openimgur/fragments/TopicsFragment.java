@@ -91,6 +91,12 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.removeItem(R.id.search);
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public void onFilterChange(ImgurTopic topic, ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort) {
         FragmentManager fm = getFragmentManager();
         fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
