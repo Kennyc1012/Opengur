@@ -16,6 +16,7 @@ import java.util.ArrayList;
  * Base class to hold common values between Imgur Api responses
  */
 public class ImgurBaseObject implements Parcelable {
+    protected final String TAG = getClass().getSimpleName();
 
     public static final String VOTE_UP = "up";
 
@@ -201,7 +202,7 @@ public class ImgurBaseObject implements Parcelable {
             }
 
         } catch (JSONException ex) {
-            LogUtil.e("ImgurBaseObject", "Error Decoding JSON", ex);
+            LogUtil.e(TAG, "Error Decoding JSON", ex);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.kenny.openimgur.classes;
 
+import android.nfc.Tag;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -63,7 +64,7 @@ public class ImgurConvo extends ImgurBaseObject {
                 mMessageCount = json.getInt(KEY_MESSAGE_COUNT);
             }
         } catch (JSONException ex) {
-            LogUtil.e("ImgurConvo", "Error Decoding JSON", ex);
+            LogUtil.e(TAG, "Error Decoding JSON", ex);
         }
     }
 

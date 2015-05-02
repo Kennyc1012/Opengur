@@ -109,7 +109,7 @@ public class ImgurComment extends ImgurBaseObject {
             }
 
         } catch (JSONException ex) {
-            LogUtil.e("ImgurComment", "Error Decoding JSON", ex);
+            LogUtil.e(TAG, "Error Decoding JSON", ex);
         }
     }
 
