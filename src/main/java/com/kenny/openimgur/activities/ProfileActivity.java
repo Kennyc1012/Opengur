@@ -7,7 +7,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -91,11 +90,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
 
     public static Intent createIntent(Context context, @Nullable String userName) {
         Intent intent = new Intent(context, ProfileActivity.class);
-
-        if (!TextUtils.isEmpty(userName)) {
-            intent.putExtra(KEY_USERNAME, userName);
-        }
-
+        if (!TextUtils.isEmpty(userName)) intent.putExtra(KEY_USERNAME, userName);
         return intent;
     }
 
@@ -104,8 +99,6 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         setupToolBar();
-        mSlidingTabs.setBackgroundColor(getResources().getColor(theme.primaryColor));
-        mSlidingTabs.setTextColor(Color.WHITE);
         handleData(savedInstanceState, getIntent());
     }
 
