@@ -49,7 +49,7 @@ public class ImgurMessage extends ImgurBaseObject {
                 mIsSending = json.getBoolean(KEY_IS_SENDING);
             }
         } catch (JSONException ex) {
-            LogUtil.e("ImgurMessage", "Error Decoding JSON", ex);
+            LogUtil.e(TAG, "Error Decoding JSON", ex);
         }
     }
 

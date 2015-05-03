@@ -29,6 +29,13 @@
             android:defaultValue="true" />
 
         <CheckBoxPreference
+            android:key="autoLoadTags"
+            android:summaryOn="@string/pref_tags_on"
+            android:summaryOff="@string/pref_tags_off"
+            android:title="@string/pref_tags_title"
+            android:defaultValue="true" />
+
+        <CheckBoxPreference
             android:key="allowNSFW"
             android:title="@string/pref_nsfw_title"
             android:summaryOn="@string/pref_nsfw_on"

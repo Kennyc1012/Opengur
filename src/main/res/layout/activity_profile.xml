@@ -4,9 +4,9 @@
     android:id="@+id/multiView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:loadingView="@layout/loading_view"
-    app:errorView="@layout/profile_error"
     app:emptyView="@layout/login_view"
+    app:errorView="@layout/profile_error"
+    app:loadingView="@layout/loading_view"
     app:viewState="loading">
 
     <RelativeLayout
@@ -29,15 +29,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="?actionBarSize"
-                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha" />
+                app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
             <com.astuetz.PagerSlidingTabStrip
                 android:id="@+id/slidingTabs"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/tab_bar_height"
+                android:background="?colorPrimary"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:layout_below="@id/toolBar"
+                android:textColor="@android:color/white"
                 app:pstsIndicatorColor="?colorAccent"
                 app:pstsTextColorSelected="@android:color/white" />
 

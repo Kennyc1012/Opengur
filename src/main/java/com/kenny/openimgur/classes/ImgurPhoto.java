@@ -88,7 +88,7 @@ public class ImgurPhoto extends ImgurBaseObject {
                 mSize = json.getInt(KEY_SIZE);
             }
         } catch (JSONException ex) {
-            LogUtil.e("ImgurPhoto", "Error Decoding JSON", ex);
+            LogUtil.e(TAG, "Error Decoding JSON", ex);
         }
     }
 

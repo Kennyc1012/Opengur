@@ -16,7 +16,6 @@ import android.widget.ListView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NavAdapter;
-import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.util.ViewUtils;
 

@@ -7,24 +7,24 @@
     app:cardBackgroundColor="?cardBG">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/title"
-            android:textAppearance="@style/TextAppearance.Regular"
             android:autoLink="web"
             android:linksClickable="true"
+            android:textAppearance="@style/TextAppearance.Regular"
             tools:text="Title" />
 
         <TextView
+            android:id="@+id/author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/author"
             android:autoLink="web"
             android:linksClickable="true"
             tools:text="- Author" />
@@ -35,16 +35,16 @@
             android:layout_marginTop="14dp">
 
             <TextView
+                android:id="@+id/pointText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/pointText"
                 android:textAppearance="@style/TextAppearance.Medium"
-                tools:text="100 points"/>
+                tools:text="100 points" />
 
             <TextView
+                android:id="@+id/topic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/topic"
                 android:layout_gravity="right"
                 android:textAppearance="@style/TextAppearance.Medium"
                 tools:text="Funny" />
@@ -55,6 +55,19 @@
             android:id="@+id/pointsBar"
             android:layout_width="match_parent"
             android:layout_height="10dp" />
+
+        <TextView
+            android:id="@+id/tags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.Medium"
+            android:visibility="gone"
+            tools:drawableLeft="@drawable/ic_action_tag"
+            tools:text="Funny, Tag, Other"
+            tools:visibility="visible" />
 
     </LinearLayout>
 

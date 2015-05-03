@@ -2,16 +2,13 @@ package com.kenny.openimgur.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
@@ -225,78 +222,6 @@ public class MultiStateView extends FrameLayout {
 
             default:
                 return null;
-        }
-    }
-
-    /**
-     * Sets the onClick listener for the error views button
-     *
-     * @param buttonId
-     * @param onClickListener
-     */
-    public void setErrorButtonClickListener(@IdRes int buttonId, OnClickListener onClickListener) {
-        if (mErrorView == null) {
-            throw new NullPointerException("Error View is null");
-        }
-
-        View button = mErrorView.findViewById(buttonId);
-
-        if (button != null) button.setOnClickListener(onClickListener);
-    }
-
-    /**
-     * Sets the text of the error view's button
-     *
-     * @param buttonId
-     * @param stringId
-     */
-    public void setErrorButtonText(@IdRes int buttonId, @StringRes int stringId) {
-        if (mErrorView == null) {
-            throw new NullPointerException("Error View is null");
-        }
-
-        Button view = (Button) mErrorView.findViewById(buttonId);
-
-        if (view != null) view.setText(stringId);
-    }
-
-    /**
-     * Sets the drawable for the empty state
-     *
-     * @param emptyView
-     * @param drawable
-     */
-    public void setEmptyDrawable(@IdRes int emptyView, Drawable drawable) {
-        if (mEmptyView == null) {
-            throw new NullPointerException("Empty view is null");
-        }
-
-        View view = mEmptyView.findViewById(emptyView);
-
-        if (view instanceof TextView) {
-            ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
-        } else if (view instanceof ImageView) {
-            ((ImageView) view).setImageDrawable(drawable);
-        }
-    }
-
-    /**
-     * Sets the drawable for the error view
-     *
-     * @param errorView
-     * @param drawable
-     */
-    public void setErrorDrawable(@IdRes int errorView, Drawable drawable) {
-        if (mErrorView == null) {
-            throw new NullPointerException("Empty view is null");
-        }
-
-        View view = mErrorView.findViewById(errorView);
-
-        if (view instanceof TextView) {
-            ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
-        } else if (view instanceof ImageView) {
-            ((ImageView) view).setImageDrawable(drawable);
         }
     }
 

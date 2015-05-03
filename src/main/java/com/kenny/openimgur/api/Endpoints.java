@@ -107,7 +107,10 @@ public enum Endpoints {
     GALLERY_SEARCH("https://api.imgur.com/3/gallery/search/%s/%d?q=%s"),
 
     // sort, window, page, query
-    GALLERY_SEARCH_TOP("https://api.imgur.com/3/gallery/search/%s/%s/%d?q=%s");
+    GALLERY_SEARCH_TOP("https://api.imgur.com/3/gallery/search/%s/%s/%d?q=%s"),
+
+    // Tags
+    TAGS("https://api.imgur.com/3/gallery/%s/tags");
 
     private final String mUrl;
 

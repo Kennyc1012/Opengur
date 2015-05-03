@@ -2,7 +2,6 @@ package com.kenny.openimgur.util;
 
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.kenny.openimgur.BuildConfig;
 
 /**

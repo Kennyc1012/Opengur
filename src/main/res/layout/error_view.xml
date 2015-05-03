@@ -24,13 +24,13 @@
 
     <Button
         android:id="@+id/errorButton"
-        style="@style/Widget.AppCompat.ActionButton"
+        style="?android:borderlessButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:textAllCaps="true"
         android:layout_gravity="center_horizontal"
         android:textColor="?colorAccent"
-        tools:text="Retry" />
+        android:text="@string/retry" />
 
 </LinearLayout>

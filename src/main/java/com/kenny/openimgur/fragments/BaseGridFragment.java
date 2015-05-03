@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
+import butterknife.OnClick;
+import butterknife.Optional;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
@@ -206,6 +208,13 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         mIsLoading = true;
         if (getAdapter() != null) getAdapter().clear();
         if (mListener != null) mListener.onLoadingStarted();
+        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+        fetchGallery();
+    }
+
+    @Optional
+    @OnClick(R.id.errorButton)
+    public void onRetryClick() {
         mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
         fetchGallery();
     }

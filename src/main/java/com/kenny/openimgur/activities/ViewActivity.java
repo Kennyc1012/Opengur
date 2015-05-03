@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -49,6 +50,7 @@ import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.OpenImgurApp;
 import com.kenny.openimgur.fragments.CommentPopupFragment;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
@@ -218,7 +220,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
-        mMultiView.setErrorButtonText(R.id.errorButton, R.string.load_comments);
+        ((Button) mMultiView.getView(MultiStateView.ViewState.ERROR).findViewById(R.id.errorButton)).setText(R.string.load_comments);
         mCommentListHeader = (TextView) View.inflate(this, R.layout.previous_comments_header, null);
         Drawable[] drawables = mCommentListHeader.getCompoundDrawables();
 
@@ -321,7 +323,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         } else {
             mCurrentPosition = intent.getIntExtra(KEY_POSITION, 0);
             ArrayList<ImgurBaseObject> objects = intent.getParcelableArrayListExtra(KEY_OBJECTS);
-            mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
+            mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
 
             if (mSideGalleryFragment != null) {
                 mSideGalleryFragment.addGalleryItems(objects);
@@ -329,7 +331,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    private void loadComments() {
+    @OnClick(R.id.errorButton)
+    public void loadComments() {
         if (mLoadComments && mPagerAdapter != null) {
             ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
 
@@ -505,7 +508,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             mIsResuming = true;
             mCurrentPosition = savedInstanceState.getInt(KEY_POSITION, 0);
             ArrayList<ImgurBaseObject> objects = savedInstanceState.getParcelableArrayList(KEY_OBJECTS);
-            mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
+            mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
             mViewPager.setAdapter(mPagerAdapter);
             mViewPager.setCurrentItem(mCurrentPosition);
 
@@ -528,7 +531,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mMultiView.setViewState(MultiStateView.ViewState.ERROR);
             }
 
-            if (savedInstanceState.getBoolean(KEY_PANEL_EXPANDED, false)) getSupportActionBar().hide();
+            if (savedInstanceState.getBoolean(KEY_PANEL_EXPANDED, false))
+                getSupportActionBar().hide();
         }
     }
 
@@ -948,7 +952,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             menu.findItem(R.id.favorite).setIcon(imgurObject.isFavorited() ?
-                    R.drawable.ic_action_unfavorite : R.drawable.ic_action_favorite);
+                    R.drawable.ic_action_favorite : R.drawable.ic_action_unfavorite);
 
             updateShareProvider((ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.share)), imgurObject);
         }
@@ -998,7 +1002,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             outState.putParcelableArrayList(KEY_OBJECTS, mPagerAdapter.retainItems());
         }
 
-        if (mSlidingPane != null) outState.putBoolean(KEY_PANEL_EXPANDED, mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
+        if (mSlidingPane != null)
+            outState.putBoolean(KEY_PANEL_EXPANDED, mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
     private void onListItemClick(int position) {
@@ -1141,14 +1146,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
-                    mMultiView.setErrorButtonText(R.id.errorButton, R.string.retry);
-                    mMultiView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            loadComments();
-                        }
-                    });
-
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
 
@@ -1177,7 +1174,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 case MESSAGE_ITEM_DETAILS:
                     final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
                     objects.add((ImgurBaseObject) msg.obj);
-                    mPagerAdapter = new BrowsingAdapter(getFragmentManager(), objects);
+                    mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
                     mViewPager.setAdapter(mPagerAdapter);
                     invalidateOptionsMenu();
                     loadComments();
@@ -1233,14 +1230,17 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private static class BrowsingAdapter extends FragmentStatePagerAdapter {
         private ArrayList<ImgurBaseObject> objects;
 
-        public BrowsingAdapter(FragmentManager fm, ArrayList<ImgurBaseObject> objects) {
+        private boolean mDisplayTags;
+
+        public BrowsingAdapter(Context context, FragmentManager fm, ArrayList<ImgurBaseObject> objects) {
             super(fm);
             this.objects = objects;
+            mDisplayTags = OpenImgurApp.getInstance(context).getPreferences().getBoolean(SettingsActivity.KEY_TAGS, true);
         }
 
         @Override
         public Fragment getItem(int position) {
-            return ImgurViewFragment.createInstance(objects.get(position));
+            return ImgurViewFragment.createInstance(objects.get(position), mDisplayTags);
         }
 
         @Override

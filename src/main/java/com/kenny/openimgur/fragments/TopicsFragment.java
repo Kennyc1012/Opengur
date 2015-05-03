@@ -91,6 +91,12 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.removeItem(R.id.search);
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public void onFilterChange(ImgurTopic topic, ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort) {
         FragmentManager fm = getFragmentManager();
         fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
@@ -196,15 +202,6 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
                         }
 
                         mMultiStateView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
-                        mMultiStateView.setErrorButtonText(R.id.errorButton, R.string.retry);
-                        mMultiStateView.setErrorButtonClickListener(R.id.errorButton, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
-                                fetchGallery();
-                            }
-                        });
-
                         mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                     break;

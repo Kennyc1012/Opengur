@@ -75,8 +75,6 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
         holder.prog.setVisibility(View.GONE);
         holder.video.setVisibility(View.GONE);
         holder.image.setVisibility(View.VISIBLE);
-        //Linkify.addLinks(holder.title, Linkify.WEB_URLS);
-        //Linkify.addLinks(holder.desc, Linkify.WEB_URLS);
 
         if (holder.video.isPlaying()) {
             holder.video.stopPlayback();
@@ -95,7 +93,8 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
             holder.desc.setVisibility(View.GONE);
         }
 
-        if (!TextUtils.isEmpty(photo.getTitle())) {
+        // Don't display titles for items with only 1 photo, it will be shown in the header
+        if (!TextUtils.isEmpty(photo.getTitle()) && getCount() > 1) {
             holder.title.setVisibility(View.VISIBLE);
             holder.title.setText(photo.getTitle());
         } else {

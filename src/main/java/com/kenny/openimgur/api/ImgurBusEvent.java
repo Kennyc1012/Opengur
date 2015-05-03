@@ -1,6 +1,6 @@
 package com.kenny.openimgur.api;
 
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 
 import org.json.JSONObject;
 
@@ -37,7 +37,8 @@ public class ImgurBusEvent {
         CONVO_BLOCK,
         TOPICS,
         MEME,
-        GALLERY_SEARCH
+        GALLERY_SEARCH,
+        TAGS
     }
 
     public JSONObject json;
@@ -46,8 +47,7 @@ public class ImgurBusEvent {
 
     public ApiClient.HttpRequest httpRequest;
 
-    // An optional unique ID for the event
-    @Nullable
+    @NonNull
     public String id;
 
     public ImgurBusEvent(JSONObject json, EventType eventType, ApiClient.HttpRequest httpRequest, String id) {

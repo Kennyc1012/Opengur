@@ -1,13 +1,19 @@
 package com.kenny.openimgur.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -67,6 +73,8 @@ import pl.droidsonroids.gif.GifDrawable;
 public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private static final String KEY_IMGUR_OBJECT = "imgurobject";
 
+    private static final String KEY_DISPLAY_TAGS = "display_tags";
+
     private static final String KEY_ITEMS = "items";
 
     @InjectView(R.id.multiView)
@@ -81,12 +89,15 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     private PhotoAdapter mPhotoAdapter;
 
+    private boolean mDisplayTags = true;
+
     private static final long FIVE_MB = 5 * 1024 * 1024;
 
-    public static ImgurViewFragment createInstance(@NonNull ImgurBaseObject obj) {
+    public static ImgurViewFragment createInstance(@NonNull ImgurBaseObject obj, boolean displayTags) {
         ImgurViewFragment fragment = new ImgurViewFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_IMGUR_OBJECT, obj);
+        args.putBoolean(KEY_DISPLAY_TAGS, displayTags);
         fragment.setArguments(args);
         return fragment;
     }
@@ -120,7 +131,8 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         switch (item.getItemId()) {
             case R.id.refresh:
                 if (mPhotoAdapter != null) mPhotoAdapter.clear();
-                if (mListView != null && mListView.getHeaderViewsCount() > 0 && mHeaderView != null) mListView.removeHeaderView(mHeaderView);
+                if (mListView != null && mListView.getHeaderViewsCount() > 0 && mHeaderView != null)
+                    mListView.removeHeaderView(mHeaderView);
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                 String url = String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mImgurObject.getId());
                 ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
@@ -140,6 +152,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void handleArguments(Bundle args, Bundle savedInstanceState) {
         // We have a savedInstanceState, use them over args
         if (savedInstanceState != null) {
+            mDisplayTags = savedInstanceState.getBoolean(KEY_DISPLAY_TAGS, true);
             mImgurObject = savedInstanceState.getParcelable(KEY_IMGUR_OBJECT);
             List<ImgurPhoto> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
             mPhotoAdapter = new PhotoAdapter(getActivity(), photos, this);
@@ -147,6 +160,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
         } else {
+            mDisplayTags = args.getBoolean(KEY_DISPLAY_TAGS, true);
             setupFragmentWithObject((ImgurBaseObject) args.getParcelable(KEY_IMGUR_OBJECT));
         }
     }
@@ -189,7 +203,12 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
      * Creates the header for the photo/album. This MUST be called before settings the adapter for pre 4.4 devices
      */
     private void createHeader() {
-        if (mHeaderView == null) mHeaderView = View.inflate(getActivity(), R.layout.image_header, null);
+        if (mHeaderView == null) {
+            mHeaderView = View.inflate(getActivity(), R.layout.image_header, null);
+        }
+
+        // Fetch the tags, except if its from searching a subreddit, they will never have tags and it isn't worth the API call
+        boolean fetchTags = mDisplayTags && TextUtils.isEmpty(mImgurObject.getRedditLink());
         TextView title = (TextView) mHeaderView.findViewById(R.id.title);
         TextView author = (TextView) mHeaderView.findViewById(R.id.author);
         PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
@@ -221,7 +240,58 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             pointText.setTextColor(getResources().getColor(R.color.notoriety_negative));
         }
 
+        if (mImgurObject.getTags() != null && mImgurObject.getTags().size() > 0) {
+            displayTags(false);
+            fetchTags = false;
+        }
+
         mListView.addHeaderView(mHeaderView);
+
+        if (fetchTags) {
+            String tagsUrl = String.format(Endpoints.TAGS.getUrl(), mImgurObject.getId());
+            new ApiClient(tagsUrl, ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.TAGS, mImgurObject.getId(), null);
+        }
+    }
+
+    private void displayTags(boolean animateIn) {
+        if (mHeaderView != null) {
+            final TextView tagTextView = (TextView) mHeaderView.findViewById(R.id.tags);
+            Drawable tagDrawable;
+            int size = mImgurObject.getTags().size();
+            StringBuilder builder = new StringBuilder();
+
+            // Tag icon is already dark themed
+            if (theme.isDarkTheme) {
+                tagDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_tag, null);
+            } else {
+                tagDrawable = ImageUtil.tintDrawable(R.drawable.ic_action_tag, getResources(), Color.BLACK);
+            }
+
+            for (int i = 0; i < size; i++) {
+                builder.append(mImgurObject.getTags().get(i));
+                if (i != size - 1) builder.append(", ");
+            }
+
+            tagTextView.setText(builder.toString());
+            tagTextView.setCompoundDrawablesWithIntrinsicBounds(tagDrawable, null, null, null);
+
+            if (animateIn) {
+                // Fade in the tags so they just don't appear randomly
+                ObjectAnimator anim = ObjectAnimator.ofFloat(tagTextView, "alpha", 0.0f, 1.0f)
+                        .setDuration(750);
+
+                anim.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        tagTextView.setVisibility(View.VISIBLE);
+                    }
+                });
+
+                anim.start();
+            } else {
+                tagTextView.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     public void setVote(String vote) {
@@ -281,45 +351,67 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     }
 
     public void onEventAsync(@NonNull ImgurBusEvent event) {
+        // Ignore other requests
+        if (!mImgurObject.getId().equals(event.id)) return;
+
         try {
+            int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
             switch (event.eventType) {
                 case ALBUM_DETAILS:
-                    if (mImgurObject.getId().equals(event.id)) {
-                        int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
+                    if (statusCode == ApiClient.STATUS_OK) {
+                        JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
+                        List<ImgurPhoto> photos = new ArrayList<>();
 
-                        if (statusCode == ApiClient.STATUS_OK) {
-                            JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
-                            List<ImgurPhoto> photos = new ArrayList<>();
-
-                            for (int i = 0; i < arr.length(); i++) {
-                                photos.add(new ImgurPhoto(arr.getJSONObject(i)));
-                            }
-
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photos);
-                        } else {
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
+                        for (int i = 0; i < arr.length(); i++) {
+                            photos.add(new ImgurPhoto(arr.getJSONObject(i)));
                         }
+
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photos);
+                    } else {
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
                     }
                     break;
 
                 case GALLERY_ITEM_INFO:
-                    if (mImgurObject.getId().equals(event.id)) {
-                        int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
+                    if (statusCode == ApiClient.STATUS_OK) {
+                        ImgurBaseObject object;
+                        JSONObject data = event.json.getJSONObject(ApiClient.KEY_DATA);
 
-                        if (statusCode == ApiClient.STATUS_OK) {
-                            ImgurBaseObject object;
-                            JSONObject data =event.json.getJSONObject(ApiClient.KEY_DATA);
-
-                            if (data.has("is_album") && data.getBoolean("is_album")) {
-                                object = new ImgurAlbum(data);
-                            } else {
-                                object = new ImgurPhoto(data);
-                            }
-
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, object);
+                        if (data.has("is_album") && data.getBoolean("is_album")) {
+                            object = new ImgurAlbum(data);
                         } else {
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
+                            object = new ImgurPhoto(data);
                         }
+
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, object);
+                    } else {
+                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
+                    }
+                    break;
+
+                case TAGS:
+                    if (statusCode == ApiClient.STATUS_OK) {
+                        JSONObject data = event.json.getJSONObject(ApiClient.KEY_DATA);
+
+                        if (data.has("tags")) {
+                            JSONArray tags = data.getJSONArray("tags");
+
+                            if (tags.length() > 0) {
+                                ArrayList<String> tagList = new ArrayList<>(tags.length());
+
+                                for (int i = 0; i < tags.length(); i++) {
+                                    JSONObject tag = tags.getJSONObject(i);
+                                    tagList.add(tag.getString("name"));
+                                }
+
+                                LogUtil.v(TAG, "Received " + tagList.size() + " tags");
+                                mHandler.sendMessage(ImgurHandler.MESSAGE_TAGS_RECEIVED, tagList);
+                            }
+                        }
+                        LogUtil.v(TAG, "No tags received");
+                    } else {
+                        // Just ignore any bad tag responses
+                        LogUtil.w(TAG, "Status came back " + statusCode + " for tags");
                     }
                     break;
             }
@@ -524,6 +616,13 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
 
+                case MESSAGE_TAGS_RECEIVED:
+                    if (msg.obj instanceof ArrayList) {
+                        mImgurObject.setTags((ArrayList<String>) msg.obj);
+                        displayTags(true);
+                    }
+                    break;
+
                 default:
                     super.handleMessage(msg);
                     break;
@@ -533,11 +632,13 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
         if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_ITEMS, mPhotoAdapter.retainItems());
         }
 
+        outState.putBoolean(KEY_DISPLAY_TAGS, mDisplayTags);
         outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);
-        super.onSaveInstanceState(outState);
     }
 }

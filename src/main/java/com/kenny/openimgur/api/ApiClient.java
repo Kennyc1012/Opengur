@@ -198,10 +198,12 @@ public class ApiClient {
      * @throws IOException
      * @throws JSONException
      */
-    public void doWork(final ImgurBusEvent.EventType type, final @Nullable String id, final @Nullable RequestBody postParams) {
+    public void doWork(final ImgurBusEvent.EventType type, @Nullable String id, final @Nullable RequestBody postParams) {
         if (mUrl == null) {
             throw new NullPointerException("Url is null");
         }
+
+        final String requestId = TextUtils.isEmpty(id) ? String.valueOf(System.currentTimeMillis()) : id;
 
         switch (mRequestType) {
             case POST:
@@ -212,17 +214,16 @@ public class ApiClient {
                 AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
                     @Override
                     public void run() throws Exception {
-                        EventBus.getDefault().post(new ImgurBusEvent(post(postParams), type, HttpRequest.POST, id));
+                        EventBus.getDefault().post(new ImgurBusEvent(post(postParams), type, HttpRequest.POST, requestId));
                     }
                 });
-
                 break;
 
             case DELETE:
                 AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
                     @Override
                     public void run() throws Exception {
-                        EventBus.getDefault().post(new ImgurBusEvent(delete(), type, HttpRequest.DELETE, id));
+                        EventBus.getDefault().post(new ImgurBusEvent(delete(), type, HttpRequest.DELETE, requestId));
                     }
                 });
                 break;
@@ -232,10 +233,9 @@ public class ApiClient {
                 AsyncExecutor.create().execute(new AsyncExecutor.RunnableEx() {
                     @Override
                     public void run() throws Exception {
-                        EventBus.getDefault().post(new ImgurBusEvent(get(), type, HttpRequest.GET, id));
+                        EventBus.getDefault().post(new ImgurBusEvent(get(), type, HttpRequest.GET, requestId));
                     }
                 });
-
                 break;
         }
 

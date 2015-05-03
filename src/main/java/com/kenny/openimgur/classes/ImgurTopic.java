@@ -62,7 +62,7 @@ public class ImgurTopic implements Parcelable {
             }
 
         } catch (JSONException ex) {
-            LogUtil.e("ImgurTop", "Error Decoding JSON", ex);
+            LogUtil.e("ImgurTopic", "Error Decoding JSON", ex);
         }
     }
 

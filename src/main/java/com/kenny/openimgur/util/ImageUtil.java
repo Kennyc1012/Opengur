@@ -18,6 +18,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
@@ -328,7 +329,7 @@ public class ImageUtil {
      * @return
      */
     public static Drawable tintDrawable(@DrawableRes int drawableId, @NonNull Resources resources, int color) {
-        Drawable drawable = resources.getDrawable(drawableId).mutate();
+        Drawable drawable = ResourcesCompat.getDrawable(resources, drawableId, null).mutate();
         drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         return drawable;
     }

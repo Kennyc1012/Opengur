@@ -32,6 +32,8 @@ public class ImgurHandler extends Handler {
 
     public static final int MESSAGE_CONVO_REPORTED = 11;
 
+    public static final int MESSAGE_TAGS_RECEIVED = 12;
+
     /**
      * Sends a message to the handler
      *
