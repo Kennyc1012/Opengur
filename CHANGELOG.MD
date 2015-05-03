@@ -1,4 +1,13 @@
 #Open Imgur Changelog
+<b>2.7</b>
+- Tags added
+- Titles won't display on single image galleries
+- Update icons 
+- Update SnackBar to 2.0.2
+- Update AppCompat to 22.1.1
+- Update Material Dialogs to 0.7.3.1
+- Update Build Tools to 1.2.2
+
 <b>2.6.2</b>
 - Experimental Settings section added
 - Several miscellaneous bug fixes 
