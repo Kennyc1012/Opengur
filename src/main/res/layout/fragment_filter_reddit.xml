@@ -15,8 +15,8 @@
             android:layout_height="wrap_content"
             android:minHeight="?actionBarSize"
             android:background="?colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:title="@string/reddit_filter"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha" />
 
         <TextView
