@@ -64,7 +64,7 @@ public class OpenImgurApp extends Application implements SharedPreferences.OnSha
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
         checkRefreshToken();
-        mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, "grey"));
+        mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, ImgurTheme.GREY.themeName));
         mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, false);
 
         // Start crashlytics if enabled
