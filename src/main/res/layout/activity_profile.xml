@@ -29,8 +29,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="?actionBarSize"
-                app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha"
-                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha" />
 
             <com.astuetz.PagerSlidingTabStrip
                 android:id="@+id/slidingTabs"

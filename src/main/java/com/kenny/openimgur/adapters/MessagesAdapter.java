@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurMessage;
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class MessagesAdapter extends ImgurBaseAdapter<ImgurMessage> {
 
     public MessagesAdapter(Context context, List<ImgurMessage> messages) {
         super(context, messages);
-        mUserId = OpenImgurApp.getInstance(context).getUser().getId();
+        mUserId = OpengurApp.getInstance(context).getUser().getId();
         mMargin = (int) (context.getResources().getDisplayMetrics().widthPixels * .25);
     }
 

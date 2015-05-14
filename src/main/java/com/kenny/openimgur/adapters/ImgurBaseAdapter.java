@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -30,7 +30,7 @@ public abstract class ImgurBaseAdapter<T> extends BaseAdapter {
     protected LayoutInflater mInflater;
 
     public ImgurBaseAdapter(Context context, List<T> collection, boolean hasImageLoader) {
-        if (hasImageLoader) mImageLoader = OpenImgurApp.getInstance(context).getImageLoader();
+        if (hasImageLoader) mImageLoader = OpengurApp.getInstance(context).getImageLoader();
         mItems = collection;
         mInflater = LayoutInflater.from(context);
     }

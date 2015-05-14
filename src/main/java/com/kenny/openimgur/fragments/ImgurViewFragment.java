@@ -459,9 +459,17 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     .itemsCallback(new MaterialDialog.ListCallback() {
                         @Override
                         public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                            ImgurBaseObject obj = mPhotoAdapter.getItem(position);
+                            ImgurPhoto photo = mPhotoAdapter.getItem(position);
+                            String link;
+
+                            if (photo.isLinkAThumbnail() && photo.hasMP4Link()) {
+                                link = photo.getMP4Link();
+                            } else {
+                                link = photo.getLink();
+                            }
+
                             ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                            clipboard.setPrimaryClip(ClipData.newPlainText("link", obj.getLink()));
+                            clipboard.setPrimaryClip(ClipData.newPlainText("link", link));
                         }
                     }).show();
         }

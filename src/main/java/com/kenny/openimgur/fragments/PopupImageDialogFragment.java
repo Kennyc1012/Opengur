@@ -22,7 +22,7 @@ import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
@@ -154,7 +154,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
 
     @Override
     public void onDestroyView() {
-        OpenImgurApp.getInstance(getActivity()).getImageLoader().cancelDisplayTask(mImage);
+        OpengurApp.getInstance(getActivity()).getImageLoader().cancelDisplayTask(mImage);
         mHandler.removeCallbacksAndMessages(null);
         ButterKnife.reset(this);
         super.onDestroyView();
@@ -206,7 +206,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
      * @param isAnimated
      */
     public void displayImage(String url, final boolean isAnimated) {
-        OpenImgurApp.getInstance(getActivity()).getImageLoader().displayImage(url, mImage, new ImageLoadingListener() {
+        OpengurApp.getInstance(getActivity()).getImageLoader().displayImage(url, mImage, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String s, View view) {
 
@@ -225,7 +225,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
                 if (isAdded()) {
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                     if (isAnimated) {
-                        if (!ImageUtil.loadAndDisplayGif((ImageView) view, s, OpenImgurApp.getInstance(getActivity()).getImageLoader())) {
+                        if (!ImageUtil.loadAndDisplayGif((ImageView) view, s, OpengurApp.getInstance(getActivity()).getImageLoader())) {
                             Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
                             dismiss();
                         }

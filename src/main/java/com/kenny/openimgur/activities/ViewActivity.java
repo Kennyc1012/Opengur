@@ -50,7 +50,7 @@ import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.fragments.CommentPopupFragment;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
@@ -1235,7 +1235,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         public BrowsingAdapter(Context context, FragmentManager fm, ArrayList<ImgurBaseObject> objects) {
             super(fm);
             this.objects = objects;
-            mDisplayTags = OpenImgurApp.getInstance(context).getPreferences().getBoolean(SettingsActivity.KEY_TAGS, true);
+            mDisplayTags = OpengurApp.getInstance(context).getPreferences().getBoolean(SettingsActivity.KEY_TAGS, true);
         }
 
         @Override

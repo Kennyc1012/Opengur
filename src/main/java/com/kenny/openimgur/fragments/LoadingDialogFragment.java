@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurTheme;
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -78,7 +78,7 @@ public class LoadingDialogFragment extends DialogFragment {
         ButterKnife.inject(this, view);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         CardView cardView = (CardView) view;
-        ImgurTheme theme = OpenImgurApp.getInstance(getActivity()).getImgurTheme();
+        ImgurTheme theme = OpengurApp.getInstance(getActivity()).getImgurTheme();
         cardView.setCardBackgroundColor(getResources().getColor(theme.isDarkTheme ? R.color.background_material_dark : R.color.background_material_light));
         setCancelable(getArguments().getBoolean(KEY_CANCELABLE, true));
         mMessage.setText(getArguments().getInt(KEY_MESSAGE));

@@ -352,11 +352,11 @@ public class ImgurUser implements Parcelable {
     }
 
     public boolean isSelf() {
-        ImgurUser user = OpenImgurApp.getInstance().getUser();
+        ImgurUser user = OpengurApp.getInstance().getUser();
         return user != null && user.equals(this);
     }
 
-    public boolean isSelf(OpenImgurApp app) {
+    public boolean isSelf(OpengurApp app) {
         if (app.getUser() != null) {
             return app.getUser().equals(this);
         }

@@ -34,12 +34,12 @@ import io.fabric.sdk.android.Fabric;
 /**
  * Created by kcampagna on 6/14/14.
  */
-public class OpenImgurApp extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class OpengurApp extends Application implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "OpenImgur";
 
     private static boolean USE_STRICT_MODE = BuildConfig.DEBUG;
 
-    private static OpenImgurApp instance;
+    private static OpengurApp instance;
 
     private ImageLoader mImageLoader;
 
@@ -64,7 +64,7 @@ public class OpenImgurApp extends Application implements SharedPreferences.OnSha
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
         checkRefreshToken();
-        mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, "grey"));
+        mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, ImgurTheme.GREY.themeName));
         mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, false);
 
         // Start crashlytics if enabled
@@ -100,12 +100,12 @@ public class OpenImgurApp extends Application implements SharedPreferences.OnSha
         return mImageLoader;
     }
 
-    public static OpenImgurApp getInstance() {
+    public static OpengurApp getInstance() {
         return instance;
     }
 
-    public static OpenImgurApp getInstance(Context context) {
-        return context != null ? (OpenImgurApp) context.getApplicationContext() : instance;
+    public static OpengurApp getInstance(Context context) {
+        return context != null ? (OpengurApp) context.getApplicationContext() : instance;
     }
 
     public SharedPreferences getPreferences() {

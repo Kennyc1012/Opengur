@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -180,9 +180,9 @@ public class ApiClient {
             json.put(KEY_STATUS, statusCode);
             response.body().close();
 
-            if (statusCode == ApiClient.STATUS_FORBIDDEN && OpenImgurApp.getInstance().getUser() != null) {
+            if (statusCode == ApiClient.STATUS_FORBIDDEN && OpengurApp.getInstance().getUser() != null) {
                 // User tokens are no longer valid, invalidate their profile
-                OpenImgurApp.getInstance().onLogout();
+                OpengurApp.getInstance().onLogout();
             }
         }
 
@@ -280,14 +280,14 @@ public class ApiClient {
      * @return
      */
     private String getAuthorizationHeader() {
-        ImgurUser user = OpenImgurApp.getInstance().getUser();
+        ImgurUser user = OpengurApp.getInstance().getUser();
 
         // Check if we have a token from a logged in user that is valid
         if (user != null && user.isAccessTokenValid()) {
             LogUtil.v(TAG, "Access Token present and valid");
             return "Bearer " + user.getAccessToken();
         } else if (user != null) {
-            OpenImgurApp.getInstance().checkRefreshToken();
+            OpengurApp.getInstance().checkRefreshToken();
         }
 
         LogUtil.v(TAG, "No access token present, using Client-ID");
