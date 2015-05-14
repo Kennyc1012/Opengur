@@ -18,7 +18,7 @@ import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ProgressRequestBody;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -195,7 +195,7 @@ public class UploadService extends IntentService implements ProgressRequestBody.
      */
     private void handleResponse(JSONObject json) {
         ImgurPhoto photo = new ImgurPhoto(json);
-        OpenImgurApp.getInstance(getApplicationContext()).getSql().insertUploadedPhoto(photo);
+        OpengurApp.getInstance(getApplicationContext()).getSql().insertUploadedPhoto(photo);
         onUploadComplete(photo.getLink());
     }
 

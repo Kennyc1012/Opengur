@@ -22,7 +22,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NavAdapter;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurTheme;
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.MemeFragment;
@@ -328,7 +328,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         switch (requestCode) {
             // Set the theme if coming from the settings activity
             case SettingsActivity.REQUEST_CODE:
-                ImgurTheme theme = OpenImgurApp.getInstance(getApplicationContext()).getImgurTheme();
+                ImgurTheme theme = OpengurApp.getInstance(getApplicationContext()).getImgurTheme();
                 mNagOnExit = app.getPreferences().getBoolean(SettingsActivity.KEY_CONFIRM_EXIT, true);
 
                 if (mSavedTheme == null || theme != mSavedTheme || mIsDarkTheme != theme.isDarkTheme) {
@@ -349,7 +349,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             case ProfileActivity.REQUEST_CODE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     if (data.getBooleanExtra(ProfileActivity.KEY_LOGGED_IN, false)) {
-                        app = OpenImgurApp.getInstance(getApplicationContext());
+                        app = OpengurApp.getInstance(getApplicationContext());
                         if (mNavFragment != null) mNavFragment.onUserLogin(app.getUser());
                     } else if (data.getBooleanExtra(ProfileActivity.KEY_LOGGED_OUT, false)) {
                         if (mNavFragment != null) mNavFragment.onUserLogin(null);

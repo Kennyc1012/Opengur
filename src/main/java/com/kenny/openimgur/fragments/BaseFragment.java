@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
 
 import butterknife.ButterKnife;
@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
 abstract public class BaseFragment extends Fragment {
     public final String TAG = getClass().getSimpleName();
 
-    public OpenImgurApp app;
+    public OpengurApp app;
 
     public ImgurUser user;
 
@@ -28,7 +28,7 @@ abstract public class BaseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         LogUtil.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        app = OpenImgurApp.getInstance(getActivity());
+        app = OpengurApp.getInstance(getActivity());
         user = app.getUser();
         theme = app.getImgurTheme();
     }

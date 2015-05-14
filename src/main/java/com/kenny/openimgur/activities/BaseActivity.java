@@ -19,7 +19,7 @@ import android.view.MenuItem;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
@@ -31,7 +31,7 @@ import butterknife.ButterKnife;
 abstract public class BaseActivity extends AppCompatActivity {
     public final String TAG = getClass().getSimpleName();
 
-    public OpenImgurApp app;
+    public OpengurApp app;
 
     public ImgurUser user;
 
@@ -48,7 +48,7 @@ abstract public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         LogUtil.v(TAG, "onCreate");
-        app = OpenImgurApp.getInstance(getApplicationContext());
+        app = OpengurApp.getInstance(getApplicationContext());
         theme = app.getImgurTheme();
         theme.applyTheme(getTheme());
         updateTaskDescription(null);

@@ -15,7 +15,7 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.ImageUtil;
 
 import butterknife.InjectView;
@@ -65,7 +65,7 @@ public class NavAdapter extends BaseAdapter {
     private int mProfileColor;
 
     public NavAdapter(Context context, ImgurUser user) {
-        ImgurTheme theme = OpenImgurApp.getInstance(context).getImgurTheme();
+        ImgurTheme theme = OpengurApp.getInstance(context).getImgurTheme();
         mInflater = LayoutInflater.from(context);
         Resources res = context.getResources();
         mTitles = res.getStringArray(R.array.nav_items);

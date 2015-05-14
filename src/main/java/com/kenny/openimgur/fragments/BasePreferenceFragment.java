@@ -5,20 +5,20 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
-import com.kenny.openimgur.classes.OpenImgurApp;
+import com.kenny.openimgur.classes.OpengurApp;
 
 /**
  * Created by kcampagna on 4/16/15.
  */
 public abstract class BasePreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
-    protected OpenImgurApp mApp;
+    protected OpengurApp mApp;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mApp = OpenImgurApp.getInstance(getActivity());
+        mApp = OpengurApp.getInstance(getActivity());
         addPreferencesFromResource(getPreferenceXML());
     }
 

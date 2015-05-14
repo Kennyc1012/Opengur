@@ -40,7 +40,7 @@ public class VideoCache {
     }
 
     private VideoCache() {
-        OpenImgurApp app = OpenImgurApp.getInstance();
+        OpengurApp app = OpengurApp.getInstance();
         String cacheKey = app.getPreferences().getString(SettingsActivity.KEY_CACHE_LOC, SettingsActivity.CACHE_LOC_INTERNAL);
         File dir = ImageUtil.getCacheDirectory(app.getApplicationContext(), cacheKey);
         mCacheDir = new File(dir, "video_cache");
