@@ -1,9 +1,9 @@
-[Opengur](https://kennyc1012.github.io/OpenImgur/)
+[Opengur](https://kennyc1012.github.io/Opengur/)
 =========
 
 Open source Imgur Android App
 
-![screenshot](https://github.com/Kennyc1012/OpenImgur/raw/master/assets/ss1.png)
+![screenshot](https://github.com/Kennyc1012/Opengur/raw/master/assets/ss1.png)
 
 #Features
 - Built in native java
