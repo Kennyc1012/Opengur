@@ -12,4 +12,6 @@ gradlew.bat
 OpenImgur.iml
 openimgur.keystore
 crashlytics.properties
+local.properties
+gradle.properties
 /src/main/assets/crashlytics-build.properties
