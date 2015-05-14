@@ -1,4 +1,12 @@
 #Open Imgur Changelog
+<b>2.7.1</b>
+- Changed app name to Opengur as per Imgur's request
+- Copy correct links
+- Updated Material Dialogs to 0.7.4.1
+- Updated SnackBar to 2.3
+- Update gradle to 2.4
+- Update android build tools to 1.2.3 
+
 <b>2.7</b>
 - Tags added
 - Titles won't display on single image galleries
