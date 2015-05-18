@@ -68,13 +68,13 @@ dependencies {
     compile 'com.android.support:cardview-v7:22.1.1'
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
-    compile 'com.kennyc:snackbar:2.3'
-    compile 'com.squareup.okhttp:okhttp:2.3.0'
+    compile 'com.kennyc:snackbar:2.4'
+    compile 'com.squareup.okhttp:okhttp:2.4.0-RC1'
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'com.afollestad:material-dialogs:0.7.4.1'
-    compile 'com.github.clans:fab:1.4.0'
+    compile 'com.github.clans:fab:1.5.0'
     compile(name: 'photo_zoom', ext: 'aar')
     compile(name: 'sliding_panel', ext: 'aar')
     compile(name: 'bottom-sheet-1.0', ext: 'aar')
