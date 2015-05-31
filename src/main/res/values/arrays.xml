@@ -76,6 +76,11 @@
         <item>12 Threads</item>
     </string-array>
 
+    <string-array name="photo_long_press_options">
+        <item>Copy Link</item>
+        <item>Download</item>
+    </string-array>
+
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys" translatable="false">
         <item>256</item>

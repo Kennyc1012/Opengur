@@ -41,6 +41,7 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
+import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.VideoView;
@@ -455,10 +456,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         if (position >= 0) {
             new MaterialDialog.Builder(getActivity())
-                    .items(new String[]{getString(R.string.copy_link)})
+                    .items(R.array.photo_long_press_options)
                     .itemsCallback(new MaterialDialog.ListCallback() {
                         @Override
-                        public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                        public void onSelection(MaterialDialog materialDialog, View view, int dialogPosition, CharSequence charSequence) {
                             ImgurPhoto photo = mPhotoAdapter.getItem(position);
                             String link;
 
@@ -468,8 +469,19 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                                 link = photo.getLink();
                             }
 
-                            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                            clipboard.setPrimaryClip(ClipData.newPlainText("link", link));
+                            switch (dialogPosition) {
+                                // Copy
+                                case 0:
+
+                                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", link));
+                                    break;
+
+                                // Download
+                                case 1:
+                                    getActivity().startService(DownloaderService.createIntent(getActivity(), link));
+                                    break;
+                            }
                         }
                     }).show();
         }
