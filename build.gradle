@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.2.3'
-        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'io.fabric.tools:gradle:+'
     }
 }
 
@@ -82,7 +82,7 @@ dependencies {
     compile(name: 'sliding_panel', ext: 'aar')
     compile(name: 'bottom-sheet-1.0', ext: 'aar')
     compile project(':libraries:EventBus')
-    compile('com.crashlytics.sdk.android:crashlytics:2.+@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;
     }
 }
