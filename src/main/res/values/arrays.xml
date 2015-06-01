@@ -79,6 +79,7 @@
     <string-array name="photo_long_press_options">
         <item>Copy Link</item>
         <item>Download</item>
+        <item>Share</item>
     </string-array>
 
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->

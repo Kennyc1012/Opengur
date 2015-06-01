@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -472,7 +473,6 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                             switch (dialogPosition) {
                                 // Copy
                                 case 0:
-
                                     ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                                     clipboard.setPrimaryClip(ClipData.newPlainText("link", link));
                                     break;
@@ -480,6 +480,15 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                                 // Download
                                 case 1:
                                     getActivity().startService(DownloaderService.createIntent(getActivity(), link));
+                                    break;
+
+                                // Share
+                                case 2:
+                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                    shareIntent.setType("text/plain");
+                                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, link);
+                                    startActivity(shareIntent);
                                     break;
                             }
                         }
