@@ -29,6 +29,7 @@ import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -108,7 +109,11 @@ public class FullScreenPhotoFragment extends BaseFragment {
                 displayVideo(savedInstanceState);
             } else {
                 mUrl = mPhoto.getLink();
-                displayImage();
+                if (LinkUtils.isVideoLink(mUrl)) {
+                    displayVideo(savedInstanceState);
+                } else {
+                    displayImage();
+                }
             }
         } else {
             mUrl = mPhoto.getLink();
