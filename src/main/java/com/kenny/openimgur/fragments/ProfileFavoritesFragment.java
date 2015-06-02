@@ -61,7 +61,14 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
 
     @Override
     protected void fetchGallery() {
-        String url = String.format(Endpoints.ACCOUNT_FAVORITES.getUrl(), mSelectedUser.getUsername());
+        boolean isSelf = mSelectedUser.isSelf(app);
+        String url;
+
+        if (isSelf) {
+            url = String.format(Endpoints.ACCOUNT_FAVORITES.getUrl(), mSelectedUser.getUsername());
+        } else {
+            url = String.format(Endpoints.ACCOUNT_GALLERY_FAVORITES.getUrl(), mSelectedUser.getUsername(), mCurrentPage);
+        }
         makeRequest(url);
     }
 
@@ -113,8 +120,8 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
                         adapter.addItems(items);
                     }
 
-                    // The endpoint returns all favorites, no need for loading on scroll
-                    mHasMore = false;
+                    // The endpoint returns all favorites for a self user, no need for loading on scroll
+                    if (mSelectedUser.isSelf(app)) mHasMore = false;
                     mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
                     break;
 
