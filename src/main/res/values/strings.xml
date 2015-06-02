@@ -89,7 +89,7 @@
     <string name="save">Save</string>
     <string name="close">Close</string>
     <string name="exit">Exit</string>
-    <string name="exit_confirm">Are you sure you want to exit Opengur?</string>
+    <string name="exit_confirm">Are you sure you want to exit?</string>
     <string name="image_uploading">Uploading Image</string>
     <string name="link_copied">Link copied</string>
     <string name="link_copy_failed">Unable to copy link</string>

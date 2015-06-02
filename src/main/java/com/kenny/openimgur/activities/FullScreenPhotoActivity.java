@@ -93,6 +93,27 @@ public class FullScreenPhotoActivity extends BaseActivity {
         mAdapter = new FullScreenPagerAdapter(photos, getFragmentManager());
         mPager.setAdapter(mAdapter);
         mPager.setCurrentItem(startingPosition);
+
+        if (mAdapter.getCount() > 1) {
+            getSupportActionBar().setTitle(mPager.getCurrentItem() + 1 + "/" + mAdapter.getCount());
+
+            mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    // NOOP
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    getSupportActionBar().setTitle(mPager.getCurrentItem() + 1 + "/" + mAdapter.getCount());
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+                    // NOOP
+                }
+            });
+        }
     }
 
     @Override
