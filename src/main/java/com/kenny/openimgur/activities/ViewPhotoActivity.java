@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,12 +18,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.diegocarloslima.byakugallery.lib.TileBitmapDrawable;
-import com.diegocarloslima.byakugallery.lib.TouchImageView;
-import com.kenny.openimgur.services.DownloaderService;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
+import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
@@ -40,7 +41,7 @@ import uk.co.senab.photoview.PhotoView;
 /**
  * Created by kcampagna on 6/22/14.
  */
-public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawable.OnInitializeListener {
+public class ViewPhotoActivity extends BaseActivity {
     private static final String KEY_VIDEO_POSITION = "position";
 
     private static final String KEY_URL = "url";
@@ -50,7 +51,7 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
     private static final String KEY_IS_VIDEO = "is_video";
 
     @InjectView(R.id.image)
-    TouchImageView mImageView;
+    SubsamplingScaleImageView mImageView;
 
     @InjectView(R.id.multiView)
     MultiStateView mMultiView;
@@ -122,6 +123,7 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
      */
     private void displayImage() {
         mIsVideo = false;
+
         app.getImageLoader().loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForView().build(), new SimpleImageLoadingListener() {
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
@@ -146,9 +148,12 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
                     try {
                         File file = app.getImageLoader().getDiskCache().get(s);
                         if (FileUtil.isFileValid(file)) {
-                            // Clear any memory cache to free up some resources
-                            app.getImageLoader().clearMemoryCache();
-                            TileBitmapDrawable.attachTileBitmapDrawable(mImageView, file.getAbsolutePath(), null, ViewPhotoActivity.this);
+                            // We will enable tiling if any of the image dimensions are above 2048 px (Canvas draw limit)
+                            int[] dimensions = ImageUtil.getBitmapDimensions(file);
+                            boolean enableTiling = dimensions[0] > 2048 || dimensions[1] > 2048;
+                            Uri fileUril = Uri.fromFile(file);
+
+                            mImageView.setImage(ImageSource.uri(fileUril).tiling(enableTiling));
                             mImageView.setMaxScale(10.0f);
                             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                         } else {
@@ -157,7 +162,8 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
                         }
                     } catch (Exception e) {
                         LogUtil.e(TAG, "Error creating tile bitmap", e);
-                        onError(e);
+                        finish();
+                        Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -273,39 +279,5 @@ public class ViewPhotoActivity extends BaseActivity implements TileBitmapDrawabl
         }
 
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onStartInitialization() {
-        LogUtil.v(TAG, "Decoding Image with BitmapRegionDecoder");
-    }
-
-    @Override
-    public void onEndInitialization() {
-        LogUtil.v(TAG, "Successfully decoded image with BitmapRegionDecoder");
-    }
-
-    @Override
-    public void onError(Exception e) {
-        LogUtil.e(TAG, "Error decoding image with BitmapRegionDecoder", e);
-        // If the image fails to load from the BitmapRegionDecoder, use the default pinch to zoom
-        String url = photo != null ? photo.getLink() : mUrl;
-
-        if (!TextUtils.isEmpty(url)) {
-            mGifImageView.setVisibility(View.VISIBLE);
-            mVideoView.setVisibility(View.GONE);
-            mImageView.setVisibility(View.GONE);
-            app.getImageLoader().displayImage(url, mGifImageView);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-        } else {
-            finish();
-            Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        TileBitmapDrawable.clearCache();
-        super.onDestroy();
     }
 }

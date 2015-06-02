@@ -70,7 +70,7 @@ dependencies {
     //compile 'com.android.support:design:' + SUPPORT_VERSION
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.7'
     compile 'com.github.chrisbanes.photoview:library:1.2.3'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
     compile 'com.kennyc:snackbar:2.5'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.jakewharton:butterknife:6.1.0'
@@ -78,7 +78,7 @@ dependencies {
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'com.afollestad:material-dialogs:0.7.4.2'
     compile 'com.github.clans:fab:1.5.0'
-    compile(name: 'photo_zoom', ext: 'aar')
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.1.3'
     compile(name: 'sliding_panel', ext: 'aar')
     compile(name: 'bottom-sheet-1.0', ext: 'aar')
     compile project(':libraries:EventBus')
