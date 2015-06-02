@@ -15,7 +15,7 @@ import android.widget.AdapterView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.activities.ViewPhotoActivity;
+import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -85,9 +85,9 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
         ImgurBaseObject obj = items.get(position);
 
         if (obj instanceof ImgurPhoto) {
-            startActivity(ViewPhotoActivity.createIntent(getActivity(), (ImgurPhoto) obj));
+            startActivity(FullScreenPhotoActivity.createIntent(getActivity(), (ImgurPhoto) obj));
         } else {
-            startActivity(ViewPhotoActivity.createIntent(getActivity(), obj.getLink(), obj.getLink().endsWith("mp4")));
+            startActivity(FullScreenPhotoActivity.createIntent(getActivity(), obj.getLink()));
         }
     }
 

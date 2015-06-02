@@ -1192,6 +1192,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
         private static final float MIN_ALPHA = 1.0f;
 
+        @Override
         public void transformPage(View view, float position) {
             int pageWidth = view.getWidth();
             int pageHeight = view.getHeight();

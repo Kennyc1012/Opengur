@@ -30,7 +30,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.activities.ViewPhotoActivity;
+import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.adapters.PhotoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -448,7 +448,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         if (mPhotoAdapter.attemptToPause(view)) return;
 
         int position = mListView.getPositionForView(view) - mListView.getHeaderViewsCount();
-        startActivity(ViewPhotoActivity.createIntent(getActivity(), mPhotoAdapter.getItem(position)));
+        startActivity(FullScreenPhotoActivity.createIntent(getActivity(), mPhotoAdapter.retainItems(), position));
     }
 
     @Override

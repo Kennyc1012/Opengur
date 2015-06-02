@@ -131,7 +131,7 @@ public class LinkUtils {
     public static boolean isLinkAnimated(@Nullable String url) {
         if (!TextUtils.isEmpty(url)) {
             url = url.toLowerCase();
-            return url.endsWith(".gif") || url.endsWith(".gifv") || url.endsWith(".webm");
+            return url.endsWith(".gif") || isVideoLink(url);
         }
 
         return false;

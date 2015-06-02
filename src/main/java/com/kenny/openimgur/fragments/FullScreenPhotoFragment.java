@@ -1,10 +1,7 @@
-package com.kenny.openimgur.activities;
+package com.kenny.openimgur.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,10 +10,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -36,19 +37,14 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import java.io.File;
 
 import butterknife.InjectView;
-import uk.co.senab.photoview.PhotoView;
 
 /**
- * Created by kcampagna on 6/22/14.
+ * Created by kcampagna on 6/2/15.
  */
-public class ViewPhotoActivity extends BaseActivity {
+public class FullScreenPhotoFragment extends BaseFragment {
+    private static final String KEY_IMGUR_OBJECT = "imgur_photo_object";
+
     private static final String KEY_VIDEO_POSITION = "position";
-
-    private static final String KEY_URL = "url";
-
-    private static final String KEY_IMAGE = "image";
-
-    private static final String KEY_IS_VIDEO = "is_video";
 
     @InjectView(R.id.image)
     SubsamplingScaleImageView mImageView;
@@ -60,60 +56,62 @@ public class ViewPhotoActivity extends BaseActivity {
     VideoView mVideoView;
 
     @InjectView(R.id.gifImage)
-    PhotoView mGifImageView;
+    ImageView mGifImageView;
 
-    @Nullable
-    private ImgurPhoto photo;
+    private ImgurPhoto mPhoto;
 
-    @Nullable
     private String mUrl;
 
-    private boolean mIsVideo = false;
-
-    public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {
-        return new Intent(context, ViewPhotoActivity.class).putExtra(KEY_IMAGE, photo);
-    }
-
-    public static Intent createIntent(@NonNull Context context, @NonNull String url, boolean isVideo) {
-        return new Intent(context, ViewPhotoActivity.class).putExtra(KEY_URL, url).putExtra(KEY_IS_VIDEO, isVideo);
+    public static FullScreenPhotoFragment createInstance(@NonNull ImgurPhoto photo) {
+        FullScreenPhotoFragment fragment = new FullScreenPhotoFragment();
+        Bundle args = new Bundle(1);
+        args.putParcelable(KEY_IMGUR_OBJECT, photo);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStatusBarColor(Color.BLACK);
-        Intent intent = getIntent();
+        setHasOptionsMenu(true);
+    }
 
-        if (intent == null || (!intent.hasExtra(KEY_IMAGE) && !intent.hasExtra(KEY_URL))) {
-            Toast.makeText(getApplicationContext(), R.string.error_generic, Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_full_screen, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+        ((Button) mMultiView.getView(MultiStateView.ViewState.ERROR).findViewById(R.id.errorButton)).setText(null);
+
+        if (savedInstanceState != null) {
+            mPhoto = savedInstanceState.getParcelable(KEY_IMGUR_OBJECT);
+        } else if (getArguments() != null) {
+            mPhoto = getArguments().getParcelable(KEY_IMGUR_OBJECT);
         }
 
-        setContentView(R.layout.activity_view_image);
-        photo = getIntent().getParcelableExtra(KEY_IMAGE);
-        mUrl = intent.getStringExtra(KEY_URL);
-        boolean isVideo = intent.getBooleanExtra(KEY_IS_VIDEO, false);
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        if (isVideo) {
-            displayVideo(savedInstanceState);
+        if (mPhoto == null) {
+            mMultiView.setViewState(MultiStateView.ViewState.ERROR);
         } else {
-            if (photo != null) {
-                if (photo.isAnimated()) {
-                    if (photo.isLinkAThumbnail() || photo.getSize() > (1024 * 1024 * 5)) {
-                        mUrl = photo.getMP4Link();
-                        displayVideo(savedInstanceState);
-                        return;
-                    } else {
-                        mUrl = photo.getLink();
-                    }
-                } else {
-                    mUrl = photo.getLink();
-                    displayImage();
-                }
-            }
+            configView(savedInstanceState);
+        }
+    }
 
+    private void configView(Bundle savedInstanceState) {
+        if (mPhoto.isAnimated()) {
+            if (mPhoto.isLinkAThumbnail() || mPhoto.getSize() > (1024 * 1024 * 5)) {
+                mUrl = mPhoto.getMP4Link();
+                displayVideo(savedInstanceState);
+            } else {
+                mUrl = mPhoto.getLink();
+                displayImage();
+            }
+        } else {
+            mUrl = mPhoto.getLink();
             displayImage();
         }
     }
@@ -122,24 +120,20 @@ public class ViewPhotoActivity extends BaseActivity {
      * Displays the image
      */
     private void displayImage() {
-        mIsVideo = false;
-
         app.getImageLoader().loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForView().build(), new SimpleImageLoadingListener() {
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
-                finish();
-                Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
             }
 
             @Override
             public void onLoadingComplete(String s, View view, Bitmap bitmap) {
                 bitmap.recycle();
 
-                if ((photo != null && photo.isAnimated()) || (!TextUtils.isEmpty(mUrl) && mUrl.endsWith(".gif"))) {
+                if ((mPhoto != null && mPhoto.isAnimated()) || (!TextUtils.isEmpty(mUrl) && mUrl.endsWith(".gif"))) {
                     // Display our gif in a standard image view
-                    if (!ImageUtil.loadAndDisplayGif(mGifImageView, photo != null ? photo.getLink() : mUrl, app.getImageLoader())) {
-                        finish();
-                        Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                    if (!ImageUtil.loadAndDisplayGif(mGifImageView, mPhoto != null ? mPhoto.getLink() : mUrl, app.getImageLoader())) {
+                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     } else {
                         mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                     }
@@ -157,13 +151,11 @@ public class ViewPhotoActivity extends BaseActivity {
                             mImageView.setMaxScale(10.0f);
                             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                         } else {
-                            finish();
-                            Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                            mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                         }
                     } catch (Exception e) {
                         LogUtil.e(TAG, "Error creating tile bitmap", e);
-                        finish();
-                        Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                 }
             }
@@ -171,7 +163,6 @@ public class ViewPhotoActivity extends BaseActivity {
     }
 
     private void displayVideo(Bundle savedInstance) {
-        mIsVideo = true;
         File file = VideoCache.getInstance().getVideoFile(mUrl);
         final int position;
 
@@ -206,8 +197,7 @@ public class ViewPhotoActivity extends BaseActivity {
 
                 @Override
                 public void onVideoDownloadFailed(Exception ex, String url) {
-                    finish();
-                    Toast.makeText(getApplicationContext(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                 }
 
                 @Override
@@ -232,8 +222,9 @@ public class ViewPhotoActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.view_photo, menu);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.view_photo, menu);
         ShareActionProvider share = (ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.share));
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -241,12 +232,12 @@ public class ViewPhotoActivity extends BaseActivity {
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
         String link;
 
-        if (photo != null) {
-            link = photo.getTitle() + " ";
-            if (TextUtils.isEmpty(photo.getRedditLink())) {
-                link += photo.getGalleryLink();
+        if (mPhoto != null && !TextUtils.isEmpty(mPhoto.getTitle())) {
+            link = mPhoto.getTitle() + " ";
+            if (TextUtils.isEmpty(mPhoto.getRedditLink())) {
+                link += mPhoto.getGalleryLink();
             } else {
-                link += String.format("https://reddit.com%s", photo.getRedditLink());
+                link += String.format("https://reddit.com%s", mPhoto.getRedditLink());
             }
         } else {
             link = mUrl;
@@ -254,18 +245,13 @@ public class ViewPhotoActivity extends BaseActivity {
 
         shareIntent.putExtra(Intent.EXTRA_TEXT, link);
         share.setShareIntent(shareIntent);
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.download:
-                if (photo != null) {
-                    startService(DownloaderService.createIntent(getApplicationContext(), photo));
-                } else {
-                    startService(DownloaderService.createIntent(getApplicationContext(), mUrl));
-                }
+                getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
                 return true;
         }
 
@@ -273,11 +259,9 @@ public class ViewPhotoActivity extends BaseActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        if (mIsVideo && mVideoView.isPlaying()) {
-            outState.putInt(KEY_VIDEO_POSITION, mVideoView.getCurrentPosition());
-        }
-
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putParcelable(KEY_IMGUR_OBJECT, mPhoto);
+        if (mVideoView.isPlaying()) outState.putInt(KEY_VIDEO_POSITION, mVideoView.getCurrentPosition());
     }
 }

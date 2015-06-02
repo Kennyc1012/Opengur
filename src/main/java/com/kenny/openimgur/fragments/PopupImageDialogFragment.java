@@ -16,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.activities.ViewPhotoActivity;
+import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
@@ -117,7 +117,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             @Override
             public void onClick(View view) {
                 dismiss();
-                startActivity(ViewPhotoActivity.createIntent(getActivity(), mImageUrl, false));
+                startActivity(FullScreenPhotoActivity.createIntent(getActivity(), mImageUrl));
             }
         });
 
@@ -126,7 +126,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 dismiss();
                 mVideo.stopPlayback();
-                startActivity(ViewPhotoActivity.createIntent(getActivity(), mImageUrl, true));
+                startActivity(FullScreenPhotoActivity.createIntent(getActivity(), mImageUrl));
                 return true;
             }
         });

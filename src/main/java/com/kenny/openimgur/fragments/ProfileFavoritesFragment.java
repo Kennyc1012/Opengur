@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.activities.ViewPhotoActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
@@ -21,7 +21,6 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.util.LinkUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -91,7 +90,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
                 items.add(obj);
                 intent = ViewActivity.createIntent(getActivity(), items, 0);
             } else {
-                intent = ViewPhotoActivity.createIntent(getActivity(), obj.getLink(), LinkUtils.isVideoLink(obj.getLink()));
+                intent = FullScreenPhotoActivity.createIntent(getActivity(), obj.getLink());
             }
 
             startActivity(intent);

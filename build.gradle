@@ -69,7 +69,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:' + SUPPORT_VERSION
     //compile 'com.android.support:design:' + SUPPORT_VERSION
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.7'
-    compile 'com.github.chrisbanes.photoview:library:1.2.3'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
     compile 'com.kennyc:snackbar:2.5'
     compile 'com.squareup.okhttp:okhttp:2.4.0'

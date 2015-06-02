@@ -17,8 +17,8 @@ import android.widget.CheckBox;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.UploadActivity;
-import com.kenny.openimgur.activities.ViewPhotoActivity;
 import com.kenny.openimgur.adapters.UploadAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -109,8 +109,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
 
         if (adapterPosition >= 0) {
             UploadedPhoto photo = mAdapter.getItem(adapterPosition);
-            boolean isVideo = photo.getUrl().endsWith(".gifv");
-            startActivity(ViewPhotoActivity.createIntent(getActivity(), photo.getUrl(), isVideo));
+            startActivity(FullScreenPhotoActivity.createIntent(getActivity(), photo.getUrl()));
         }
     }
 
