@@ -1113,6 +1113,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     break;
 
                 case MESSAGE_ACTION_COMPLETE:
+                    if (mPagerAdapter == null) return;
                     List<ImgurComment> comments = (List<ImgurComment>) msg.obj;
 
                     if (!comments.isEmpty()) {

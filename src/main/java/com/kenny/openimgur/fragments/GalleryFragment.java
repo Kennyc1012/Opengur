@@ -148,7 +148,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                 mSearchAdapter.setFilterQueryProvider(new FilterQueryProvider() {
                     @Override
                     public Cursor runQuery(CharSequence constraint) {
-                        return app.getSql().getPreviousGallerySearches(constraint);
+                        return app.getSql().getPreviousGallerySearches(constraint.toString());
                     }
                 });
                 mSearchView.setSuggestionsAdapter(mSearchAdapter);

@@ -626,6 +626,8 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
+                    if (getActivity() == null || !isAdded() || isRemoving()) return;
+
                     if (msg.obj instanceof ImgurBaseObject) {
                         setupFragmentWithObject((ImgurBaseObject) msg.obj);
                     } else if (msg.obj instanceof List && mImgurObject instanceof ImgurAlbum) {

@@ -15,13 +15,13 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.UploadedPhoto;
+import com.kenny.openimgur.util.DBContracts.GallerySearchContract;
 import com.kenny.openimgur.util.DBContracts.MemeContract;
 import com.kenny.openimgur.util.DBContracts.ProfileContract;
 import com.kenny.openimgur.util.DBContracts.SubRedditContract;
 import com.kenny.openimgur.util.DBContracts.TopicsContract;
 import com.kenny.openimgur.util.DBContracts.UploadContract;
 import com.kenny.openimgur.util.DBContracts.UserContract;
-import com.kenny.openimgur.util.DBContracts.GallerySearchContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -363,9 +363,9 @@ public class SqlHelper extends SQLiteOpenHelper {
      * @param name
      * @return
      */
-    public Cursor getSubReddits(CharSequence name) {
-        String sql = SubRedditContract.SEARCH_SUBREDDIT_SQL + name + "%'";
-        return getReadableDatabase().rawQuery(sql, null);
+    public Cursor getSubReddits(String name) {
+        name = "%" + name + "%";
+        return getReadableDatabase().rawQuery(SubRedditContract.SEARCH_SUBREDDIT_SQL, new String[]{name});
     }
 
     /**
@@ -429,9 +429,9 @@ public class SqlHelper extends SQLiteOpenHelper {
         return getReadableDatabase().rawQuery(GallerySearchContract.GET_PREVIOUS_SEARCHES_SQL, null);
     }
 
-    public Cursor getPreviousGallerySearches(CharSequence name) {
-        String sql = GallerySearchContract.SEARCH_GALLERY_SQL + name + "%'";
-        return getReadableDatabase().rawQuery(sql, null);
+    public Cursor getPreviousGallerySearches(String name) {
+        name = "%" + name + "%";
+        return getReadableDatabase().rawQuery(GallerySearchContract.SEARCH_GALLERY_SQL, new String[]{name});
     }
 
     public void addPreviousGallerySearch(String name) {
@@ -441,7 +441,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         db.insertWithOnConflict(GallerySearchContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
     }
 
-    public void deletePreviousGallerySearch(){
+    public void deletePreviousGallerySearch() {
         getWritableDatabase().delete(GallerySearchContract.TABLE_NAME, null, null);
     }
 

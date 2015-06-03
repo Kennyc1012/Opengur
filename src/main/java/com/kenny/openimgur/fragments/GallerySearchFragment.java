@@ -128,10 +128,10 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
         app.getSql().addPreviousGallerySearch(mQuery);
 
         if (mSearchAdapter == null) {
-            mSearchAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(mQuery), DBContracts.GallerySearchContract.COLUMN_NAME);
+            mSearchAdapter = new SearchAdapter(getActivity(), app.getSql().getPreviousGallerySearches(mQuery), DBContracts.GallerySearchContract.COLUMN_NAME);
             mSearchView.setSuggestionsAdapter(mSearchAdapter);
         } else {
-            mSearchAdapter.changeCursor(app.getSql().getSubReddits(mQuery));
+            mSearchAdapter.changeCursor(app.getSql().getPreviousGallerySearches(mQuery));
         }
 
         mSearchAdapter.notifyDataSetChanged();
