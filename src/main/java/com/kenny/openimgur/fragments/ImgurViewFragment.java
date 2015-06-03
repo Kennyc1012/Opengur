@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -21,15 +22,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.activities.ViewPhotoActivity;
+import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.adapters.PhotoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -41,6 +42,7 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
+import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.VideoView;
@@ -446,7 +448,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         if (mPhotoAdapter.attemptToPause(view)) return;
 
         int position = mListView.getPositionForView(view) - mListView.getHeaderViewsCount();
-        startActivity(ViewPhotoActivity.createIntent(getActivity(), mPhotoAdapter.getItem(position)));
+        startActivity(FullScreenPhotoActivity.createIntent(getActivity(), mPhotoAdapter.retainItems(), position));
     }
 
     @Override
@@ -455,10 +457,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         if (position >= 0) {
             new MaterialDialog.Builder(getActivity())
-                    .items(new String[]{getString(R.string.copy_link)})
+                    .items(R.array.photo_long_press_options)
                     .itemsCallback(new MaterialDialog.ListCallback() {
                         @Override
-                        public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                        public void onSelection(MaterialDialog materialDialog, View view, int dialogPosition, CharSequence charSequence) {
                             ImgurPhoto photo = mPhotoAdapter.getItem(position);
                             String link;
 
@@ -468,15 +470,34 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                                 link = photo.getLink();
                             }
 
-                            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                            clipboard.setPrimaryClip(ClipData.newPlainText("link", link));
+                            switch (dialogPosition) {
+                                // Copy
+                                case 0:
+                                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", link));
+                                    break;
+
+                                // Download
+                                case 1:
+                                    getActivity().startService(DownloaderService.createIntent(getActivity(), link));
+                                    break;
+
+                                // Share
+                                case 2:
+                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                    shareIntent.setType("text/plain");
+                                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, link);
+                                    startActivity(shareIntent);
+                                    break;
+                            }
                         }
                     }).show();
         }
     }
 
     @Override
-    public void onPlayTap(final ProgressBar prog, final ImageButton play, final ImageView image, final VideoView video) {
+    public void onPlayTap(final ProgressBar prog, final FloatingActionButton play, final ImageView image, final VideoView video) {
         final ImgurPhoto photo = mPhotoAdapter.getItem(mListView.getPositionForView(image) - mListView.getHeaderViewsCount());
 
         if (image.getVisibility() == View.VISIBLE && image.getDrawable() instanceof GifDrawable) {
@@ -605,6 +626,8 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
+                    if (getActivity() == null || !isAdded() || isRemoving()) return;
+
                     if (msg.obj instanceof ImgurBaseObject) {
                         setupFragmentWithObject((ImgurBaseObject) msg.obj);
                     } else if (msg.obj instanceof List && mImgurObject instanceof ImgurAlbum) {

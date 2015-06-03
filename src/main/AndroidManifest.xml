@@ -26,7 +26,7 @@
             android:name=".activities.ViewActivity"
             android:theme="@style/Theme_Not_Translucent" />
         <activity
-            android:name=".activities.ViewPhotoActivity"
+            android:name=".activities.FullScreenPhotoActivity"
             android:theme="@style/Theme_Not_Translucent" />
         <activity
             android:name=".activities.SettingsActivity"

@@ -67,7 +67,7 @@ import pl.droidsonroids.gif.GifDrawable;
 /**
  * Created by kcampagna on 8/2/14.
  */
-public class UploadActivity extends BaseActivity{
+public class UploadActivity extends BaseActivity {
     public static final int REQUEST_CODE = 100;
 
     private static final String PREF_BG_UPLOAD = "upload_in_background";
@@ -599,13 +599,20 @@ public class UploadActivity extends BaseActivity{
                         @Override
                         public void onLoadingFailed(String s, View view, FailReason failReason) {
                             mIsValidLink = false;
-                            mPreviewImage.setImageResource(R.drawable.photo_placeholder);
+
+                            if (theme.isDarkTheme) {
+                                mPreviewImage.setImageDrawable(ImageUtil.tintDrawable(R.drawable.photo_placeholder, getResources(), Color.WHITE));
+                            } else {
+                                mPreviewImage.setImageResource(R.drawable.photo_placeholder);
+                            }
+
                             SnackBar.show(UploadActivity.this, R.string.invalid_url);
                         }
 
                         @Override
                         public void onLoadingComplete(String url, View view, Bitmap bitmap) {
                             mIsValidLink = true;
+                            
                             if (url.endsWith(".gif")) {
                                 if (!ImageUtil.loadAndDisplayGif(mPreviewImage, url, app.getImageLoader())) {
                                     mPreviewImage.setImageBitmap(bitmap);
@@ -618,7 +625,13 @@ public class UploadActivity extends BaseActivity{
                         @Override
                         public void onLoadingCancelled(String s, View view) {
                             mIsValidLink = false;
-                            mPreviewImage.setImageResource(R.drawable.photo_placeholder);
+
+                            if (theme.isDarkTheme) {
+                                mPreviewImage.setImageDrawable(ImageUtil.tintDrawable(R.drawable.photo_placeholder, getResources(), Color.WHITE));
+                            } else {
+                                mPreviewImage.setImageResource(R.drawable.photo_placeholder);
+                            }
+
                             SnackBar.show(UploadActivity.this, R.string.invalid_url);
                         }
                     });

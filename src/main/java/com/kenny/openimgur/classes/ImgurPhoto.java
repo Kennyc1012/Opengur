@@ -56,6 +56,11 @@ public class ImgurPhoto extends ImgurBaseObject {
 
     private long mSize;
 
+    public ImgurPhoto(String link) {
+        super(null, null, link);
+        mIsAnimated = LinkUtils.isLinkAnimated(link);
+    }
+
     public ImgurPhoto(JSONObject json) {
         super(json);
         parseJson(json);

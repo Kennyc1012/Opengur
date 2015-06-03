@@ -51,7 +51,7 @@ public class RoutingActivity extends BaseActivity {
                 break;
 
             case DIRECT_LINK:
-                routingIntent = ViewPhotoActivity.createIntent(getApplicationContext(), link, LinkUtils.isVideoLink(link));
+                routingIntent = FullScreenPhotoActivity.createIntent(getApplicationContext(), link);
                 break;
         }
 

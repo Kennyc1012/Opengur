@@ -34,6 +34,8 @@ public enum Endpoints {
     PROFILE("https://api.imgur.com/3/account/%s"),
 
     // Username/page
+    ACCOUNT_FAVORITES("https://api.imgur.com/3/account/%s/favorites"),
+
     ACCOUNT_GALLERY_FAVORITES("https://api.imgur.com/3/account/%s/gallery_favorites/%d/newest"),
 
     // Username/Page

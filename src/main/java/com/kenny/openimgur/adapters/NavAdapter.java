@@ -64,6 +64,8 @@ public class NavAdapter extends BaseAdapter {
 
     private int mProfileColor;
 
+    private int mDividerColor;
+
     public NavAdapter(Context context, ImgurUser user) {
         ImgurTheme theme = OpengurApp.getInstance(context).getImgurTheme();
         mInflater = LayoutInflater.from(context);
@@ -73,6 +75,7 @@ public class NavAdapter extends BaseAdapter {
         mSelectedColor = res.getColor(theme.accentColor);
         mProfileColor = res.getColor(theme.primaryColor);
         mDefaultColor = res.getColor(theme.isDarkTheme ? R.color.primary_text_default_material_dark : R.color.primary_text_default_material_light);
+        mDividerColor = res.getColor(theme.isDarkTheme ? R.color.primary_material_light : R.color.primary_material_dark);
 
     }
 
@@ -95,7 +98,9 @@ public class NavAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         switch (getItemViewType(position)) {
             case VIEW_TYPE_DIVIDER:
-                return mInflater.inflate(R.layout.nav_divider, parent, false);
+                View view = mInflater.inflate(R.layout.nav_divider, parent, false);
+                view.setBackgroundColor(mDividerColor);
+                return view;
 
             case VIEW_TYPE_PROFILE:
                 return renderProfile(position, parent);

@@ -25,8 +25,8 @@ import android.widget.ImageView;
 
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
+import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -188,15 +188,15 @@ public class ImageUtil {
 
         if (discCacheSize > 0) {
             try {
-                discCache = new LruDiscCache(dir, new Md5FileNameGenerator(), discCacheSize);
+                discCache = new LruDiskCache(dir, new Md5FileNameGenerator(), discCacheSize);
                 LogUtil.v(TAG, "Disc cache set to " + FileUtil.humanReadableByteCount(discCacheSize, false));
             } catch (IOException e) {
                 LogUtil.e(TAG, "Unable to set the disc cache, falling back to unlimited", e);
-                discCache = new UnlimitedDiscCache(dir);
+                discCache = new UnlimitedDiskCache(dir);
             }
         } else {
             LogUtil.v(TAG, "Disc cache set to unlimited");
-            discCache = new UnlimitedDiscCache(dir);
+            discCache = new UnlimitedDiskCache(dir);
         }
 
         final int memory = (int) (Runtime.getRuntime().maxMemory() / 8);
@@ -355,5 +355,19 @@ public class ImageUtil {
         }
 
         return file;
+    }
+
+    /**
+     * Decodes a file path to a bitmap and returns its width and height. This <b><i>WILL NOT</i></b> load the image int memory
+     *
+     * @param file The file path to decode
+     * @return An int array containing the width and height of the bitmap
+     */
+    @NonNull
+    public static int[] getBitmapDimensions(@NonNull File file) {
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+        return new int[]{options.outWidth, options.outHeight};
     }
 }

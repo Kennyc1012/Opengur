@@ -1,5 +1,6 @@
 package com.kenny.openimgur.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -7,12 +8,15 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
@@ -57,7 +61,14 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
 
     @Override
     protected void fetchGallery() {
-        String url = String.format(Endpoints.ACCOUNT_GALLERY_FAVORITES.getUrl(), mSelectedUser.getUsername(), mCurrentPage);
+        boolean isSelf = mSelectedUser.isSelf(app);
+        String url;
+
+        if (isSelf) {
+            url = String.format(Endpoints.ACCOUNT_FAVORITES.getUrl(), mSelectedUser.getUsername());
+        } else {
+            url = String.format(Endpoints.ACCOUNT_GALLERY_FAVORITES.getUrl(), mSelectedUser.getUsername(), mCurrentPage);
+        }
         makeRequest(url);
     }
 
@@ -68,7 +79,29 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
 
     @Override
     protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        startActivity(ViewActivity.createIntent(getActivity(), items, position));
+        // NOOP see onItemClick
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        int headerSize = mGrid.getNumColumns() * mGrid.getHeaderViewCount();
+        int adapterPosition = position - headerSize;
+        // Don't respond to the header being clicked
+
+        if (adapterPosition >= 0) {
+            ImgurBaseObject obj = getAdapter().getItem(adapterPosition);
+            Intent intent;
+
+            if (obj instanceof ImgurAlbum || obj.getUpVotes() > Integer.MIN_VALUE) {
+                ArrayList<ImgurBaseObject> items = new ArrayList<>(1);
+                items.add(obj);
+                intent = ViewActivity.createIntent(getActivity(), items, 0);
+            } else {
+                intent = FullScreenPhotoActivity.createIntent(getActivity(), obj.getLink());
+            }
+
+            startActivity(intent);
+        }
     }
 
     private ImgurHandler mHandler = new ImgurHandler() {
@@ -87,6 +120,8 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
                         adapter.addItems(items);
                     }
 
+                    // The endpoint returns all favorites for a self user, no need for loading on scroll
+                    if (mSelectedUser.isSelf(app)) mHasMore = false;
                     mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
                     break;
 

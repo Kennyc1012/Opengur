@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.cocosw.bottomsheet.BottomSheetListener;
-import com.diegocarloslima.byakugallery.lib.TileBitmapDrawable;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -97,7 +96,6 @@ public class MemeActivity extends BaseActivity {
 
                 // Clear any memory cache before we save to avoid an OOM
                 app.getImageLoader().clearMemoryCache();
-                TileBitmapDrawable.clearCache();
                 new SaveMemeTask().execute(this);
                 return true;
 

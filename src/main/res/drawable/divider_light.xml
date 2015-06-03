@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:left="@dimen/keyline_margin">
         <shape>
-            <solid android:color="@color/primary_material_light" />
+            <solid android:color="@color/primary_material_dark" />
             <size android:height="1dp" />
         </shape>
     </item>

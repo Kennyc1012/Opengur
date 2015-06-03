@@ -7,6 +7,8 @@ import android.animation.ObjectAnimator;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -38,6 +40,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.cocosw.bottomsheet.BottomSheetListener;
+import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -232,7 +235,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         // Header needs to be added before adapter is set for pre 4.4 devices
         mCommentList.addHeaderView(mCommentListHeader);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
-        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
@@ -265,6 +268,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
 
+        Drawable commentDivider = getResources().getDrawable(theme.isDarkTheme ? R.drawable.divider_dark : R.drawable.divider_light);
+        mCommentList.setDivider(commentDivider);
         initSlidingView();
         handleIntent(getIntent(), savedInstanceState);
     }
@@ -809,7 +814,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public void onPlayTap(final ProgressBar prog, final ImageButton play, final ImageView image, final VideoView video) {
+    public void onPlayTap(final ProgressBar prog, final FloatingActionButton play, final ImageView image, final VideoView video) {
     }
 
     @Override
@@ -840,6 +845,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     String[] split = url.split("\\/");
                     PopupImageDialogFragment.getInstance(split[split.length - 1], false, false, false)
                             .show(getFragmentManager(), "popup");
+                    break;
+
+                case USER_CALLOUT:
+                    startActivity(ProfileActivity.createIntent(getApplicationContext(), url.replace("@", "")));
                     break;
 
                 case NONE:
@@ -1074,6 +1083,13 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
                 break;
+
+            case R.id.copy:
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText(getString(R.string.comment), comment.getComment());
+                clipboard.setPrimaryClip(clip);
+                SnackBar.show(ViewActivity.this, R.string.comment_copied);
+                break;
         }
     }
 
@@ -1113,6 +1129,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     break;
 
                 case MESSAGE_ACTION_COMPLETE:
+                    if (mPagerAdapter == null) return;
                     List<ImgurComment> comments = (List<ImgurComment>) msg.obj;
 
                     if (!comments.isEmpty()) {
@@ -1192,6 +1209,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
         private static final float MIN_ALPHA = 1.0f;
 
+        @Override
         public void transformPage(View view, float position) {
             int pageWidth = view.getWidth();
             int pageHeight = view.getHeight();

@@ -124,7 +124,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
             mCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
                 @Override
                 public Cursor runQuery(CharSequence constraint) {
-                    return app.getSql().getSubReddits(constraint);
+                    return app.getSql().getSubReddits(constraint.toString());
                 }
             });
             mSearchView.setSuggestionsAdapter(mCursorAdapter);

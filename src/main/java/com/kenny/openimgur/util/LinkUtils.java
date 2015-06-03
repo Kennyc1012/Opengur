@@ -29,6 +29,8 @@ public class LinkUtils {
     private static final String REGEX_IMGUR_DIRECT_LINK = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
             "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+(.jpg|.jpeg|.gif|.png|.gifv|.mp4|.webm)$";
 
+    private static final String REGEX_IMGUR_USER_CALLOUT = "@\\w+";
+
     // Pattern used to extra an ID from a url
     private static final Pattern ID_PATTERN = Pattern.compile(".com\\/(.*)\\W");
 
@@ -39,6 +41,7 @@ public class LinkUtils {
         USER,
         ALBUM,
         DIRECT_LINK,
+        USER_CALLOUT,
         NONE
     }
 
@@ -63,7 +66,9 @@ public class LinkUtils {
             } else if (url.matches(REGEX_IMGUR_USER)) {
                 match = LinkMatch.USER;
             } else if (url.matches(REGEX_IMGUR_ALBUM)) {
-                return LinkMatch.ALBUM;
+                match = LinkMatch.ALBUM;
+            } else if (url.matches(REGEX_IMGUR_USER_CALLOUT)) {
+                match = LinkMatch.USER_CALLOUT;
             }
         }
 
@@ -131,7 +136,7 @@ public class LinkUtils {
     public static boolean isLinkAnimated(@Nullable String url) {
         if (!TextUtils.isEmpty(url)) {
             url = url.toLowerCase();
-            return url.endsWith(".gif") || url.endsWith(".gifv") || url.endsWith(".webm");
+            return url.endsWith(".gif") || isVideoLink(url);
         }
 
         return false;

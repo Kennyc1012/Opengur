@@ -18,6 +18,7 @@ import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurListener;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import butterknife.InjectView;
 
@@ -28,6 +29,8 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
     private int mSelectedIndex = -1;
 
     private String mOP;
+
+    private Pattern mUserPattern = Pattern.compile("@\\w+");
 
     public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
         super(context, comments);
@@ -67,6 +70,7 @@ public class CommentAdapter extends ImgurBaseAdapter<ImgurComment> {
         holder.comment.setText(comment.getComment());
         holder.author.setText(constructSpan(comment, holder.author.getContext()));
         Linkify.addLinks(holder.comment, Linkify.WEB_URLS);
+        Linkify.addLinks(holder.comment, mUserPattern, null);
         holder.score.setText(String.valueOf(comment.getPoints()));
         holder.score.setBackgroundResource(comment.getPoints() >= 0 ? R.drawable.positive_circle : R.drawable.negative_circle);
         holder.replies.setVisibility(comment.getReplyCount() > 0 ? View.VISIBLE : View.GONE);
