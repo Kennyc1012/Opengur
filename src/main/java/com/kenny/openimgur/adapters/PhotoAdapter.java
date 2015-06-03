@@ -7,12 +7,12 @@ import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -210,7 +210,7 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
         ImageView image;
 
         @InjectView(R.id.play)
-        ImageButton play;
+        FloatingActionButton play;
 
         @InjectView(R.id.progressBar)
         ProgressBar prog;

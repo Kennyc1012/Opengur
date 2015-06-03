@@ -36,12 +36,14 @@
                 android:layout_height="1000dp"
                 android:visibility="gone" />
 
-            <ImageButton
+            <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/play"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:background="@drawable/black_circle"
-                android:src="@drawable/ic_action_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_play_arrow"
+                app:fab_size="mini"
+                app:fab_colorNormal="@color/play_circle_default"
+                app:fab_colorPressed="@color/play_circle_pressed"
                 android:layout_centerInParent="true" />
 
             <ProgressBar

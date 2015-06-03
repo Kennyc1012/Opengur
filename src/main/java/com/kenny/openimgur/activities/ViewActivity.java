@@ -38,6 +38,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.cocosw.bottomsheet.BottomSheetListener;
+import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -809,7 +810,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public void onPlayTap(final ProgressBar prog, final ImageButton play, final ImageView image, final VideoView video) {
+    public void onPlayTap(final ProgressBar prog, final FloatingActionButton play, final ImageView image, final VideoView video) {
     }
 
     @Override

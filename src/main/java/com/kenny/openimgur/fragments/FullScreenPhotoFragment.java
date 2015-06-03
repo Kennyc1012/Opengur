@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.services.DownloaderService;
@@ -38,6 +40,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import java.io.File;
 
 import butterknife.InjectView;
+import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Created by kcampagna on 6/2/15.
@@ -46,6 +49,8 @@ public class FullScreenPhotoFragment extends BaseFragment {
     private static final String KEY_IMGUR_OBJECT = "imgur_photo_object";
 
     private static final String KEY_VIDEO_POSITION = "position";
+
+    private static final long GIF_DELAY = 250L;
 
     @InjectView(R.id.image)
     SubsamplingScaleImageView mImageView;
@@ -62,6 +67,8 @@ public class FullScreenPhotoFragment extends BaseFragment {
     private ImgurPhoto mPhoto;
 
     private String mUrl;
+
+    private PhotoHandler mHander = new PhotoHandler();
 
     public static FullScreenPhotoFragment createInstance(@NonNull ImgurPhoto photo) {
         FullScreenPhotoFragment fragment = new FullScreenPhotoFragment();
@@ -121,6 +128,21 @@ public class FullScreenPhotoFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        mHander.removeMessages(0);
+        mHander = null;
+
+        // Free up some memory
+        if (mGifImageView.getDrawable() instanceof GifDrawable) {
+            ((GifDrawable) mGifImageView.getDrawable()).recycle();
+        } else if (mVideoView.getDuration() > 0) {
+            mVideoView.suspend();
+        }
+
+        super.onDestroyView();
+    }
+
     /**
      * Displays the image
      */
@@ -140,6 +162,11 @@ public class FullScreenPhotoFragment extends BaseFragment {
                     if (!ImageUtil.loadAndDisplayGif(mGifImageView, mPhoto != null ? mPhoto.getLink() : mUrl, app.getImageLoader())) {
                         mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     } else {
+                        if (!getUserVisibleHint()) {
+                            GifDrawable dr = ((GifDrawable) mGifImageView.getDrawable());
+                            dr.seekToFrame(0);
+                            mHander.sendMessageDelayed(0, dr, GIF_DELAY);
+                        }
                         mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                     }
                 } else {
@@ -192,7 +219,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
             });
 
             mVideoView.setVideoPath(file.getAbsolutePath());
-            mVideoView.start();
+            if (getUserVisibleHint()) mVideoView.start();
         } else {
             VideoCache.getInstance().putVideo(mUrl, new VideoCache.VideoCacheListener() {
                 @Override
@@ -220,7 +247,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
                     });
 
                     mVideoView.setVideoPath(file.getAbsolutePath());
-                    mVideoView.start();
+                    if (getUserVisibleHint()) mVideoView.start();
                 }
             });
         }
@@ -268,5 +295,36 @@ public class FullScreenPhotoFragment extends BaseFragment {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_IMGUR_OBJECT, mPhoto);
         if (mVideoView.isPlaying()) outState.putInt(KEY_VIDEO_POSITION, mVideoView.getCurrentPosition());
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser) {
+            if (mGifImageView != null && mGifImageView.getDrawable() instanceof GifDrawable) {
+                ((GifDrawable) mGifImageView.getDrawable()).start();
+            } else if (mVideoView != null && mVideoView.getDuration() > 0) {
+                mVideoView.start();
+            }
+        } else {
+            if (mGifImageView != null && mGifImageView.getDrawable() instanceof GifDrawable) {
+                ((GifDrawable) mGifImageView.getDrawable()).pause();
+            } else if (mVideoView != null && mVideoView.getDuration() > 0) {
+                mVideoView.pause();
+            }
+        }
+    }
+
+    private static class PhotoHandler extends ImgurHandler {
+        @Override
+        public void handleMessage(Message msg) {
+            // The pause call is sent to the handler to account for the delay so that it doesn't auto start
+            if (msg.obj instanceof GifDrawable) {
+                ((GifDrawable) msg.obj).pause();
+            }
+
+            super.handleMessage(msg);
+        }
     }
 }

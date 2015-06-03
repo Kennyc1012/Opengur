@@ -14,13 +14,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
 import com.kenny.openimgur.activities.ProfileActivity;
@@ -186,7 +186,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     }
 
     @Override
-    public void onPlayTap(ProgressBar prog, ImageButton play, ImageView image, VideoView video) {
+    public void onPlayTap(ProgressBar prog, FloatingActionButton play, ImageView image, VideoView video) {
         // NOOP
     }
 

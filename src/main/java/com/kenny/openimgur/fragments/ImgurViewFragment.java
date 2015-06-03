@@ -22,13 +22,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.adapters.PhotoAdapter;
@@ -497,7 +497,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     }
 
     @Override
-    public void onPlayTap(final ProgressBar prog, final ImageButton play, final ImageView image, final VideoView video) {
+    public void onPlayTap(final ProgressBar prog, final FloatingActionButton play, final ImageView image, final VideoView video) {
         final ImgurPhoto photo = mPhotoAdapter.getItem(mListView.getPositionForView(image) - mListView.getHeaderViewsCount());
 
         if (image.getVisibility() == View.VISIBLE && image.getDrawable() instanceof GifDrawable) {
