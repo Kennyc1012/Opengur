@@ -8,7 +8,7 @@
 - Fix some theme issues
 - Bug fixes
 - Add subsampling-scale-image-view for better zoom support
-- Update Universal Image Load to 1.9.4
+- Update Universal Image Loader to 1.9.4
 - Update Fabric
 - Update OKHTTP to 2.4.0
 - Update SnackBar to 2.5
