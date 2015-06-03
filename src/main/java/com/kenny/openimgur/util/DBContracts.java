@@ -85,7 +85,7 @@ public class DBContracts {
                 COLUMN_CREATED + " INTEGER);";
 
         public static final String SEARCH_USER_SQL = "SELECT * FROM " + TABLE_NAME +
-                " WHERE " + COLUMN_USERNAME + " = '%s' LIMIT 0,1";
+                " WHERE " + COLUMN_USERNAME + " LIKE '%s' LIMIT 0,1";
     }
 
     public static class UploadContract implements BaseColumns {

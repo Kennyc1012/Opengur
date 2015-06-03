@@ -201,7 +201,7 @@ public class SqlHelper extends SQLiteOpenHelper {
      */
     public void insertProfile(@NonNull ImgurUser profile) {
         SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues(5);
+        ContentValues values = new ContentValues(6);
         values.put(ProfileContract._ID, profile.getId());
         values.put(ProfileContract.COLUMN_USERNAME, profile.getUsername());
         values.put(ProfileContract.COLUMN_BIO, profile.getBio());
