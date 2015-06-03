@@ -612,6 +612,7 @@ public class UploadActivity extends BaseActivity {
                         @Override
                         public void onLoadingComplete(String url, View view, Bitmap bitmap) {
                             mIsValidLink = true;
+                            
                             if (url.endsWith(".gif")) {
                                 if (!ImageUtil.loadAndDisplayGif(mPreviewImage, url, app.getImageLoader())) {
                                     mPreviewImage.setImageBitmap(bitmap);
@@ -624,7 +625,7 @@ public class UploadActivity extends BaseActivity {
                         @Override
                         public void onLoadingCancelled(String s, View view) {
                             mIsValidLink = false;
-                            
+
                             if (theme.isDarkTheme) {
                                 mPreviewImage.setImageDrawable(ImageUtil.tintDrawable(R.drawable.photo_placeholder, getResources(), Color.WHITE));
                             } else {
