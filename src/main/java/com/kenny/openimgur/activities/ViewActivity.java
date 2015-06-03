@@ -7,6 +7,8 @@ import android.animation.ObjectAnimator;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -1078,6 +1080,13 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
+                break;
+
+            case R.id.copy:
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText(getString(R.string.comment), comment.getComment());
+                clipboard.setPrimaryClip(clip);
+                SnackBar.show(ViewActivity.this, R.string.comment_copied);
                 break;
         }
     }

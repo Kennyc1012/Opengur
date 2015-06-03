@@ -27,6 +27,12 @@
         app:showAsAction="always" />
 
     <item
+        android:title="@string/copy_comment"
+        android:id="@+id/copy"
+        android:icon="@drawable/ic_action_copy"
+        app:showAsAction="always" />
+
+    <item
         android:title="@string/cancel"
         android:id="@+id/cancel"
         android:icon="@drawable/ic_action_close"

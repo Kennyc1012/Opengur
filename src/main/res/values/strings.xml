@@ -18,7 +18,6 @@
     <string name="tap_to_view">Tap to view</string>
     <string name="share">Share</string>
     <string name="dismiss">Dismiss</string>
-    <string name="empty_comment_message">No comments have been posted yet.</string>
     <string name="cant_launch_intent">Your device in unable to handle this link</string>
     <string name="loading_image_error">Unable to load image.</string>
     <string name="moments_ago">Moments Ago</string>
@@ -32,8 +31,6 @@
     <string name="logout_confirm">Are you sure you want to logout?</string>
     <string name="user_not_logged_in">You must be logged in to complete this action</string>
     <string name="invalid_url">The url does not appear to be an image</string>
-    <string name="comment_hint">Enter Comment (Max 140)</string>
-    <string name="comment">Comment</string>
     <string name="post">Post</string>
     <string name="up_vote">Up Vote</string>
     <string name="down_vote">Down Vote</string>
@@ -52,10 +49,6 @@
     <string name="sort_by">Sort By</string>
     <string name="developer">Developer</string>
     <string name="version">Version</string>
-    <string name="open_src_licenses">Open Source Licenses</string>
-    <string name="posting_comment">Posting Comment…</string>
-    <string name="comment_post_successful">Comment Posted</string>
-    <string name="comment_post_unsuccessful">Unable to post comment. Please try again</string>
     <string name="vote_cast">Vote Casted</string>
     <string name="one_moment">One Moment…</string>
     <string name="uploading">Uploading, One Moment…</string>
@@ -70,8 +63,6 @@
     <string name="upload_success">Uploaded to %s</string>
     <string name="upload_complete">Upload Complete</string>
     <string name="view_licenses">View Open Source Licenses</string>
-    <string name="comments_off">Comments set not to load</string>
-    <string name="load_comments">Load Comments</string>
     <string name="retry">Retry</string>
     <string name="empty_upload">No Photo has been selected for upload</string>
     <string name="gallery_upload_no_title">Gallery Submissions must have a title</string>
@@ -245,5 +236,18 @@
     <string name="fab_camera">Take a picture</string>
     <string name="fab_gallery">Select a picture</string>
     <string name="fab_link">Enter a link</string>
+
+    <!-- Comments -->
+    <string name="copy_comment">Copy Comment</string>
+    <string name="empty_comment_message">No comments have been posted yet.</string>
+    <string name="comment_hint">Enter Comment (Max 140)</string>
+    <string name="comment">Comment</string>
+    <string name="open_src_licenses">Open Source Licenses</string>
+    <string name="posting_comment">Posting Comment…</string>
+    <string name="comment_post_successful">Comment Posted</string>
+    <string name="comment_post_unsuccessful">Unable to post comment. Please try again</string>
+    <string name="comments_off">Comments set not to load</string>
+    <string name="load_comments">Load Comments</string>
+    <string name="comment_copied">Comment Copied</string>
 
 </resources>
