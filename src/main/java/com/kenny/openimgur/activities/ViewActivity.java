@@ -268,6 +268,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
 
+        Drawable commentDivider = getResources().getDrawable(theme.isDarkTheme ? R.drawable.divider_dark : R.drawable.divider_light);
+        mCommentList.setDivider(commentDivider);
         initSlidingView();
         handleIntent(getIntent(), savedInstanceState);
     }

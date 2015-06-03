@@ -9,5 +9,4 @@
     android:drawSelectorOnTop="true"
     android:cacheColorHint="@null"
     android:footerDividersEnabled="false"
-    android:divider="@drawable/divider"
     tools:listitem="@layout/comment_item" />
