@@ -843,6 +843,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             .show(getFragmentManager(), "popup");
                     break;
 
+                case USER_CALLOUT:
+                    startActivity(ProfileActivity.createIntent(getApplicationContext(), url.replace("@", "")));
+                    break;
+
                 case NONE:
                 default:
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
