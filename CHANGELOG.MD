@@ -1,4 +1,22 @@
 #Open Imgur Changelog
+<b>2.8</b>
+- Update account favorites end point for self profiles
+- Full photo swiping added. When viewing an album, swiping between photos is enabled in full screen 
+- Long pressing an image will now show the download and share options
+- Handle user mentions from comments
+- Fix some theme issues
+- Bug fixes
+- Add subsampling-scale-image-view for better zoom support
+- Update Universal Image Load to 1.9.4
+- Update Fabric
+- Update OKHTTP to 2.4.0
+- Update SnackBar to 2.5
+- Update Material Dialogs to 0.7.5.1
+- Update support libraries to 22.2.0
+- Update Gif Drawable to 1.1.7
+- Remove PhotoView library
+- Remove ByakuGallery library
+
 <b>2.7.1</b>
 - Changed app name to Opengur as per Imgur's request
 - Copy correct links
