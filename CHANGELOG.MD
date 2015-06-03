@@ -4,6 +4,7 @@
 - Full photo swiping added. When viewing an album, swiping between photos is enabled in full screen 
 - Long pressing an image will now show the download and share options
 - Handle user mentions from comments
+- Comment Copying
 - Fix some theme issues
 - Bug fixes
 - Add subsampling-scale-image-view for better zoom support
