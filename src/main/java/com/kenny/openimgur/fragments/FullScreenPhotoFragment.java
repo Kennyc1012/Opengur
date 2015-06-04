@@ -150,12 +150,15 @@ public class FullScreenPhotoFragment extends BaseFragment {
         app.getImageLoader().loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForView().build(), new SimpleImageLoadingListener() {
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
+                if (getActivity() == null | !isAdded() || isRemoving()) return;
+
                 mMultiView.setViewState(MultiStateView.ViewState.ERROR);
             }
 
             @Override
             public void onLoadingComplete(String s, View view, Bitmap bitmap) {
                 bitmap.recycle();
+                if (getActivity() == null | !isAdded() || isRemoving()) return;
 
                 if ((mPhoto != null && mPhoto.isAnimated()) || (!TextUtils.isEmpty(mUrl) && mUrl.endsWith(".gif"))) {
                     // Display our gif in a standard image view
@@ -229,11 +232,15 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
                 @Override
                 public void onVideoDownloadFailed(Exception ex, String url) {
+                    if (getActivity() == null | !isAdded() || isRemoving()) return;
+
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                 }
 
                 @Override
                 public void onVideoDownloadComplete(File file) {
+                    if (getActivity() == null | !isAdded() || isRemoving()) return;
+
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                     mVideoView.setVisibility(View.VISIBLE);
                     mImageView.setVisibility(View.GONE);
