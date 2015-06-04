@@ -18,6 +18,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -112,7 +113,9 @@ public class ImageUtil {
      * @param imageLoader The Imageloader where we will retrieve the image from
      * @return if successful
      */
-    public static boolean loadAndDisplayGif(@NonNull ImageView imageView, @NonNull String url, @NonNull ImageLoader imageLoader) {
+    public static boolean loadAndDisplayGif(@Nullable ImageView imageView, @NonNull String url, @NonNull ImageLoader imageLoader) {
+        if (imageView == null) return false;
+        
         File file = DiskCacheUtils.findInCache(url, imageLoader.getDiskCache());
 
         if (FileUtil.isFileValid(file)) {
