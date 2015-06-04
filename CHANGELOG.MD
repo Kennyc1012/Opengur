@@ -1,4 +1,7 @@
 #Open Imgur Changelog
+<b>2.8.1</b>
+- Fix crash while in full screen image viewing
+
 <b>2.8</b>
 - Update account favorites end point for self profiles
 - Full photo swiping added. When viewing an album, swiping between photos is enabled in full screen 
