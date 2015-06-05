@@ -91,6 +91,13 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         }
     }
 
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        LogUtil.w(TAG, "Received onLowMemory");
+        getImageLoader().clearMemoryCache();
+    }
+
     public ImageLoader getImageLoader() {
         if (mImageLoader == null || !mImageLoader.isInited()) {
             ImageUtil.initImageLoader(getApplicationContext());

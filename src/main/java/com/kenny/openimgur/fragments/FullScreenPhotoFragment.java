@@ -50,7 +50,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
     private static final String KEY_VIDEO_POSITION = "position";
 
-    private static final long GIF_DELAY = 250L;
+    private static final long GIF_DELAY = 350L;
 
     @InjectView(R.id.image)
     SubsamplingScaleImageView mImageView;
@@ -68,7 +68,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
     private String mUrl;
 
-    private PhotoHandler mHander = new PhotoHandler();
+    private PhotoHandler mHandler = new PhotoHandler();
 
     public static FullScreenPhotoFragment createInstance(@NonNull ImgurPhoto photo) {
         FullScreenPhotoFragment fragment = new FullScreenPhotoFragment();
@@ -130,14 +130,16 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
-        mHander.removeMessages(0);
-        mHander = null;
+        mHandler.removeMessages(0);
+        mHandler = null;
 
         // Free up some memory
         if (mGifImageView.getDrawable() instanceof GifDrawable) {
             ((GifDrawable) mGifImageView.getDrawable()).recycle();
         } else if (mVideoView.getDuration() > 0) {
             mVideoView.suspend();
+        } else {
+            mImageView.recycle();
         }
 
         super.onDestroyView();
@@ -147,7 +149,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
      * Displays the image
      */
     private void displayImage() {
-        app.getImageLoader().loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForView().build(), new SimpleImageLoadingListener() {
+        app.getImageLoader().loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForFullscreen().build(), new SimpleImageLoadingListener() {
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
                 if (getActivity() == null | !isAdded() || isRemoving()) return;
@@ -156,34 +158,27 @@ public class FullScreenPhotoFragment extends BaseFragment {
             }
 
             @Override
-            public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+            public void onLoadingComplete(String url, View view, Bitmap bitmap) {
                 bitmap.recycle();
                 if (getActivity() == null | !isAdded() || isRemoving()) return;
 
-                if ((mPhoto != null && mPhoto.isAnimated()) || (!TextUtils.isEmpty(mUrl) && mUrl.endsWith(".gif"))) {
-                    // Display our gif in a standard image view
-                    if (!ImageUtil.loadAndDisplayGif(mGifImageView, mPhoto != null ? mPhoto.getLink() : mUrl, app.getImageLoader())) {
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                    } else {
-                        if (!getUserVisibleHint()) {
-                            GifDrawable dr = ((GifDrawable) mGifImageView.getDrawable());
-                            dr.seekToFrame(0);
-                            mHander.sendMessageDelayed(0, dr, GIF_DELAY);
-                        }
-                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                    }
+                if (url.endsWith(".gif")) {
+                    displayGif(url);
                 } else {
                     // Static images will use the TouchImageView to render the image. This allows large(tall) images to render better and be better legible
                     try {
-                        File file = app.getImageLoader().getDiskCache().get(s);
+                        File file = app.getImageLoader().getDiskCache().get(url);
                         if (FileUtil.isFileValid(file)) {
                             // We will enable tiling if any of the image dimensions are above 2048 px (Canvas draw limit)
                             int[] dimensions = ImageUtil.getBitmapDimensions(file);
                             boolean enableTiling = dimensions[0] > 2048 || dimensions[1] > 2048;
+                            LogUtil.v(TAG, "Tiling enabled for image " + enableTiling);
                             Uri fileUril = Uri.fromFile(file);
 
-                            mImageView.setImage(ImageSource.uri(fileUril).tiling(enableTiling));
+                            mImageView.setImage(ImageSource.uri(fileUril).dimensions(dimensions[0], dimensions[1]).tiling(enableTiling));
                             mImageView.setMaxScale(10.0f);
+                            mVideoView.setVisibility(View.GONE);
+                            mGifImageView.setVisibility(View.GONE);
                             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                         } else {
                             mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -260,6 +255,27 @@ public class FullScreenPhotoFragment extends BaseFragment {
         }
     }
 
+    private void displayGif(String url) {
+        // Display our gif in a standard image view
+
+        if (getUserVisibleHint()) {
+            // Auto play the gif if we are visible
+            File file = app.getImageLoader().getDiskCache().get(url);
+            if (!ImageUtil.loadAndDisplayGif(mGifImageView, file)) {
+                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+            } else {
+                mVideoView.setVisibility(View.GONE);
+                mImageView.setVisibility(View.GONE);
+                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            }
+        } else {
+            mVideoView.setVisibility(View.GONE);
+            mImageView.setVisibility(View.GONE);
+            app.getImageLoader().displayImage(url, mGifImageView);
+            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        }
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -313,6 +329,8 @@ public class FullScreenPhotoFragment extends BaseFragment {
                 ((GifDrawable) mGifImageView.getDrawable()).start();
             } else if (mVideoView != null && mVideoView.getDuration() > 0) {
                 mVideoView.start();
+            } else {
+                mHandler.sendEmptyMessageDelayed(0, GIF_DELAY);
             }
         } else {
             if (mGifImageView != null && mGifImageView.getDrawable() instanceof GifDrawable) {
@@ -323,12 +341,11 @@ public class FullScreenPhotoFragment extends BaseFragment {
         }
     }
 
-    private static class PhotoHandler extends ImgurHandler {
+    private class PhotoHandler extends ImgurHandler {
         @Override
         public void handleMessage(Message msg) {
-            // The pause call is sent to the handler to account for the delay so that it doesn't auto start
-            if (msg.obj instanceof GifDrawable) {
-                ((GifDrawable) msg.obj).pause();
+            if (getUserVisibleHint() && mGifImageView != null && LinkUtils.isLinkAnimated(mUrl) && !LinkUtils.isVideoLink(mUrl)) {
+                displayGif(mUrl);
             }
 
             super.handleMessage(msg);

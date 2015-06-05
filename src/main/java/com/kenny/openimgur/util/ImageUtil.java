@@ -114,9 +114,19 @@ public class ImageUtil {
      * @return if successful
      */
     public static boolean loadAndDisplayGif(@Nullable ImageView imageView, @NonNull String url, @NonNull ImageLoader imageLoader) {
-        if (imageView == null) return false;
-        
         File file = DiskCacheUtils.findInCache(url, imageLoader.getDiskCache());
+        return loadAndDisplayGif(imageView, file);
+    }
+
+    /**
+     * Loads a gif into an image view. The gif must have been saved to the disk cache before calling this method or it will fail
+     *
+     * @param imageView The ImageView where the gif will be displayed
+     * @param file      File of the gif
+     * @return
+     */
+    public static boolean loadAndDisplayGif(@Nullable ImageView imageView, @Nullable File file) {
+        if (imageView == null) return false;
 
         if (FileUtil.isFileValid(file)) {
             try {
@@ -248,6 +258,11 @@ public class ImageUtil {
     public static DisplayImageOptions.Builder getDisplayOptionsForComments() {
         return getDefaultDisplayOptions()
                 .displayer(new CircleBitmapDisplayer());
+    }
+
+    public static DisplayImageOptions.Builder getDisplayOptionsForFullscreen() {
+        return getDefaultDisplayOptions()
+                .cacheInMemory(false);
     }
 
     /**
