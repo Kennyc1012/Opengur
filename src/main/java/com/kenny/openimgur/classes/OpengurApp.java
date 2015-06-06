@@ -63,7 +63,6 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         mPref.registerOnSharedPreferenceChangeListener(this);
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
-        checkRefreshToken();
         mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, ImgurTheme.GREY.themeName));
         mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, false);
 
@@ -166,23 +165,6 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         mSql.onUserLogout();
     }
 
-    /**
-     * Refreshes the user's access token
-     *
-     * @return If the token will be refreshed
-     */
-    public boolean checkRefreshToken() {
-        if (mUser != null && !mUser.isAccessTokenValid() && !mIsFetchingAccessToken) {
-            LogUtil.v(TAG, "Token expired or is expiring soon, requesting new token");
-            mIsFetchingAccessToken = true;
-            new RefreshTokenTask().execute(mUser);
-            return true;
-        }
-
-        LogUtil.v(TAG, "User is null, token is still valid, or currently request a token, no need to request a new token");
-        return false;
-    }
-
     public ImgurTheme getImgurTheme() {
         return mTheme;
     }
@@ -203,55 +185,6 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
                     .detectAll()
                     .penaltyLog()
                     .build());
-        }
-    }
-
-    /**
-     * Called when a refresh token has been received.
-     *
-     * @param json
-     */
-    private synchronized boolean onReceivedRefreshToken(JSONObject json) {
-        try {
-            String accessToken = json.getString(ImgurUser.KEY_ACCESS_TOKEN);
-            String refreshToken = json.getString(ImgurUser.KEY_REFRESH_TOKEN);
-            long expiration = System.currentTimeMillis() + (json.getLong(ImgurUser.KEY_EXPIRES_IN) * DateUtils.SECOND_IN_MILLIS);
-            mUser.setTokens(accessToken, refreshToken, expiration);
-            mSql.updateUserTokens(accessToken, refreshToken, expiration);
-            LogUtil.v(TAG, "New refresh token received");
-            mIsFetchingAccessToken = false;
-            return true;
-        } catch (JSONException e) {
-            LogUtil.e(TAG, "Error parsing refresh token result", e);
-            mIsFetchingAccessToken = false;
-            return false;
-        }
-    }
-
-    private class RefreshTokenTask extends AsyncTask<ImgurUser, Void, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(ImgurUser... imgurUsers) {
-            if (imgurUsers == null || imgurUsers.length <= 0) {
-                return false;
-            }
-
-            try {
-                ImgurUser user = imgurUsers[0];
-
-                final RequestBody body = new FormEncodingBuilder()
-                        .add("client_id", ApiClient.CLIENT_ID)
-                        .add("client_secret", ApiClient.CLIENT_SECRET)
-                        .add("refresh_token", user.getRefreshToken())
-                        .add("grant_type", "refresh_token").build();
-
-                ApiClient client = new ApiClient(Endpoints.REFRESH_TOKEN.getUrl(), ApiClient.HttpRequest.POST);
-                return onReceivedRefreshToken(client.doWork(body));
-            } catch (Exception e) {
-                LogUtil.e(TAG, "Error parsing user tokens", e);
-                mIsFetchingAccessToken = false;
-                return false;
-            }
         }
     }
 
