@@ -42,7 +42,9 @@ public class NavAdapter extends BaseAdapter {
 
     public static final int PAGE_SETTINGS = 8;
 
-    public static final int PAGE_FEEDBACK = 9;
+    public static final int PAGE_BETA = 9;
+
+    public static final int PAGE_FEEDBACK = 10;
 
     private static final int VIEW_TYPE_PRIMARY = 0;
 
@@ -231,6 +233,10 @@ public class NavAdapter extends BaseAdapter {
 
             case PAGE_MEME:
                 drawableId = R.drawable.ic_action_meme;
+                break;
+
+            case PAGE_BETA:
+                drawableId = R.drawable.ic_action_social_people;
                 break;
         }
 

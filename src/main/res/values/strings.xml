@@ -250,4 +250,10 @@
     <string name="load_comments">Load Comments</string>
     <string name="comment_copied">Comment Copied</string>
 
+    <!-- Beta Community -->
+    <string name="beta_test">Beta Tester</string>
+    <string name="beta_message">Want to become a beta tester for Opengur and receive features before they are officially released?</string>
+    <string name="beta_confirm">I Sure Do</string>
+    <string name="beta_no">No Thanks</string>
+
 </resources>
