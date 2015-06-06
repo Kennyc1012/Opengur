@@ -24,6 +24,8 @@ repositories {
     jcenter()
 }
 
+def VERSION_NAME = '2.8.1'
+
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
@@ -33,9 +35,19 @@ android {
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 26
-        versionName "2.8.1"
+
         buildConfigField "String", "API_CLIENT_ID", project.API_CLIENT_ID
         buildConfigField "String", "API_CLIENT_SECRET", project.API_CLIENT_SECRET
+    }
+
+    productFlavors {
+        full {
+            versionName VERSION_NAME
+        }
+
+        beta {
+            versionName VERSION_NAME + "-beta"
+        }
     }
 
     buildTypes {
