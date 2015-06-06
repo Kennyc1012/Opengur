@@ -676,6 +676,11 @@ public class UploadActivity extends BaseActivity {
         }
     };
 
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
+    }
+
     /**
      * Decodes the selected image in the background for displaying
      */

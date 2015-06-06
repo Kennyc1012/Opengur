@@ -108,4 +108,9 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
 
         super.onBackPressed();
     }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Translucent_Main_Dark : R.style.Theme_Translucent_Main_Light;
+    }
 }

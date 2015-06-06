@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.StyleRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -50,6 +51,7 @@ abstract public class BaseActivity extends AppCompatActivity {
         LogUtil.v(TAG, "onCreate");
         app = OpengurApp.getInstance(getApplicationContext());
         theme = app.getImgurTheme();
+        onSetStyle();
         theme.applyTheme(getTheme());
         updateTaskDescription(null);
         super.onCreate(savedInstanceState);
@@ -237,4 +239,19 @@ abstract public class BaseActivity extends AppCompatActivity {
     protected boolean canDoFragmentTransaction() {
         return !isFinishing() && !isChangingConfigurations();
     }
+
+    /**
+     * Called before the super call on {@link #onCreate(Bundle)} so the style can be set for the activity
+     */
+    private void onSetStyle() {
+        setTheme(getStyleRes());
+    }
+
+    /**
+     * Returns the style resource for the activity.
+     *
+     * @return
+     */
+    @StyleRes
+    protected abstract int getStyleRes();
 }

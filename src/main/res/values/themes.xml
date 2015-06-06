@@ -1,17 +1,17 @@
 <resources>
 
-    <style name="Theme_Translucent" parent="Theme_Not_Translucent" />
+    <style name="Theme_Translucent_Light" parent="Theme_Not_Translucent_Light" />
 
-    <style name="Settings_Theme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Settings_Theme_Light" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBarOverlay">false</item>
     </style>
 
-    <style name="Theme_Not_Translucent" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Theme_Not_Translucent_Light" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="Theme_Translucent_Main" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme_Translucent_Main_Light" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
@@ -19,14 +19,7 @@
 
     <!-- Override styles (Light) -->
     <style name="Theme_Light">
-        <item name="android:windowBackground">@color/background_material_light</item>
-        <item name="android:textColorSecondary">@color/secondary_text_default_material_light</item>
-        <item name="android:textColor">@color/primary_text_default_material_light</item>
-        <item name="android:textColorHint">@color/secondary_text_default_material_light</item>
         <item name="android:textColorLink">?colorAccent</item>
-        <item name="android:editTextColor">@color/primary_text_default_material_light</item>
-        <item name="radioButtonStyle">@style/RadioButton.Style.Light</item>
-        <item name="checkboxStyle">@style/CheckBox.Style.Light</item>
         <item name="cardBG">@color/cardview_light_background</item>
         <item name="emptyDrawableUploads">@drawable/empty_uploads_light</item>
         <item name="emptyDrawableMessages">@drawable/no_comments_light</item>
@@ -35,73 +28,73 @@
         <item name="md_dark_theme">false</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
         <item name="md_negative_color">@color/primary_text_default_material_light</item>
-        <item name="dropDownListViewStyle">@style/PopupMenuStyle.Light</item>
+        <item name="toolBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
-    <style name="Theme_Blue" parent="@style/Theme_Light">
+    <style name="Theme_Light.Blue">
         <item name="colorPrimary">@color/theme_blue_primary</item>
         <item name="colorPrimaryDark">@color/theme_blue_dark</item>
         <item name="colorAccent">@color/theme_blue_accent</item>
         <item name="fabPressed">@color/theme_blue_accent_dark</item>
     </style>
 
-    <style name="Theme_Orange" parent="@style/Theme_Light">
+    <style name="Theme_Light.Orange">
         <item name="colorPrimary">@color/theme_orange_primary</item>
         <item name="colorPrimaryDark">@color/theme_orange_dark</item>
         <item name="colorAccent">@color/theme_light_blue_accent</item>
         <item name="fabPressed">@color/theme_light_blue_accent_dark</item>
     </style>
 
-    <style name="Theme_Cyan" parent="@style/Theme_Light">
+    <style name="Theme_Light.Cyan">
         <item name="colorPrimary">@color/theme_cyan_primary</item>
         <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
         <item name="colorAccent">@color/theme_cyan_accent</item>
         <item name="fabPressed">@color/theme_cyan_accent_dark</item>
     </style>
 
-    <style name="Theme_Green" parent="@style/Theme_Light">
+    <style name="Theme_Light.Green">
         <item name="colorPrimary">@color/theme_green_primary</item>
         <item name="colorPrimaryDark">@color/theme_green_dark</item>
         <item name="colorAccent">@color/theme_green_accent</item>
         <item name="fabPressed">@color/theme_green_accent_dark</item>
     </style>
 
-    <style name="Theme_Teal" parent="@style/Theme_Light">
+    <style name="Theme_Light.Teal">
         <item name="colorPrimary">@color/theme_teal_primary</item>
         <item name="colorPrimaryDark">@color/theme_teal_dark</item>
         <item name="colorAccent">@color/theme_teal_accent</item>
         <item name="fabPressed">@color/theme_teal_accent_dark</item>
     </style>
 
-    <style name="Theme_Red" parent="@style/Theme_Light">
+    <style name="Theme_Light.Red">
         <item name="colorPrimary">@color/theme_red_primary</item>
         <item name="colorPrimaryDark">@color/theme_red_dark</item>
         <item name="colorAccent">@color/theme_red_accent</item>
         <item name="fabPressed">@color/theme_red_accent_dark</item>
     </style>
 
-    <style name="Theme_Pink" parent="@style/Theme_Light">
+    <style name="Theme_Light.Pink">
         <item name="colorPrimary">@color/theme_pink_primary</item>
         <item name="colorPrimaryDark">@color/theme_pink_dark</item>
         <item name="colorAccent">@color/theme_pink_accent</item>
         <item name="fabPressed">@color/theme_pink_accent_dark</item>
     </style>
 
-    <style name="Theme_Purple" parent="@style/Theme_Light">
+    <style name="Theme_Light.Purple">
         <item name="colorPrimary">@color/theme_purple_primary</item>
         <item name="colorPrimaryDark">@color/theme_purple_dark</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
         <item name="fabPressed">@color/theme_purple_accent_dark</item>
     </style>
 
-    <style name="Theme_Grey" parent="@style/Theme_Light">
+    <style name="Theme_Light.Grey">
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
         <item name="fabPressed">@color/theme_grey_accent_dark</item>
     </style>
 
-    <style name="Theme_Black" parent="@style/Theme_Light">
+    <style name="Theme_Light.Black">
         <item name="colorPrimary">@color/theme_black_primary</item>
         <item name="colorPrimaryDark">@color/theme_black_dark</item>
         <item name="colorAccent">@color/theme_black_accent</item>
@@ -109,15 +102,25 @@
     </style>
 
     <!-- Override styles (Dark) -->
+    <style name="Theme_Translucent_Dark" parent="Theme_Not_Translucent_Light" />
+
+    <style name="Settings_Theme_Dark" parent="Theme.AppCompat">
+        <item name="windowActionBarOverlay">false</item>
+    </style>
+
+    <style name="Theme_Not_Translucent_Dark" parent="Theme.AppCompat">
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="Theme_Translucent_Main_Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+    </style>
+
     <style name="Theme_Dark">
-        <item name="android:windowBackground">@color/background_material_dark</item>
-        <item name="android:textColorSecondary">@color/secondary_text_default_material_dark</item>
-        <item name="android:textColor">@color/primary_text_default_material_dark</item>
-        <item name="android:textColorHint">@color/secondary_text_default_material_dark</item>
         <item name="android:textColorLink">?colorAccent</item>
-        <item name="android:editTextColor">@color/primary_text_default_material_dark</item>
-        <item name="radioButtonStyle">@style/RadioButton.Style.Dark</item>
-        <item name="checkboxStyle">@style/CheckBox.Style.Dark</item>
         <item name="cardBG">@color/card_bg_dark</item>
         <item name="emptyDrawableUploads">@drawable/empty_uploads_dark</item>
         <item name="emptyDrawableMessages">@drawable/no_comments_dark</item>
@@ -128,73 +131,73 @@
         <item name="md_dark_theme">true</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
         <item name="md_negative_color">@color/primary_text_default_material_dark</item>
-        <item name="dropDownListViewStyle">@style/PopupMenuStyle.Dark</item>
+        <item name="toolBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
     </style>
 
-    <style name="Theme_Blue_Dark" parent="@style/Theme_Dark">
+    <style name="Theme_Dark.Blue">
         <item name="colorPrimary">@color/theme_blue_primary</item>
         <item name="colorPrimaryDark">@color/theme_blue_dark</item>
         <item name="colorAccent">@color/theme_blue_accent</item>
         <item name="fabPressed">@color/theme_blue_accent_dark</item>
     </style>
 
-    <style name="Theme_Orange_Dark" parent="@style/Theme_Dark">
+    <style name="Theme_Dark.Orange">
         <item name="colorPrimary">@color/theme_orange_primary</item>
         <item name="colorPrimaryDark">@color/theme_orange_dark</item>
         <item name="colorAccent">@color/theme_light_blue_accent</item>
         <item name="fabPressed">@color/theme_light_blue_accent_dark</item>
     </style>
 
-    <style name="Theme_Cyan_Dark" parent="@style/Theme_Dark">
+    <style name="Theme_Dark.Cyan">
         <item name="colorPrimary">@color/theme_cyan_primary</item>
         <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
         <item name="colorAccent">@color/theme_cyan_accent</item>
         <item name="fabPressed">@color/theme_cyan_accent_dark</item>
     </style>
 
-    <style name="Theme_Green_Dark" parent="@style/Theme_Dark">
+    <style name="Theme_Dark.Green">
         <item name="colorPrimary">@color/theme_green_primary</item>
         <item name="colorPrimaryDark">@color/theme_green_dark</item>
         <item name="colorAccent">@color/theme_green_accent</item>
         <item name="fabPressed">@color/theme_green_accent_dark</item>
     </style>
 
-    <style name="Theme_Teal_Dark" parent="@style/Theme_Dark">
+    <style name="Theme_Dark.Teal">
         <item name="colorPrimary">@color/theme_teal_primary</item>
         <item name="colorPrimaryDark">@color/theme_teal_dark</item>
         <item name="colorAccent">@color/theme_teal_accent</item>
         <item name="fabPressed">@color/theme_teal_accent_dark</item>
     </style>
 
-    <style name="Theme_Red_Dark" parent="@style/Theme_Dark">
+    <style name="Theme_Dark.Red">
         <item name="colorPrimary">@color/theme_red_primary</item>
         <item name="colorPrimaryDark">@color/theme_red_dark</item>
         <item name="colorAccent">@color/theme_red_accent</item>
         <item name="fabPressed">@color/theme_red_accent_dark</item>
     </style>
 
-    <style name="Theme_Pink_Dark" parent="@style/Theme_Dark">
+    <style name="Theme_Dark.Pink">
         <item name="colorPrimary">@color/theme_pink_primary</item>
         <item name="colorPrimaryDark">@color/theme_pink_dark</item>
         <item name="colorAccent">@color/theme_pink_accent</item>
         <item name="fabPressed">@color/theme_pink_accent_dark</item>
     </style>
 
-    <style name="Theme_Purple_Dark" parent="@style/Theme_Dark">
+    <style name="Theme_Dark.Purple">
         <item name="colorPrimary">@color/theme_purple_primary</item>
         <item name="colorPrimaryDark">@color/theme_purple_dark</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
         <item name="fabPressed">@color/theme_purple_accent_dark</item>
     </style>
 
-    <style name="Theme_Grey_Dark" parent="@style/Theme_Dark">
+    <style name="Theme_Dark.Grey">
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
         <item name="fabPressed">@color/theme_grey_accent_dark</item>
     </style>
 
-    <style name="Theme_Black_Dark" parent="@style/Theme_Dark">
+    <style name="Theme_Dark.Black">
         <item name="colorPrimary">@color/theme_black_primary</item>
         <item name="colorPrimaryDark">@color/theme_black_dark</item>
         <item name="colorAccent">@color/theme_black_accent</item>

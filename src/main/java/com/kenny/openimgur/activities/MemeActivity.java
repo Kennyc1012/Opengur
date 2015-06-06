@@ -62,7 +62,6 @@ public class MemeActivity extends BaseActivity {
     public static Intent createIntent(Context context, ImgurBaseObject object) {
         return new Intent(context, MemeActivity.class).putExtra(KEY_OBJECT, object);
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -247,6 +246,11 @@ public class MemeActivity extends BaseActivity {
                         }
                     }
                 }).show();
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
     }
 
     private static class SaveMemeTask extends AsyncTask<MemeActivity, Void, File> {

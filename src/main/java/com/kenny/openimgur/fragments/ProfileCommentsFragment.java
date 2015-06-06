@@ -2,6 +2,7 @@ package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
@@ -154,6 +155,8 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
         mListView.setOnScrollListener(this);
         mListView.setOnItemClickListener(this);
         mListView.setHeaderDividersEnabled(false);
+        Drawable commentDivider = getResources().getDrawable(theme.isDarkTheme ? R.drawable.divider_dark : R.drawable.divider_light);
+        mListView.setDivider(commentDivider);
         handleArgs(getArguments(), savedInstanceState);
     }
 

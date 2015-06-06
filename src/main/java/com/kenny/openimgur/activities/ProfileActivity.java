@@ -422,6 +422,11 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         // NOOP
     }
 
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Translucent_Main_Dark : R.style.Theme_Translucent_Main_Light;
+    }
+
     private static class ProfilePager extends FragmentStatePagerAdapter {
         private static final int NUM_PAGES_SELF = 6;
 

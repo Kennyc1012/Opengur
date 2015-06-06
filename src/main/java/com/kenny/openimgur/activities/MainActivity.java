@@ -360,4 +360,9 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Translucent_Main_Dark : R.style.Theme_Translucent_Main_Light;
+    }
 }

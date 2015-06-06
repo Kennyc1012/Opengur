@@ -60,7 +60,6 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
         }
 
         displayImage(holder.image, photoUrl);
-
         return convertView;
     }
 

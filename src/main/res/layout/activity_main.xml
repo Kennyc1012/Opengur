@@ -19,26 +19,26 @@
             android:layout_height="wrap_content"
             android:background="?colorPrimary"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            app:popupTheme="?toolBarPopupTheme" />
 
         <include
-            layout="@layout/upload_menu"
             android:id="@+id/uploadMenu"
+            layout="@layout/upload_menu"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/upload_button_margin_right"
             android:layout_marginBottom="@dimen/upload_button_margin_bottom"
+            android:layout_marginRight="@dimen/upload_button_margin_right"
             android:visibility="visible" />
 
     </RelativeLayout>
 
     <fragment
         android:id="@+id/navDrawer"
+        android:name="com.kenny.openimgur.fragments.NavFragment"
         android:layout_width="@dimen/drawer_max_width"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:name="com.kenny.openimgur.fragments.NavFragment" />
+        android:layout_gravity="start" />
 
 </android.support.v4.widget.DrawerLayout>

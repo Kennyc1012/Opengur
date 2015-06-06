@@ -416,4 +416,9 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_CONVO, mConvo);
     }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
+    }
 }
