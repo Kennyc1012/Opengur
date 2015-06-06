@@ -3,6 +3,8 @@
 
 Open source Imgur Android App
 
+Want to become a beta tester? [Click Here!](https://plus.google.com/u/0/communities/107476382114210885879)
+
 ![screenshot](https://github.com/Kennyc1012/Opengur/raw/master/assets/ss1.png)
 
 #Features

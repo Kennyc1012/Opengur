@@ -1,13 +1,22 @@
 #Open Imgur Changelog
+<b>2.8.2</b>
+- Better gif support while viewing in full screen
+- Added Beta community nav item
+- Added product flavors for beta and full release
+
+<b>2.8.1</b>
+- Fix crash while in full screen image viewing
+
 <b>2.8</b>
 - Update account favorites end point for self profiles
 - Full photo swiping added. When viewing an album, swiping between photos is enabled in full screen 
 - Long pressing an image will now show the download and share options
 - Handle user mentions from comments
+- Comment Copying
 - Fix some theme issues
 - Bug fixes
 - Add subsampling-scale-image-view for better zoom support
-- Update Universal Image Load to 1.9.4
+- Update Universal Image Loader to 1.9.4
 - Update Fabric
 - Update OKHTTP to 2.4.0
 - Update SnackBar to 2.5
