@@ -186,14 +186,13 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 break;
 
             case NavAdapter.PAGE_BETA:
-                new MaterialDialog.Builder(this)
-                        .title(R.string.beta_test)
-                        .content(R.string.beta_message)
-                        .negativeText(R.string.beta_no)
-                        .positiveText(R.string.beta_confirm)
-                        .callback(new MaterialDialog.ButtonCallback() {
+                new AlertDialog.Builder(this, theme.getDialogTheme())
+                        .setTitle(R.string.beta_test)
+                        .setMessage(R.string.beta_message)
+                        .setNegativeButton(R.string.beta_no, null)
+                        .setPositiveButton(R.string.beta_confirm, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://plus.google.com/u/0/communities/107476382114210885879"));
 
                                 if (browserIntent.resolveActivity(getPackageManager()) != null) {
