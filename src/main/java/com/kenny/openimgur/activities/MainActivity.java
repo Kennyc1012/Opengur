@@ -8,33 +8,36 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.github.clans.fab.FloatingActionMenu;
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.NavAdapter;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurTheme;
+import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.MemeFragment;
-import com.kenny.openimgur.fragments.NavFragment;
 import com.kenny.openimgur.fragments.RandomFragment;
 import com.kenny.openimgur.fragments.RedditFilterFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.fragments.TopicsFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 
 import butterknife.InjectView;
@@ -43,7 +46,7 @@ import butterknife.OnClick;
 /**
  * Created by kcampagna on 10/19/14.
  */
-public class MainActivity extends BaseActivity implements NavFragment.NavigationListener, FragmentListener {
+public class MainActivity extends BaseActivity implements FragmentListener, NavigationView.OnNavigationItemSelectedListener {
     private static final String KEY_CURRENT_PAGE = "current_page";
 
     @InjectView(R.id.drawerLayout)
@@ -55,7 +58,8 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     @InjectView(R.id.toolBar)
     Toolbar mToolBar;
 
-    private NavFragment mNavFragment;
+    @InjectView(R.id.navigationView)
+    NavigationView mNavigationView;
 
     private int mCurrentPage = -1;
 
@@ -69,9 +73,8 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mNavigationView.setNavigationItemSelectedListener(this);
         setupToolBar();
-        mNavFragment = (NavFragment) getFragmentManager().findFragmentById(R.id.navDrawer);
-        mNavFragment.configDrawerLayout(mDrawer);
         mNagOnExit = app.getPreferences().getBoolean(SettingsActivity.KEY_CONFIRM_EXIT, true);
     }
 
@@ -79,29 +82,30 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
      * Sets up the tool bar to take the place of the action bar
      */
     private void setupToolBar() {
-        if (isLandscape() && !isTablet()) {
-            // Don't add the extra padding
-        } else {
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mToolBar.getLayoutParams();
-            lp.setMargins(0, ViewUtils.getStatusBarHeight(getApplicationContext()), 0, 0);
-            mToolBar.setLayoutParams(lp);
-        }
-
         setSupportActionBar(mToolBar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setHomeAsUpIndicator(R.drawable.ic_action_navigation_menu);
+        ab.setHomeButtonEnabled(true);
     }
 
     @Override
-    public void onNavigationItemSelected(int position) {
-        if (position <= 2 && mCurrentPage == position) return;
-        changePage(position);
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+        if (mCurrentPage == menuItem.getItemId()) return false;
+        menuItem.setChecked(true);
+        changePage(menuItem.getItemId());
         mDrawer.closeDrawers();
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mNavFragment.onOptionsItemSelected(item)) return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawer.openDrawer(GravityCompat.START);
+                return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -115,55 +119,98 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commitAllowingStateLoss();
         }
 
+        int fragmentPage;
+
         if (savedInstanceState == null) {
-            changePage(app.getPreferences().getInt(KEY_CURRENT_PAGE, NavAdapter.PAGE_GALLERY));
+            fragmentPage = app.getPreferences().getInt(KEY_CURRENT_PAGE, R.id.nav_gallery);
         } else {
-            mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, NavAdapter.PAGE_GALLERY);
+            fragmentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, R.id.nav_gallery);
         }
 
-        mNavFragment.setSelectedPage(mCurrentPage);
+        // TODO Remove this eventually. This is to support old pages being saved from previous nav drawer
+        if (fragmentPage < 10) fragmentPage = R.id.nav_gallery;
+
+        if (mNavigationView.getMenu() != null) {
+            MenuItem item = mNavigationView.getMenu().findItem(fragmentPage);
+            if (item != null) item.setChecked(true);
+        }
+
+        changePage(fragmentPage);
+        updateUserHeader(user);
+    }
+
+    private void updateUserHeader(@Nullable ImgurUser user) {
+        View header = mNavigationView.findViewById(R.id.header);
+        if (header == null) return;
+
+        ImageView avatar = (ImageView) header.findViewById(R.id.profileImg);
+        TextView name = (TextView) header.findViewById(R.id.profileName);
+        TextView rep = (TextView) header.findViewById(R.id.reputation);
+
+        if (user != null) {
+            int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
+            String firstLetter = user.getUsername().substring(0, 1);
+
+            avatar.setImageDrawable(TextDrawable.builder()
+                    .beginConfig()
+                    .toUpperCase()
+                    .width(size)
+                    .height(size)
+                    .endConfig()
+                    .buildRound(firstLetter, getResources().getColor(theme.accentColor)));
+
+            name.setText(user.getUsername());
+            rep.setText(user.getNotoriety().getStringId());
+        } else {
+            avatar.setImageResource(R.drawable.ic_account_circle);
+            name.setText(R.string.profile);
+            rep.setText(R.string.login_msg);
+        }
+
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(ProfileActivity.createIntent(getApplicationContext(), null), ProfileActivity.REQUEST_CODE);
+            }
+        });
     }
 
     /**
      * Changes the fragment
      *
-     * @param position The pages position
+     * @param menuItemId The menu item id of the page selected
      */
-    private void changePage(int position) {
+    private void changePage(int menuItemId) {
         Fragment fragment = null;
 
-        switch (position) {
-            case NavAdapter.PAGE_GALLERY:
+        switch (menuItemId) {
+            case R.id.nav_gallery:
                 fragment = GalleryFragment.createInstance();
-                mCurrentPage = position;
+                mCurrentPage = menuItemId;
                 break;
 
-            case NavAdapter.PAGE_PROFILE:
-                startActivityForResult(ProfileActivity.createIntent(getApplicationContext(), null), ProfileActivity.REQUEST_CODE);
-                break;
-
-            case NavAdapter.PAGE_SUBREDDIT:
+            case R.id.nav_reddit:
                 fragment = RedditFragment.createInstance();
-                mCurrentPage = position;
+                mCurrentPage = menuItemId;
                 break;
 
-            case NavAdapter.PAGE_RANDOM:
+            case R.id.nav_random:
                 fragment = RandomFragment.createInstance();
-                mCurrentPage = position;
+                mCurrentPage = menuItemId;
                 break;
 
-            case NavAdapter.PAGE_UPLOADS:
+            case R.id.nav_uploads:
                 fragment = UploadedPhotosFragment.createInstance();
-                mCurrentPage = position;
+                mCurrentPage = menuItemId;
                 break;
 
-            case NavAdapter.PAGE_SETTINGS:
+            case R.id.nav_settings:
                 mSavedTheme = ImgurTheme.copy(theme);
                 mIsDarkTheme = app.getPreferences().getBoolean(SettingsActivity.KEY_DARK_THEME, mSavedTheme.isDarkTheme);
                 startActivityForResult(SettingsActivity.createIntent(getApplicationContext()), SettingsActivity.REQUEST_CODE);
                 break;
 
-            case NavAdapter.PAGE_FEEDBACK:
+            case R.id.nav_feedback:
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                         "mailto", "kennyc.developer@gmail.com", null));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Open Imgur Feedback");
@@ -175,17 +222,17 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 }
                 break;
 
-            case NavAdapter.PAGE_TOPICS:
+            case R.id.nav_topics:
                 fragment = new TopicsFragment();
-                mCurrentPage = position;
+                mCurrentPage = menuItemId;
                 break;
 
-            case NavAdapter.PAGE_MEME:
+            case R.id.nav_meme:
                 fragment = new MemeFragment();
-                mCurrentPage = position;
+                mCurrentPage = menuItemId;
                 break;
 
-            case NavAdapter.PAGE_BETA:
+            case R.id.nav_beta:
                 new AlertDialog.Builder(this, theme.getDialogTheme())
                         .setTitle(R.string.beta_test)
                         .setMessage(R.string.beta_message)
@@ -217,13 +264,13 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         SharedPreferences.Editor edit = pref.edit();
         long lastClear = app.getPreferences().getLong("lastClear", 0);
 
-        // We will clear the cache every 4 days
+        // We will clear the cache every 3 days
         if (lastClear == 0) {
             edit.putLong("lastClear", System.currentTimeMillis());
         } else {
             long currentTime = System.currentTimeMillis();
 
-            if (currentTime - lastClear >= DateUtils.DAY_IN_MILLIS * 4) {
+            if (currentTime - lastClear >= DateUtils.DAY_IN_MILLIS * 3) {
                 app.deleteAllCache();
                 edit.putLong("lastClear", currentTime);
             }
@@ -267,11 +314,6 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     @Override
     public void onUpdateActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
-    }
-
-    @Override
-    public void onDrawerToggle(boolean isOpen) {
-        // NOOP
     }
 
     @OnClick({R.id.linkUpload, R.id.cameraUpload, R.id.galleryUpload})
@@ -373,9 +415,9 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     if (data.getBooleanExtra(ProfileActivity.KEY_LOGGED_IN, false)) {
                         app = OpengurApp.getInstance(getApplicationContext());
-                        if (mNavFragment != null) mNavFragment.onUserLogin(app.getUser());
+                        updateUserHeader(app.getUser());
                     } else if (data.getBooleanExtra(ProfileActivity.KEY_LOGGED_OUT, false)) {
-                        if (mNavFragment != null) mNavFragment.onUserLogin(null);
+                        updateUserHeader(null);
                     }
                 }
                 break;

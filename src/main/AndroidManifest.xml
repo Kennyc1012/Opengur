@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.kenny.openimgur">
+    package="com.kenny.openimgur" >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,8 +12,8 @@
         android:name=".classes.OpengurApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name">
-        <activity android:name=".activities.MainActivity">
+        android:label="@string/app_name" >
+        <activity android:name=".activities.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,15 +28,19 @@
         <activity android:name=".activities.ProfileActivity" />
         <activity
             android:name=".activities.UploadActivity"
-            android:label="@string/upload">
+            android:label="@string/upload" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="image/*" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
@@ -44,7 +48,8 @@
             android:name=".activities.RoutingActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask" >
+
             <!-- Profiles -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -92,7 +97,7 @@
                     android:pathPrefix="/user/"
                     android:scheme="https" />
             </intent-filter>
-            <!-- Galleries-->
+            <!-- Galleries -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -139,7 +144,7 @@
                     android:pathPrefix="/gallery/"
                     android:scheme="https" />
             </intent-filter>
-            <!-- Albums-->
+            <!-- Albums -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -214,6 +219,7 @@
         <activity android:name=".activities.ConvoThreadActivity" />
         <activity android:name=".activities.MemeActivity" />
         <activity android:name=".activities.GallerySearchActivity" />
+
         <service android:name=".services.DownloaderService" />
         <service android:name=".services.UploadService" />
 
@@ -222,6 +228,7 @@
         <meta-data
             android:name="com.crashlytics.ApiKey"
             android:value="${fabric_key}" />
+
     </application>
 
 </manifest>

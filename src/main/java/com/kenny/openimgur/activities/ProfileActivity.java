@@ -99,6 +99,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        setStatusBarColor(getResources().getColor(theme.darkColor));
         setupToolBar();
         handleData(savedInstanceState, getIntent());
     }
@@ -107,14 +108,6 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
      * Sets up the tool bar to take the place of the action bar
      */
     private void setupToolBar() {
-        if (isLandscape() && !isTablet()) {
-            // Don't add the extra padding
-        } else {
-            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mToolBar.getLayoutParams();
-            lp.setMargins(0, ViewUtils.getStatusBarHeight(getApplicationContext()), 0, 0);
-            mToolBar.setLayoutParams(lp);
-        }
-
         mToolBar.setBackgroundColor(getResources().getColor(app.getImgurTheme().primaryColor));
         setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
