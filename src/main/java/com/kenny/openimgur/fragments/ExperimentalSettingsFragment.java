@@ -1,13 +1,14 @@
 package com.kenny.openimgur.fragments;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 
@@ -22,10 +23,10 @@ public class ExperimentalSettingsFragment extends BasePreferenceFragment impleme
         bindListPreference(findPreference(SettingsActivity.KEY_THREAD_SIZE));
         setHasOptionsMenu(true);
 
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.caution)
-                .content(R.string.pref_experimental_warning_msg)
-                .positiveText(getString(R.string.okay).toUpperCase())
+        new AlertDialog.Builder(getActivity(), mApp.getImgurTheme().getDialogTheme())
+                .setTitle(R.string.caution)
+                .setMessage(R.string.pref_experimental_warning_msg)
+                .setPositiveButton(getString(R.string.okay).toUpperCase(), null)
                 .show();
     }
 
@@ -39,15 +40,13 @@ public class ExperimentalSettingsFragment extends BasePreferenceFragment impleme
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.reset:
-                new MaterialDialog.Builder(getActivity())
-                        .title(R.string.pref_experimental_settings)
-                        .content(R.string.pref_experimental_reset_msg)
-                        .negativeText(R.string.cancel)
-                        .positiveText(R.string.yes)
-                        .callback(new MaterialDialog.ButtonCallback() {
+                new AlertDialog.Builder(getActivity(), mApp.getImgurTheme().getDialogTheme())
+                        .setTitle(R.string.pref_experimental_settings)
+                        .setMessage(R.string.pref_experimental_reset_msg)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                super.onPositive(dialog);
+                            public void onClick(DialogInterface dialog, int which) {
                                 SharedPreferences.Editor edit = mApp.getPreferences().edit();
                                 edit.putString(SettingsActivity.KEY_THREAD_SIZE, SettingsActivity.THREAD_SIZE_5);
                                 onPreferenceChange(findPreference(SettingsActivity.KEY_THREAD_SIZE), SettingsActivity.THREAD_SIZE_5);

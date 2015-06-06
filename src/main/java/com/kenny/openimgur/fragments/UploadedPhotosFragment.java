@@ -5,9 +5,11 @@ import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +17,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.UploadActivity;
@@ -121,11 +122,10 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
         if (adapterPosition >= 0) {
             final UploadedPhoto photo = mAdapter.getItem(adapterPosition);
 
-            new MaterialDialog.Builder(getActivity())
-                    .items(R.array.uploaded_photos_options)
-                    .itemsCallback(new MaterialDialog.ListCallback() {
+            new AlertDialog.Builder(getActivity(), theme.getDialogTheme())
+                    .setItems(R.array.uploaded_photos_options, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onSelection(MaterialDialog materialDialog, View view, int which, CharSequence charSequence) {
+                        public void onClick(DialogInterface dialog, int which) {
                             // 0. Share 1. Copy Link 2. Delete
 
                             switch (which) {
@@ -145,18 +145,18 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                                 case 1:
                                     ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                                     clipboard.setPrimaryClip(ClipData.newPlainText("link", photo.getUrl()));
+                                    SnackBar.show(getActivity(),R.string.link_copied);
                                     break;
 
                                 case 2:
                                     View deleteView = LayoutInflater.from(getActivity()).inflate(R.layout.upload_delete_confirm, null);
                                     final CheckBox cb = (CheckBox) deleteView.findViewById(R.id.imgurDelete);
 
-                                    new MaterialDialog.Builder(getActivity())
-                                            .negativeText(R.string.cancel)
-                                            .positiveText(R.string.yes)
-                                            .callback(new MaterialDialog.ButtonCallback() {
+                                    new AlertDialog.Builder(getActivity(), theme.getDialogTheme())
+                                            .setNegativeButton(R.string.cancel, null)
+                                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                                 @Override
-                                                public void onPositive(MaterialDialog dialog) {
+                                                public void onClick(DialogInterface dialog, int which) {
                                                     if (cb.isChecked()) {
                                                         String url = String.format(Endpoints.IMAGE_DELETE.getUrl(), photo.getDeleteHash());
                                                         // We don't care about any conformation here
@@ -172,7 +172,9 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                                                             mListener.onUpdateActionBar(true);
                                                     }
                                                 }
-                                            }).customView(deleteView, false).show();
+                                            })
+                                            .setView(deleteView)
+                                            .show();
                             }
                         }
                     }).show();

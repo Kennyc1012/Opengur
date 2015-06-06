@@ -10,6 +10,7 @@ import android.app.FragmentManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -23,6 +24,7 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -37,7 +39,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.cocosw.bottomsheet.BottomSheetListener;
 import com.github.clans.fab.FloatingActionButton;
@@ -628,12 +629,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case R.id.sortComments:
-                new MaterialDialog.Builder(ViewActivity.this)
-                        .title(R.string.sort_by)
-                        .items(CommentSort.getItemsForArray(getApplicationContext()))
-                        .itemsCallback(new MaterialDialog.ListCallback() {
+                new AlertDialog.Builder(ViewActivity.this, theme.getDialogTheme())
+                        .setTitle(R.string.sort_by)
+                        .setItems(CommentSort.getItemsForArray(getApplicationContext()), new DialogInterface.OnClickListener() {
                             @Override
-                            public void onSelection(MaterialDialog materialDialog, View view, int which, CharSequence charSequence) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 CommentSort sort = CommentSort.getSortFromPosition(which);
 
                                 if (sort != mCommentSort) {

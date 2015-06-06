@@ -25,9 +25,7 @@
         <item name="emptyDrawableMessages">@drawable/no_comments_light</item>
         <item name="errorDrawable">@drawable/error_light</item>
         <item name="repliesDrawable">@drawable/ic_action_replies_light</item>
-        <item name="md_dark_theme">false</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
-        <item name="md_negative_color">@color/primary_text_default_material_light</item>
         <item name="toolBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
@@ -128,9 +126,7 @@
         <item name="repliesDrawable">@drawable/ic_action_replies_dark</item>
         <item name="snack_bar_background_color">@color/background_floating_material_light</item>
         <item name="snack_bar_text_color">@android:color/black</item>
-        <item name="md_dark_theme">true</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
-        <item name="md_negative_color">@color/primary_text_default_material_dark</item>
         <item name="toolBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
     </style>
 

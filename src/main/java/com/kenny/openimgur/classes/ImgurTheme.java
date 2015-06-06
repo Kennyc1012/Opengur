@@ -48,6 +48,30 @@ public enum ImgurTheme {
         theme.applyStyle(isDarkTheme ? this.darkTheme : this.theme, true);
     }
 
+    @StyleRes
+    public int getDialogTheme() {
+        switch (this) {
+            case BLUE:
+            case ORANGE:
+            case CYAN:
+            case GREEN:
+            case TEAL:
+            case PURPLE:
+                return isDarkTheme ? R.style.Theme_AppCompat_Dialog_Alert_Accent_Pink : R.style.Theme_AppCompat_Light_Dialog_Alert_Accent_Pink;
+
+            case RED:
+            case PINK:
+                return isDarkTheme ? R.style.Theme_AppCompat_Dialog_Alert_Accent_Blue : R.style.Theme_AppCompat_Light_Dialog_Alert_Accent_Blue;
+
+            case BLACK:
+                return isDarkTheme ? R.style.Theme_AppCompat_Dialog_Alert_Accent_Yellow : R.style.Theme_AppCompat_Light_Dialog_Alert_Accent_Yellow;
+
+            case GREY:
+            default:
+                return isDarkTheme ? R.style.Theme_AppCompat_Dialog_Alert_Accent_Green : R.style.Theme_AppCompat_Light_Dialog_Alert_Accent_Green;
+        }
+    }
+
     /**
      * Returns a copy of the supplied theme
      *

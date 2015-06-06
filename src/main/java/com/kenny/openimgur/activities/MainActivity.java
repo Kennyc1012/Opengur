@@ -3,20 +3,21 @@ package com.kenny.openimgur.activities;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.clans.fab.FloatingActionMenu;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NavAdapter;
@@ -32,6 +33,7 @@ import com.kenny.openimgur.fragments.RedditFilterFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.fragments.TopicsFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 
@@ -275,7 +277,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
     @Override
     public void onBackPressed() {
-        if (mDrawer.isDrawerOpen(Gravity.START)) {
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawers();
             return;
         } else if (getFragmentManager().findFragmentByTag("filter") != null) {
@@ -303,19 +305,21 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     }
 
     private void showExitNag() {
-        new MaterialDialog.Builder(this)
-                .title(R.string.exit)
-                .customView(R.layout.exit_nag, false)
-                .negativeText(R.string.cancel)
-                .positiveText(R.string.yes)
-                .callback(new MaterialDialog.ButtonCallback() {
+        new AlertDialog.Builder(this, theme.getDialogTheme())
+                .setTitle(R.string.exit)
+                .setView(R.layout.exit_nag)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        CheckBox cb = (CheckBox) dialog.getCustomView().findViewById(R.id.askAgainCB);
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (dialog instanceof AlertDialog) {
+                            CheckBox cb = (CheckBox) ((AlertDialog) dialog).findViewById(R.id.askAgainCB);
 
-                        if (cb != null && cb.isChecked()) {
-                            app.getPreferences().edit().putBoolean(SettingsActivity.KEY_CONFIRM_EXIT, false).apply();
+                            if (cb != null && cb.isChecked()) {
+                                app.getPreferences().edit().putBoolean(SettingsActivity.KEY_CONFIRM_EXIT, false).apply();
+                            }
+                        } else {
+                            LogUtil.w(TAG, "Dialog was not an alert dialog... but how?");
                         }
 
                         finish();

@@ -1,12 +1,14 @@
 package com.kenny.openimgur.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.cocosw.bottomsheet.BottomSheetListener;
 import com.kenny.openimgur.R;
@@ -62,6 +63,7 @@ public class MemeActivity extends BaseActivity {
     public static Intent createIntent(Context context, ImgurBaseObject object) {
         return new Intent(context, MemeActivity.class).putExtra(KEY_OBJECT, object);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,15 +101,13 @@ public class MemeActivity extends BaseActivity {
                 return true;
 
             case R.id.fontSize:
-                new MaterialDialog.Builder(this)
-                        .title(R.string.meme_font_size)
-                        .items(R.array.meme_font_sizes)
-                        .itemsCallback(new MaterialDialog.ListCallback() {
+                new AlertDialog.Builder(this, theme.getDialogTheme())
+                        .setTitle(R.string.meme_font_size)
+                        .setItems(R.array.meme_font_sizes, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 float textSize;
-
-                                switch (i) {
+                                switch (which) {
                                     case 0:
                                         // Small
                                         textSize = getResources().getDimensionPixelSize(R.dimen.meme_text_small);
@@ -138,6 +138,7 @@ public class MemeActivity extends BaseActivity {
                                 mBottomText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
                             }
                         }).show();
+
                 return true;
         }
 
@@ -227,16 +228,15 @@ public class MemeActivity extends BaseActivity {
 
     @OnClick({R.id.topText, R.id.bottomText})
     public void onClick(final View view) {
-        new MaterialDialog.Builder(this)
-                .title(R.string.meme_input_title)
-                .customView(R.layout.meme_caption, false)
-                .negativeText(R.string.cancel)
-                .positiveText(R.string.save)
-                .callback(new MaterialDialog.ButtonCallback() {
+        new AlertDialog.Builder(this, theme.getDialogTheme())
+                .setTitle(R.string.meme_input_title)
+                .setView(R.layout.meme_caption)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        EditText editText = (EditText) dialog.getCustomView().findViewById(R.id.memeCaption);
+                    public void onClick(DialogInterface dialog, int which) {
+                        AlertDialog ad = (AlertDialog) dialog;
+                        EditText editText = (EditText) ad.findViewById(R.id.memeCaption);
                         String text = editText.getText().toString();
 
                         if (view == mBottomText) {
