@@ -50,10 +50,7 @@ abstract public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         LogUtil.v(TAG, "onCreate");
         app = OpengurApp.getInstance(getApplicationContext());
-        theme = app.getImgurTheme();
-        onSetStyle();
-        theme.applyTheme(getTheme());
-        updateTaskDescription(null);
+        onSetStyle(app.getImgurTheme());
         super.onCreate(savedInstanceState);
         ActionBar ab = getSupportActionBar();
 
@@ -243,8 +240,11 @@ abstract public class BaseActivity extends AppCompatActivity {
     /**
      * Called before the super call on {@link #onCreate(Bundle)} so the style can be set for the activity
      */
-    private void onSetStyle() {
+    private void onSetStyle(ImgurTheme imgurTheme) {
+        theme = imgurTheme;
         setTheme(getStyleRes());
+        theme.applyTheme(getTheme());
+        updateTaskDescription(null);
     }
 
     /**
