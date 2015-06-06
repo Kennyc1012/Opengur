@@ -1,4 +1,9 @@
 #Open Imgur Changelog
+<b>2.8.2</b>
+- Better gif support while viewing in full screen
+- Added Beta community nav item
+- Added product flavors for beta and full release
+
 <b>2.8.1</b>
 - Fix crash while in full screen image viewing
 
