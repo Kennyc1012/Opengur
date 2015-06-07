@@ -19,7 +19,7 @@
         android:layout_marginLeft="@dimen/dialog_content_margin"
         android:layout_marginRight="@dimen/dialog_content_margin"
         android:hint="@string/comment_hint"
-        android:inputType="textNoSuggestions|textCapSentences|textMultiLine"
+        android:inputType="textCapSentences|textMultiLine"
         android:maxLength="140">
 
         <requestFocus />

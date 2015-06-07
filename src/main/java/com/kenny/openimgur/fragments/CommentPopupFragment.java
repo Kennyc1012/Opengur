@@ -79,6 +79,12 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
     }
 
     @Override
+    public void onPause() {
+        mComment.setCursorVisible(false);
+        super.onPause();
+    }
+
+    @Override
     public void onDestroyView() {
         ButterKnife.reset(this);
         super.onDestroyView();
