@@ -35,7 +35,7 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_search);
-        setStatusBarColor(getResources().getColor(theme.darkColor));
+        setStatusBarColorResource(theme.darkColor);
         mFragment = (GallerySearchFragment) getFragmentManager().findFragmentById(R.id.searchFragment);
         String query;
 
