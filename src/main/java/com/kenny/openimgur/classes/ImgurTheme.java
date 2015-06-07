@@ -1,6 +1,8 @@
 package com.kenny.openimgur.classes;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.support.annotation.ColorRes;
 import android.support.annotation.StyleRes;
 
@@ -70,6 +72,26 @@ public enum ImgurTheme {
             default:
                 return isDarkTheme ? R.style.Theme_AppCompat_Dialog_Alert_Accent_Green : R.style.Theme_AppCompat_Light_Dialog_Alert_Accent_Green;
         }
+    }
+
+    /**
+     * Returns the {@link ColorStateList} for the NavigationView
+     *
+     * @param res
+     * @return
+     */
+    public ColorStateList getNavigationColors(Resources res) {
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_checked},
+                new int[]{-android.R.attr.state_checked}
+        };
+
+        int[] colors = new int[]{
+                res.getColor(accentColor),
+                isDarkTheme ? Color.WHITE : Color.BLACK
+        };
+
+        return new ColorStateList(states, colors);
     }
 
     /**

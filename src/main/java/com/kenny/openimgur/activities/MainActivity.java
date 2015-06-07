@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -94,6 +95,9 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mNavigationView.setNavigationItemSelectedListener(this);
+        ColorStateList selector = theme.getNavigationColors(getResources());
+        mNavigationView.setItemTextColor(selector);
+        mNavigationView.setItemIconTintList(selector);
         setupToolBar();
         mNagOnExit = app.getPreferences().getBoolean(SettingsActivity.KEY_CONFIRM_EXIT, true);
     }
@@ -111,7 +115,6 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
-        if (mCurrentPage == menuItem.getItemId()) return false;
         menuItem.setChecked(true);
         changePage(menuItem.getItemId());
         mDrawer.closeDrawers();
@@ -230,21 +233,25 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
         switch (menuItemId) {
             case R.id.nav_gallery:
+                if (mCurrentPage == PAGE_GALLERY) return;
                 fragment = GalleryFragment.createInstance();
                 mCurrentPage = PAGE_GALLERY;
                 break;
 
             case R.id.nav_reddit:
+                if (mCurrentPage == PAGE_SUBREDDIT) return;
                 fragment = RedditFragment.createInstance();
                 mCurrentPage = PAGE_SUBREDDIT;
                 break;
 
             case R.id.nav_random:
+                if (mCurrentPage == PAGE_RANDOM) return;
                 fragment = RandomFragment.createInstance();
                 mCurrentPage = PAGE_RANDOM;
                 break;
 
             case R.id.nav_uploads:
+                if (mCurrentPage == PAGE_UPLOADS) return;
                 fragment = UploadedPhotosFragment.createInstance();
                 mCurrentPage = PAGE_UPLOADS;
                 break;
@@ -268,11 +275,13 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                 break;
 
             case R.id.nav_topics:
+                if (mCurrentPage == PAGE_TOPICS) return;
                 fragment = new TopicsFragment();
                 mCurrentPage = PAGE_TOPICS;
                 break;
 
             case R.id.nav_meme:
+                if (mCurrentPage == PAGE_MEME) return;
                 fragment = new MemeFragment();
                 mCurrentPage = PAGE_MEME;
                 break;
