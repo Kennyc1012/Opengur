@@ -100,7 +100,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
         if (adapterPosition >= 0) {
             final ImgurBaseObject photo = getAdapter().getItem(adapterPosition);
 
-            new AlertDialog.Builder(getActivity(), theme.getDialogTheme())
+            new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                     .setItems(R.array.uploaded_photos_options, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -126,7 +126,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
                                     break;
 
                                 case 2:
-                                    new AlertDialog.Builder(getActivity(), theme.getDialogTheme())
+                                    new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                                             .setMessage(R.string.profile_delete_image)
                                             .setNegativeButton(R.string.cancel, null)
                                             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {

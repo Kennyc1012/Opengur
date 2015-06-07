@@ -23,7 +23,7 @@ public class ExperimentalSettingsFragment extends BasePreferenceFragment impleme
         bindListPreference(findPreference(SettingsActivity.KEY_THREAD_SIZE));
         setHasOptionsMenu(true);
 
-        new AlertDialog.Builder(getActivity(), mApp.getImgurTheme().getDialogTheme())
+        new AlertDialog.Builder(getActivity(), mApp.getImgurTheme().getAlertDialogTheme())
                 .setTitle(R.string.caution)
                 .setMessage(R.string.pref_experimental_warning_msg)
                 .setPositiveButton(getString(R.string.okay).toUpperCase(), null)
@@ -40,7 +40,7 @@ public class ExperimentalSettingsFragment extends BasePreferenceFragment impleme
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.reset:
-                new AlertDialog.Builder(getActivity(), mApp.getImgurTheme().getDialogTheme())
+                new AlertDialog.Builder(getActivity(), mApp.getImgurTheme().getAlertDialogTheme())
                         .setTitle(R.string.pref_experimental_settings)
                         .setMessage(R.string.pref_experimental_reset_msg)
                         .setNegativeButton(R.string.cancel, null)

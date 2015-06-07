@@ -17,7 +17,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
@@ -288,7 +287,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                 break;
 
             case R.id.nav_beta:
-                new AlertDialog.Builder(this, theme.getDialogTheme())
+                new AlertDialog.Builder(this, theme.getAlertDialogTheme())
                         .setTitle(R.string.beta_test)
                         .setMessage(R.string.beta_message)
                         .setNegativeButton(R.string.beta_no, null)
@@ -421,7 +420,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     }
 
     private void showExitNag() {
-        new AlertDialog.Builder(this, theme.getDialogTheme())
+        new AlertDialog.Builder(this, theme.getAlertDialogTheme())
                 .setTitle(R.string.exit)
                 .setView(R.layout.exit_nag)
                 .setNegativeButton(R.string.cancel, null)

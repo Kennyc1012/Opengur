@@ -122,7 +122,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
         if (adapterPosition >= 0) {
             final UploadedPhoto photo = mAdapter.getItem(adapterPosition);
 
-            new AlertDialog.Builder(getActivity(), theme.getDialogTheme())
+            new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                     .setItems(R.array.uploaded_photos_options, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -152,7 +152,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                                     View deleteView = LayoutInflater.from(getActivity()).inflate(R.layout.upload_delete_confirm, null);
                                     final CheckBox cb = (CheckBox) deleteView.findViewById(R.id.imgurDelete);
 
-                                    new AlertDialog.Builder(getActivity(), theme.getDialogTheme())
+                                    new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                                             .setNegativeButton(R.string.cancel, null)
                                             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                                 @Override

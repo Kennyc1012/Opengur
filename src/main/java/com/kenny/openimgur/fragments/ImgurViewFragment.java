@@ -457,7 +457,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         final int position = mListView.getPositionForView(view) - mListView.getHeaderViewsCount();
 
         if (position >= 0) {
-            new AlertDialog.Builder(getActivity(), theme.getDialogTheme())
+            new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                     .setItems(R.array.photo_long_press_options, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

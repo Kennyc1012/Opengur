@@ -129,7 +129,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
             case R.id.sort:
                 final String[] items = getResources().getStringArray(R.array.comments_sort);
 
-                new AlertDialog.Builder(getActivity(), theme.getDialogTheme())
+                new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                         .setTitle(R.string.sort_by)
                         .setItems(items, new DialogInterface.OnClickListener() {
                             @Override

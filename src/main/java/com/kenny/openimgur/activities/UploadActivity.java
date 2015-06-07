@@ -155,7 +155,7 @@ public class UploadActivity extends BaseActivity {
                 View nagView = LayoutInflater.from(UploadActivity.this).inflate(R.layout.no_user_nag, null);
                 final CheckBox cb = (CheckBox) nagView.findViewById(R.id.dontNotify);
 
-                new AlertDialog.Builder(UploadActivity.this, theme.getDialogTheme())
+                new AlertDialog.Builder(UploadActivity.this, theme.getAlertDialogTheme())
                         .setTitle(R.string.not_logged_in)
                         .setNegativeButton(R.string.cancel, null)
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
@@ -648,7 +648,7 @@ public class UploadActivity extends BaseActivity {
                     }
 
                     String message = getString(R.string.upload_success, url);
-                    new AlertDialog.Builder(UploadActivity.this, theme.getDialogTheme())
+                    new AlertDialog.Builder(UploadActivity.this, theme.getAlertDialogTheme())
                             .setTitle(R.string.upload_complete)
                             .setMessage(message)
                             .setNegativeButton(R.string.dismiss, null)

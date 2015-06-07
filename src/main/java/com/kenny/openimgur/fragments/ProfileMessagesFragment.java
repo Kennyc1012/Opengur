@@ -147,7 +147,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
 
         if (position >= 0) {
             final ImgurConvo convo = mAdapter.getItem(position);
-            new AlertDialog.Builder(getActivity(), theme.getDialogTheme())
+            new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                     .setTitle(R.string.convo_delete)
                     .setMessage(R.string.convo_delete_message)
                     .setNegativeButton(R.string.cancel, null)

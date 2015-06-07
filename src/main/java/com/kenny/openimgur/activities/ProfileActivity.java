@@ -188,7 +188,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.logout:
-                new AlertDialog.Builder(ProfileActivity.this, theme.getDialogTheme())
+                new AlertDialog.Builder(ProfileActivity.this, theme.getAlertDialogTheme())
                         .setTitle(R.string.logout)
                         .setMessage(R.string.logout_confirm)
                         .setNegativeButton(R.string.cancel, null)

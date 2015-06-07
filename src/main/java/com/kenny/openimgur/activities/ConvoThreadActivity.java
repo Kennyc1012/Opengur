@@ -125,7 +125,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
             message = getString(R.string.convo_block_message, mConvo.getWithAccount());
         }
 
-        new AlertDialog.Builder(this, theme.getDialogTheme())
+        new AlertDialog.Builder(this, theme.getAlertDialogTheme())
                 .setTitle(title)
                 .setMessage(message)
                 .setNegativeButton(R.string.cancel, null)

@@ -19,7 +19,7 @@
         <item name="layout">@layout/search_view</item>
     </style>
 
-    <!-- Alert Dialog Styles -->
+    <!-- Dialog Styles -->
     <style name="Theme.AppCompat.Light.Dialog.Alert.Accent_Pink">
         <item name="colorAccent">@color/theme_light_blue_accent</item>
         <item name="buttonBarNegativeButtonStyle">@style/Alert_Dialog_Negative_Light</item>
@@ -66,6 +66,46 @@
 
     <style name="Alert_Dialog_Negative_Light" parent="android:Widget.DeviceDefault.Button.Borderless">
         <item name="android:textColor">@color/primary_text_default_material_light</item>
+    </style>
+
+    <style name="Theme.AppCompat.Light.Dialog.Accent_Pink">
+        <item name="colorAccent">@color/theme_light_blue_accent</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert_Dialog_Negative_Light</item>
+    </style>
+
+    <style name="Theme.AppCompat.Light.Dialog.Accent_Blue">
+        <item name="colorAccent">@color/theme_red_accent</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert_Dialog_Negative_Light</item>
+    </style>
+
+    <style name="Theme.AppCompat.Light.Dialog.Accent_Green">
+        <item name="colorAccent">@color/theme_grey_accent</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert_Dialog_Negative_Light</item>
+    </style>
+
+    <style name="Theme.AppCompat.Light.Dialog.Accent_Yellow">
+        <item name="colorAccent">@color/theme_black_accent</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert_Dialog_Negative_Light</item>
+    </style>
+
+    <style name="Theme.AppCompat.Dialog.Accent_Pink">
+        <item name="colorAccent">@color/theme_light_blue_accent</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert_Dialog_Negative_Dark</item>
+    </style>
+
+    <style name="Theme.AppCompat.Dialog.Accent_Blue">
+        <item name="colorAccent">@color/theme_red_accent</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert_Dialog_Negative_Dark</item>
+    </style>
+
+    <style name="Theme.AppCompat.Dialog.Accent_Green">
+        <item name="colorAccent">@color/theme_grey_accent</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert_Dialog_Negative_Dark</item>
+    </style>
+
+    <style name="Theme.AppCompat.Dialog.Accent_Yellow">
+        <item name="colorAccent">@color/theme_black_accent</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert_Dialog_Negative_Dark</item>
     </style>
 
 </resources>

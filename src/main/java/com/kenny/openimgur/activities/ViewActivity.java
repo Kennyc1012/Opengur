@@ -629,7 +629,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case R.id.sortComments:
-                new AlertDialog.Builder(ViewActivity.this, theme.getDialogTheme())
+                new AlertDialog.Builder(ViewActivity.this, theme.getAlertDialogTheme())
                         .setTitle(R.string.sort_by)
                         .setItems(CommentSort.getItemsForArray(getApplicationContext()), new DialogInterface.OnClickListener() {
                             @Override

@@ -101,7 +101,7 @@ public class MemeActivity extends BaseActivity {
                 return true;
 
             case R.id.fontSize:
-                new AlertDialog.Builder(this, theme.getDialogTheme())
+                new AlertDialog.Builder(this, theme.getAlertDialogTheme())
                         .setTitle(R.string.meme_font_size)
                         .setItems(R.array.meme_font_sizes, new DialogInterface.OnClickListener() {
                             @Override
@@ -228,7 +228,7 @@ public class MemeActivity extends BaseActivity {
 
     @OnClick({R.id.topText, R.id.bottomText})
     public void onClick(final View view) {
-        new AlertDialog.Builder(this, theme.getDialogTheme())
+        new AlertDialog.Builder(this, theme.getAlertDialogTheme())
                 .setTitle(R.string.meme_input_title)
                 .setView(R.layout.meme_caption)
                 .setNegativeButton(R.string.cancel, null)
