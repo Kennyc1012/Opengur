@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
@@ -48,6 +49,25 @@ import butterknife.OnClick;
  */
 public class MainActivity extends BaseActivity implements FragmentListener, NavigationView.OnNavigationItemSelectedListener {
     private static final String KEY_CURRENT_PAGE = "current_page";
+    public static final int PAGE_PROFILE = 0;
+
+    public static final int PAGE_GALLERY = 1;
+
+    public static final int PAGE_TOPICS = 2;
+
+    public static final int PAGE_MEME = 3;
+
+    public static final int PAGE_SUBREDDIT = 4;
+
+    public static final int PAGE_RANDOM = 5;
+
+    public static final int PAGE_UPLOADS = 6;
+
+    public static final int PAGE_SETTINGS = 7;
+
+    public static final int PAGE_BETA = 8;
+
+    public static final int PAGE_FEEDBACK = 9;
 
     @InjectView(R.id.drawerLayout)
     DrawerLayout mDrawer;
@@ -120,22 +140,47 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         }
 
         int fragmentPage;
+        int menuItemId = R.id.nav_gallery;
 
         if (savedInstanceState == null) {
-            fragmentPage = app.getPreferences().getInt(KEY_CURRENT_PAGE, R.id.nav_gallery);
+            fragmentPage = app.getPreferences().getInt(KEY_CURRENT_PAGE, PAGE_GALLERY);
         } else {
-            fragmentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, R.id.nav_gallery);
+            fragmentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, PAGE_GALLERY);
         }
 
-        // TODO Remove this eventually. This is to support old pages being saved from previous nav drawer
-        if (fragmentPage < 10) fragmentPage = R.id.nav_gallery;
-
         if (mNavigationView.getMenu() != null) {
-            MenuItem item = mNavigationView.getMenu().findItem(fragmentPage);
+            switch (fragmentPage) {
+                case PAGE_TOPICS:
+                    menuItemId = R.id.nav_topics;
+                    break;
+
+                case PAGE_SUBREDDIT:
+                    menuItemId = R.id.nav_reddit;
+                    break;
+
+                case PAGE_MEME:
+                    menuItemId = R.id.nav_meme;
+                    break;
+
+                case PAGE_RANDOM:
+                    menuItemId = R.id.nav_random;
+                    break;
+
+                case PAGE_UPLOADS:
+                    menuItemId = R.id.nav_uploads;
+                    break;
+
+                case PAGE_GALLERY:
+                default:
+                    menuItemId = R.id.nav_gallery;
+                    break;
+            }
+
+            MenuItem item = mNavigationView.getMenu().findItem(menuItemId);
             if (item != null) item.setChecked(true);
         }
 
-        changePage(fragmentPage);
+        changePage(menuItemId);
         updateUserHeader(user);
     }
 
@@ -186,22 +231,22 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         switch (menuItemId) {
             case R.id.nav_gallery:
                 fragment = GalleryFragment.createInstance();
-                mCurrentPage = menuItemId;
+                mCurrentPage = PAGE_GALLERY;
                 break;
 
             case R.id.nav_reddit:
                 fragment = RedditFragment.createInstance();
-                mCurrentPage = menuItemId;
+                mCurrentPage = PAGE_SUBREDDIT;
                 break;
 
             case R.id.nav_random:
                 fragment = RandomFragment.createInstance();
-                mCurrentPage = menuItemId;
+                mCurrentPage = PAGE_RANDOM;
                 break;
 
             case R.id.nav_uploads:
                 fragment = UploadedPhotosFragment.createInstance();
-                mCurrentPage = menuItemId;
+                mCurrentPage = PAGE_UPLOADS;
                 break;
 
             case R.id.nav_settings:
@@ -224,12 +269,12 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
             case R.id.nav_topics:
                 fragment = new TopicsFragment();
-                mCurrentPage = menuItemId;
+                mCurrentPage = PAGE_TOPICS;
                 break;
 
             case R.id.nav_meme:
                 fragment = new MemeFragment();
-                mCurrentPage = menuItemId;
+                mCurrentPage = PAGE_MEME;
                 break;
 
             case R.id.nav_beta:
