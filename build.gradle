@@ -32,7 +32,7 @@ android {
         applicationId "com.kennyc.open.imgur"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 28
+        versionCode 29
         buildConfigField "String", "API_CLIENT_ID", project.API_CLIENT_ID
         buildConfigField "String", "API_CLIENT_SECRET", project.API_CLIENT_SECRET
     }
@@ -43,7 +43,7 @@ android {
         }
 
         beta {
-            versionName VERSION_NAME + "-beta"
+            versionName VERSION_NAME + "-beta2"
         }
     }
 
