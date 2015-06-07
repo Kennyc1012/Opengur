@@ -56,7 +56,6 @@ public class LoadingDialogFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ButterKnife.inject(this, inflater.inflate(R.layout.loading_dialog, container, false));
         return inflater.inflate(R.layout.loading_dialog, container, false);
     }
 

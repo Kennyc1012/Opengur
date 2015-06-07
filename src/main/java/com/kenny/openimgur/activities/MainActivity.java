@@ -3,36 +3,42 @@ package com.kenny.openimgur.activities;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.github.clans.fab.FloatingActionMenu;
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.NavAdapter;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurTheme;
+import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.MemeFragment;
-import com.kenny.openimgur.fragments.NavFragment;
 import com.kenny.openimgur.fragments.RandomFragment;
 import com.kenny.openimgur.fragments.RedditFilterFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.fragments.TopicsFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
-import com.kenny.openimgur.util.ViewUtils;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
 import butterknife.InjectView;
@@ -41,8 +47,27 @@ import butterknife.OnClick;
 /**
  * Created by kcampagna on 10/19/14.
  */
-public class MainActivity extends BaseActivity implements NavFragment.NavigationListener, FragmentListener {
+public class MainActivity extends BaseActivity implements FragmentListener, NavigationView.OnNavigationItemSelectedListener {
     private static final String KEY_CURRENT_PAGE = "current_page";
+    public static final int PAGE_PROFILE = 0;
+
+    public static final int PAGE_GALLERY = 1;
+
+    public static final int PAGE_TOPICS = 2;
+
+    public static final int PAGE_MEME = 3;
+
+    public static final int PAGE_SUBREDDIT = 4;
+
+    public static final int PAGE_RANDOM = 5;
+
+    public static final int PAGE_UPLOADS = 6;
+
+    public static final int PAGE_SETTINGS = 7;
+
+    public static final int PAGE_BETA = 8;
+
+    public static final int PAGE_FEEDBACK = 9;
 
     @InjectView(R.id.drawerLayout)
     DrawerLayout mDrawer;
@@ -53,7 +78,8 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     @InjectView(R.id.toolBar)
     Toolbar mToolBar;
 
-    private NavFragment mNavFragment;
+    @InjectView(R.id.navigationView)
+    NavigationView mNavigationView;
 
     private int mCurrentPage = -1;
 
@@ -67,9 +93,11 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mNavigationView.setNavigationItemSelectedListener(this);
+        ColorStateList selector = theme.getNavigationColors(getResources());
+        mNavigationView.setItemTextColor(selector);
+        mNavigationView.setItemIconTintList(selector);
         setupToolBar();
-        mNavFragment = (NavFragment) getFragmentManager().findFragmentById(R.id.navDrawer);
-        mNavFragment.configDrawerLayout(mDrawer);
         mNagOnExit = app.getPreferences().getBoolean(SettingsActivity.KEY_CONFIRM_EXIT, true);
     }
 
@@ -77,29 +105,29 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
      * Sets up the tool bar to take the place of the action bar
      */
     private void setupToolBar() {
-        if (isLandscape() && !isTablet()) {
-            // Don't add the extra padding
-        } else {
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mToolBar.getLayoutParams();
-            lp.setMargins(0, ViewUtils.getStatusBarHeight(getApplicationContext()), 0, 0);
-            mToolBar.setLayoutParams(lp);
-        }
-
         setSupportActionBar(mToolBar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setHomeAsUpIndicator(R.drawable.ic_action_navigation_menu);
+        ab.setHomeButtonEnabled(true);
     }
 
     @Override
-    public void onNavigationItemSelected(int position) {
-        if (position <= 2 && mCurrentPage == position) return;
-        changePage(position);
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+        menuItem.setChecked(true);
+        changePage(menuItem.getItemId());
         mDrawer.closeDrawers();
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mNavFragment.onOptionsItemSelected(item)) return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawer.openDrawer(GravityCompat.START);
+                return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -113,55 +141,128 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
             fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commitAllowingStateLoss();
         }
 
+        int fragmentPage;
+        int menuItemId = R.id.nav_gallery;
+
         if (savedInstanceState == null) {
-            changePage(app.getPreferences().getInt(KEY_CURRENT_PAGE, NavAdapter.PAGE_GALLERY));
+            fragmentPage = app.getPreferences().getInt(KEY_CURRENT_PAGE, PAGE_GALLERY);
         } else {
-            mCurrentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, NavAdapter.PAGE_GALLERY);
+            fragmentPage = savedInstanceState.getInt(KEY_CURRENT_PAGE, PAGE_GALLERY);
         }
 
-        mNavFragment.setSelectedPage(mCurrentPage);
+        if (mNavigationView.getMenu() != null) {
+            switch (fragmentPage) {
+                case PAGE_TOPICS:
+                    menuItemId = R.id.nav_topics;
+                    break;
+
+                case PAGE_SUBREDDIT:
+                    menuItemId = R.id.nav_reddit;
+                    break;
+
+                case PAGE_MEME:
+                    menuItemId = R.id.nav_meme;
+                    break;
+
+                case PAGE_RANDOM:
+                    menuItemId = R.id.nav_random;
+                    break;
+
+                case PAGE_UPLOADS:
+                    menuItemId = R.id.nav_uploads;
+                    break;
+
+                case PAGE_GALLERY:
+                default:
+                    menuItemId = R.id.nav_gallery;
+                    break;
+            }
+
+            MenuItem item = mNavigationView.getMenu().findItem(menuItemId);
+            if (item != null) item.setChecked(true);
+        }
+
+        changePage(menuItemId);
+        updateUserHeader(user);
+    }
+
+    private void updateUserHeader(@Nullable ImgurUser user) {
+        View header = mNavigationView.findViewById(R.id.header);
+        if (header == null) return;
+
+        ImageView avatar = (ImageView) header.findViewById(R.id.profileImg);
+        TextView name = (TextView) header.findViewById(R.id.profileName);
+        TextView rep = (TextView) header.findViewById(R.id.reputation);
+
+        if (user != null) {
+            int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
+            String firstLetter = user.getUsername().substring(0, 1);
+
+            avatar.setImageDrawable(TextDrawable.builder()
+                    .beginConfig()
+                    .toUpperCase()
+                    .width(size)
+                    .height(size)
+                    .endConfig()
+                    .buildRound(firstLetter, getResources().getColor(theme.accentColor)));
+
+            name.setText(user.getUsername());
+            rep.setText(user.getNotoriety().getStringId());
+        } else {
+            avatar.setImageResource(R.drawable.ic_account_circle);
+            name.setText(R.string.profile);
+            rep.setText(R.string.login_msg);
+        }
+
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawer.closeDrawers();
+                startActivityForResult(ProfileActivity.createIntent(getApplicationContext(), null), ProfileActivity.REQUEST_CODE);
+            }
+        });
     }
 
     /**
      * Changes the fragment
      *
-     * @param position The pages position
+     * @param menuItemId The menu item id of the page selected
      */
-    private void changePage(int position) {
+    private void changePage(int menuItemId) {
         Fragment fragment = null;
 
-        switch (position) {
-            case NavAdapter.PAGE_GALLERY:
+        switch (menuItemId) {
+            case R.id.nav_gallery:
+                if (mCurrentPage == PAGE_GALLERY) return;
                 fragment = GalleryFragment.createInstance();
-                mCurrentPage = position;
+                mCurrentPage = PAGE_GALLERY;
                 break;
 
-            case NavAdapter.PAGE_PROFILE:
-                startActivityForResult(ProfileActivity.createIntent(getApplicationContext(), null), ProfileActivity.REQUEST_CODE);
-                break;
-
-            case NavAdapter.PAGE_SUBREDDIT:
+            case R.id.nav_reddit:
+                if (mCurrentPage == PAGE_SUBREDDIT) return;
                 fragment = RedditFragment.createInstance();
-                mCurrentPage = position;
+                mCurrentPage = PAGE_SUBREDDIT;
                 break;
 
-            case NavAdapter.PAGE_RANDOM:
+            case R.id.nav_random:
+                if (mCurrentPage == PAGE_RANDOM) return;
                 fragment = RandomFragment.createInstance();
-                mCurrentPage = position;
+                mCurrentPage = PAGE_RANDOM;
                 break;
 
-            case NavAdapter.PAGE_UPLOADS:
+            case R.id.nav_uploads:
+                if (mCurrentPage == PAGE_UPLOADS) return;
                 fragment = UploadedPhotosFragment.createInstance();
-                mCurrentPage = position;
+                mCurrentPage = PAGE_UPLOADS;
                 break;
 
-            case NavAdapter.PAGE_SETTINGS:
+            case R.id.nav_settings:
                 mSavedTheme = ImgurTheme.copy(theme);
                 mIsDarkTheme = app.getPreferences().getBoolean(SettingsActivity.KEY_DARK_THEME, mSavedTheme.isDarkTheme);
                 startActivityForResult(SettingsActivity.createIntent(getApplicationContext()), SettingsActivity.REQUEST_CODE);
                 break;
 
-            case NavAdapter.PAGE_FEEDBACK:
+            case R.id.nav_feedback:
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                         "mailto", "kennyc.developer@gmail.com", null));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Open Imgur Feedback");
@@ -173,25 +274,26 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 }
                 break;
 
-            case NavAdapter.PAGE_TOPICS:
+            case R.id.nav_topics:
+                if (mCurrentPage == PAGE_TOPICS) return;
                 fragment = new TopicsFragment();
-                mCurrentPage = position;
+                mCurrentPage = PAGE_TOPICS;
                 break;
 
-            case NavAdapter.PAGE_MEME:
+            case R.id.nav_meme:
+                if (mCurrentPage == PAGE_MEME) return;
                 fragment = new MemeFragment();
-                mCurrentPage = position;
+                mCurrentPage = PAGE_MEME;
                 break;
 
-            case NavAdapter.PAGE_BETA:
-                new MaterialDialog.Builder(this)
-                        .title(R.string.beta_test)
-                        .content(R.string.beta_message)
-                        .negativeText(R.string.beta_no)
-                        .positiveText(R.string.beta_confirm)
-                        .callback(new MaterialDialog.ButtonCallback() {
+            case R.id.nav_beta:
+                new AlertDialog.Builder(this, theme.getAlertDialogTheme())
+                        .setTitle(R.string.beta_test)
+                        .setMessage(R.string.beta_message)
+                        .setNegativeButton(R.string.beta_no, null)
+                        .setPositiveButton(R.string.beta_confirm, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://plus.google.com/u/0/communities/107476382114210885879"));
 
                                 if (browserIntent.resolveActivity(getPackageManager()) != null) {
@@ -216,13 +318,13 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         SharedPreferences.Editor edit = pref.edit();
         long lastClear = app.getPreferences().getLong("lastClear", 0);
 
-        // We will clear the cache every 4 days
+        // We will clear the cache every 3 days
         if (lastClear == 0) {
             edit.putLong("lastClear", System.currentTimeMillis());
         } else {
             long currentTime = System.currentTimeMillis();
 
-            if (currentTime - lastClear >= DateUtils.DAY_IN_MILLIS * 4) {
+            if (currentTime - lastClear >= DateUtils.DAY_IN_MILLIS * 3) {
                 app.deleteAllCache();
                 edit.putLong("lastClear", currentTime);
             }
@@ -268,11 +370,6 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
         getSupportActionBar().setTitle(title);
     }
 
-    @Override
-    public void onDrawerToggle(boolean isOpen) {
-        // NOOP
-    }
-
     @OnClick({R.id.linkUpload, R.id.cameraUpload, R.id.galleryUpload})
     public void onClick(View view) {
         switch (view.getId()) {
@@ -295,7 +392,7 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
 
     @Override
     public void onBackPressed() {
-        if (mDrawer.isDrawerOpen(Gravity.START)) {
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawers();
             return;
         } else if (getFragmentManager().findFragmentByTag("filter") != null) {
@@ -323,19 +420,21 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
     }
 
     private void showExitNag() {
-        new MaterialDialog.Builder(this)
-                .title(R.string.exit)
-                .customView(R.layout.exit_nag, false)
-                .negativeText(R.string.cancel)
-                .positiveText(R.string.yes)
-                .callback(new MaterialDialog.ButtonCallback() {
+        new AlertDialog.Builder(this, theme.getAlertDialogTheme())
+                .setTitle(R.string.exit)
+                .setView(R.layout.exit_nag)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        CheckBox cb = (CheckBox) dialog.getCustomView().findViewById(R.id.askAgainCB);
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (dialog instanceof AlertDialog) {
+                            CheckBox cb = (CheckBox) ((AlertDialog) dialog).findViewById(R.id.askAgainCB);
 
-                        if (cb != null && cb.isChecked()) {
-                            app.getPreferences().edit().putBoolean(SettingsActivity.KEY_CONFIRM_EXIT, false).apply();
+                            if (cb != null && cb.isChecked()) {
+                                app.getPreferences().edit().putBoolean(SettingsActivity.KEY_CONFIRM_EXIT, false).apply();
+                            }
+                        } else {
+                            LogUtil.w(TAG, "Dialog was not an alert dialog... but how?");
                         }
 
                         finish();
@@ -370,14 +469,19 @@ public class MainActivity extends BaseActivity implements NavFragment.Navigation
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     if (data.getBooleanExtra(ProfileActivity.KEY_LOGGED_IN, false)) {
                         app = OpengurApp.getInstance(getApplicationContext());
-                        if (mNavFragment != null) mNavFragment.onUserLogin(app.getUser());
+                        updateUserHeader(app.getUser());
                     } else if (data.getBooleanExtra(ProfileActivity.KEY_LOGGED_OUT, false)) {
-                        if (mNavFragment != null) mNavFragment.onUserLogin(null);
+                        updateUserHeader(null);
                     }
                 }
                 break;
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Translucent_Main_Dark : R.style.Theme_Translucent_Main_Light;
     }
 }

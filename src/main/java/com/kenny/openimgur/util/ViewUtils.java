@@ -24,7 +24,7 @@ public class ViewUtils {
      * @return
      */
     public static int getHeightForTranslucentStyle(Context context) {
-        return getActionBarHeight(context) + getStatusBarHeight(context);
+        return getActionBarHeight(context);
     }
 
     /**
@@ -92,24 +92,6 @@ public class ViewUtils {
         }
 
         return height;
-    }
-
-    /**
-     * Returns if a SwipeRefreshLayout should be able to refresh given a ListView
-     *
-     * @param view
-     * @return
-     */
-    public static boolean canRefreshInListView(AbsListView view) {
-        boolean canRefresh = false;
-
-        if (view != null && view.getChildCount() > 0) {
-            boolean firstItemVisible = view.getFirstVisiblePosition() == 0;
-            boolean topOfFirstItemVisible = view.getChildAt(0).getTop() == 0;
-            canRefresh = firstItemVisible && topOfFirstItemVisible;
-        }
-
-        return canRefresh;
     }
 
     /**

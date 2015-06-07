@@ -3,7 +3,7 @@
 
     <PreferenceCategory android:title="@string/pref_category_title">
 
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+        <ListPreference
             android:key="app_theme"
             android:title="@string/pref_theme_title"
             android:entries="@array/pref_themes_items"
@@ -60,7 +60,7 @@
 
     <PreferenceCategory android:title="@string/pref_cache_title">
 
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+        <ListPreference
             android:key="cacheLoc"
             android:title="@string/pref_cache_loc_title"
             android:entries="@array/pref_cache_loc_items"
@@ -81,7 +81,7 @@
             android:title="@string/pref_reddit_title"
             android:summary="@string/pref_reddit_desc" />
 
-        <com.afollestad.materialdialogs.prefs.MaterialListPreference
+        <ListPreference
             android:key="cacheSize"
             android:title="@string/pref_cache_size_title"
             android:entries="@array/pref_cache_size_items"

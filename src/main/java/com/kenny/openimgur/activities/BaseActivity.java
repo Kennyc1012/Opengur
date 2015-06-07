@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
+import android.support.annotation.StyleRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -49,9 +51,7 @@ abstract public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         LogUtil.v(TAG, "onCreate");
         app = OpengurApp.getInstance(getApplicationContext());
-        theme = app.getImgurTheme();
-        theme.applyTheme(getTheme());
-        updateTaskDescription(null);
+        onSetStyle(app.getImgurTheme());
         super.onCreate(savedInstanceState);
         ActionBar ab = getSupportActionBar();
 
@@ -213,6 +213,17 @@ abstract public class BaseActivity extends AppCompatActivity {
     }
 
     /**
+     * Sets the color of the status bar, only for SDK 21+ devices
+     *
+     * @param color
+     */
+    public void setStatusBarColorResource(@ColorRes int color) {
+        if (app.sdkVersion >= Build.VERSION_CODES.LOLLIPOP) {
+            setStatusBarColor(getResources().getColor(color));
+        }
+    }
+
+    /**
      * Sets the Task Description for Lollipop devices
      *
      * @param title
@@ -237,4 +248,22 @@ abstract public class BaseActivity extends AppCompatActivity {
     protected boolean canDoFragmentTransaction() {
         return !isFinishing() && !isChangingConfigurations();
     }
+
+    /**
+     * Called before the super call on {@link #onCreate(Bundle)} so the style can be set for the activity
+     */
+    private void onSetStyle(ImgurTheme imgurTheme) {
+        theme = imgurTheme;
+        setTheme(getStyleRes());
+        theme.applyTheme(getTheme());
+        updateTaskDescription(null);
+    }
+
+    /**
+     * Returns the style resource for the activity.
+     *
+     * @return
+     */
+    @StyleRes
+    protected abstract int getStyleRes();
 }

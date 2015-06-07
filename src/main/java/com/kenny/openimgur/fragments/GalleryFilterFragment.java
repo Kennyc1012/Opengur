@@ -117,12 +117,6 @@ public class GalleryFilterFragment extends BaseFragment implements SeekBar.OnSee
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (theme.isDarkTheme) {
-            view.setBackgroundColor(getResources().getColor(R.color.background_material_dark));
-        } else {
-            view.setBackgroundColor(getResources().getColor(R.color.background_material_light));
-        }
-
         configToolBar((Toolbar) view.findViewById(R.id.toolBar));
         Bundle args = getArguments();
         GallerySort sort = GallerySort.getSortFromString(args.getString(KEY_SORT, null));

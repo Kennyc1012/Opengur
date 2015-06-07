@@ -4,12 +4,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
+import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -72,6 +74,8 @@ public class ApiClient {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
     private static final long DEFAULT_TIMEOUT = 15;
+
+    private static boolean sIsFetchingToken = false;
 
     private String mUrl;
 
@@ -180,7 +184,7 @@ public class ApiClient {
             json.put(KEY_STATUS, statusCode);
             response.body().close();
 
-            if (statusCode == ApiClient.STATUS_FORBIDDEN && OpengurApp.getInstance().getUser() != null) {
+            if (!sIsFetchingToken && statusCode == ApiClient.STATUS_FORBIDDEN && OpengurApp.getInstance().getUser() != null) {
                 // User tokens are no longer valid, invalidate their profile
                 OpengurApp.getInstance().onLogout();
             }
@@ -199,9 +203,7 @@ public class ApiClient {
      * @throws JSONException
      */
     public void doWork(final ImgurBusEvent.EventType type, @Nullable String id, final @Nullable RequestBody postParams) {
-        if (mUrl == null) {
-            throw new NullPointerException("Url is null");
-        }
+        if (mUrl == null) throw new NullPointerException("Url is null");
 
         final String requestId = TextUtils.isEmpty(id) ? String.valueOf(System.currentTimeMillis()) : id;
 
@@ -282,16 +284,56 @@ public class ApiClient {
     private String getAuthorizationHeader() {
         ImgurUser user = OpengurApp.getInstance().getUser();
 
-        // Check if we have a token from a logged in user that is valid
-        if (user != null && user.isAccessTokenValid()) {
-            LogUtil.v(TAG, "Access Token present and valid");
-            return "Bearer " + user.getAccessToken();
-        } else if (user != null) {
-            OpengurApp.getInstance().checkRefreshToken();
+        if (user != null) {
+            if (user.isAccessTokenValid()) {
+                LogUtil.v(TAG, "Access Token present and valid");
+                return "Bearer " + user.getAccessToken();
+            } else if (!sIsFetchingToken) {
+                sIsFetchingToken = true;
+                // Our token is no longer valid, attempt to get a fresh one
+                String token = refreshToken(user);
+                if (!TextUtils.isEmpty(token)) return "Bearer " + token;
+            }
         }
 
         LogUtil.v(TAG, "No access token present, using Client-ID");
         return "Client-ID " + CLIENT_ID;
+    }
+
+    private String refreshToken(ImgurUser user) {
+        final RequestBody requestBody = new FormEncodingBuilder()
+                .add("client_id", ApiClient.CLIENT_ID)
+                .add("client_secret", ApiClient.CLIENT_SECRET)
+                .add("refresh_token", user.getRefreshToken())
+                .add("grant_type", "refresh_token").build();
+
+        Request request = new Request.Builder()
+                .addHeader(AUTHORIZATION_HEADER, CLIENT_ID)
+                .post(requestBody)
+                .url(Endpoints.REFRESH_TOKEN.getUrl())
+                .build();
+
+        try {
+            LogUtil.v(TAG, "Requesting new access token");
+            JSONObject json = makeRequest(request);
+            String accessToken = json.getString(ImgurUser.KEY_ACCESS_TOKEN);
+            String refreshToken = json.getString(ImgurUser.KEY_REFRESH_TOKEN);
+            long expiration = System.currentTimeMillis() + (json.getLong(ImgurUser.KEY_EXPIRES_IN) * DateUtils.SECOND_IN_MILLIS);
+            user.setTokens(accessToken, refreshToken, expiration);
+            OpengurApp app = OpengurApp.getInstance();
+            app.getSql().updateUserTokens(accessToken, refreshToken, expiration);
+            app.setUser(user);
+            LogUtil.v(TAG, "New refresh token received");
+            sIsFetchingToken = false;
+            return user.getAccessToken();
+        } catch (JSONException ex) {
+            LogUtil.e(TAG, "Error parsing user tokens", ex);
+        } catch (IOException ex) {
+            LogUtil.e(TAG, "Error parsing user tokens", ex);
+        }
+
+        sIsFetchingToken = false;
+        return null;
     }
 
     /**
