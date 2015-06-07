@@ -9,20 +9,6 @@
         <item>Unlimited</item>
     </string-array>
 
-    <string-array name="nav_items">
-        <item>Profile</item>
-        <item>Gallery</item>
-        <item>Topics</item>
-        <item>Meme Generator</item>
-        <item>Subreddit</item>
-        <item>Random</item>
-        <item>Uploads</item>
-        <item>Divider</item>
-        <item>Settings</item>
-        <item>Beta</item>
-        <item>Feedback</item>
-    </string-array>
-
     <string-array name="pref_themes_items">
         <item>Black</item>
         <item>Blue</item>

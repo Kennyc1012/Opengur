@@ -1,33 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/header"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="192dp"
+    android:background="?colorPrimaryDark"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:paddingBottom="8dp"
     android:paddingLeft="@dimen/content_padding"
     android:paddingRight="@dimen/content_padding"
-    android:paddingBottom="8dp"
-    android:paddingTop="8dp">
+    android:paddingTop="8dp"
+    tools:background="@color/theme_teal_primary">
 
     <ImageView
         android:id="@+id/profileImg"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        tools:src="@drawable/ic_account_circle" />
 
     <TextView
         android:id="@+id/profileName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.Medium"
         android:textColor="@android:color/white"
         android:textSize="14sp"
-        android:textAppearance="@style/TextAppearance.Medium" />
+        tools:text="DrButtersMD" />
 
     <TextView
         android:id="@+id/reputation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.Regular"
+        android:textColor="@android:color/white"
         android:textSize="14sp"
-        android:textColor="@android:color/white" />
+        tools:text="ForeverAlone" />
 
 </LinearLayout>

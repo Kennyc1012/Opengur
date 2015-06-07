@@ -76,4 +76,9 @@ public class SettingsActivity extends BaseActivity {
     public static Intent createIntent(Context context, boolean isExperimental) {
         return createIntent(context).putExtra(KEY_IS_EXPERIMENTAL, isExperimental);
     }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Settings_Theme_Dark : R.style.Settings_Theme_Light;
+    }
 }

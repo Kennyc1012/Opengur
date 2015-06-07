@@ -18,6 +18,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -30,7 +31,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -155,19 +155,19 @@ public class UploadActivity extends BaseActivity {
                 View nagView = LayoutInflater.from(UploadActivity.this).inflate(R.layout.no_user_nag, null);
                 final CheckBox cb = (CheckBox) nagView.findViewById(R.id.dontNotify);
 
-                new MaterialDialog.Builder(UploadActivity.this)
-                        .title(R.string.not_logged_in)
-                        .negativeText(R.string.cancel)
-                        .positiveText(R.string.yes)
-                        .customView(nagView, false)
-                        .callback(new MaterialDialog.ButtonCallback() {
+                new AlertDialog.Builder(UploadActivity.this, theme.getAlertDialogTheme())
+                        .setTitle(R.string.not_logged_in)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 if (cb.isChecked())
                                     app.getPreferences().edit().putBoolean(PREF_NOTIFY_NO_USER, false).apply();
                                 onPreUpload();
                             }
-                        }).show();
+                        })
+                        .setView(nagView)
+                        .show();
             } else {
                 onPreUpload();
             }
@@ -612,7 +612,7 @@ public class UploadActivity extends BaseActivity {
                         @Override
                         public void onLoadingComplete(String url, View view, Bitmap bitmap) {
                             mIsValidLink = true;
-                            
+
                             if (url.endsWith(".gif")) {
                                 if (!ImageUtil.loadAndDisplayGif(mPreviewImage, url, app.getImageLoader())) {
                                     mPreviewImage.setImageBitmap(bitmap);
@@ -648,23 +648,23 @@ public class UploadActivity extends BaseActivity {
                     }
 
                     String message = getString(R.string.upload_success, url);
-                    new MaterialDialog.Builder(UploadActivity.this)
-                            .title(R.string.upload_complete)
-                            .content(message)
-                            .negativeText(R.string.dismiss)
-                            .positiveText(R.string.copy_link)
-                            .dismissListener(new DialogInterface.OnDismissListener() {
+                    new AlertDialog.Builder(UploadActivity.this, theme.getAlertDialogTheme())
+                            .setTitle(R.string.upload_complete)
+                            .setMessage(message)
+                            .setNegativeButton(R.string.dismiss, null)
+                            .setPositiveButton(R.string.copy_link, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", url));
+                                }
+                            })
+                            .setOnDismissListener(new DialogInterface.OnDismissListener() {
                                 @Override
                                 public void onDismiss(DialogInterface dialog) {
                                     finish();
                                 }
-                            }).callback(new MaterialDialog.ButtonCallback() {
-                        @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                            clipboard.setPrimaryClip(ClipData.newPlainText("link", url));
-                        }
-                    }).show();
+                            }).show();
                     break;
 
                 case MESSAGE_ACTION_FAILED:
@@ -675,6 +675,11 @@ public class UploadActivity extends BaseActivity {
             }
         }
     };
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
+    }
 
     /**
      * Decodes the selected image in the background for displaying

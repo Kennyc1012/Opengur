@@ -2,11 +2,14 @@ package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +20,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.ProfileCommentAdapter;
@@ -127,12 +129,11 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
             case R.id.sort:
                 final String[] items = getResources().getStringArray(R.array.comments_sort);
 
-                new MaterialDialog.Builder(getActivity())
-                        .title(R.string.sort_by)
-                        .items(items)
-                        .itemsCallback(new MaterialDialog.ListCallback() {
+                new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                        .setTitle(R.string.sort_by)
+                        .setItems(items, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onSelection(MaterialDialog materialDialog, View view, int which, CharSequence charSequence) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 mSort = CommentSort.getSortType(items[which]);
                                 if (mAdapter != null) mAdapter.clear();
                                 mPage = 0;
@@ -154,6 +155,8 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
         mListView.setOnScrollListener(this);
         mListView.setOnItemClickListener(this);
         mListView.setHeaderDividersEnabled(false);
+        Drawable commentDivider = getResources().getDrawable(theme.isDarkTheme ? R.drawable.divider_dark : R.drawable.divider_light);
+        mListView.setDivider(commentDivider);
         handleArgs(getArguments(), savedInstanceState);
     }
 

@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginTop="?actionBarSize">
 
     <RelativeLayout
         android:id="@+id/messageInputContainer"
@@ -17,8 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
+            android:layout_marginRight="4dp"
             android:src="@drawable/ic_action_send"
             app:fab_colorNormal="?colorAccent"
             app:fab_colorPressed="?fabPressed"
@@ -28,8 +29,8 @@
             android:id="@+id/messageInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/sendBtn"
             android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/sendBtn"
             android:hint="@string/convo_message_hint"
             android:inputType="textMultiLine|textCapSentences" />
 
@@ -40,18 +41,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/messageInputContainer"
-        app:loadingView="@layout/loading_view"
-        app:errorView="@layout/profile_error"
         app:emptyView="@layout/empty_comment_view"
+        app:errorView="@layout/profile_error"
+        app:loadingView="@layout/loading_view"
         app:viewState="loading">
 
         <ListView
             android:id="@+id/convoList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:choiceMode="none"
             android:divider="@null"
-            android:dividerHeight="0dp"
-            android:choiceMode="none" />
+            android:dividerHeight="0dp" />
 
     </com.kenny.openimgur.ui.MultiStateView>
 

@@ -64,4 +64,10 @@ public class RoutingActivity extends BaseActivity {
 
         finish();
     }
+
+    @Override
+    protected int getStyleRes() {
+        // Routing activity is barely visible so the theme won't matter
+        return R.style.Theme_Not_Translucent_Light;
+    }
 }

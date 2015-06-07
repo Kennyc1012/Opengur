@@ -123,6 +123,11 @@ public class FullScreenPhotoActivity extends BaseActivity {
         if (mAdapter != null) outState.putParcelableArrayList(KEY_IMAGES, mAdapter.retainItems());
     }
 
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
+    }
+
     private static class FullScreenPagerAdapter extends FragmentStatePagerAdapter {
         private List<ImgurPhoto> mPhotos;
 

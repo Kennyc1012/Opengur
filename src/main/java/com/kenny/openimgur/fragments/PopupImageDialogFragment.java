@@ -79,6 +79,12 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
         return fragment;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        setStyle(DialogFragment.STYLE_NO_TITLE, OpengurApp.getInstance(getActivity()).getImgurTheme().getDialogTheme());
+        super.onCreate(savedInstanceState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
