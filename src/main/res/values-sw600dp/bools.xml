@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <bool name="is_tablet">true</bool>
+    <!-- Was true until issue is fixed -->
+    <bool name="translucent_nav_bar">false</bool>
 
 </resources>
