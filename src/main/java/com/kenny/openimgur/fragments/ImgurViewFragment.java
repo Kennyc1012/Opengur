@@ -141,9 +141,23 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
                 api.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, mImgurObject.getId(), null);
                 return true;
+
+            case R.id.copy_album_link:
+                if (mImgurObject instanceof ImgurAlbum) {
+                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboard.setPrimaryClip(ClipData.newPlainText("link", mImgurObject.getLink()));
+                    SnackBar.show(getActivity(), R.string.link_copied);
+                }
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.copy_album_link).setVisible(mImgurObject instanceof ImgurAlbum);
     }
 
     /**

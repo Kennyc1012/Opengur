@@ -86,6 +86,7 @@
     <string name="link_copy_failed">Unable to copy link</string>
     <string name="caution">Caution</string>
     <string name="okay">Okay</string>
+    <string name="copy_album_link">Copy Album Link</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
