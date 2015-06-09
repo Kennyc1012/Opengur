@@ -116,16 +116,21 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     @Override
     public void onResume() {
         super.onResume();
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        GalleryAdapter adapter = getAdapter();
+        SharedPreferences pref = app.getPreferences();
         boolean nsfwThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
         mAllowNSFW = pref.getBoolean(SettingsActivity.NSFW_KEY, false);
-        if (getAdapter() != null) getAdapter().setAllowNSFW(nsfwThumb);
+
+        if (adapter != null) {
+            adapter.setAllowNSFW(nsfwThumb);
+            adapter.setThumbnailQuality(pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY));
+        }
 
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
 
-        if (getAdapter() == null || getAdapter().isEmpty()) {
+        if (adapter == null || adapter.isEmpty()) {
             mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
             mIsLoading = true;
 

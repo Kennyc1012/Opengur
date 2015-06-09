@@ -42,6 +42,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         bindListPreference(findPreference(SettingsActivity.CACHE_SIZE_KEY));
         bindListPreference(findPreference(SettingsActivity.THEME_KEY));
         bindListPreference(findPreference(SettingsActivity.KEY_CACHE_LOC));
+        bindListPreference(findPreference(SettingsActivity.KEY_THUMBNAIL_QUALITY));
         findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);

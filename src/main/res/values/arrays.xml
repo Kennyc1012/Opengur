@@ -69,6 +69,12 @@
         <item>Share</item>
     </string-array>
 
+    <string-array name="pref_gallery_thumbnails">
+        <item>Low (Less bandwidth)</item>
+        <item>Medium (Moderate bandwidth)</item>
+        <item>High (More bandwidth)</item>
+    </string-array>
+
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys" translatable="false">
         <item>256</item>
@@ -102,6 +108,13 @@
         <item>7</item>
         <item>10</item>
         <item>12</item>
+    </string-array>
+
+    <!-- These are the thumbnail keys for imgur (b being gallery thumbnail)-->
+    <string-array name="pref_thumbanail_keys">
+        <item>s</item>
+        <item>b</item>
+        <item>l</item>
     </string-array>
 
 

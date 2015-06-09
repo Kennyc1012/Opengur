@@ -60,6 +60,8 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String KEY_TAGS = "autoLoadTags";
 
+    public static final String KEY_THUMBNAIL_QUALITY = "thumbnailQuality";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

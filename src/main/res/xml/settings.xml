@@ -21,6 +21,13 @@
 
     <PreferenceCategory android:title="@string/gallery">
 
+        <ListPreference
+            android:key="thumbnailQuality"
+            android:title="@string/pref_thumbnail_quality"
+            android:entries="@array/pref_gallery_thumbnails"
+            android:entryValues="@array/pref_thumbanail_keys"
+            android:defaultValue="b" />
+
         <CheckBoxPreference
             android:key="autoLoadComments"
             android:summaryOn="@string/pref_comments_on"

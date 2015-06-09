@@ -205,6 +205,7 @@
     <string name="pref_tags_title">Tags</string>
     <string name="pref_tags_on">Display Tags</string>
     <string name="pref_tags_off">Don\'t Display Tags</string>
+    <string name="pref_thumbnail_quality">Thumbnail Quality</string>
 
     <!-- Experimental Settings -->
     <string name="pref_experimental_settings">Experimental Settings</string>
