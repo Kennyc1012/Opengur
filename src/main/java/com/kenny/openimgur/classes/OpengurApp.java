@@ -3,31 +3,24 @@ package com.kenny.openimgur.classes;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.os.UserManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.text.format.DateUtils;
 
 import com.crashlytics.android.Crashlytics;
 import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.activities.SettingsActivity;
-import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.RequestBody;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
+import java.lang.reflect.Method;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -59,6 +52,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
     public void onCreate() {
         super.onCreate();
         instance = this;
+        stopUserManagerLeak();
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mPref.registerOnSharedPreferenceChangeListener(this);
         mSql = new SqlHelper(getApplicationContext());
@@ -185,6 +179,29 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
                     .detectAll()
                     .penaltyLog()
                     .build());
+        }
+    }
+
+    /**
+     * Attempts to call static method from {@link UserManager} that is causing an activity leak
+     * https://code.google.com/p/android/issues/detail?id=173789
+     */
+    private void stopUserManagerLeak() {
+        // UserManager was introduced in API 17
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN) return;
+
+        try {
+            Method method = UserManager.class.getMethod("get", Context.class);
+            method.setAccessible(true);
+
+            if (method.isAccessible()) {
+                method.invoke(null, getApplicationContext());
+                LogUtil.v(TAG, "Able to access method causing leak");
+            } else {
+                LogUtil.w(TAG, "Unable to access method to stop leak");
+            }
+        } catch (Throwable ex) {
+            LogUtil.e(TAG, "Unable to fix user manager leak", ex);
         }
     }
 
