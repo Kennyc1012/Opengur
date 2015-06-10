@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
         android:layout_margin="@dimen/dialog_content_margin"
+        android:text="@string/comment"
         android:textAppearance="@style/TextAppearance.Medium"
-        android:text="@string/comment" />
+        android:textSize="25sp" />
 
     <EditText
         android:id="@+id/comment"
@@ -20,8 +19,8 @@
         android:layout_marginLeft="@dimen/dialog_content_margin"
         android:layout_marginRight="@dimen/dialog_content_margin"
         android:hint="@string/comment_hint"
-        android:maxLength="140"
-        android:inputType="textNoSuggestions|textCapSentences|textMultiLine">
+        android:inputType="textCapSentences|textMultiLine"
+        android:maxLength="140">
 
         <requestFocus />
     </EditText>
@@ -32,37 +31,36 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dialog_content_margin"
         android:layout_marginTop="4dp"
-        android:textSize="18sp"
+        android:text="140"
         android:textAppearance="@style/TextAppearance.Regular"
-        android:text="140" />
+        android:textSize="18sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dialog_content_margin"
+        android:layout_marginBottom="@dimen/dialog_button_margin"
         android:layout_marginLeft="@dimen/dialog_button_margin"
         android:layout_marginRight="@dimen/dialog_button_margin"
-        android:layout_marginBottom="@dimen/dialog_button_margin"
-        android:orientation="horizontal"
-        android:gravity="end">
+        android:layout_marginTop="@dimen/dialog_content_margin"
+        android:gravity="end"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/cancel"
+            style="@style/Widget.AppCompat.ActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel"
-            android:textAllCaps="true"
-            android:textColor="?android:textColor"
-            style="@style/Widget.AppCompat.ActionButton" />
+            android:textAllCaps="true" />
 
         <Button
             android:id="@+id/post"
+            style="@style/Widget.AppCompat.ActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/post"
             android:textAllCaps="true"
-            android:textColor="?colorAccent"
-            style="@style/Widget.AppCompat.ActionButton" />
+            android:textColor="?colorAccent" />
 
     </LinearLayout>
 

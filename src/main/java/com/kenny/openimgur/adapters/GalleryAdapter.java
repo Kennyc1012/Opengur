@@ -1,6 +1,7 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -36,11 +38,15 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
 
     private boolean mAllowNSFWThumb;
 
+    private String mThumbnailQuality;
+
     public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects) {
         super(context, objects, true);
         mUpvoteColor = context.getResources().getColor(R.color.notoriety_positive);
         mDownVoteColor = context.getResources().getColor(R.color.notoriety_negative);
-        mAllowNSFWThumb = OpengurApp.getInstance(context).getPreferences().getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
+        SharedPreferences pref = OpengurApp.getInstance(context).getPreferences();
+        mAllowNSFWThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
+        mThumbnailQuality = pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY);
     }
 
     @Override
@@ -94,6 +100,16 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
         notifyDataSetChanged();
     }
 
+    public void setThumbnailQuality(String quality) {
+        if (!mThumbnailQuality.equals(quality)) {
+            LogUtil.v(TAG, "Updating thumbnail quality to " + quality);
+            // Clear any memory cache we may have for the new thumbnail
+            mImageLoader.clearMemoryCache();
+            mThumbnailQuality = quality;
+            notifyDataSetChanged();
+        }
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         GalleryHolder holder;
@@ -115,17 +131,17 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
 
             // Check if the link is a thumbed version of a large gif
             if (photoObject.hasMP4Link() && photoObject.isLinkAThumbnail() && ImgurPhoto.IMAGE_TYPE_GIF.equals(photoObject.getType())) {
-                photoUrl = photoObject.getThumbnail(ImgurPhoto.THUMBNAIL_GALLERY, true, FileUtil.EXTENSION_GIF);
+                photoUrl = photoObject.getThumbnail(mThumbnailQuality, true, FileUtil.EXTENSION_GIF);
             } else {
-                photoUrl = ((ImgurPhoto) obj).getThumbnail(ImgurPhoto.THUMBNAIL_GALLERY, false, null);
+                photoUrl = ((ImgurPhoto) obj).getThumbnail(mThumbnailQuality, false, null);
             }
 
             displayImage(holder.image, photoUrl);
 
         } else if (obj instanceof ImgurAlbum) {
-            displayImage(holder.image, ((ImgurAlbum) obj).getCoverUrl(ImgurPhoto.THUMBNAIL_GALLERY));
+            displayImage(holder.image, ((ImgurAlbum) obj).getCoverUrl(mThumbnailQuality));
         } else {
-            String url = ImgurBaseObject.getThumbnail(obj.getId(), obj.getLink(), ImgurPhoto.THUMBNAIL_GALLERY);
+            String url = ImgurBaseObject.getThumbnail(obj.getId(), obj.getLink(), mThumbnailQuality);
             displayImage(holder.image, url);
         }
 

@@ -1,10 +1,14 @@
 package com.kenny.openimgur.fragments;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.view.View;
 
+import com.kenny.openimgur.activities.BaseActivity;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
@@ -79,5 +83,24 @@ abstract public class BaseFragment extends Fragment {
     protected boolean canDoFragmentTransaction() {
         Activity activity = getActivity();
         return activity != null && !activity.isFinishing() && !activity.isChangingConfigurations() && isAdded() && !isRemoving() && getUserVisibleHint();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    protected void setStatusBarColor(int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getActivity() instanceof BaseActivity) {
+            ((BaseActivity) getActivity()).setStatusBarColor(color);
+        }
+    }
+
+    /**
+     * Sets the color of the status bar, only for SDK 21+ devices
+     *
+     * @param color
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void setStatusBarColorResource(@ColorRes int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getActivity() instanceof BaseActivity) {
+            setStatusBarColor(getResources().getColor(color));
+        }
     }
 }

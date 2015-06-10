@@ -9,4 +9,9 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_navigation_refresh" />
 
+    <item
+        android:id="@+id/copy_album_link"
+        android:title="@string/copy_album_link"
+        app:showAsAction="never" />
+
 </menu>

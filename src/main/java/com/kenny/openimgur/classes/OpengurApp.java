@@ -3,31 +3,24 @@ package com.kenny.openimgur.classes;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.os.UserManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.text.format.DateUtils;
 
 import com.crashlytics.android.Crashlytics;
 import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.activities.SettingsActivity;
-import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.RequestBody;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
+import java.lang.reflect.Method;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -59,11 +52,11 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
     public void onCreate() {
         super.onCreate();
         instance = this;
+        stopUserManagerLeak();
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mPref.registerOnSharedPreferenceChangeListener(this);
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
-        checkRefreshToken();
         mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, ImgurTheme.GREY.themeName));
         mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, false);
 
@@ -166,23 +159,6 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         mSql.onUserLogout();
     }
 
-    /**
-     * Refreshes the user's access token
-     *
-     * @return If the token will be refreshed
-     */
-    public boolean checkRefreshToken() {
-        if (mUser != null && !mUser.isAccessTokenValid() && !mIsFetchingAccessToken) {
-            LogUtil.v(TAG, "Token expired or is expiring soon, requesting new token");
-            mIsFetchingAccessToken = true;
-            new RefreshTokenTask().execute(mUser);
-            return true;
-        }
-
-        LogUtil.v(TAG, "User is null, token is still valid, or currently request a token, no need to request a new token");
-        return false;
-    }
-
     public ImgurTheme getImgurTheme() {
         return mTheme;
     }
@@ -207,51 +183,25 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
     }
 
     /**
-     * Called when a refresh token has been received.
-     *
-     * @param json
+     * Attempts to call static method from {@link UserManager} that is causing an activity leak
+     * https://code.google.com/p/android/issues/detail?id=173789
      */
-    private synchronized boolean onReceivedRefreshToken(JSONObject json) {
+    private void stopUserManagerLeak() {
+        // UserManager was introduced in API 17
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN) return;
+
         try {
-            String accessToken = json.getString(ImgurUser.KEY_ACCESS_TOKEN);
-            String refreshToken = json.getString(ImgurUser.KEY_REFRESH_TOKEN);
-            long expiration = System.currentTimeMillis() + (json.getLong(ImgurUser.KEY_EXPIRES_IN) * DateUtils.SECOND_IN_MILLIS);
-            mUser.setTokens(accessToken, refreshToken, expiration);
-            mSql.updateUserTokens(accessToken, refreshToken, expiration);
-            LogUtil.v(TAG, "New refresh token received");
-            mIsFetchingAccessToken = false;
-            return true;
-        } catch (JSONException e) {
-            LogUtil.e(TAG, "Error parsing refresh token result", e);
-            mIsFetchingAccessToken = false;
-            return false;
-        }
-    }
+            Method method = UserManager.class.getMethod("get", Context.class);
+            method.setAccessible(true);
 
-    private class RefreshTokenTask extends AsyncTask<ImgurUser, Void, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(ImgurUser... imgurUsers) {
-            if (imgurUsers == null || imgurUsers.length <= 0) {
-                return false;
+            if (method.isAccessible()) {
+                method.invoke(null, getApplicationContext());
+                LogUtil.v(TAG, "Able to access method causing leak");
+            } else {
+                LogUtil.w(TAG, "Unable to access method to stop leak");
             }
-
-            try {
-                ImgurUser user = imgurUsers[0];
-
-                final RequestBody body = new FormEncodingBuilder()
-                        .add("client_id", ApiClient.CLIENT_ID)
-                        .add("client_secret", ApiClient.CLIENT_SECRET)
-                        .add("refresh_token", user.getRefreshToken())
-                        .add("grant_type", "refresh_token").build();
-
-                ApiClient client = new ApiClient(Endpoints.REFRESH_TOKEN.getUrl(), ApiClient.HttpRequest.POST);
-                return onReceivedRefreshToken(client.doWork(body));
-            } catch (Exception e) {
-                LogUtil.e(TAG, "Error parsing user tokens", e);
-                mIsFetchingAccessToken = false;
-                return false;
-            }
+        } catch (Throwable ex) {
+            LogUtil.e(TAG, "Unable to fix user manager leak", ex);
         }
     }
 

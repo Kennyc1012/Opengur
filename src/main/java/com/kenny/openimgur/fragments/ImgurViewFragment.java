@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,7 +29,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
@@ -140,9 +141,23 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
                 api.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, mImgurObject.getId(), null);
                 return true;
+
+            case R.id.copy_album_link:
+                if (mImgurObject instanceof ImgurAlbum) {
+                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboard.setPrimaryClip(ClipData.newPlainText("link", mImgurObject.getLink()));
+                    SnackBar.show(getActivity(), R.string.link_copied);
+                }
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.copy_album_link).setVisible(mImgurObject instanceof ImgurAlbum);
     }
 
     /**
@@ -456,11 +471,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         final int position = mListView.getPositionForView(view) - mListView.getHeaderViewsCount();
 
         if (position >= 0) {
-            new MaterialDialog.Builder(getActivity())
-                    .items(R.array.photo_long_press_options)
-                    .itemsCallback(new MaterialDialog.ListCallback() {
+            new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                    .setItems(R.array.photo_long_press_options, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onSelection(MaterialDialog materialDialog, View view, int dialogPosition, CharSequence charSequence) {
+                        public void onClick(DialogInterface dialog, int which) {
                             ImgurPhoto photo = mPhotoAdapter.getItem(position);
                             String link;
 
@@ -470,7 +484,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                                 link = photo.getLink();
                             }
 
-                            switch (dialogPosition) {
+                            switch (which) {
                                 // Copy
                                 case 0:
                                     ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);

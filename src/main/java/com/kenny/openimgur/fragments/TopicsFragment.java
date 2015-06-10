@@ -246,8 +246,10 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
             mMultiStateView.post(new Runnable() {
                 @Override
                 public void run() {
-                    mMultiStateView.setErrorText(R.id.errorMessage, R.string.topics_empty_message);
-                    mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+                    if (isAdded() && mMultiStateView != null) {
+                        mMultiStateView.setErrorText(R.id.errorMessage, R.string.topics_empty_message);
+                        mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+                    }
                 }
             });
         } else if (mListener != null) {

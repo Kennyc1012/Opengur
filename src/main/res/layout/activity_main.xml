@@ -2,9 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -19,26 +20,27 @@
             android:layout_height="wrap_content"
             android:background="?colorPrimary"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            app:popupTheme="?toolBarPopupTheme" />
 
         <include
-            layout="@layout/upload_menu"
             android:id="@+id/uploadMenu"
+            layout="@layout/upload_menu"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/upload_button_margin_right"
+            android:layout_gravity="bottom|right"
             android:layout_marginBottom="@dimen/upload_button_margin_bottom"
+            android:layout_marginRight="@dimen/upload_button_margin_right"
             android:visibility="visible" />
 
-    </RelativeLayout>
+    </FrameLayout>
 
-    <fragment
-        android:id="@+id/navDrawer"
-        android:layout_width="@dimen/drawer_max_width"
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:name="com.kenny.openimgur.fragments.NavFragment" />
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_profile"
+        app:menu="@menu/menu_nav" />
 
 </android.support.v4.widget.DrawerLayout>

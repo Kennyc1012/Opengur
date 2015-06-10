@@ -19,6 +19,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.snackbar.SnackBar;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -78,6 +79,12 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
     }
 
     @Override
+    public void onPause() {
+        mComment.setCursorVisible(false);
+        super.onPause();
+    }
+
+    @Override
     public void onDestroyView() {
         ButterKnife.reset(this);
         super.onDestroyView();
@@ -85,10 +92,8 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setStyle(DialogFragment.STYLE_NO_TITLE, OpengurApp.getInstance(getActivity()).getImgurTheme().getDialogTheme());
         super.onCreate(savedInstanceState);
-        int style = OpengurApp.getInstance(getActivity()).getImgurTheme().isDarkTheme ?
-                R.style.Theme_AppCompat_Dialog : R.style.Theme_AppCompat_Light_Dialog;
-        setStyle(DialogFragment.STYLE_NO_TITLE, style);
     }
 
     @Nullable

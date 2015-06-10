@@ -35,6 +35,7 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_search);
+        setStatusBarColorResource(theme.darkColor);
         mFragment = (GallerySearchFragment) getFragmentManager().findFragmentById(R.id.searchFragment);
         String query;
 
@@ -52,14 +53,6 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
      * Sets up the tool bar to take the place of the action bar
      */
     private void setupToolBar(String query) {
-        if (isLandscape() && !isTablet()) {
-            // Don't add the extra padding
-        } else {
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mToolBar.getLayoutParams();
-            lp.setMargins(0, ViewUtils.getStatusBarHeight(getApplicationContext()), 0, 0);
-            mToolBar.setLayoutParams(lp);
-        }
-
         mToolBar.setTitle(query);
         setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -107,5 +100,10 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
         }
 
         super.onBackPressed();
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Translucent_Main_Dark : R.style.Theme_Translucent_Main_Light;
     }
 }

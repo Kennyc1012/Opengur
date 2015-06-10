@@ -2,10 +2,12 @@ package com.kenny.openimgur.activities;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,7 +15,6 @@ import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -124,14 +125,13 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
             message = getString(R.string.convo_block_message, mConvo.getWithAccount());
         }
 
-        new MaterialDialog.Builder(this)
-                .title(title)
-                .content(message)
-                .negativeText(R.string.cancel)
-                .positiveText(R.string.yes)
-                .callback(new MaterialDialog.ButtonCallback() {
+        new AlertDialog.Builder(this, theme.getAlertDialogTheme())
+                .setTitle(title)
+                .setMessage(message)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
+                    public void onClick(DialogInterface dialog, int which) {
                         ImgurBusEvent.EventType event = endpoint == Endpoints.CONVO_REPORT ?
                                 ImgurBusEvent.EventType.CONVO_REPORT : ImgurBusEvent.EventType.CONVO_BLOCK;
 
@@ -415,5 +415,10 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_CONVO, mConvo);
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
     }
 }

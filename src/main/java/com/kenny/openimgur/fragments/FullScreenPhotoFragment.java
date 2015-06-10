@@ -173,10 +173,10 @@ public class FullScreenPhotoFragment extends BaseFragment {
                             int[] dimensions = ImageUtil.getBitmapDimensions(file);
                             boolean enableTiling = dimensions[0] > 2048 || dimensions[1] > 2048;
                             LogUtil.v(TAG, "Tiling enabled for image " + enableTiling);
-                            Uri fileUril = Uri.fromFile(file);
+                            Uri fileUri = Uri.fromFile(file);
 
-                            mImageView.setImage(ImageSource.uri(fileUril).dimensions(dimensions[0], dimensions[1]).tiling(enableTiling));
-                            mImageView.setMaxScale(10.0f);
+                            mImageView.setMinimumTileDpi(160);
+                            mImageView.setImage(ImageSource.uri(fileUri).dimensions(dimensions[0], dimensions[1]).tiling(enableTiling));
                             mVideoView.setVisibility(View.GONE);
                             mGifImageView.setVisibility(View.GONE);
                             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);

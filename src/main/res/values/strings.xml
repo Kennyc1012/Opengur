@@ -86,6 +86,7 @@
     <string name="link_copy_failed">Unable to copy link</string>
     <string name="caution">Caution</string>
     <string name="okay">Okay</string>
+    <string name="copy_album_link">Copy Album Link</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -204,6 +205,7 @@
     <string name="pref_tags_title">Tags</string>
     <string name="pref_tags_on">Display Tags</string>
     <string name="pref_tags_off">Don\'t Display Tags</string>
+    <string name="pref_thumbnail_quality">Thumbnail Quality</string>
 
     <!-- Experimental Settings -->
     <string name="pref_experimental_settings">Experimental Settings</string>
@@ -255,5 +257,16 @@
     <string name="beta_message">Want to become a beta tester for Opengur and receive features before they are officially released?</string>
     <string name="beta_confirm">I Sure Do</string>
     <string name="beta_no">No Thanks</string>
+
+    <!-- Nav Items -->
+    <string name="nav_gallery">Gallery</string>
+    <string name="nav_topics">Topics</string>
+    <string name="nav_meme">Meme Generator</string>
+    <string name="nav_reddit">Subreddit</string>
+    <string name="nav_random">Random</string>
+    <string name="nav_uploads">Uploads</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_beta">Beta</string>
+    <string name="nav_feedback">Feedback</string>
 
 </resources>

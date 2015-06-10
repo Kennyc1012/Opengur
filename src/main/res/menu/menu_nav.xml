@@ -1,0 +1,62 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/checkableGroup"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_action_gallery"
+            android:title="@string/nav_gallery" />
+
+        <item
+            android:id="@+id/nav_topics"
+            android:icon="@drawable/ic_action_quotes"
+            android:title="@string/nav_topics" />
+
+        <item
+            android:id="@+id/nav_meme"
+            android:icon="@drawable/ic_action_meme"
+            android:title="@string/nav_meme" />
+
+        <item
+            android:id="@+id/nav_reddit"
+            android:icon="@drawable/ic_action_reddit"
+            android:title="@string/nav_reddit" />
+
+        <item
+            android:id="@+id/nav_random"
+            android:icon="@drawable/ic_action_shuffle"
+            android:title="@string/nav_random" />
+        <item
+            android:id="@+id/nav_uploads"
+            android:icon="@drawable/ic_action_upload"
+            android:title="@string/nav_uploads" />
+    </group>
+
+    <group
+        android:id="@+id/nonCheckableGroup"
+        android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_action_settings"
+            android:title="@string/nav_settings" />
+
+        <item
+            android:id="@+id/nav_beta"
+            android:icon="@drawable/ic_action_social_people"
+            android:title="@string/nav_beta" />
+
+        <item
+            android:id="@+id/nav_feedback"
+            android:icon="@drawable/ic_action_email"
+            android:title="@string/nav_feedback" />
+
+        <!-- This item is so the list isn't underneath the transparent nav bar -->
+        <item
+            android:enabled="false"
+            android:title="@null" />
+    </group>
+
+</menu>

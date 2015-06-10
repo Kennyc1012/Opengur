@@ -60,6 +60,8 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String KEY_TAGS = "autoLoadTags";
 
+    public static final String KEY_THUMBNAIL_QUALITY = "thumbnailQuality";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,5 +77,10 @@ public class SettingsActivity extends BaseActivity {
 
     public static Intent createIntent(Context context, boolean isExperimental) {
         return createIntent(context).putExtra(KEY_IS_EXPERIMENTAL, isExperimental);
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Settings_Theme_Dark : R.style.Settings_Theme_Light;
     }
 }

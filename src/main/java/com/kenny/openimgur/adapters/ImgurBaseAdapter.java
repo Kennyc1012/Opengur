@@ -25,7 +25,7 @@ public abstract class ImgurBaseAdapter<T> extends BaseAdapter {
 
     private List<T> mItems;
 
-    private ImageLoader mImageLoader;
+    protected ImageLoader mImageLoader;
 
     protected LayoutInflater mInflater;
 

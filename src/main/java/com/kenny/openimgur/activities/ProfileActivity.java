@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
@@ -13,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -22,9 +24,7 @@ import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.LinearLayout;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.astuetz.PagerSlidingTabStrip;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
@@ -41,7 +41,6 @@ import com.kenny.openimgur.fragments.ProfileSubmissionsFragment;
 import com.kenny.openimgur.fragments.ProfileUploadsFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.ViewUtils;
 
 import org.json.JSONException;
 
@@ -98,6 +97,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        setStatusBarColorResource(theme.darkColor);
         setupToolBar();
         handleData(savedInstanceState, getIntent());
     }
@@ -106,14 +106,6 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
      * Sets up the tool bar to take the place of the action bar
      */
     private void setupToolBar() {
-        if (isLandscape() && !isTablet()) {
-            // Don't add the extra padding
-        } else {
-            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mToolBar.getLayoutParams();
-            lp.setMargins(0, ViewUtils.getStatusBarHeight(getApplicationContext()), 0, 0);
-            mToolBar.setLayoutParams(lp);
-        }
-
         mToolBar.setBackgroundColor(getResources().getColor(app.getImgurTheme().primaryColor));
         setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -196,14 +188,13 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.logout:
-                new MaterialDialog.Builder(ProfileActivity.this)
-                        .title(R.string.logout)
-                        .content(R.string.logout_confirm)
-                        .negativeText(R.string.cancel)
-                        .positiveText(R.string.yes)
-                        .callback(new MaterialDialog.ButtonCallback() {
+                new AlertDialog.Builder(ProfileActivity.this, theme.getAlertDialogTheme())
+                        .setTitle(R.string.logout)
+                        .setMessage(R.string.logout_confirm)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 onUserLogout();
                             }
                         }).show();
@@ -420,6 +411,11 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     @Override
     public void onError(int errorCode) {
         // NOOP
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Translucent_Main_Dark : R.style.Theme_Translucent_Main_Light;
     }
 
     private static class ProfilePager extends FragmentStatePagerAdapter {
