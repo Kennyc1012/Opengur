@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -25,7 +26,6 @@ import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.astuetz.PagerSlidingTabStrip;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -67,7 +67,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     private static final String KEY_USER = "user";
 
     @InjectView(R.id.slidingTabs)
-    PagerSlidingTabStrip mSlidingTabs;
+    TabLayout mSlidingTabs;
 
     @InjectView(R.id.pager)
     ViewPager mPager;
@@ -158,7 +158,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
             LogUtil.v(TAG, "Selected user present in database and has valid data");
             mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);
             mPager.setAdapter(mAdapter);
-            mSlidingTabs.setViewPager(mPager);
+            mSlidingTabs.setupWithViewPager(mPager);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
             getSupportActionBar().setTitle(mSelectedUser.getUsername());
             supportInvalidateOptionsMenu();
@@ -355,7 +355,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                 case MESSAGE_ACTION_COMPLETE:
                     mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);
                     mPager.setAdapter(mAdapter);
-                    mSlidingTabs.setViewPager(mPager);
+                    mSlidingTabs.setupWithViewPager(mPager);
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                     supportInvalidateOptionsMenu();
                     break;

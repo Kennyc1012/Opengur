@@ -82,7 +82,6 @@ dependencies {
     compile 'com.kennyc:snackbar:2.5'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.jakewharton:butterknife:6.1.0'
-    compile 'com.jpardogo.materialtabstrip:library:1.0.9'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'com.github.clans:fab:1.5.0'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.1.3'
