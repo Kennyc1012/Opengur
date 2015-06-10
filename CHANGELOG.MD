@@ -1,4 +1,17 @@
 #Open Imgur Changelog
+<b>2.9.0</b> June 9, 2015
+- Better Themeing
+- Better token refresh
+- Remove Material Dialogs library
+- Switch drawer to NavigationView
+- Added text suggestion to comment dialog
+- Fix dialog styles
+- Reduce memory in Full screen
+- Turn of translucent navigation bar temporarily 
+- Fix Topics crash
+- Add Thumbnail quality settings
+- Fix UserManager memory leak
+
 <b>2.8.2</b> June 6, 2015
 - Better gif support while viewing in full screen
 - Added Beta community nav item
