@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.kenny.openimgur" >
+    package="com.kenny.openimgur">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,8 +12,8 @@
         android:name=".classes.OpengurApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" >
-        <activity android:name=".activities.MainActivity" >
+        android:label="@string/app_name">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,15 +28,15 @@
         <activity android:name=".activities.ProfileActivity" />
         <activity
             android:name=".activities.UploadActivity"
-            android:label="@string/upload" >
-            <intent-filter>
+            android:label="@string/upload">
+            <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.SEND" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="image/*" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.SEND" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -48,7 +48,7 @@
             android:name=".activities.RoutingActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask">
 
             <!-- Profiles -->
             <intent-filter>
