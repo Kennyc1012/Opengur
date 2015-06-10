@@ -10,6 +10,7 @@
 - Turn of translucent navigation bar temporarily 
 - Fix Topics crash
 - Add Thumbnail quality settings
+- Allow direct album link copying 
 - Fix UserManager memory leak
 
 <b>2.8.2</b> June 6, 2015
