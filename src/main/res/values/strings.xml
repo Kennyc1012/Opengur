@@ -269,4 +269,10 @@
     <string name="nav_beta">Beta</string>
     <string name="nav_feedback">Feedback</string>
 
+    <plurals name="comment_points">
+        <item quantity="zero">No Points</item>
+        <item quantity="one">%d Point</item>
+        <item quantity="other">%d Points</item>
+    </plurals>
+
 </resources>
