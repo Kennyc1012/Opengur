@@ -25,6 +25,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.activities.SettingsActivity;
+import com.kenny.openimgur.ui.CircleBitmapDisplayer;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;

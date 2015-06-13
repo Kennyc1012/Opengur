@@ -1,4 +1,4 @@
-package com.kenny.openimgur.util;
+package com.kenny.openimgur.ui;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
