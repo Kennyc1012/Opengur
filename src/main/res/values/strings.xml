@@ -41,7 +41,6 @@
     <string name="reddit_empty">Did not find any results for %s</string>
     <string name="view_reddit">View on Reddit</string>
     <string name="accept">Accept</string>
-    <string name="previous_comments">Previous Comments</string>
     <string name="profile_no_favorites">%s has no favorite galleries</string>
     <string name="profile_no_submissions">%s has not shared any images with Imgur</string>
     <string name="profile_no_comments">%s has not posted any comments to Imgur</string>
@@ -67,8 +66,6 @@
     <string name="empty_upload">No Photo has been selected for upload</string>
     <string name="gallery_upload_no_title">Gallery Submissions must have a title</string>
     <string name="gallery">Gallery</string>
-    <string name="nav_open">Open</string>
-    <string name="nav_close">Closed</string>
     <string name="subreddit">Subreddit</string>
     <string name="send_feedback">Send Feedback</string>
     <string name="search">Search</string>
