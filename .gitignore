@@ -13,3 +13,4 @@ crashlytics.properties
 /src/main/res/values/com_crashlytics_export_strings.xml
 local.properties
 *.iml
+Thumbs.db

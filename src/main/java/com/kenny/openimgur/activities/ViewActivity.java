@@ -16,12 +16,10 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -258,12 +256,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void onPanelCollapsed(View view) {
-                if (mPanelButton.getRotation() == 180) ObjectAnimator.ofFloat(mPanelButton, "rotation", 180, 0).setDuration(200).start();
+                if (mPanelButton.getRotation() == 180)
+                    ObjectAnimator.ofFloat(mPanelButton, "rotation", 180, 0).setDuration(200).start();
             }
 
             @Override
             public void onPanelExpanded(View view) {
-                if (mPanelButton.getRotation() == 0) ObjectAnimator.ofFloat(mPanelButton, "rotation", 0, 180).setDuration(200).start();
+                if (mPanelButton.getRotation() == 0)
+                    ObjectAnimator.ofFloat(mPanelButton, "rotation", 0, 180).setDuration(200).start();
             }
 
             @Override
@@ -737,7 +737,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 // This is super ugly, in order to the get position from the layout manager, we need the root view
                 View parent = (View) view.getParent();
                 if (parent != null) parent = (View) parent.getParent();
-                if (parent != null) onListItemClick(mCommentList.getLayoutManager().getPosition(parent));
+                if (parent != null)
+                    onListItemClick(mCommentList.getLayoutManager().getPosition(parent));
             }
         }
     }
@@ -816,7 +817,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
                 }
+                return true;
 
+
+            case R.id.share:
+                startActivity(Intent.createChooser(imgurObj.getShareIntent(), getString(R.string.share)));
                 return true;
         }
 
@@ -838,33 +843,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             menu.findItem(R.id.favorite).setIcon(imgurObject.isFavorited() ?
                     R.drawable.ic_action_favorite : R.drawable.ic_action_unfavorite);
-
-            updateShareProvider((ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.share)), imgurObject);
         }
 
         return super.onPrepareOptionsMenu(menu);
-    }
-
-    /**
-     * Updates the share provider to the current selected object
-     *
-     * @param provider
-     * @param imgurBaseObject
-     */
-    private void updateShareProvider(ShareActionProvider provider, ImgurBaseObject imgurBaseObject) {
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
-
-        String link = imgurBaseObject.getTitle() + " ";
-        if (TextUtils.isEmpty(imgurBaseObject.getRedditLink())) {
-            link += imgurBaseObject.getGalleryLink();
-        } else {
-            link += String.format("https://reddit.com%s", imgurBaseObject.getRedditLink());
-        }
-
-        shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-        provider.setShareIntent(shareIntent);
     }
 
     @Override
