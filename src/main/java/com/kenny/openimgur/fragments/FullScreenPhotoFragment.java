@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -280,26 +278,6 @@ public class FullScreenPhotoFragment extends BaseFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.view_photo, menu);
-        ShareActionProvider share = (ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.share));
-
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
-        String link;
-
-        if (mPhoto != null && !TextUtils.isEmpty(mPhoto.getTitle())) {
-            link = mPhoto.getTitle() + " ";
-            if (TextUtils.isEmpty(mPhoto.getRedditLink())) {
-                link += mPhoto.getGalleryLink();
-            } else {
-                link += String.format("https://reddit.com%s", mPhoto.getRedditLink());
-            }
-        } else {
-            link = mUrl;
-        }
-
-        shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-        share.setShareIntent(shareIntent);
     }
 
     @Override
@@ -308,6 +286,26 @@ public class FullScreenPhotoFragment extends BaseFragment {
             case R.id.download:
                 getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
                 return true;
+
+            case R.id.share:
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                String link;
+
+                if (mPhoto != null && !TextUtils.isEmpty(mPhoto.getTitle())) {
+                    link = mPhoto.getTitle() + " ";
+                    if (TextUtils.isEmpty(mPhoto.getRedditLink())) {
+                        link += mPhoto.getGalleryLink();
+                    } else {
+                        link += String.format("https://reddit.com%s", mPhoto.getRedditLink());
+                    }
+                } else {
+                    link = mUrl;
+                }
+
+                shareIntent.putExtra(Intent.EXTRA_TEXT, link);
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -317,7 +315,8 @@ public class FullScreenPhotoFragment extends BaseFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_IMGUR_OBJECT, mPhoto);
-        if (mVideoView.isPlaying()) outState.putInt(KEY_VIDEO_POSITION, mVideoView.getCurrentPosition());
+        if (mVideoView.isPlaying())
+            outState.putInt(KEY_VIDEO_POSITION, mVideoView.getCurrentPosition());
     }
 
     @Override

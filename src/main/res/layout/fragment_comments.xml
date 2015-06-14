@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.kenny.openimgur.ui.MultiStateView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/multiView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:loadingView="@layout/loading_view"
     app:emptyView="@layout/empty_comment_view"
     app:errorView="@layout/error_view"
+    app:loadingView="@layout/loading_view"
     app:viewState="loading">
 
-    <include layout="@layout/comment_list" />
+    <ListView
+        android:id="@+id/commentList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animationCache="false"
+        android:cacheColorHint="@null"
+        android:drawSelectorOnTop="true"
+        android:footerDividersEnabled="false"
+        android:scrollingCache="false"
+        tools:listitem="@layout/comment_item" />
 
 </com.kenny.openimgur.ui.MultiStateView>

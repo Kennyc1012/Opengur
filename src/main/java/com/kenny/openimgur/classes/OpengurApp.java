@@ -32,11 +32,9 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
 
     private static boolean USE_STRICT_MODE = BuildConfig.DEBUG;
 
-    private static OpengurApp instance;
+    private static OpengurApp sInstance;
 
     private ImageLoader mImageLoader;
-
-    public int sdkVersion = Build.VERSION.SDK_INT;
 
     private SharedPreferences mPref;
 
@@ -44,21 +42,19 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
 
     private ImgurUser mUser;
 
-    private boolean mIsFetchingAccessToken = false;
-
     private ImgurTheme mTheme = ImgurTheme.GREY;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
+        sInstance = this;
         stopUserManagerLeak();
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mPref.registerOnSharedPreferenceChangeListener(this);
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
         mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, ImgurTheme.GREY.themeName));
-        mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, false);
+        mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, true);
 
         // Start crashlytics if enabled
         if (!BuildConfig.DEBUG && mPref.getBoolean(SettingsActivity.KEY_CRASHLYTICS, true)) {
@@ -101,11 +97,11 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
     }
 
     public static OpengurApp getInstance() {
-        return instance;
+        return sInstance;
     }
 
     public static OpengurApp getInstance(Context context) {
-        return context != null ? (OpengurApp) context.getApplicationContext() : instance;
+        return context != null ? (OpengurApp) context.getApplicationContext() : sInstance;
     }
 
     public SharedPreferences getPreferences() {
