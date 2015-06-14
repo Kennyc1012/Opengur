@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginTop="8dp"
+    android:orientation="vertical"
     app:cardBackgroundColor="?cardBG">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:padding="8dp"
             android:autoLink="web"
-            android:linksClickable="true" />
+            android:linksClickable="true"
+            android:padding="8dp"
+            android:textStyle="bold" />
 
-        <RelativeLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -40,30 +44,30 @@
                 android:id="@+id/play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:src="@drawable/ic_play_arrow"
-                app:fab_size="mini"
                 app:fab_colorNormal="@color/play_circle_default"
                 app:fab_colorPressed="@color/play_circle_pressed"
-                android:layout_centerInParent="true" />
+                app:fab_size="mini" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="?android:attr/progressBarStyleLarge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_gravity="center"
                 android:visibility="gone" />
 
-        </RelativeLayout>
+        </FrameLayout>
 
         <TextView
             android:id="@+id/desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:textAppearance="@style/TextAppearance.Regular"
             android:autoLink="web"
-            android:linksClickable="true" />
+            android:linksClickable="true"
+            android:padding="8dp"
+            android:textAppearance="@style/TextAppearance.Regular" />
 
     </LinearLayout>
 

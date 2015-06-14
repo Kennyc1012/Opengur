@@ -111,7 +111,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
     }
 
     /**
-     * Removes an item at the given position, {@link #notifyItemRemoved(int, int)} will be called
+     * Removes an item at the given position, {@link #notifyItemRemoved(int)} will be called
      *
      * @param position The position to remove from the adapter
      * @return The item removed
@@ -138,7 +138,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
     }
 
     /**
-     * Removes all items from the list, {@link #notifyItemRemoved(int, int)} will be called
+     * Removes all items from the list, {@link #notifyItemRangeRemoved(int, int)} will be called
      */
     public void clear() {
         if (mItems != null) {

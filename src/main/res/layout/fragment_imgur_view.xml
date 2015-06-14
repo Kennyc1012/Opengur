@@ -3,10 +3,14 @@
     android:id="@+id/multiView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:loadingView="@layout/loading_view"
     app:errorView="@layout/error_view"
+    app:loadingView="@layout/loading_view"
     app:viewState="loading">
 
-    <include layout="@layout/list_view" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize" />
 
 </com.kenny.openimgur.ui.MultiStateView>

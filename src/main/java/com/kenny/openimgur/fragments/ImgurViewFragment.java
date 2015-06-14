@@ -1,23 +1,18 @@
 package com.kenny.openimgur.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,9 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
@@ -45,7 +38,6 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
@@ -84,9 +76,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     MultiStateView mMultiView;
 
     @InjectView(R.id.list)
-    ListView mListView;
-
-    private View mHeaderView;
+    RecyclerView mListView;
 
     private ImgurBaseObject mImgurObject;
 
@@ -121,6 +111,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         handleArguments(getArguments(), savedInstanceState);
+        mListView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     @Override
@@ -134,8 +125,6 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         switch (item.getItemId()) {
             case R.id.refresh:
                 if (mPhotoAdapter != null) mPhotoAdapter.clear();
-                if (mListView != null && mListView.getHeaderViewsCount() > 0 && mHeaderView != null)
-                    mListView.removeHeaderView(mHeaderView);
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);
                 String url = String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mImgurObject.getId());
                 ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
@@ -172,10 +161,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             mDisplayTags = savedInstanceState.getBoolean(KEY_DISPLAY_TAGS, true);
             mImgurObject = savedInstanceState.getParcelable(KEY_IMGUR_OBJECT);
             List<ImgurPhoto> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
-            mPhotoAdapter = new PhotoAdapter(getActivity(), photos, this);
-            createHeader();
+            mPhotoAdapter = new PhotoAdapter(getActivity(), photos, mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            checkForTags();
         } else {
             mDisplayTags = args.getBoolean(KEY_DISPLAY_TAGS, true);
             setupFragmentWithObject((ImgurBaseObject) args.getParcelable(KEY_IMGUR_OBJECT));
@@ -194,10 +183,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             if (mImgurObject.getUpVotes() != Integer.MIN_VALUE) {
                 List<ImgurPhoto> photo = new ArrayList<>(1);
                 photo.add(((ImgurPhoto) mImgurObject));
-                mPhotoAdapter = new PhotoAdapter(getActivity(), photo, this);
-                createHeader();
+                mPhotoAdapter = new PhotoAdapter(getActivity(), photo, mImgurObject, this);
                 mListView.setAdapter(mPhotoAdapter);
                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                checkForTags();
             } else {
                 LogUtil.v(TAG, "Item does not contain scores, fetching from api");
                 String url = String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mImgurObject.getId());
@@ -209,126 +198,25 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
             api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
         } else {
-            mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), this);
-            createHeader();
+            mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            checkForTags();
         }
     }
 
-    /**
-     * Creates the header for the photo/album. This MUST be called before settings the adapter for pre 4.4 devices
-     */
-    private void createHeader() {
-        if (mHeaderView == null) {
-            mHeaderView = View.inflate(getActivity(), R.layout.image_header, null);
-        }
-
-        // Fetch the tags, except if its from searching a subreddit, they will never have tags and it isn't worth the API call
-        boolean fetchTags = mDisplayTags && TextUtils.isEmpty(mImgurObject.getRedditLink());
-        TextView title = (TextView) mHeaderView.findViewById(R.id.title);
-        TextView author = (TextView) mHeaderView.findViewById(R.id.author);
-        PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
-        TextView pointText = (TextView) mHeaderView.findViewById(R.id.pointText);
-        TextView topic = (TextView) mHeaderView.findViewById(R.id.topic);
-
-        if (!TextUtils.isEmpty(mImgurObject.getTitle())) {
-            title.setText(mImgurObject.getTitle());
-        }
-
-        if (!TextUtils.isEmpty(mImgurObject.getAccount())) {
-            author.setText("- " + mImgurObject.getAccount());
-        } else {
-            author.setText("- ?????");
-        }
-
-        if (!TextUtils.isEmpty(mImgurObject.getTopic())) {
-            topic.setText(mImgurObject.getTopic());
-        }
-
-        int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
-        pointText.setText((mImgurObject.getUpVotes() - mImgurObject.getDownVotes()) + " " + getString(R.string.points));
-        pointsBar.setUpVotes(mImgurObject.getUpVotes());
-        pointsBar.setTotalPoints(totalPoints);
-
-        if (mImgurObject.isFavorited() || ImgurBaseObject.VOTE_UP.equals(mImgurObject.getVote())) {
-            pointText.setTextColor(getResources().getColor(R.color.notoriety_positive));
-        } else if (ImgurBaseObject.VOTE_DOWN.equals(mImgurObject.getVote())) {
-            pointText.setTextColor(getResources().getColor(R.color.notoriety_negative));
-        }
-
-        if (mImgurObject.getTags() != null && mImgurObject.getTags().size() > 0) {
-            displayTags(false);
-            fetchTags = false;
-        }
-
-        mListView.addHeaderView(mHeaderView);
-
-        if (fetchTags) {
+    private void checkForTags() {
+        // No need to request if the object already has tags, they will be set in the adapter
+        if (mDisplayTags && (mImgurObject.getTags() == null || mImgurObject.getTags().isEmpty())) {
             String tagsUrl = String.format(Endpoints.TAGS.getUrl(), mImgurObject.getId());
             new ApiClient(tagsUrl, ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.TAGS, mImgurObject.getId(), null);
         }
     }
 
-    private void displayTags(boolean animateIn) {
-        if (mHeaderView != null) {
-            final TextView tagTextView = (TextView) mHeaderView.findViewById(R.id.tags);
-            Drawable tagDrawable;
-            int size = mImgurObject.getTags().size();
-            StringBuilder builder = new StringBuilder();
-
-            // Tag icon is already dark themed
-            if (theme.isDarkTheme) {
-                tagDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_tag, null);
-            } else {
-                tagDrawable = ImageUtil.tintDrawable(R.drawable.ic_action_tag, getResources(), Color.BLACK);
-            }
-
-            for (int i = 0; i < size; i++) {
-                builder.append(mImgurObject.getTags().get(i));
-                if (i != size - 1) builder.append(", ");
-            }
-
-            tagTextView.setText(builder.toString());
-            tagTextView.setCompoundDrawablesWithIntrinsicBounds(tagDrawable, null, null, null);
-
-            if (animateIn) {
-                // Fade in the tags so they just don't appear randomly
-                ObjectAnimator anim = ObjectAnimator.ofFloat(tagTextView, "alpha", 0.0f, 1.0f)
-                        .setDuration(750);
-
-                anim.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        tagTextView.setVisibility(View.VISIBLE);
-                    }
-                });
-
-                anim.start();
-            } else {
-                tagTextView.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
     public void setVote(String vote) {
-        mImgurObject.setVote(vote);
-
-        if (mHeaderView != null) {
-            TextView pointText = (TextView) mHeaderView.findViewById(R.id.pointText);
-            PointsBar pointsBar = (PointsBar) mHeaderView.findViewById(R.id.pointsBar);
-
-            int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
-            pointText.setText((mImgurObject.getUpVotes() - mImgurObject.getDownVotes()) + " " + getString(R.string.points));
-            pointsBar.setUpVotes(mImgurObject.getUpVotes());
-            pointsBar.setTotalPoints(totalPoints);
-
-            if (mImgurObject.isFavorited() || ImgurBaseObject.VOTE_UP.equals(mImgurObject.getVote())) {
-                pointText.setTextColor(getResources().getColor(R.color.notoriety_positive));
-            } else if (ImgurBaseObject.VOTE_DOWN.equals(mImgurObject.getVote())) {
-                pointText.setTextColor(getResources().getColor(R.color.notoriety_negative));
-            }
-        }
+        // Trigger the adapter to redraw displaying the vote
+        if (mImgurObject != null) mImgurObject.setVote(vote);
+        if (mPhotoAdapter != null) mPhotoAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -462,13 +350,15 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         // Try to pause either the gif or video if it is currently playing
         if (mPhotoAdapter.attemptToPause(view)) return;
 
-        int position = mListView.getPositionForView(view) - mListView.getHeaderViewsCount();
+        // Adjust position for header
+        final int position = mListView.getLayoutManager().getPosition(view) - 1;
         startActivity(FullScreenPhotoActivity.createIntent(getActivity(), mPhotoAdapter.retainItems(), position));
     }
 
     @Override
     public void onPhotoLongTapListener(View view) {
-        final int position = mListView.getPositionForView(view) - mListView.getHeaderViewsCount();
+        // Adjust position for header
+        final int position = mListView.getLayoutManager().getPosition(view) - 1;
 
         if (position >= 0) {
             new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
@@ -511,8 +401,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     }
 
     @Override
-    public void onPlayTap(final ProgressBar prog, final FloatingActionButton play, final ImageView image, final VideoView video) {
-        final ImgurPhoto photo = mPhotoAdapter.getItem(mListView.getPositionForView(image) - mListView.getHeaderViewsCount());
+    public void onPlayTap(final ProgressBar prog, final FloatingActionButton play, final ImageView image, final VideoView video, final View view) {
+        // Adjust position for header
+        final int position = mListView.getLayoutManager().getPosition(view) - 1;
+        final ImgurPhoto photo = mPhotoAdapter.getItem(position);
 
         if (image.getVisibility() == View.VISIBLE && image.getDrawable() instanceof GifDrawable) {
             play.setVisibility(View.GONE);
@@ -646,10 +538,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                         setupFragmentWithObject((ImgurBaseObject) msg.obj);
                     } else if (msg.obj instanceof List && mImgurObject instanceof ImgurAlbum) {
                         ((ImgurAlbum) mImgurObject).addPhotosToAlbum((List<ImgurPhoto>) msg.obj);
-                        mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), ImgurViewFragment.this);
-                        createHeader();
+                        mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
                         mListView.setAdapter(mPhotoAdapter);
                         mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                        checkForTags();
                     } else {
                         mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
                         mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -663,8 +555,9 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
                 case MESSAGE_TAGS_RECEIVED:
                     if (msg.obj instanceof ArrayList) {
-                        mImgurObject.setTags((ArrayList<String>) msg.obj);
-                        displayTags(true);
+                        ArrayList<String> tags = (ArrayList<String>) msg.obj;
+                        mImgurObject.setTags(tags);
+                        if (mPhotoAdapter != null) mPhotoAdapter.setTags(tags);
                     }
                     break;
 

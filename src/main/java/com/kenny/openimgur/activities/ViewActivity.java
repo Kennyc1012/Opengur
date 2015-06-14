@@ -182,8 +182,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private boolean mLoadComments;
 
-    private boolean mIsCommentsAnimating = false;
-
     private BrowsingAdapter mPagerAdapter;
 
     private CommentSort mCommentSort;
@@ -682,7 +680,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public void onPlayTap(final ProgressBar prog, final FloatingActionButton play, final ImageView image, final VideoView video) {
+    public void onPlayTap(final ProgressBar prog, final FloatingActionButton play, final ImageView image, final VideoView video, final View view) {
     }
 
     @Override

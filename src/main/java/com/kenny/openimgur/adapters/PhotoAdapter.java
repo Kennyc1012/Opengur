@@ -1,41 +1,52 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
-import android.media.MediaPlayer;
-import android.support.v7.widget.CardView;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.OpengurApp;
+import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
 import pl.droidsonroids.gif.GifDrawable;
 
-public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
-    private ImgurListener mListener;
-
+public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
+    private static final int NUM_VIEW = 2;
+    private static final int VIEW_HEADER = 1;
+    private static final int VIEW_PHOTO = 2;
     private static final long PHOTO_SIZE_LIMIT = 1024 * 1024 * 2;
-
     private static final long PHOTO_PIXEL_LIMIT = 2048;
 
-    public PhotoAdapter(Context context, List<ImgurPhoto> photos, ImgurListener listener) {
+    private ImgurListener mListener;
+    private ImgurBaseObject mImgurObject;
+    private boolean mIsDarkTheme;
+
+    public PhotoAdapter(Context context, List<ImgurPhoto> photos, ImgurBaseObject object, ImgurListener listener) {
         super(context, photos, true);
         mListener = listener;
+        mImgurObject = object;
+        mIsDarkTheme = OpengurApp.getInstance(context).getImgurTheme().isDarkTheme;
     }
 
     /**
@@ -52,57 +63,121 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        final PhotoViewHolder holder;
+    public int getItemViewType(int position) {
+        return position == 0 ? VIEW_HEADER : VIEW_PHOTO;
+    }
 
-        if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.view_photo_item, parent, false);
-            holder = new PhotoViewHolder(convertView);
-            holder.video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.setLooping(true);
+    @Override
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        BaseViewHolder holder;
+
+        if (viewType == VIEW_HEADER) {
+            holder = new PhotoTitleHolder(mInflater.inflate(R.layout.image_header, parent, false));
+        } else {
+            holder = new PhotoViewHolder(mInflater.inflate(R.layout.view_photo_item, parent, false));
+            setClickListener((PhotoViewHolder) holder);
+            holder.itemView.setTag(holder);
+        }
+
+        return holder;
+    }
+
+    @Override
+    public int getItemCount() {
+        // Pad the count for the header
+        return super.getItemCount() + 1;
+    }
+
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
+        // Remove one from position to account for the header
+        position--;
+
+        if (holder instanceof PhotoTitleHolder) {
+            PhotoTitleHolder titleHolder = (PhotoTitleHolder) holder;
+            Resources res = titleHolder.author.getResources();
+
+            if (!TextUtils.isEmpty(mImgurObject.getTitle())) {
+                titleHolder.title.setText(mImgurObject.getTitle());
+            }
+
+            if (!TextUtils.isEmpty(mImgurObject.getAccount())) {
+                titleHolder.author.setText("- " + mImgurObject.getAccount());
+            } else {
+                titleHolder.author.setText("- ?????");
+            }
+
+            if (!TextUtils.isEmpty(mImgurObject.getTopic())) {
+                titleHolder.topic.setText(mImgurObject.getTopic());
+            }
+
+            int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
+            titleHolder.points.setText((mImgurObject.getUpVotes() - mImgurObject.getDownVotes()) + " " + res.getString(R.string.points));
+            titleHolder.pointsBar.setUpVotes(mImgurObject.getUpVotes());
+            titleHolder.pointsBar.setTotalPoints(totalPoints);
+
+            if (mImgurObject.isFavorited() || ImgurBaseObject.VOTE_UP.equals(mImgurObject.getVote())) {
+                titleHolder.points.setTextColor(res.getColor(R.color.notoriety_positive));
+            } else if (ImgurBaseObject.VOTE_DOWN.equals(mImgurObject.getVote())) {
+                titleHolder.points.setTextColor(res.getColor(R.color.notoriety_negative));
+            }
+
+            if (mImgurObject.getTags() != null && !mImgurObject.getTags().isEmpty()) {
+                Drawable tagDrawable;
+                int size = mImgurObject.getTags().size();
+                StringBuilder builder = new StringBuilder();
+
+                // Tag icon is already dark themed
+                if (mIsDarkTheme) {
+                    tagDrawable = ResourcesCompat.getDrawable(res, R.drawable.ic_action_tag, null);
+                } else {
+                    tagDrawable = ImageUtil.tintDrawable(R.drawable.ic_action_tag, res, Color.BLACK);
                 }
-            });
 
-            setClickListener(holder);
+                for (int i = 0; i < size; i++) {
+                    builder.append(mImgurObject.getTags().get(i));
+                    if (i != size - 1) builder.append(", ");
+                }
+
+                titleHolder.tags.setText(builder.toString());
+                titleHolder.tags.setCompoundDrawablesWithIntrinsicBounds(tagDrawable, null, null, null);
+                titleHolder.tags.setVisibility(View.VISIBLE);
+            }
         } else {
-            holder = (PhotoViewHolder) convertView.getTag();
+            PhotoViewHolder photoHolder = (PhotoViewHolder) holder;
+            ImgurPhoto photo = getItem(position);
+            String url = getPhotoUrl(photo);
+            photoHolder.prog.setVisibility(View.GONE);
+            photoHolder.video.setVisibility(View.GONE);
+            photoHolder.image.setVisibility(View.VISIBLE);
+
+            if (photoHolder.video.isPlaying()) {
+                photoHolder.video.stopPlayback();
+            }
+
+            if (photo.isAnimated()) {
+                photoHolder.play.setVisibility(View.VISIBLE);
+            } else {
+                photoHolder.play.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(photo.getDescription())) {
+                photoHolder.desc.setVisibility(View.VISIBLE);
+                photoHolder.desc.setText(photo.getDescription());
+            } else {
+                photoHolder.desc.setVisibility(View.GONE);
+            }
+
+            // Don't display titles for items with only 1 photo, it will be shown in the header
+            if (!TextUtils.isEmpty(photo.getTitle()) && getItemCount() > 1) {
+                photoHolder.title.setVisibility(View.VISIBLE);
+                photoHolder.title.setText(photo.getTitle());
+            } else {
+                photoHolder.title.setVisibility(View.GONE);
+            }
+
+            displayImage(photoHolder.image, url);
         }
-
-        ImgurPhoto photo = getItem(position);
-        String url = getPhotoUrl(photo);
-        holder.prog.setVisibility(View.GONE);
-        holder.video.setVisibility(View.GONE);
-        holder.image.setVisibility(View.VISIBLE);
-
-        if (holder.video.isPlaying()) {
-            holder.video.stopPlayback();
-        }
-
-        if (photo.isAnimated()) {
-            holder.play.setVisibility(View.VISIBLE);
-        } else {
-            holder.play.setVisibility(View.GONE);
-        }
-
-        if (!TextUtils.isEmpty(photo.getDescription())) {
-            holder.desc.setVisibility(View.VISIBLE);
-            holder.desc.setText(photo.getDescription());
-        } else {
-            holder.desc.setVisibility(View.GONE);
-        }
-
-        // Don't display titles for items with only 1 photo, it will be shown in the header
-        if (!TextUtils.isEmpty(photo.getTitle()) && getCount() > 1) {
-            holder.title.setVisibility(View.VISIBLE);
-            holder.title.setText(photo.getTitle());
-        } else {
-            holder.title.setVisibility(View.GONE);
-        }
-
-        displayImage(holder.image, url);
-        return convertView;
     }
 
     /**
@@ -115,7 +190,9 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
             @Override
             public void onClick(View view) {
                 if (mListener != null) {
-                    mListener.onPlayTap(holder.prog, holder.play, holder.image, holder.video);
+                    if (mListener != null) {
+                        mListener.onPlayTap(holder.prog, holder.play, holder.image, holder.video, holder.itemView);
+                    }
                 }
             }
         });
@@ -124,7 +201,7 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
             @Override
             public void onClick(View view) {
                 if (mListener != null) {
-                    mListener.onPhotoTap(view);
+                    mListener.onPhotoTap(holder.itemView);
                 }
             }
         });
@@ -133,7 +210,7 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP && mListener != null) {
-                    mListener.onPhotoTap(view);
+                    mListener.onPhotoTap(holder.itemView);
                 }
 
                 return true;
@@ -144,7 +221,7 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
             @Override
             public boolean onLongClick(View view) {
                 if (mListener != null) {
-                    mListener.onPhotoLongTapListener(view);
+                    mListener.onPhotoLongTapListener(holder.itemView);
                 }
                 return true;
             }
@@ -186,26 +263,49 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
      * @return If pausing was successfuly
      */
     public boolean attemptToPause(View view) {
-        if (view instanceof ImageView && ((ImageView) view).getDrawable() instanceof GifDrawable) {
-            GifDrawable gif = (GifDrawable) ((ImageView) view).getDrawable();
+        if (!(view.getTag() instanceof PhotoViewHolder)) return false;
+
+        PhotoViewHolder holder = (PhotoViewHolder) view.getTag();
+        if (holder.image.getDrawable() instanceof GifDrawable) {
+            GifDrawable gif = (GifDrawable) holder.image.getDrawable();
 
             if (gif.isPlaying()) {
                 gif.pause();
-                RelativeLayout parent = (RelativeLayout) view.getParent();
-                parent.findViewById(R.id.play).setVisibility(View.VISIBLE);
+                holder.play.setVisibility(View.VISIBLE);
                 return true;
             }
-        } else if (view instanceof VideoView && ((VideoView) view).isPlaying()) {
-            ((VideoView) view).pause();
-            RelativeLayout parent = (RelativeLayout) view.getParent();
-            parent.findViewById(R.id.play).setVisibility(View.VISIBLE);
+        } else if (holder.video.isPlaying()) {
+            holder.video.pause();
+            holder.play.setVisibility(View.VISIBLE);
             return true;
         }
 
         return false;
     }
 
-    static class PhotoViewHolder extends ImgurViewHolder {
+    public void setTags(ArrayList<String> tags) {
+        mImgurObject.setTags(tags);
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onViewRecycled(BaseViewHolder holder) {
+        super.onViewRecycled(holder);
+
+        if (holder instanceof PhotoViewHolder) {
+            PhotoViewHolder photoViewHolder = (PhotoViewHolder) holder;
+
+            if(photoViewHolder.image.getDrawable() instanceof GifDrawable){
+                GifDrawable gif = (GifDrawable) photoViewHolder.image.getDrawable();
+                gif.stop();
+                gif.recycle();
+            }
+
+            photoViewHolder.video.stopPlayback();
+        }
+    }
+
+    static class PhotoViewHolder extends BaseViewHolder {
         @InjectView(R.id.image)
         ImageView image;
 
@@ -224,11 +324,32 @@ public class PhotoAdapter extends ImgurBaseAdapter<ImgurPhoto> {
         @InjectView(R.id.videoView)
         VideoView video;
 
-        CardView root;
-
         public PhotoViewHolder(View view) {
             super(view);
-            root = (CardView) view;
+        }
+    }
+
+    static class PhotoTitleHolder extends BaseViewHolder {
+        @InjectView(R.id.title)
+        TextView title;
+
+        @InjectView(R.id.author)
+        TextView author;
+
+        @InjectView(R.id.pointText)
+        TextView points;
+
+        @InjectView(R.id.topic)
+        TextView topic;
+
+        @InjectView(R.id.tags)
+        TextView tags;
+
+        @InjectView(R.id.pointsBar)
+        PointsBar pointsBar;
+
+        public PhotoTitleHolder(View view) {
+            super(view);
         }
     }
 }
