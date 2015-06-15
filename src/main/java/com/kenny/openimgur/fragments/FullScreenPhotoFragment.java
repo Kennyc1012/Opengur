@@ -66,6 +66,8 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
     private String mUrl;
 
+    private boolean mStartedToLoad = false;
+
     private PhotoHandler mHandler = new PhotoHandler();
 
     public static FullScreenPhotoFragment createInstance(@NonNull ImgurPhoto photo) {
@@ -150,6 +152,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
         app.getImageLoader().loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForFullscreen().build(), new SimpleImageLoadingListener() {
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
+                mStartedToLoad = false;
                 if (getActivity() == null | !isAdded() || isRemoving()) return;
 
                 mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -157,6 +160,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
             @Override
             public void onLoadingComplete(String url, View view, Bitmap bitmap) {
+                mStartedToLoad = false;
                 bitmap.recycle();
                 if (getActivity() == null | !isAdded() || isRemoving()) return;
 
@@ -186,6 +190,12 @@ public class FullScreenPhotoFragment extends BaseFragment {
                         mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                 }
+            }
+
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {
+                super.onLoadingStarted(imageUri, view);
+                mStartedToLoad = true;
             }
         });
     }
@@ -343,7 +353,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
     private class PhotoHandler extends ImgurHandler {
         @Override
         public void handleMessage(Message msg) {
-            if (getUserVisibleHint() && mGifImageView != null && LinkUtils.isLinkAnimated(mUrl) && !LinkUtils.isVideoLink(mUrl)) {
+            if (getUserVisibleHint() && !mStartedToLoad && mGifImageView != null && LinkUtils.isLinkAnimated(mUrl) && !LinkUtils.isVideoLink(mUrl)) {
                 displayGif(mUrl);
             }
 
