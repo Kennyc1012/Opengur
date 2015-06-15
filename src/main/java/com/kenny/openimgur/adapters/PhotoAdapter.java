@@ -176,7 +176,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
             }
 
             // Don't display titles for items with only 1 photo, it will be shown in the header
-            if (!TextUtils.isEmpty(photo.getTitle()) && getItemCount() > 1) {
+            if (!TextUtils.isEmpty(photo.getTitle()) && getItemCount() - 1 > 1) {
                 photoHolder.title.setVisibility(View.VISIBLE);
                 photoHolder.title.setText(photo.getTitle());
             } else {
