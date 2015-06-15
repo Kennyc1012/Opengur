@@ -177,6 +177,35 @@ public class FullScreenPhotoFragment extends BaseFragment {
                             LogUtil.v(TAG, "Tiling enabled for image " + enableTiling);
                             Uri fileUri = Uri.fromFile(file);
 
+                            mImageView.setOnImageEventListener(new SubsamplingScaleImageView.OnImageEventListener() {
+                                @Override
+                                public void onReady() {
+
+                                }
+
+                                @Override
+                                public void onImageLoaded() {
+
+                                }
+
+                                @Override
+                                public void onPreviewLoadError(Exception e) {
+
+                                }
+
+                                @Override
+                                public void onImageLoadError(Exception e) {
+                                    LogUtil.e(TAG, "Error loading image", e);
+                                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                                }
+
+                                @Override
+                                public void onTileLoadError(Exception e) {
+                                    LogUtil.e(TAG, "Error creating tile", e);
+                                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                                }
+                            });
+
                             mImageView.setMinimumTileDpi(160);
                             mImageView.setImage(ImageSource.uri(fileUri).dimensions(dimensions[0], dimensions[1]).tiling(enableTiling));
                             mVideoView.setVisibility(View.GONE);
