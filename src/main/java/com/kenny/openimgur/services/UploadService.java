@@ -207,7 +207,7 @@ public class UploadService extends IntentService implements ProgressRequestBody.
         mManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(this).setContentTitle(getString(R.string.image_uploading))
                 .setContentText(getString(R.string.uploading)).setAutoCancel(true).setProgress(0, 100, true).setLargeIcon(icon)
-                .setSmallIcon(Build.VERSION.SDK_INT < 21 ? R.drawable.ic_launcher : R.drawable.ic_i);
+                .setSmallIcon(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ? R.drawable.ic_launcher : R.drawable.ic_i);
         mManager.notify(mNotificationId, mBuilder.build());
     }
 

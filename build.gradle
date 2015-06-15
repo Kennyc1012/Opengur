@@ -30,7 +30,7 @@ android {
 
     defaultConfig {
         applicationId "com.kennyc.open.imgur"
-        minSdkVersion 15
+        minSdkVersion 17
         targetSdkVersion 22
         versionCode 32
         buildConfigField "String", "API_CLIENT_ID", project.API_CLIENT_ID

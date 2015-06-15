@@ -3,7 +3,6 @@ package com.kenny.openimgur.classes;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.os.UserManager;
@@ -183,9 +182,6 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
      * https://code.google.com/p/android/issues/detail?id=173789
      */
     private void stopUserManagerLeak() {
-        // UserManager was introduced in API 17
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN) return;
-
         try {
             Method method = UserManager.class.getMethod("get", Context.class);
             method.setAccessible(true);
