@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.view.MotionEvent;
@@ -33,13 +34,19 @@ import pl.droidsonroids.gif.GifDrawable;
 
 public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
     private static final int NUM_VIEW = 2;
+
     private static final int VIEW_HEADER = 1;
+
     private static final int VIEW_PHOTO = 2;
+
     private static final long PHOTO_SIZE_LIMIT = 1024 * 1024 * 2;
+
     private static final long PHOTO_PIXEL_LIMIT = 2048;
 
     private ImgurListener mListener;
+
     private ImgurBaseObject mImgurObject;
+
     private boolean mIsDarkTheme;
 
     public PhotoAdapter(Context context, List<ImgurPhoto> photos, ImgurBaseObject object, ImgurListener listener) {
@@ -227,6 +234,13 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
             }
         });
 
+        holder.video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.setLooping(true);
+            }
+        });
+
         // holder.title.setMovementMethod(CustomLinkMovement.getInstance(mListener));
         //holder.desc.setMovementMethod(CustomLinkMovement.getInstance(mListener));
     }
@@ -295,7 +309,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
         if (holder instanceof PhotoViewHolder) {
             PhotoViewHolder photoViewHolder = (PhotoViewHolder) holder;
 
-            if(photoViewHolder.image.getDrawable() instanceof GifDrawable){
+            if (photoViewHolder.image.getDrawable() instanceof GifDrawable) {
                 GifDrawable gif = (GifDrawable) photoViewHolder.image.getDrawable();
                 gif.stop();
                 gif.recycle();
