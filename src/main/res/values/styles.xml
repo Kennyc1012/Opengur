@@ -19,11 +19,11 @@
     </style>
 
     <style name="TextAppearance.Regular" parent="android:TextAppearance">
-        <item name="android:typeface">sans</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="TextAppearance.Medium" parent="android:TextAppearance">
-        <item name="android:typeface">sans</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>
 

@@ -14,7 +14,7 @@
         android:title="@string/refresh"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_navigation_refresh" />
-    
+
     <item
         android:id="@+id/filter"
         android:title="@string/filter"

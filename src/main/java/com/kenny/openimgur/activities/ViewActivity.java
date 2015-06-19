@@ -1,7 +1,5 @@
 package com.kenny.openimgur.activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.DialogFragment;
@@ -12,32 +10,25 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
-import android.support.v4.util.LongSparseArray;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.cocosw.bottomsheet.BottomSheet;
 import com.cocosw.bottomsheet.BottomSheetListener;
@@ -166,7 +157,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     MultiStateView mMultiView;
 
     @InjectView(R.id.commentList)
-    ListView mCommentList;
+    RecyclerView mCommentList;
 
     @InjectView(R.id.panelUpBtn)
     ImageButton mPanelButton;
@@ -179,14 +170,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private CommentAdapter mCommentAdapter;
 
-    private TextView mCommentListHeader;
-
-    // Keeps track of the previous list of comments as we progress in the stack
-    private LongSparseArray<ArrayList<ImgurComment>> mCommentArray = new LongSparseArray<>();
-
-    // Keeps track of the position of the comment list when navigating in the stack
-    private LongSparseArray<Integer> mPreviousCommentPositionArray = new LongSparseArray<>();
-
     private int mCurrentPosition = 0;
 
     private ApiClient mApiClient;
@@ -198,8 +181,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private boolean mIsResuming = false;
 
     private boolean mLoadComments;
-
-    private boolean mIsCommentsAnimating = false;
 
     private BrowsingAdapter mPagerAdapter;
 
@@ -223,18 +204,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
+        mCommentList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
         ((Button) mMultiView.getView(MultiStateView.ViewState.ERROR).findViewById(R.id.errorButton)).setText(R.string.load_comments);
-        mCommentListHeader = (TextView) View.inflate(this, R.layout.previous_comments_header, null);
-        Drawable[] drawables = mCommentListHeader.getCompoundDrawables();
 
-        // Sets the previous comment button color to the themes accent color
-        if (drawables != null && drawables.length > 0 && drawables[0] instanceof LayerDrawable) {
-            GradientDrawable drawable = (GradientDrawable) ((LayerDrawable) drawables[0]).getDrawable(0);
-            drawable.setColor(getResources().getColor(theme.accentColor));
-        }
-        // Header needs to be added before adapter is set for pre 4.4 devices
-        mCommentList.addHeaderView(mCommentListHeader);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -262,15 +235,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
 
-        mCommentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                onListItemClick(position - mCommentList.getHeaderViewsCount());
-            }
-        });
-
-        Drawable commentDivider = getResources().getDrawable(theme.isDarkTheme ? R.drawable.divider_dark : R.drawable.divider_light);
-        mCommentList.setDivider(commentDivider);
         initSlidingView();
         handleIntent(getIntent(), savedInstanceState);
     }
@@ -290,12 +254,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void onPanelCollapsed(View view) {
-                ObjectAnimator.ofFloat(mPanelButton, "rotation", 180, 0).setDuration(200).start();
+                if (mPanelButton.getRotation() == 180)
+                    ObjectAnimator.ofFloat(mPanelButton, "rotation", 180, 0).setDuration(200).start();
             }
 
             @Override
             public void onPanelExpanded(View view) {
-                ObjectAnimator.ofFloat(mPanelButton, "rotation", 0, 180).setDuration(200).start();
+                if (mPanelButton.getRotation() == 0)
+                    ObjectAnimator.ofFloat(mPanelButton, "rotation", 0, 180).setDuration(200).start();
             }
 
             @Override
@@ -368,107 +334,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    /**
-     * Changes the Comment List to the next thread of comments
-     *
-     * @param comment
-     */
-    private void nextComments(final ImgurComment comment) {
-        if (mIsCommentsAnimating) return;
-
-        mIsCommentsAnimating = true;
-        mCommentAdapter.setSelectedIndex(-1);
-
-        mCommentList.animate().translationX(-mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                animation.removeAllListeners();
-
-                mCommentArray.put(Long.valueOf(comment.getId()), mCommentAdapter.retainItems());
-                mPreviousCommentPositionArray.put(Long.valueOf(comment.getId()), mCommentList.getFirstVisiblePosition());
-                mCommentAdapter.clear();
-
-                if (mCommentList.getHeaderViewsCount() <= 0) {
-                    mCommentList.addHeaderView(mCommentListHeader);
-                }
-
-                mCommentAdapter.addItems(comment.getReplies());
-                mCommentList.setSelection(0);
-                Animator anim = ObjectAnimator.ofFloat(mCommentList, "translationX", mCommentList.getWidth(), 0);
-
-                anim.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        animation.removeAllListeners();
-                        mIsCommentsAnimating = false;
-                    }
-                });
-
-                anim.setDuration(250).start();
-            }
-        }).start();
-    }
-
-    /**
-     * Changes the comment list to the previous thread of comments
-     *
-     * @param comment
-     */
-    private void previousComments(final ImgurComment comment) {
-        final Integer previousSelection = mPreviousCommentPositionArray.get(comment.getParentId());
-
-        if (mIsCommentsAnimating || previousSelection == null) {
-            LogUtil.w(TAG, "No previous comments to show");
-            return;
-        }
-
-        mIsCommentsAnimating = true;
-        mCommentAdapter.setSelectedIndex(-1);
-
-        mCommentList.animate().translationX(mCommentList.getWidth()).setDuration(250).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                animation.removeAllListeners();
-
-                if (mPreviousCommentPositionArray.size() <= 1) {
-                    mCommentList.removeHeaderView(mCommentListHeader);
-                }
-
-                mCommentAdapter.clear();
-                mCommentAdapter.addItems(mCommentArray.get(comment.getParentId()));
-                mCommentArray.remove(comment.getParentId());
-                mCommentAdapter.notifyDataSetChanged();
-                mCommentList.setSelection(previousSelection);
-                mPreviousCommentPositionArray.remove(comment.getParentId());
-                Animator anim = ObjectAnimator.ofFloat(mCommentList, "translationX", -mCommentList.getWidth(), 0);
-
-                anim.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        animation.removeAllListeners();
-                        mIsCommentsAnimating = false;
-                    }
-                });
-
-                anim.setDuration(250).start();
-            }
-        }).start();
-    }
-
     @Override
     public void onBackPressed() {
         if (mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
-            if (mCommentAdapter != null && !mCommentAdapter.isEmpty() &&
-                    mCommentArray != null && mCommentArray.size() > 0) {
-                previousComments(mCommentAdapter.getItem(0));
-            } else {
-                mSlidingPane.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-            }
-
+            mSlidingPane.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             return;
         }
 
@@ -527,7 +396,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             if (comments != null) {
                 mCommentAdapter = new CommentAdapter(this, comments, this);
                 mCommentList.setAdapter(mCommentAdapter);
-                mCommentList.removeHeaderView(mCommentListHeader);
             }
 
             if (mLoadComments) {
@@ -564,8 +432,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         mHandler.removeCallbacksAndMessages(null);
         dismissDialogFragment(DIALOG_LOADING);
         dismissDialogFragment("comment");
-        mPreviousCommentPositionArray.clear();
-        mCommentArray.clear();
 
         if (mCommentAdapter != null) {
             mCommentAdapter.destroy();
@@ -814,7 +680,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
-    public void onPlayTap(final ProgressBar prog, final FloatingActionButton play, final ImageView image, final VideoView video) {
+    public void onPlayTap(final ProgressBar prog, final FloatingActionButton play, final ImageView image, final VideoView video, final View view) {
     }
 
     @Override
@@ -863,17 +729,26 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     break;
             }
         } else {
-            onListItemClick(mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount());
+            if (view.getLayoutParams() instanceof RecyclerView.LayoutParams) {
+                onListItemClick(mCommentList.getLayoutManager().getPosition(view));
+            } else {
+                // This is super ugly, in order to the get position from the layout manager, we need the root view
+                View parent = (View) view.getParent();
+                if (parent != null) parent = (View) parent.getParent();
+                if (parent != null)
+                    onListItemClick(mCommentList.getLayoutManager().getPosition(parent));
+            }
         }
     }
 
     @Override
     public void onViewRepliesTap(View view) {
-        int position = mCommentList.getPositionForView(view) - mCommentList.getHeaderViewsCount();
-        ImgurComment comment = mCommentAdapter.getItem(position);
+        int position = mCommentList.getLayoutManager().getPosition(view);
 
-        if (comment.getReplyCount() > 0) {
-            nextComments(comment);
+        if (!mCommentAdapter.isExpanded(position)) {
+            mCommentAdapter.expandComments(view, position);
+        } else {
+            mCommentAdapter.collapseComments(view, position);
         }
     }
 
@@ -940,7 +815,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
                 }
+                return true;
 
+
+            case R.id.share:
+                startActivity(Intent.createChooser(imgurObj.getShareIntent(), getString(R.string.share)));
                 return true;
         }
 
@@ -962,44 +841,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             menu.findItem(R.id.favorite).setIcon(imgurObject.isFavorited() ?
                     R.drawable.ic_action_favorite : R.drawable.ic_action_unfavorite);
-
-            updateShareProvider((ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.share)), imgurObject);
         }
 
         return super.onPrepareOptionsMenu(menu);
-    }
-
-    /**
-     * Updates the share provider to the current selected object
-     *
-     * @param provider
-     * @param imgurBaseObject
-     */
-    private void updateShareProvider(ShareActionProvider provider, ImgurBaseObject imgurBaseObject) {
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
-
-        String link = imgurBaseObject.getTitle() + " ";
-        if (TextUtils.isEmpty(imgurBaseObject.getRedditLink())) {
-            link += imgurBaseObject.getGalleryLink();
-        } else {
-            link += String.format("https://reddit.com%s", imgurBaseObject.getRedditLink());
-        }
-
-        shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-        provider.setShareIntent(shareIntent);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        // If the comment list is browsing replies, we need to get the original list of comments
-        if (mCommentArray.size() > 0) {
-            long key = mCommentArray.keyAt(0);
-            outState.putParcelableArrayList(KEY_COMMENT, mCommentArray.get(key));
-        } else if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
+        if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_COMMENT, mCommentAdapter.retainItems());
         }
 
@@ -1030,9 +881,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         .object(mCommentAdapter.getItem(position))
                         .show();
             }
-        } else {
-            // Header view
-            previousComments(mCommentAdapter.getItem(0));
         }
     }
 
@@ -1139,12 +987,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             mCommentAdapter = new CommentAdapter(ViewActivity.this, comments, ViewActivity.this);
                             mCommentAdapter.setOP(imgurObject.getAccount());
                             mCommentList.setAdapter(mCommentAdapter);
-                            mCommentList.removeHeaderView(mCommentListHeader);
                         } else {
                             mCommentAdapter.setOP(imgurObject.getAccount());
-                            mCommentArray.clear();
-                            mPreviousCommentPositionArray.clear();
-                            mCommentList.removeHeaderView(mCommentListHeader);
+                            mCommentAdapter.clearExpansionInfo();
                             mCommentAdapter.addItems(comments);
                         }
 
@@ -1153,7 +998,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         mMultiView.post(new Runnable() {
                             @Override
                             public void run() {
-                                mCommentList.setSelection(0);
+                                mCommentList.scrollToPosition(0);
                             }
                         });
                     } else {

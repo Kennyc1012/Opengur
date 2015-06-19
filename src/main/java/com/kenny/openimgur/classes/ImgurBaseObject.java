@@ -1,10 +1,12 @@
 package com.kenny.openimgur.classes;
 
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.util.LogUtil;
 
 import org.json.JSONException;
@@ -429,6 +431,26 @@ public class ImgurBaseObject implements Parcelable {
     public String toString() {
         return "ID :" + mId
                 + "Title :" + mTitle;
+    }
+
+    /**
+     * Returns an Intent for sharing to application
+     *
+     * @return
+     */
+    public Intent getShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+
+        String link = getTitle() + " ";
+        if (TextUtils.isEmpty(getRedditLink())) {
+            link += getGalleryLink();
+        } else {
+            link += String.format("https://reddit.com%s", getRedditLink());
+        }
+
+        shareIntent.putExtra(Intent.EXTRA_TEXT, link);
+        return shareIntent;
     }
 
     /**

@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/share"
-        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_share_white_24dp"
         android:title="@string/share"
-        app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
+        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/download"
-        android:title="@string/download"
         android:icon="@drawable/ic_action_download"
+        android:title="@string/download"
         app:showAsAction="ifRoom" />
+
 </menu>

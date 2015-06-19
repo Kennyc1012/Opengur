@@ -150,7 +150,7 @@ public class VideoCache {
         protected Object doInBackground(File... file) {
             InputStream in = null;
             BufferedOutputStream buffer = null;
-            LogUtil.v(TAG, "Downlong video from " + mUrl);
+            LogUtil.v(TAG, "Downloading video from " + mUrl);
 
             try {
                 in = new URL(mUrl).openStream();

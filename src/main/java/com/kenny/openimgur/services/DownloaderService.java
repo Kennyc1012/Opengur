@@ -87,7 +87,7 @@ public class DownloaderService extends IntentService {
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setContentTitle(getString(R.string.image_downloading))
                     .setContentText(getString(R.string.downloading_msg)).setAutoCancel(true).setProgress(0, 0, true).setLargeIcon(icon)
-                    .setSmallIcon(Build.VERSION.SDK_INT < 21 ? R.drawable.ic_launcher : R.drawable.ic_i);
+                    .setSmallIcon(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ? R.drawable.ic_launcher : R.drawable.ic_i);
             manager.notify(notificationId, builder.build());
 
             boolean saved;
@@ -139,7 +139,7 @@ public class DownloaderService extends IntentService {
                     builder.setStyle(bigPicStyle);
                 }
 
-                builder.setProgress(0, 0, false).setContentIntent(viewP).addAction(R.drawable.ic_action_share, getString(R.string.share), shareP)
+                builder.setProgress(0, 0, false).setContentIntent(viewP).addAction(R.drawable.ic_share_white_24dp, getString(R.string.share), shareP)
                         .setContentTitle(getString(R.string.download_complete)).setContentText(getString(R.string.tap_to_view)).setLargeIcon(bm);
                 manager.notify(notificationId, builder.build());
             } else {

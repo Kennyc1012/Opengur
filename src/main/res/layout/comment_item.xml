@@ -3,65 +3,57 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingRight="@dimen/content_padding"
-    android:minHeight="?android:listPreferredItemHeight"
-    android:descendantFocusability="blocksDescendants"
-    tools:layout_height="120dp">
+    android:descendantFocusability="blocksDescendants">
 
-    <TextView
-        android:id="@+id/score"
-        android:layout_width="@dimen/avatar_size"
-        android:layout_height="@dimen/avatar_size"
-        android:layout_marginLeft="@dimen/content_padding"
-        android:background="@drawable/positive_circle"
-        android:layout_gravity="center_vertical"
-        android:gravity="center"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:textAppearance="@style/TextAppearance.Regular"
-        tools:text="4000" />
+    <View
+        android:id="@+id/indicator"
+        android:layout_width="@dimen/comment_indicator_size"
+        android:layout_height="match_parent"
+        android:background="?colorAccent"
+        tools:background="@color/theme_green_accent"
+        tools:layout_height="100dp" />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/keyline_margin"
-        android:layout_gravity="center_vertical">
+        android:orientation="vertical"
+        android:padding="@dimen/comment_padding">
+
+        <TextView
+            android:id="@+id/author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Medium"
+            android:textSize="12sp"
+            tools:text="DRButtersMD: 20 Points 9 Hours ago" />
+
+        <TextView
+            android:id="@+id/comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.Regular"
+            android:textSize="14sp"
+            tools:text="This will be a comment " />
 
         <ImageButton
             android:id="@+id/replies"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="right"
             android:background="@drawable/pressed_drawable"
-            android:src="?repliesDrawable" />
+            android:src="?repliesDrawable"
+            tools:src="@drawable/ic_add_white_18dp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_toLeftOf="@id/replies"
-            android:layout_centerVertical="true">
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.Regular"
-                android:textSize="@dimen/abc_text_size_subhead_material"
-                tools:text="DRButtersMD 9 Hours ago" />
-
-            <TextView
-                android:id="@+id/comment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textAppearance="@style/TextAppearance.Medium"
-                android:textSize="@dimen/abc_text_size_body_2_material"
-                tools:text="This will be a comment " />
-
-        </LinearLayout>
-
-    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="?dividerColor"
+        android:layout_gravity="bottom"
+        tools:background="@color/primary_material_light" />
 
 </FrameLayout>
+
+

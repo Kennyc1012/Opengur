@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -67,6 +65,8 @@ public class FullScreenPhotoFragment extends BaseFragment {
     private ImgurPhoto mPhoto;
 
     private String mUrl;
+
+    private boolean mStartedToLoad = false;
 
     private PhotoHandler mHandler = new PhotoHandler();
 
@@ -152,6 +152,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
         app.getImageLoader().loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForFullscreen().build(), new SimpleImageLoadingListener() {
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
+                mStartedToLoad = false;
                 if (getActivity() == null | !isAdded() || isRemoving()) return;
 
                 mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -159,6 +160,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
             @Override
             public void onLoadingComplete(String url, View view, Bitmap bitmap) {
+                mStartedToLoad = false;
                 bitmap.recycle();
                 if (getActivity() == null | !isAdded() || isRemoving()) return;
 
@@ -175,6 +177,35 @@ public class FullScreenPhotoFragment extends BaseFragment {
                             LogUtil.v(TAG, "Tiling enabled for image " + enableTiling);
                             Uri fileUri = Uri.fromFile(file);
 
+                            mImageView.setOnImageEventListener(new SubsamplingScaleImageView.OnImageEventListener() {
+                                @Override
+                                public void onReady() {
+
+                                }
+
+                                @Override
+                                public void onImageLoaded() {
+
+                                }
+
+                                @Override
+                                public void onPreviewLoadError(Exception e) {
+
+                                }
+
+                                @Override
+                                public void onImageLoadError(Exception e) {
+                                    LogUtil.e(TAG, "Error loading image", e);
+                                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                                }
+
+                                @Override
+                                public void onTileLoadError(Exception e) {
+                                    LogUtil.e(TAG, "Error creating tile", e);
+                                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                                }
+                            });
+
                             mImageView.setMinimumTileDpi(160);
                             mImageView.setImage(ImageSource.uri(fileUri).dimensions(dimensions[0], dimensions[1]).tiling(enableTiling));
                             mVideoView.setVisibility(View.GONE);
@@ -188,6 +219,12 @@ public class FullScreenPhotoFragment extends BaseFragment {
                         mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                 }
+            }
+
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {
+                super.onLoadingStarted(imageUri, view);
+                mStartedToLoad = true;
             }
         });
     }
@@ -280,26 +317,6 @@ public class FullScreenPhotoFragment extends BaseFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.view_photo, menu);
-        ShareActionProvider share = (ShareActionProvider) MenuItemCompat.getActionProvider(menu.findItem(R.id.share));
-
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
-        String link;
-
-        if (mPhoto != null && !TextUtils.isEmpty(mPhoto.getTitle())) {
-            link = mPhoto.getTitle() + " ";
-            if (TextUtils.isEmpty(mPhoto.getRedditLink())) {
-                link += mPhoto.getGalleryLink();
-            } else {
-                link += String.format("https://reddit.com%s", mPhoto.getRedditLink());
-            }
-        } else {
-            link = mUrl;
-        }
-
-        shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-        share.setShareIntent(shareIntent);
     }
 
     @Override
@@ -308,6 +325,26 @@ public class FullScreenPhotoFragment extends BaseFragment {
             case R.id.download:
                 getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
                 return true;
+
+            case R.id.share:
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                String link;
+
+                if (mPhoto != null && !TextUtils.isEmpty(mPhoto.getTitle())) {
+                    link = mPhoto.getTitle() + " ";
+                    if (TextUtils.isEmpty(mPhoto.getRedditLink())) {
+                        link += mPhoto.getGalleryLink();
+                    } else {
+                        link += String.format("https://reddit.com%s", mPhoto.getRedditLink());
+                    }
+                } else {
+                    link = mUrl;
+                }
+
+                shareIntent.putExtra(Intent.EXTRA_TEXT, link);
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -317,7 +354,8 @@ public class FullScreenPhotoFragment extends BaseFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_IMGUR_OBJECT, mPhoto);
-        if (mVideoView.isPlaying()) outState.putInt(KEY_VIDEO_POSITION, mVideoView.getCurrentPosition());
+        if (mVideoView.isPlaying())
+            outState.putInt(KEY_VIDEO_POSITION, mVideoView.getCurrentPosition());
     }
 
     @Override
@@ -344,7 +382,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
     private class PhotoHandler extends ImgurHandler {
         @Override
         public void handleMessage(Message msg) {
-            if (getUserVisibleHint() && mGifImageView != null && LinkUtils.isLinkAnimated(mUrl) && !LinkUtils.isVideoLink(mUrl)) {
+            if (getUserVisibleHint() && !mStartedToLoad && mGifImageView != null && LinkUtils.isLinkAnimated(mUrl) && !LinkUtils.isVideoLink(mUrl)) {
                 displayGif(mUrl);
             }
 

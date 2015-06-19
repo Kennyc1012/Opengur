@@ -11,7 +11,7 @@ import com.kenny.openimgur.ui.VideoView;
 public interface ImgurListener {
     void onPhotoTap(View view);
 
-    void onPlayTap(ProgressBar prog, FloatingActionButton play, ImageView image, VideoView video);
+    void onPlayTap(ProgressBar prog, FloatingActionButton play, ImageView image, VideoView video, View root);
 
     void onLinkTap(View view, @Nullable String url);
 

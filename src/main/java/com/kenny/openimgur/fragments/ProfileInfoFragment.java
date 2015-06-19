@@ -186,7 +186,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     }
 
     @Override
-    public void onPlayTap(ProgressBar prog, FloatingActionButton play, ImageView image, VideoView video) {
+    public void onPlayTap(ProgressBar prog, FloatingActionButton play, ImageView image, VideoView video, final View view) {
         // NOOP
     }
 
