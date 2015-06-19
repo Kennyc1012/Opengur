@@ -1,4 +1,14 @@
 #Open Imgur Changelog
+<b>3.0</b> June 19, 2015
+- Revamp of comments
+- Up Min SDK to 17 (4.2)
+- Change Share Text to Opengur
+- Switch to TabLayout from Design Lib and remove Material Tab library
+- Default to Dark Theme
+- Add xxxhdpi icons
+- Start RecyclerView conversions for lists
+- Update Subsampling Image View to 3.1.4
+
 <b>2.9.0</b> June 9, 2015
 - Better Themeing
 - Better token refresh
