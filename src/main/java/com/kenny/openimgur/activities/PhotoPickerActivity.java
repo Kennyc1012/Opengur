@@ -1,5 +1,6 @@
 package com.kenny.openimgur.activities;
 
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
@@ -9,7 +10,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.kenny.openimgur.R;
@@ -27,6 +31,8 @@ import butterknife.InjectView;
  */
 public class PhotoPickerActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<List<String>>, View.OnClickListener {
     private static int LOADER_ID = PhotoPickerActivity.class.hashCode();
+    public static final int REQUEST_CODE = LOADER_ID;
+    public static final String KEY_PHOTOS = PhotoPickerActivity.class.getSimpleName() + ".photos";
 
     @InjectView(R.id.grid)
     RecyclerView mGrid;
@@ -44,6 +50,7 @@ public class PhotoPickerActivity extends BaseActivity implements LoaderManager.L
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_picker);
+        getSupportActionBar().setTitle(R.string.photo_picker_title);
     }
 
     @Override
@@ -67,7 +74,53 @@ public class PhotoPickerActivity extends BaseActivity implements LoaderManager.L
     @Override
     public void onClick(View v) {
         String path = mAdapter.getItem(mGrid.getLayoutManager().getPosition(v));
-        mAdapter.onSelected(path, v);
+        int selected = mAdapter.onSelected(path, v);
+        ActionBar ab = getSupportActionBar();
+
+        if (selected > 0) {
+            ab.setTitle(getString(R.string.photos_selected, selected));
+        } else {
+            ab.setTitle(R.string.photo_picker_title);
+        }
+
+        supportInvalidateOptionsMenu();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.photo_picker, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.done);
+        boolean hasSelection = mAdapter != null && mAdapter.getSelectedCount() > 0;
+        item.setVisible(hasSelection);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.done:
+                if (mAdapter != null) {
+                    ArrayList<String> photos = mAdapter.getCheckedPhotos();
+
+                    if (photos != null && !photos.isEmpty()) {
+                        Intent intent = new Intent();
+                        intent.putExtra(KEY_PHOTOS, photos);
+                        setResult(Activity.RESULT_OK, intent);
+                    } else {
+                        setResult(Activity.RESULT_CANCELED);
+                    }
+                }
+
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

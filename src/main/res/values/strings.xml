@@ -84,6 +84,7 @@
     <string name="caution">Caution</string>
     <string name="okay">Okay</string>
     <string name="copy_album_link">Copy Album Link</string>
+    <string name="done">Done</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -257,6 +258,8 @@
 
     <!-- Photo Uploads/Picking -->
     <string name="device_no_photos">Did not find any photos</string>
+    <string name="photo_picker_title">Select Photos</string>
+    <string name="photos_selected">%d Selected</string>
 
     <!-- Nav Items -->
     <string name="nav_gallery">Gallery</string>
