@@ -219,6 +219,7 @@
         <activity android:name=".activities.ConvoThreadActivity" />
         <activity android:name=".activities.MemeActivity" />
         <activity android:name=".activities.GallerySearchActivity" />
+        <activity android:name=".activities.PhotoPickerActivity" />
 
         <service android:name=".services.DownloaderService" />
         <service android:name=".services.UploadService" />

@@ -266,6 +266,11 @@ public class ImageUtil {
                 .cacheInMemory(false);
     }
 
+    public static DisplayImageOptions.Builder getDisplayOptionsForPhotoPicker() {
+        return getDefaultDisplayOptions()
+                .cacheOnDisk(false);
+    }
+
     /**
      * Returns the default display options for the image loader
      * Resets view before loading, caches in memory and on disk.

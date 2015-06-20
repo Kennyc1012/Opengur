@@ -255,6 +255,9 @@
     <string name="beta_confirm">I Sure Do</string>
     <string name="beta_no">No Thanks</string>
 
+    <!-- Photo Uploads/Picking -->
+    <string name="device_no_photos">Did not find any photos</string>
+
     <!-- Nav Items -->
     <string name="nav_gallery">Gallery</string>
     <string name="nav_topics">Topics</string>
