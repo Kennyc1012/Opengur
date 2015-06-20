@@ -14,7 +14,7 @@ Want to become a beta tester? [Click Here!](https://plus.google.com/u/0/communit
 - Material Design
 - Dark Theme
 - Meme Generator
-- Support for Api 15+
+- Support for Api 17+
 
 #What's New
 Check the [Changelog](https://github.com/Kennyc1012/Opengur/blob/master/CHANGELOG.MD) for the changes of each version
