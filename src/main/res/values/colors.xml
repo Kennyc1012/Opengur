@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="play_circle_pressed">#424242</color>
     <color name="play_circle_default">#212121</color>
     <color name="comment_bg_selected">#b6b6b6</color>
     <color name="notoriety_positive">#81C784</color>
