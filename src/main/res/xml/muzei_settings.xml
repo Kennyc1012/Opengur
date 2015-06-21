@@ -29,4 +29,13 @@
         android:key="muzeiSource"
         android:title="@string/muzei_source" />
 
+    <EditTextPreference
+        android:title="@string/subreddit"
+        android:key="muzeiInput"
+        android:defaultValue="aww" />
+
+    <ListPreference
+        android:title="@string/muzei_topic"
+        android:key="muzeiTopic" />
+
 </PreferenceScreen>

@@ -36,8 +36,15 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
 
     // If unable to get an image, DickButt will be shown, dealwithit.gif
     private static final String FALLBACK_URL = "http://i.imgur.com/ICt6W7X.png";
+
     private static final String FALLBACK_TITLE = "DickButt";
+
     private static final String FALLBACK_BYLINE = "K.C. Green";
+
+    private static final String FALLBACK_SUBREDDIT = "aww";
+
+    // 8 is aww
+    private static final String FALLBACK_TOPIC_ID = "8";
 
     private static final Random sRandom = new Random();
 
@@ -74,7 +81,7 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
         String title;
         String byline;
         Uri uri;
-        List<ImgurPhoto> photos = makeRequest(getClientForSource(source), allowNSFW);
+        List<ImgurPhoto> photos = makeRequest(getClientForSource(source, pref), allowNSFW);
 
         if (photos != null && !photos.isEmpty()) {
             ImgurPhoto photo = photos.get(sRandom.nextInt(photos.size()));
@@ -169,11 +176,22 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
      * @param source The source for displaying photos
      * @return
      */
-    private ApiClient getClientForSource(String source) {
-        // TODO Other sources
-        ApiClient client = null;
-        String url = String.format(Endpoints.GALLERY.getUrl(), ImgurFilters.GallerySection.HOT.getSection(), ImgurFilters.GallerySort.TIME.getSort(), 0, false);
-        client = new ApiClient(url, ApiClient.HttpRequest.GET);
-        return client;
+    private ApiClient getClientForSource(String source, SharedPreferences pref) {
+        String url;
+
+        if (MuzeiSettingsActivity.SOURCE_REDDIT.equals(source)) {
+            String query = pref.getString(MuzeiSettingsActivity.KEY_INPUT, FALLBACK_SUBREDDIT);
+            url = String.format(Endpoints.SUBREDDIT.getUrl(), query.replaceAll("\\s", ""), ImgurFilters.RedditSort.TOP.getSort(), ImgurFilters.TimeSort.ALL.getSort(), 0);
+        } else if (MuzeiSettingsActivity.SOURCE_VIRAL.equals(source)) {
+            url = String.format(Endpoints.GALLERY.getUrl(), ImgurFilters.GallerySection.HOT.getSection(), ImgurFilters.GallerySort.TIME.getSort(), 0, false);
+        } else if (MuzeiSettingsActivity.SOURCE_USER_SUB.equals(source)) {
+            url = String.format(Endpoints.GALLERY.getUrl(), ImgurFilters.GallerySection.USER.getSection(), ImgurFilters.GallerySort.VIRAL.getSort(), 0, false);
+        } else {
+            int topicId = Integer.valueOf(pref.getString(MuzeiSettingsActivity.KEY_TOPIC, FALLBACK_TOPIC_ID));
+            url = String.format(Endpoints.TOPICS.getUrl(), topicId, ImgurFilters.GallerySort.VIRAL.getSort(), 0);
+        }
+
+
+        return new ApiClient(url, ApiClient.HttpRequest.GET);
     }
 }

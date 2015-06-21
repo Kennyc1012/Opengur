@@ -13,6 +13,8 @@ public class MuzeiSettingsActivity extends BaseActivity {
     public static final String KEY_NSFW = "muzeiNSFW";
     public static final String KEY_UPDATE = "muzeiUpdate";
     public static final String KEY_SOURCE = "muzeiSource";
+    public static final String KEY_INPUT = "muzeiInput";
+    public static final String KEY_TOPIC = "muzeiTopic";
 
     // Preference Values
     public static final String UPDATE_1_HOUR = "1";
