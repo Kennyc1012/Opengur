@@ -207,6 +207,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
                             });
 
                             mImageView.setMinimumTileDpi(160);
+                            mImageView.setZoomEnabled(enableTiling);
                             mImageView.setImage(ImageSource.uri(fileUri).dimensions(dimensions[0], dimensions[1]).tiling(enableTiling));
                             mVideoView.setVisibility(View.GONE);
                             mGifImageView.setVisibility(View.GONE);
