@@ -30,8 +30,7 @@ import butterknife.InjectView;
  * Created by Kenny-PC on 6/20/2015.
  */
 public class PhotoPickerActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<List<String>>, View.OnClickListener {
-    private static int LOADER_ID = PhotoPickerActivity.class.hashCode();
-    public static final int REQUEST_CODE = LOADER_ID;
+    private static final int LOADER_ID = PhotoPickerActivity.class.hashCode();
     public static final String KEY_PHOTOS = PhotoPickerActivity.class.getSimpleName() + ".photos";
 
     @InjectView(R.id.grid)

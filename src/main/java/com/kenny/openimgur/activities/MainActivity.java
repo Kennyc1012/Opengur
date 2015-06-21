@@ -382,7 +382,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab:
-                startActivityForResult(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_CAMERA), UploadActivity.REQUEST_CODE);
+                startActivityForResult(UploadActivity2.createIntent(getApplicationContext()), UploadActivity.REQUEST_CODE);
                 break;
         }
     }

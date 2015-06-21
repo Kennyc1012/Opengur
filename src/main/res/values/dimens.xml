@@ -29,4 +29,8 @@
     <dimen name="comment_padding">8dp</dimen>
     <dimen name="comment_indicator_size">4dp</dimen>
 
+    <!-- Uploads -->
+    <dimen name="upload_photo_size">96dp</dimen>
+    <dimen name="upload_content_margin">100dp</dimen>
+
 </resources>

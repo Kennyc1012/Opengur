@@ -576,7 +576,6 @@ public class UploadActivity extends BaseActivity {
                     intent.putExtra(MediaStore.EXTRA_OUTPUT,
                             Uri.fromFile(mUploadFile));
                 }
-
                 break;
 
             case UPLOAD_TYPE_GALLERY:

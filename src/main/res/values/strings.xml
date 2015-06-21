@@ -232,11 +232,6 @@
     <!-- Gallery Search -->
     <string name="gallery_search_hint">Search Imgur</string>
 
-    <!-- FAB Menu -->
-    <string name="fab_camera">Take a picture</string>
-    <string name="fab_gallery">Select a picture</string>
-    <string name="fab_link">Enter a link</string>
-
     <!-- Comments -->
     <string name="copy_comment">Copy Comment</string>
     <string name="empty_comment_message">No comments have been posted yet.</string>
@@ -260,6 +255,11 @@
     <string name="device_no_photos">Did not find any photos</string>
     <string name="photo_picker_title">Select Photos</string>
     <string name="photos_selected">%d Selected</string>
+    <string name="upload_camera">Camera</string>
+    <string name="upload_gallery">Gallery</string>
+    <string name="upload_link">Link</string>
+    <string name="upload_empty_title">No title set</string>
+    <string name="upload_empty_desc">No description set</string>
 
     <!-- Nav Items -->
     <string name="nav_gallery">Gallery</string>
