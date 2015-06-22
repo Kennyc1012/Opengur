@@ -181,14 +181,14 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
 
         if (MuzeiSettingsActivity.SOURCE_REDDIT.equals(source)) {
             String query = pref.getString(MuzeiSettingsActivity.KEY_INPUT, FALLBACK_SUBREDDIT);
-            url = String.format(Endpoints.SUBREDDIT.getUrl(), query.replaceAll("\\s", ""), ImgurFilters.RedditSort.TOP.getSort(), ImgurFilters.TimeSort.ALL.getSort(), 0);
-        } else if (MuzeiSettingsActivity.SOURCE_VIRAL.equals(source)) {
-            url = String.format(Endpoints.GALLERY.getUrl(), ImgurFilters.GallerySection.HOT.getSection(), ImgurFilters.GallerySort.TIME.getSort(), 0, false);
+            url = String.format(Endpoints.SUBREDDIT.getUrl(), query.replaceAll("\\s", ""), ImgurFilters.RedditSort.TIME.getSort(), ImgurFilters.TimeSort.ALL.getSort(), 0);
         } else if (MuzeiSettingsActivity.SOURCE_USER_SUB.equals(source)) {
             url = String.format(Endpoints.GALLERY.getUrl(), ImgurFilters.GallerySection.USER.getSection(), ImgurFilters.GallerySort.VIRAL.getSort(), 0, false);
-        } else {
+        } else if (MuzeiSettingsActivity.SOURCE_TOPICS.equals(source)) {
             int topicId = Integer.valueOf(pref.getString(MuzeiSettingsActivity.KEY_TOPIC, FALLBACK_TOPIC_ID));
             url = String.format(Endpoints.TOPICS.getUrl(), topicId, ImgurFilters.GallerySort.VIRAL.getSort(), 0);
+        } else {
+            url = String.format(Endpoints.GALLERY.getUrl(), ImgurFilters.GallerySection.HOT.getSection(), ImgurFilters.GallerySort.TIME.getSort(), 0, false);
         }
 
 
