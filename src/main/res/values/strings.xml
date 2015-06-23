@@ -275,4 +275,15 @@
         <item quantity="other">%d Points</item>
     </plurals>
 
+    <!-- Muzei -->
+    <string name="muzei_settings">Muzei Settings</string>
+    <string name="muzei_update_interval">Update Interval</string>
+    <string name="muzei_wifi_only">Refresh only on Wi-Fi</string>
+    <string name="muzei_wifi_on">Only refresh when connected to Wi-Fi</string>
+    <string name="muzei_wifi_off">Refresh regardless of network</string>
+    <string name="muzei_source">Image Source</string>
+    <string name="muzei_description">Imgur images for Muzei</string>
+    <string name="muzei_subreddit">Subreddit</string>
+    <string name="muzei_topic">Topic</string>
+
 </resources>

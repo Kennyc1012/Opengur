@@ -75,6 +75,21 @@
         <item>High (More bandwidth)</item>
     </string-array>
 
+    <string-array name="muzei_update">
+        <item>Every hour</item>
+        <item>Every 3 hours</item>
+        <item>Every 6 hours</item>
+        <item>Every 12 hours</item>
+        <item>Every 24 hours</item>
+    </string-array>
+
+    <string-array name="muzei_sources">
+        <item>Most Viral</item>
+        <item>User Sub</item>
+        <item>Topics</item>
+        <item>Subreddit</item>
+    </string-array>
+
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys" translatable="false">
         <item>256</item>
@@ -111,10 +126,25 @@
     </string-array>
 
     <!-- These are the thumbnail keys for imgur (b being gallery thumbnail)-->
-    <string-array name="pref_thumbanail_keys">
+    <string-array name="pref_thumbanail_keys" translatable="false">
         <item>s</item>
         <item>b</item>
         <item>l</item>
+    </string-array>
+
+    <string-array name="muzei_update_keys" translatable="false">
+        <item>1</item>
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
+
+    <string-array name="muzei_sources_keys" translatable="false">
+        <item>viral</item>
+        <item>usersub</item>
+        <item>topics</item>
+        <item>reddit</item>
     </string-array>
 
 
