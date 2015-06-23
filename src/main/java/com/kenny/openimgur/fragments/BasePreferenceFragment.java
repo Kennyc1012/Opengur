@@ -11,6 +11,7 @@ import com.kenny.openimgur.classes.OpengurApp;
  * Created by kcampagna on 4/16/15.
  */
 public abstract class BasePreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+    protected final String TAG = getClass().getSimpleName();
 
     protected OpengurApp mApp;
 

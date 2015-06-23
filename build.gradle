@@ -22,7 +22,7 @@ repositories {
     jcenter()
 }
 
-def VERSION_NAME = '3.0'
+def VERSION_NAME = '3.+'
 
 android {
     compileSdkVersion 22
@@ -32,7 +32,7 @@ android {
         applicationId "com.kennyc.open.imgur"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 33
+        versionCode 34
         buildConfigField "String", "API_CLIENT_ID", project.API_CLIENT_ID
         buildConfigField "String", "API_CLIENT_SECRET", project.API_CLIENT_SECRET
     }
@@ -85,6 +85,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.1.4'
+    compile 'com.google.android.apps.muzei:muzei-api:2.0'
     compile(name: 'sliding_panel', ext: 'aar')
     compile(name: 'bottom-sheet-1.0', ext: 'aar')
     compile project(':libraries:EventBus')
