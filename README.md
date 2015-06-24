@@ -20,6 +20,7 @@ Want to become a beta tester? [Click Here!](https://plus.google.com/u/0/communit
 Check the [Changelog](https://github.com/Kennyc1012/Opengur/blob/master/CHANGELOG.MD) for the changes of each version
 
 #Building
+[![Build Status](https://travis-ci.org/Kennyc1012/Opengur.svg)](https://travis-ci.org/Kennyc1012/Opengur)
 Check out the [wiki](https://github.com/Kennyc1012/Opengur/wiki) for instructions on building Open Imgur
 
 #Contribution

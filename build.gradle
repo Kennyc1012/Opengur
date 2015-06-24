@@ -66,6 +66,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 def SUPPORT_VERSION = '22.2.0'
