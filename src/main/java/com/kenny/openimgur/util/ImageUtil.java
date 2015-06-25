@@ -21,10 +21,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.activities.SettingsActivity;
+import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.CircleBitmapDisplayer;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
@@ -231,6 +233,24 @@ public class ImageUtil {
         }
 
         ImageLoader.getInstance().init(config);
+
+        // Check our cache to see if we should delete it
+        long lastClear = pref.getLong("lastClear", 0);
+
+        // We will clear the cache every 3 days
+        if (lastClear == 0) {
+            pref.edit().putLong("lastClear", System.currentTimeMillis()).apply();
+        } else {
+            long currentTime = System.currentTimeMillis();
+
+            if (currentTime - lastClear >= DateUtils.DAY_IN_MILLIS * 3) {
+                LogUtil.v(TAG, "Cache older than 3 days, clearing");
+                ImageLoader.getInstance().clearMemoryCache();
+                ImageLoader.getInstance().clearDiskCache();
+                VideoCache.getInstance().deleteCache();
+                pref.edit().putLong("lastClear", currentTime).apply();
+            }
+        }
     }
 
     /**
