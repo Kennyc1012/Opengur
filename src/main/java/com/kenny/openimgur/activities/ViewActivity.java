@@ -696,21 +696,18 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     break;
 
                 case IMAGE_URL:
-                    PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true, false)
-                            .show(getFragmentManager(), "popup");
+                    getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true, false), "popup").commitAllowingStateLoss();
                     break;
 
                 case DIRECT_LINK:
                     boolean isAnimated = LinkUtils.isLinkAnimated(url);
                     boolean isVideo = LinkUtils.isVideoLink(url);
-                    PopupImageDialogFragment.getInstance(url, isAnimated, true, isVideo)
-                            .show(getFragmentManager(), "popup");
+                    getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(url, isAnimated, true, isVideo), "popup").commitAllowingStateLoss();
                     break;
 
                 case IMAGE:
                     String[] split = url.split("\\/");
-                    PopupImageDialogFragment.getInstance(split[split.length - 1], false, false, false)
-                            .show(getFragmentManager(), "popup");
+                    getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(split[split.length - 1], false, false, false), "popup").commitAllowingStateLoss();
                     break;
 
                 case USER_CALLOUT:
