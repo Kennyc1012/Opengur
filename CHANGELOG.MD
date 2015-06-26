@@ -1,4 +1,12 @@
 #Open Imgur Changelog
+<b>3.1.0</b> June 26, 2015
+- Muzei Support
+- Reneable scroll bars for galleries
+- Fix full screen zooming crashes
+- Fix fragment transaction crashes 
+- Ensure cache gets cleared after 3 days
+- Add Travis CI
+
 <b>3.0</b> June 19, 2015
 - Revamp of comments
 - Up Min SDK to 17 (4.2)
