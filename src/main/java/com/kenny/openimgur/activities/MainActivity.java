@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
@@ -49,6 +47,7 @@ import butterknife.OnClick;
  */
 public class MainActivity extends BaseActivity implements FragmentListener, NavigationView.OnNavigationItemSelectedListener {
     private static final String KEY_CURRENT_PAGE = "current_page";
+
     public static final int PAGE_PROFILE = 0;
 
     public static final int PAGE_GALLERY = 1;
@@ -314,23 +313,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     @Override
     protected void onDestroy() {
-        SharedPreferences pref = app.getPreferences();
-        SharedPreferences.Editor edit = pref.edit();
-        long lastClear = app.getPreferences().getLong("lastClear", 0);
-
-        // We will clear the cache every 3 days
-        if (lastClear == 0) {
-            edit.putLong("lastClear", System.currentTimeMillis());
-        } else {
-            long currentTime = System.currentTimeMillis();
-
-            if (currentTime - lastClear >= DateUtils.DAY_IN_MILLIS * 3) {
-                app.deleteAllCache();
-                edit.putLong("lastClear", currentTime);
-            }
-        }
-
-        edit.putInt(KEY_CURRENT_PAGE, mCurrentPage).apply();
+        app.getPreferences().edit().putInt(KEY_CURRENT_PAGE, mCurrentPage).apply();
         super.onDestroy();
     }
 

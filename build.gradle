@@ -22,7 +22,7 @@ repositories {
     jcenter()
 }
 
-def VERSION_NAME = '3.+'
+def VERSION_NAME = '3.1.0'
 
 android {
     compileSdkVersion 22
@@ -32,7 +32,7 @@ android {
         applicationId "com.kennyc.open.imgur"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 34
+        versionCode 35
         buildConfigField "String", "API_CLIENT_ID", project.API_CLIENT_ID
         buildConfigField "String", "API_CLIENT_SECRET", project.API_CLIENT_SECRET
     }
@@ -65,6 +65,10 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
 
