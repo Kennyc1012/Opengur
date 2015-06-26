@@ -22,7 +22,7 @@ repositories {
     jcenter()
 }
 
-def VERSION_NAME = '3.+'
+def VERSION_NAME = '3.1.0'
 
 android {
     compileSdkVersion 22
