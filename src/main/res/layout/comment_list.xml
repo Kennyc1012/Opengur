@@ -9,4 +9,5 @@
     android:drawSelectorOnTop="true"
     android:cacheColorHint="@null"
     android:footerDividersEnabled="false"
+    android:scrollbars="vertical"
     tools:listitem="@layout/comment_item" />

@@ -1,17 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <com.kenny.openimgur.ui.MultiStateView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/multiView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:errorView="@layout/error_view"
+    app:emptyView="@layout/uploads_empty"
     app:loadingView="@layout/loading_view"
     app:viewState="loading">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/list"
+        android:id="@+id/grid"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:scrollbars="vertical" />
+        android:layout_height="match_parent" />
 
 </com.kenny.openimgur.ui.MultiStateView>

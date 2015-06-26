@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".classes.OpengurApp"
@@ -219,9 +220,30 @@
         <activity android:name=".activities.ConvoThreadActivity" />
         <activity android:name=".activities.MemeActivity" />
         <activity android:name=".activities.GallerySearchActivity" />
+        <activity android:name=".activities.PhotoPickerActivity" />
+        <activity
+            android:name=".activities.MuzeiSettingsActivity"
+            android:exported="true" />
 
         <service android:name=".services.DownloaderService" />
         <service android:name=".services.UploadService" />
+
+        <service
+            android:name=".services.ImgurMuzeiService"
+            android:description="@string/muzei_description"
+            android:icon="@drawable/ic_i"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
+            </intent-filter>
+
+            <meta-data
+                android:name="color"
+                android:value="@color/theme_green_primary" />
+            <meta-data
+                android:name="settingsActivity"
+                android:value="com.kenny.openimgur.activities.MuzeiSettingsActivity" />
+        </service>
 
         <receiver android:name=".services.NotificationReceiver" />
 

@@ -48,7 +48,7 @@
     <string name="sort_by">Sort By</string>
     <string name="developer">Developer</string>
     <string name="version">Version</string>
-    <string name="vote_cast">Vote Casted</string>
+    <string name="vote_cast">Vote Cast</string>
     <string name="one_moment">One Moment…</string>
     <string name="uploading">Uploading, One Moment…</string>
     <string name="decoding_image">Decoding Image, One Moment…</string>
@@ -255,6 +255,9 @@
     <string name="beta_confirm">I Sure Do</string>
     <string name="beta_no">No Thanks</string>
 
+    <!-- Photo Uploads/Picking -->
+    <string name="device_no_photos">Did not find any photos</string>
+
     <!-- Nav Items -->
     <string name="nav_gallery">Gallery</string>
     <string name="nav_topics">Topics</string>
@@ -271,5 +274,16 @@
         <item quantity="one">%d Point</item>
         <item quantity="other">%d Points</item>
     </plurals>
+
+    <!-- Muzei -->
+    <string name="muzei_settings">Muzei Settings</string>
+    <string name="muzei_update_interval">Update Interval</string>
+    <string name="muzei_wifi_only">Refresh only on Wi-Fi</string>
+    <string name="muzei_wifi_on">Only refresh when connected to Wi-Fi</string>
+    <string name="muzei_wifi_off">Refresh regardless of network</string>
+    <string name="muzei_source">Image Source</string>
+    <string name="muzei_description">Imgur images for Muzei</string>
+    <string name="muzei_subreddit">Subreddit</string>
+    <string name="muzei_topic">Topic</string>
 
 </resources>
