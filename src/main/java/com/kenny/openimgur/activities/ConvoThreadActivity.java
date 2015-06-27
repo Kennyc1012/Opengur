@@ -45,7 +45,9 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
  */
 public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnScrollListener {
     public static final int REQUEST_CODE = 102;
+
     public static final String KEY_BLOCKED_CONVO = "blocked_convo";
+
     private static final String KEY_CONVO = "convo";
 
     @InjectView(R.id.multiView)
@@ -107,6 +109,10 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
 
             case R.id.report:
                 reportBlockUser(Endpoints.CONVO_REPORT);
+                break;
+
+            case R.id.profile:
+                startActivity(ProfileActivity.createIntent(getApplicationContext(), mConvo.getWithAccount()));
                 break;
         }
 
