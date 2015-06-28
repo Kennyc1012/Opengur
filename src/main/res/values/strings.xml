@@ -85,6 +85,7 @@
     <string name="okay">Okay</string>
     <string name="copy_album_link">Copy Album Link</string>
     <string name="done">Done</string>
+    <string name="add">Add</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -260,6 +261,10 @@
     <string name="upload_link">Link</string>
     <string name="upload_empty_title">No title set</string>
     <string name="upload_empty_desc">No description set</string>
+    <string name="upload_enter_link">Enter Link</string>
+    <string name="upload_checking_link">Checking link&#8230;</string>
+    <string name="upload_invalid_link">The link you entered is not a valid image link.</string>
+    <string name="upload_valid_link">The link you entered is valid!</string>
 
     <!-- Nav Items -->
     <string name="nav_gallery">Gallery</string>

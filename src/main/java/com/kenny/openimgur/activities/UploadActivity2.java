@@ -13,6 +13,7 @@ import android.view.View;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.UploadPhotoAdapter;
 import com.kenny.openimgur.classes.Upload;
+import com.kenny.openimgur.fragments.UploadLinkFragmentDialog;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.snackbar.SnackBar;
@@ -27,7 +28,7 @@ import butterknife.OnClick;
 /**
  * Created by Kenny-PC on 6/20/2015.
  */
-public class UploadActivity2 extends BaseActivity {
+public class UploadActivity2 extends BaseActivity implements UploadLinkFragmentDialog.LinkListener {
     private static final int REQUEST_CODE_CAMERA = 123;
 
     private static final int REQUEST_CODE_GALLERY = 321;
@@ -75,6 +76,9 @@ public class UploadActivity2 extends BaseActivity {
                 break;
 
             case R.id.linkBtn:
+                getFragmentManager().beginTransaction()
+                        .add(new UploadLinkFragmentDialog(), UploadLinkFragmentDialog.TAG)
+                        .commit();
                 break;
         }
     }
@@ -117,7 +121,6 @@ public class UploadActivity2 extends BaseActivity {
                     }
 
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-
                     mTempFile = null;
                 } else {
                     SnackBar.show(this, R.string.upload_camera_error);
@@ -131,5 +134,21 @@ public class UploadActivity2 extends BaseActivity {
     @Override
     protected int getStyleRes() {
         return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
+    }
+
+    @Override
+    public void onLinkAdded(String link) {
+        Upload upload = new Upload(link, true);
+
+        if (mAdapter == null) {
+            List<Upload> uploadList = new ArrayList<>(1);
+            uploadList.add(upload);
+            mAdapter = new UploadPhotoAdapter(this, uploadList);
+            mRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.addItem(upload);
+        }
+
+        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
     }
 }
