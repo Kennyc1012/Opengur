@@ -265,6 +265,7 @@
     <string name="upload_checking_link">Checking link&#8230;</string>
     <string name="upload_invalid_link">The link you entered is not a valid image link.</string>
     <string name="upload_valid_link">The link you entered is valid!</string>
+    <string name="upload_link_dialog_title">Photo Link</string>
 
     <!-- Nav Items -->
     <string name="nav_gallery">Gallery</string>

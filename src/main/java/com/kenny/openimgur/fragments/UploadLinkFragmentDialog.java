@@ -71,11 +71,7 @@ public class UploadLinkFragmentDialog extends DialogFragment implements TextWatc
     public void onStart() {
         super.onStart();
         if (getDialog() == null) return;
-
-        // Dialog Fragments are automatically set to wrap_content, so we need to force the width to fit our view
-        int dialogWidth = (int) (getResources().getDisplayMetrics().widthPixels * .85);
-        getDialog().getWindow().setLayout(dialogWidth, getDialog().getWindow().getAttributes().height);
-
+        getDialog().getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     @Override
