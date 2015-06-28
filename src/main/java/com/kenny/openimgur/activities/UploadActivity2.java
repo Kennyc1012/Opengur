@@ -122,7 +122,6 @@ public class UploadActivity2 extends BaseActivity {
                 } else {
                     SnackBar.show(this, R.string.upload_camera_error);
                 }
-
                 break;
         }
 
@@ -131,7 +130,6 @@ public class UploadActivity2 extends BaseActivity {
 
     @Override
     protected int getStyleRes() {
-        // TODO Return correct theme
-        return R.style.Theme_AppCompat;
+        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
     }
 }

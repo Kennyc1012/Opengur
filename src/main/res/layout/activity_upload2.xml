@@ -10,9 +10,10 @@
         android:id="@+id/multiView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="?actionBarSize"
         android:layout_weight="1"
-        app:loadingView="@layout/loading_view"
         app:emptyView="@layout/uploads_empty"
+        app:loadingView="@layout/loading_view"
         app:viewState="empty">
 
         <android.support.v7.widget.RecyclerView
