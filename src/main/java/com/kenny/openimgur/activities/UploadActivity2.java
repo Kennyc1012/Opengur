@@ -9,15 +9,14 @@ import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.PopupMenu;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.UploadPhotoAdapter;
 import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
-import com.kenny.openimgur.fragments.UploadLinkFragmentDialog;
+import com.kenny.openimgur.fragments.UploadEditDialogFragment;
+import com.kenny.openimgur.fragments.UploadLinkDialogFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.snackbar.SnackBar;
@@ -82,7 +81,7 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
 
             case R.id.linkBtn:
                 getFragmentManager().beginTransaction()
-                        .add(new UploadLinkFragmentDialog(), UploadLinkFragmentDialog.TAG)
+                        .add(new UploadLinkDialogFragment(), UploadLinkDialogFragment.TAG)
                         .commit();
                 break;
         }
@@ -159,7 +158,16 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
 
     @Override
     public void onItemClicked(int position) {
-        // TODO
+        Upload upload = mAdapter.getItem(position);
+
+        getFragmentManager().beginTransaction()
+                .add(UploadEditDialogFragment.createInstance(upload), UploadEditDialogFragment.TAG)
+                .commit();
+    }
+
+    @Override
+    public void onItemEdited(Upload upload) {
+        mAdapter.notifyDataSetChanged();
     }
 
     private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {

@@ -33,8 +33,8 @@ import butterknife.OnClick;
 /**
  * Created by Kenny-PC on 6/28/2015.
  */
-public class UploadLinkFragmentDialog extends DialogFragment implements TextWatcher {
-    public static final String TAG = UploadLinkFragmentDialog.class.getSimpleName();
+public class UploadLinkDialogFragment extends DialogFragment implements TextWatcher {
+    public static final String TAG = UploadLinkDialogFragment.class.getSimpleName();
 
     private static final long TEXT_DELAY = DateUtils.SECOND_IN_MILLIS;
 

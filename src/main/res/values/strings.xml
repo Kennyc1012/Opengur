@@ -266,6 +266,8 @@
     <string name="upload_invalid_link">The link you entered is not a valid image link.</string>
     <string name="upload_valid_link">The link you entered is valid!</string>
     <string name="upload_link_dialog_title">Photo Link</string>
+    <string name="upload_edit_title_hint">Enter title</string>
+    <string name="upload_edit_desc_hint">Enter description</string>
 
     <!-- Nav Items -->
     <string name="nav_gallery">Gallery</string>

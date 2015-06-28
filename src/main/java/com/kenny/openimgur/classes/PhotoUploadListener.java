@@ -8,4 +8,6 @@ public interface PhotoUploadListener {
     void onLinkAdded(String link);
 
     void onItemClicked(int position);
+
+    void onItemEdited(Upload upload);
 }
