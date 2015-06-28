@@ -8,10 +8,14 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.UploadPhotoAdapter;
+import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.fragments.UploadLinkFragmentDialog;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -28,7 +32,7 @@ import butterknife.OnClick;
 /**
  * Created by Kenny-PC on 6/20/2015.
  */
-public class UploadActivity2 extends BaseActivity implements UploadLinkFragmentDialog.LinkListener {
+public class UploadActivity2 extends BaseActivity implements PhotoUploadListener {
     private static final int REQUEST_CODE_CAMERA = 123;
 
     private static final int REQUEST_CODE_GALLERY = 321;
@@ -52,6 +56,7 @@ public class UploadActivity2 extends BaseActivity implements UploadLinkFragmentD
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload2);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        new ItemTouchHelper(mSimpleItemTouchCallback).attachToRecyclerView(mRecyclerView);
     }
 
     @OnClick({R.id.cameraBtn, R.id.linkBtn, R.id.galleryBtn})
@@ -96,7 +101,7 @@ public class UploadActivity2 extends BaseActivity implements UploadLinkFragmentD
                     }
 
                     if (mAdapter == null) {
-                        mAdapter = new UploadPhotoAdapter(this, uploads);
+                        mAdapter = new UploadPhotoAdapter(this, uploads, this);
                         mRecyclerView.setAdapter(mAdapter);
                     } else {
                         mAdapter.addItems(uploads);
@@ -114,7 +119,7 @@ public class UploadActivity2 extends BaseActivity implements UploadLinkFragmentD
                     if (mAdapter == null) {
                         List<Upload> uploadList = new ArrayList<>(1);
                         uploadList.add(upload);
-                        mAdapter = new UploadPhotoAdapter(this, uploadList);
+                        mAdapter = new UploadPhotoAdapter(this, uploadList, this);
                         mRecyclerView.setAdapter(mAdapter);
                     } else {
                         mAdapter.addItem(upload);
@@ -143,7 +148,7 @@ public class UploadActivity2 extends BaseActivity implements UploadLinkFragmentD
         if (mAdapter == null) {
             List<Upload> uploadList = new ArrayList<>(1);
             uploadList.add(upload);
-            mAdapter = new UploadPhotoAdapter(this, uploadList);
+            mAdapter = new UploadPhotoAdapter(this, uploadList, this);
             mRecyclerView.setAdapter(mAdapter);
         } else {
             mAdapter.addItem(upload);
@@ -151,4 +156,23 @@ public class UploadActivity2 extends BaseActivity implements UploadLinkFragmentD
 
         mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
     }
+
+    @Override
+    public void onItemClicked(int position) {
+        // TODO
+    }
+
+    private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            mAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+            return true;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+            mAdapter.removeItem(viewHolder.getAdapterPosition());
+            if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+        }
+    };
 }

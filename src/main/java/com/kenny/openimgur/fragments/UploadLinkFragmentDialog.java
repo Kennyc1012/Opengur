@@ -3,7 +3,6 @@ package com.kenny.openimgur.fragments;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.Nullable;
@@ -23,8 +22,7 @@ import android.widget.TextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.OpengurApp;
-import com.kenny.openimgur.util.ImageUtil;
-import com.kenny.snackbar.SnackBar;
+import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -55,12 +53,12 @@ public class UploadLinkFragmentDialog extends DialogFragment implements TextWatc
     @InjectView(R.id.loadingIndicator)
     ProgressBar mLoadingIndicator;
 
-    private LinkListener mListener;
+    private PhotoUploadListener mListener;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        if (activity instanceof LinkListener) mListener = (LinkListener) activity;
+        if (activity instanceof PhotoUploadListener) mListener = (PhotoUploadListener) activity;
     }
 
     @Override
@@ -115,7 +113,7 @@ public class UploadLinkFragmentDialog extends DialogFragment implements TextWatc
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         mAddButton.setEnabled(false);
 
-        if(!TextUtils.isEmpty(s.toString())) {
+        if (!TextUtils.isEmpty(s.toString())) {
             mHandler.removeMessages(ImgurHandler.MESSAGE_SEARCH_URL);
             mHandler.sendMessageDelayed(mHandler.obtainMessage(ImgurHandler.MESSAGE_SEARCH_URL, s.toString()), TEXT_DELAY);
         }
@@ -179,8 +177,4 @@ public class UploadLinkFragmentDialog extends DialogFragment implements TextWatc
             }
         }
     };
-
-    public interface LinkListener {
-        void onLinkAdded(String link);
-    }
 }

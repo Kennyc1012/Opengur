@@ -43,13 +43,4 @@
 
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/overflow"
-        style="?android:borderlessButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right|bottom"
-        android:minWidth="0dp"
-        tools:src="@drawable/ic_more_vert_white_24dp" />
-
 </android.support.v7.widget.CardView>

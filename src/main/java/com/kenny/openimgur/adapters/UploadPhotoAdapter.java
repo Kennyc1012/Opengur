@@ -14,10 +14,12 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.OpengurApp;
+import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.InjectView;
@@ -26,11 +28,16 @@ import butterknife.InjectView;
  * Created by Kenny-PC on 6/21/2015.
  */
 public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
-    private boolean mIsDarkTheme;
+    private PhotoUploadListener mListener;
 
-    public UploadPhotoAdapter(Context context, List<Upload> uploads) {
+    public UploadPhotoAdapter(Context context, List<Upload> uploads, PhotoUploadListener listener) {
         super(context, uploads, true);
-        mIsDarkTheme = OpengurApp.getInstance(context).getImgurTheme().isDarkTheme;
+        mListener = listener;
+    }
+
+    public void onItemMove(int from, int to) {
+        Collections.swap(getAllItems(), from, to);
+        notifyItemMoved(from, to);
     }
 
     @Override
@@ -40,10 +47,13 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        UploadPhotoHolder holder = new UploadPhotoHolder(mInflater.inflate(R.layout.upload_photo_item, parent, false));
-        Resources res = holder.overflow.getResources();
-        Drawable dr = mIsDarkTheme ? ResourcesCompat.getDrawable(res, R.drawable.ic_more_vert_white_24dp, null) : ImageUtil.tintDrawable(R.drawable.ic_more_vert_white_24dp, res, Color.BLACK);
-        holder.overflow.setImageDrawable(dr);
+        final UploadPhotoHolder holder = new UploadPhotoHolder(mInflater.inflate(R.layout.upload_photo_item, parent, false));
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) mListener.onItemClicked(holder.getAdapterPosition());
+            }
+        });
         return holder;
     }
 
@@ -77,9 +87,6 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
 
         @InjectView(R.id.image)
         ImageView image;
-
-        @InjectView(R.id.overflow)
-        ImageButton overflow;
 
         public UploadPhotoHolder(View view) {
             super(view);
