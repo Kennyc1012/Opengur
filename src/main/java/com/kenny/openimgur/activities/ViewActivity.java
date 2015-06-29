@@ -732,8 +732,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 // This is super ugly, in order to the get position from the layout manager, we need the root view
                 View parent = (View) view.getParent();
                 if (parent != null) parent = (View) parent.getParent();
-                if (parent != null)
+                
+                if (parent != null && parent.getLayoutParams() instanceof RecyclerView.LayoutParams) {
                     onListItemClick(mCommentList.getLayoutManager().getPosition(parent));
+                }
             }
         }
     }
