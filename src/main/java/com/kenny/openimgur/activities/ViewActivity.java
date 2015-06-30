@@ -16,7 +16,6 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,6 +52,7 @@ import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
+import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
@@ -732,7 +732,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 // This is super ugly, in order to the get position from the layout manager, we need the root view
                 View parent = (View) view.getParent();
                 if (parent != null) parent = (View) parent.getParent();
-                
+
                 if (parent != null && parent.getLayoutParams() instanceof RecyclerView.LayoutParams) {
                     onListItemClick(mCommentList.getLayoutManager().getPosition(parent));
                 }
