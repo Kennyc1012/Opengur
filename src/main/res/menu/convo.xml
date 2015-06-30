@@ -4,6 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/profile"
+        android:title="@string/view_user"
+        android:icon="@drawable/ic_action_user"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/refresh"
         android:title="@string/convo_check_for_messages"
         app:showAsAction="never" />

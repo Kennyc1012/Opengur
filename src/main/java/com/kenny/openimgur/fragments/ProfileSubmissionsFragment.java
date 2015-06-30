@@ -74,6 +74,8 @@ public class ProfileSubmissionsFragment extends BaseGridFragment {
     private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
+            if (!isAdded()) return;
+
             mRefreshLayout.setRefreshing(false);
             switch (msg.what) {
                 case ImgurHandler.MESSAGE_ACTION_COMPLETE:

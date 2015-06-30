@@ -216,7 +216,18 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     public void setVote(String vote) {
         // Trigger the adapter to redraw displaying the vote
         if (mImgurObject != null) mImgurObject.setVote(vote);
-        if (mPhotoAdapter != null) mPhotoAdapter.notifyDataSetChanged();
+
+        if (mPhotoAdapter != null) {
+            LinearLayoutManager manager = ((LinearLayoutManager) mListView.getLayoutManager());
+            int firstVisible = manager.findFirstCompletelyVisibleItemPosition();
+
+            if (firstVisible == 0) {
+                // The header is visible, update it without triggering a list redraw
+                View view = mListView.getChildAt(0);
+                if (view != null) mPhotoAdapter.updateHeader(mListView.getChildViewHolder(view));
+            }
+            // If the header is not visible, it will get updated when it becomes visible
+        }
     }
 
     @Override
