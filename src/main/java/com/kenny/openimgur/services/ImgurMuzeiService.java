@@ -18,6 +18,7 @@ import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +48,8 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
     private static final String FALLBACK_TOPIC_ID = "8";
 
     private static final Random sRandom = new Random();
+
+    private static final int RETY_ATTEMPTS = 5;
 
     public ImgurMuzeiService() {
         super(TAG);
@@ -85,9 +88,32 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
 
         if (photos != null && !photos.isEmpty()) {
             ImgurPhoto photo = photos.get(sRandom.nextInt(photos.size()));
+            SqlHelper sql = app.getSql();
+
+            if (sql.getMuzeiLastSeen(photo.getLink()) != -1) {
+                // We have seen this image already, lets try to get another
+                LogUtil.v(TAG, "Got an image we have already seen, going to try for another");
+                int retryCount = 0;
+
+                while (retryCount < RETY_ATTEMPTS) {
+                    photo = photos.get(sRandom.nextInt(photos.size()));
+
+                    if (sql.getMuzeiLastSeen(photo.getLink()) == -1) {
+                        LogUtil.v(TAG, "Received a valid image, retry count at " + retryCount);
+                        break;
+                    }
+
+                    LogUtil.v(TAG, "Received another duplicate, retry count at " + retryCount);
+                    retryCount++;
+                }
+            } else {
+                LogUtil.v(TAG, "Link does not exist in database");
+            }
+
             url = photo.getLink();
             title = photo.getTitle();
             byline = TextUtils.isEmpty(photo.getAccount()) ? "?????" : photo.getAccount();
+            sql.addMuzeiLink(photo.getLink());
         } else {
             url = FALLBACK_URL;
             title = FALLBACK_TITLE;

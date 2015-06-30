@@ -17,6 +17,7 @@ import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.DBContracts.GallerySearchContract;
 import com.kenny.openimgur.util.DBContracts.MemeContract;
+import com.kenny.openimgur.util.DBContracts.MuzeiContract;
 import com.kenny.openimgur.util.DBContracts.ProfileContract;
 import com.kenny.openimgur.util.DBContracts.SubRedditContract;
 import com.kenny.openimgur.util.DBContracts.TopicsContract;
@@ -32,7 +33,7 @@ import java.util.List;
 public class SqlHelper extends SQLiteOpenHelper {
     private static final String TAG = "SqlHelper";
 
-    private static final int DB_VERSION = 6;
+    private static final int DB_VERSION = 7;
 
     private static final String DB_NAME = "open_imgur.db";
 
@@ -53,6 +54,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SubRedditContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(MemeContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(GallerySearchContract.CREATE_TABLE_SQL);
+        sqLiteDatabase.execSQL(MuzeiContract.CREATE_TABLE_SQL);
     }
 
     @Override
@@ -61,7 +63,8 @@ public class SqlHelper extends SQLiteOpenHelper {
          V3 Added topics Table
          v4 Added Subreddits Table
          V5 Added Meme Table
-         V6 Added GallerySearch Table */
+         V6 Added GallerySearch Table
+         v7 Added Muzei Table*/
         onCreate(db);
     }
 
@@ -425,15 +428,31 @@ public class SqlHelper extends SQLiteOpenHelper {
         return memes;
     }
 
+    /**
+     * Returns Cursor containing all previous gallery searches
+     *
+     * @return
+     */
     public Cursor getPreviousGallerySearches() {
         return getReadableDatabase().rawQuery(GallerySearchContract.GET_PREVIOUS_SEARCHES_SQL, null);
     }
 
+    /**
+     * Returns Cursor containing all previous gallery search that are similar to given string
+     *
+     * @param name
+     * @return
+     */
     public Cursor getPreviousGallerySearches(String name) {
         name = "%" + name + "%";
         return getReadableDatabase().rawQuery(GallerySearchContract.SEARCH_GALLERY_SQL, new String[]{name});
     }
 
+    /**
+     * Adds an entry to the previous gallery search table
+     *
+     * @param name
+     */
     public void addPreviousGallerySearch(String name) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues(1);
@@ -441,8 +460,41 @@ public class SqlHelper extends SQLiteOpenHelper {
         db.insertWithOnConflict(GallerySearchContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
     }
 
+    /**
+     * Deletes all records from the previous gallery search table
+     */
     public void deletePreviousGallerySearch() {
         getWritableDatabase().delete(GallerySearchContract.TABLE_NAME, null, null);
+    }
+
+    /**
+     * returns the last seen time for a link in use with Muzei. Will return -1 if not found
+     *
+     * @param link
+     * @return
+     */
+    public long getMuzeiLastSeen(String link) {
+        if (TextUtils.isEmpty(link)) return -1;
+
+        long lastSeen = -1;
+        Cursor cursor = getReadableDatabase().rawQuery(String.format(MuzeiContract.GET_LAST_SEEN_SQL, link), null);
+        if (cursor.moveToFirst()) lastSeen = cursor.getLong(0);
+        cursor.close();
+        return lastSeen;
+    }
+
+    /**
+     * Adds a new link to the Muzei table. Will replace any duplicate entries
+     *
+     * @param link
+     */
+    public void addMuzeiLink(String link) {
+        if (TextUtils.isEmpty(link)) return;
+
+        ContentValues values = new ContentValues(2);
+        values.put(MuzeiContract.COLUMN_LINK, link);
+        values.put(MuzeiContract.COLUMN_LAST_SEEN, System.currentTimeMillis());
+        getWritableDatabase().insertWithOnConflict(MuzeiContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     @Override

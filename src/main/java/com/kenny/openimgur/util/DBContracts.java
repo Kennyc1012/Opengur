@@ -204,4 +204,26 @@ public class DBContracts {
         public static final String SEARCH_GALLERY_SQL = "SELECT * FROM " + TABLE_NAME + " WHERE " +
                 COLUMN_NAME + " LIKE ?";
     }
+
+    public static class MuzeiContract implements BaseColumns {
+        public static final String TABLE_NAME = "muzei";
+
+        public static final String COLUMN_LINK = "link";
+
+        public static final String COLUMN_LAST_SEEN = "last_seen";
+
+        public static final int COLUMN_INDEX_ID = 0;
+
+        public static final int COLUMN_INDEX_LINK = 1;
+
+        public static final int COLUMN_INDEX_LAST_SEEN = 2;
+
+        public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
+                " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
+                COLUMN_LINK + " TEXT NOT NULL UNIQUE, " +
+                COLUMN_LAST_SEEN + " INTEGER)";
+
+        public static final String GET_LAST_SEEN_SQL = "SELECT " + COLUMN_LAST_SEEN + " FROM " + TABLE_NAME +
+                " WHERE " + COLUMN_LINK + " ='%s' LIMIT 0,1";
+    }
 }
