@@ -330,6 +330,8 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     private ImgurHandler mHandler = new ImgurHandler() {
         @Override
         public void handleMessage(Message msg) {
+            if (!isAdded()) return;
+
             switch (msg.what) {
                 case MESSAGE_ACTION_COMPLETE:
                     List<ImgurComment> comments = (List<ImgurComment>) msg.obj;
@@ -353,7 +355,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
                         mMultiStatView.post(new Runnable() {
                             @Override
                             public void run() {
-                                mListView.setSelection(0);
+                                if (mListView != null) mListView.setSelection(0);
                             }
                         });
                     }

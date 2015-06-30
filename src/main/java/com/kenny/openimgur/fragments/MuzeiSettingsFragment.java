@@ -40,6 +40,9 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
         mScreen = getPreferenceScreen();
         mTopicPreference = (ListPreference) findPreference(MuzeiSettingsActivity.KEY_TOPIC);
         mInputPreference = (EditTextPreference) findPreference(MuzeiSettingsActivity.KEY_INPUT);
+        mInputPreference.setOnPreferenceChangeListener(this);
+        String savedSubReddit = mApp.getPreferences().getString(MuzeiSettingsActivity.KEY_INPUT, "aww");
+        mInputPreference.setSummary(savedSubReddit);
         List<ImgurTopic> topics = mApp.getSql().getTopics();
 
         if (topics != null && !topics.isEmpty()) {
@@ -72,6 +75,9 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
 
         if (preference.getKey().equals(MuzeiSettingsActivity.KEY_SOURCE)) {
             toggleSource(newValue.toString());
+        } else if (preference.getKey().equals(MuzeiSettingsActivity.KEY_INPUT)) {
+            preference.setSummary(newValue.toString());
+            result = true;
         }
 
         return result;
