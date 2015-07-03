@@ -268,6 +268,23 @@
     <string name="upload_link_dialog_title">Photo Link</string>
     <string name="upload_edit_title_hint">Enter title</string>
     <string name="upload_edit_desc_hint">Enter description</string>
+    <string name="upload_notif_starting">Starting upload</string>
+    <string name="upload_notif_starting_content">Your upload will begin shortly</string>
+    <string name="upload_notif_in_progress">Upload in Progress</string>
+    <string name="upload_notif_error">There was a problem uploading your photos. Please try again.</string>
+    <string name="upload_notif_error_upload_incomplete_short">Unable to upload all photos</string>
+    <string name="upload_notif_error_upload_complete_long">There was a problem while uploading. Only %1$d of %2$d photos were uploaded successfully</string>
+    <string name="upload_gallery_title">Submitting to Gallery</string>
+    <string name="upload_gallery_message">Submitting to the Imgur gallery</string>
+    <string name="upload_gallery_failed">There was an error submitting to the gallery</string>
+    <string name="upload_gallery_failed_long">There was a problem while submitting to the Imgur Gallery. The photos were still uploaded however.</string>
+    <string name="upload_album_failed">There was an error creating the album</string>
+    <string name="upload_album_failed_long">There was a problem while creating the album. The photos were still uploaded however.</string>
+
+    <plurals name="upload_notif_photos">
+        <item quantity="one">Uploading Photo&#8230;</item>
+        <item quantity="other">Uploading Photo %1$d of %2$d</item>
+    </plurals>
 
     <!-- Nav Items -->
     <string name="nav_gallery">Gallery</string>
