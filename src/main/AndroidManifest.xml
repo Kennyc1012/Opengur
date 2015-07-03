@@ -227,6 +227,7 @@
 
         <service android:name=".services.DownloaderService" />
         <service android:name=".services.UploadService" />
+        <service android:name=".services.UploadService2" />
 
         <service
             android:name=".services.ImgurMuzeiService"

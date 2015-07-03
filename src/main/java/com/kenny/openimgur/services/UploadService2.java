@@ -22,13 +22,13 @@ import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -106,6 +106,7 @@ public class UploadService2 extends IntentService {
             LogUtil.v(TAG, "Starting upload of " + uploads.size() + " images");
             ApiClient client = new ApiClient(Endpoints.UPLOAD.getUrl(), ApiClient.HttpRequest.POST);
             List<ImgurPhoto> uploadedPhotos = new ArrayList<>(totalUploads);
+            SqlHelper sql = app.getSql();
 
             for (int i = 0; i < totalUploads; i++) {
                 Upload u = uploads.get(i);
@@ -113,12 +114,15 @@ public class UploadService2 extends IntentService {
                 onPhotoUploading(totalUploads, i + 1);
 
                 if (body != null) {
+                    LogUtil.v(TAG, "Uploading photo " + (i + 1) + " of " + totalUploads);
                     // This will be synchronous
                     JSONObject json = client.doWork(body);
                     int status = json.getInt(ApiClient.KEY_STATUS);
 
                     if (status == ApiClient.STATUS_OK) {
-                        uploadedPhotos.add(new ImgurPhoto(json.getJSONObject(ApiClient.KEY_DATA)));
+                        ImgurPhoto photo = new ImgurPhoto(json.getJSONObject(ApiClient.KEY_DATA));
+                        uploadedPhotos.add(photo);
+                        sql.insertUploadedPhoto(photo);
                     } else {
                         LogUtil.w(TAG, "Photo failed to uploaded, status code returned " + status);
                     }
@@ -174,7 +178,7 @@ public class UploadService2 extends IntentService {
      * @param uploadNumber The current photo number that is being uploaded
      */
     private void onPhotoUploading(int totalUploads, int uploadNumber) {
-        String contentText = getResources().getQuantityString(R.plurals.upload_notif_photos, totalUploads, totalUploads, uploadNumber);
+        String contentText = getResources().getQuantityString(R.plurals.upload_notif_photos, totalUploads, uploadNumber, totalUploads);
 
         mBuilder.setContentTitle(getString(R.string.upload_notif_in_progress))
                 .setContentText(contentText);
@@ -293,7 +297,13 @@ public class UploadService2 extends IntentService {
      * @param obj
      */
     private void onSuccessfulUpload(ImgurBaseObject obj) {
-        String url = obj.getLink();
+        String url;
+        if (obj instanceof ImgurAlbum) {
+            // A newly created album won't contain its link, so we will create it
+            url = "https://imgur.com/a/" + obj.getId();
+        } else {
+            url = obj.getLink();
+        }
         Intent intent = NotificationReceiver.createCopyIntent(getApplicationContext(), url, mNotificationId);
         PendingIntent pIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -375,15 +385,16 @@ public class UploadService2 extends IntentService {
     private void createAlbum(@NonNull List<ImgurPhoto> uploadedPhotos, @Nullable String title, @Nullable ImgurTopic topic) {
         try {
             ApiClient client = new ApiClient(Endpoints.ALBUM_CREATION.getUrl(), ApiClient.HttpRequest.POST);
-            JSONArray jsonArray = new JSONArray();
             String coverId = uploadedPhotos.get(0).getId();
+            StringBuilder sb = new StringBuilder();
 
-            for (ImgurPhoto photo : uploadedPhotos) {
-                jsonArray.put(photo.getId());
+            for (int i = 0; i < uploadedPhotos.size(); i++) {
+                sb.append(uploadedPhotos.get(i).getId());
+                if (i != uploadedPhotos.size() - 1) sb.append(",");
             }
 
             FormEncodingBuilder builder = new FormEncodingBuilder()
-                    .add("ids", jsonArray.toString())
+                    .add("ids", sb.toString())
                     .add("cover", coverId);
             if (!TextUtils.isEmpty(title)) builder.add("title", title);
 
