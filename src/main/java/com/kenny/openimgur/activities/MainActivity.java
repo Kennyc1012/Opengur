@@ -181,7 +181,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             if (item != null) item.setChecked(true);
         }
 
-        changePage(menuItemId);
+        if (getFragmentManager().findFragmentById(R.id.container) == null) changePage(menuItemId);
         updateUserHeader(user);
     }
 
