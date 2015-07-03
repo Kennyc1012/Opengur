@@ -1,4 +1,10 @@
 #Open Imgur Changelog
+<b>3.1.1</b> June 30,2015
+- Display subreddit in Muzei settings
+- Reduce duplicate images in Muzei
+- Don't redraw gallery list when voting
+- Fix several bugs
+
 <b>3.1.0</b> June 26, 2015
 - Muzei Support
 - Reneable scroll bars for galleries

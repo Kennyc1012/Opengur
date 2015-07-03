@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -40,6 +39,7 @@ import com.kenny.openimgur.fragments.ProfileMessagesFragment;
 import com.kenny.openimgur.fragments.ProfileSubmissionsFragment;
 import com.kenny.openimgur.fragments.ProfileUploadsFragment;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LogUtil;
 
 import org.json.JSONException;
