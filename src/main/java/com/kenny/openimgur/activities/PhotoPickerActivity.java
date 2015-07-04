@@ -22,6 +22,7 @@ import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.InjectView;
@@ -31,6 +32,7 @@ import butterknife.InjectView;
  */
 public class PhotoPickerActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<List<String>>, View.OnClickListener {
     private static final int LOADER_ID = PhotoPickerActivity.class.hashCode();
+
     public static final String KEY_PHOTOS = PhotoPickerActivity.class.getSimpleName() + ".photos";
 
     @InjectView(R.id.grid)
@@ -175,6 +177,8 @@ public class PhotoPickerActivity extends BaseActivity implements LoaderManager.L
 
                 LogUtil.v(TAG, "Found " + photos.size() + " photos");
                 cursor.close();
+                // Reverse the list so newest are first
+                Collections.reverse(photos);
                 return photos;
             }
 

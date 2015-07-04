@@ -114,6 +114,7 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
 
             case REQUEST_CODE_CAMERA:
                 if (resultCode == Activity.RESULT_OK && FileUtil.isFileValid(mTempFile)) {
+                    FileUtil.scanFile(Uri.fromFile(mTempFile), getApplicationContext());
                     String fileLocation = mTempFile.getAbsolutePath();
                     Upload upload = new Upload(fileLocation);
 
