@@ -114,7 +114,10 @@ public enum Endpoints {
     // Tags
     TAGS("https://api.imgur.com/3/gallery/%s/tags"),
 
-    ALBUM_CREATION("https://api.imgur.com/3/album");
+    ALBUM_CREATION("https://api.imgur.com/3/album"),
+
+    // Username/Page
+    USER_ALBUMS("https://api.imgur.com/3/account/%s/albums/%d");
 
     private final String mUrl;
 

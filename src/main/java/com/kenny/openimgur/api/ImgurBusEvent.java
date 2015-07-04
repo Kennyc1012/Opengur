@@ -38,7 +38,8 @@ public class ImgurBusEvent {
         TOPICS,
         MEME,
         GALLERY_SEARCH,
-        TAGS
+        TAGS,
+        USER_ALBUMS
     }
 
     public JSONObject json;
