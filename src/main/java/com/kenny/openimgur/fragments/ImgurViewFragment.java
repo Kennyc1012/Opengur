@@ -233,7 +233,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onDestroyView() {
         if (mPhotoAdapter != null) {
-            mPhotoAdapter.destroy();
+            mPhotoAdapter.onDestroy();
             mPhotoAdapter = null;
         }
 

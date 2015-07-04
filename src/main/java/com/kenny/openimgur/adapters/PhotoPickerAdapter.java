@@ -45,6 +45,12 @@ public class PhotoPickerAdapter extends BaseRecyclerAdapter<String> {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mClickListener = null;
+    }
+
+    @Override
     protected DisplayImageOptions getDisplayOptions() {
         return ImageUtil.getDisplayOptionsForPhotoPicker().build();
     }
@@ -98,6 +104,11 @@ public class PhotoPickerAdapter extends BaseRecyclerAdapter<String> {
         }
 
         return null;
+    }
+
+    public void setCheckedPhotos(List<String> checkedPhotos){
+        mCheckPhotos.addAll(checkedPhotos);
+        notifyDataSetChanged();
     }
 
     static class PhotoViewHolder extends BaseViewHolder {

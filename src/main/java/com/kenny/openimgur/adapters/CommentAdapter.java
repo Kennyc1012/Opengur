@@ -66,7 +66,9 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     /**
      * Removes all items from list and ImgurListener is removed
      */
-    public void destroy() {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         clear();
         mListener = null;
     }
@@ -245,7 +247,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
                     }
                 }
 
-                if(endPosition!=-1)break;
+                if (endPosition != -1) break;
             }
         }
 

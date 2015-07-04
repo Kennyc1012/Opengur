@@ -53,6 +53,8 @@ import de.greenrobot.event.EventBus;
  * Created by Kenny-PC on 6/20/2015.
  */
 public class UploadActivity2 extends BaseActivity implements PhotoUploadListener {
+    private static final String KEY_SAVED_ITEMS = "saved_items";
+
     private static final int REQUEST_CODE_CAMERA = 123;
 
     private static final int REQUEST_CODE_GALLERY = 321;
@@ -82,6 +84,13 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
         getSupportActionBar().setTitle(R.string.upload);
         checkForTopics();
         checkForNag();
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SAVED_ITEMS)) {
+            List<Upload> uploads = savedInstanceState.getParcelableArrayList(KEY_SAVED_ITEMS);
+            mAdapter = new UploadPhotoAdapter(this, uploads, this);
+            mRecyclerView.setAdapter(mAdapter);
+            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        }
     }
 
     @Override
@@ -327,8 +336,18 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (mAdapter != null && !mAdapter.isEmpty()) {
+            outState.putParcelableArrayList(KEY_SAVED_ITEMS, mAdapter.retainItems());
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         if (EventBus.getDefault().isRegistered(this)) EventBus.getDefault().unregister(this);
+        if (mAdapter != null) mAdapter.onDestroy();
         super.onDestroy();
     }
 

@@ -61,7 +61,9 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
     /**
      * Removes all items from list and ImgurListener is removed
      */
-    public void destroy() {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         clear();
         mListener = null;
     }

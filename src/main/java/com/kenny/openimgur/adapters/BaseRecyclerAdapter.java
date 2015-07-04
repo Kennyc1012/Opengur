@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -213,6 +214,13 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
      */
     protected DisplayImageOptions getDisplayOptions() {
         return ImageUtil.getDefaultDisplayOptions().build();
+    }
+
+    /**
+     * Frees up any resources tied to the adapter. Should be called in an activities onDestroy lifecycle method
+     */
+    public void onDestroy() {
+        LogUtil.v(TAG, "onDestroy");
     }
 
     public abstract static class BaseViewHolder extends RecyclerView.ViewHolder {

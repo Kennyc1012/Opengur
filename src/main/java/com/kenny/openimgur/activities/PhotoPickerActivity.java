@@ -32,6 +32,8 @@ import butterknife.InjectView;
  */
 public class PhotoPickerActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<List<String>>, View.OnClickListener {
     private static final int LOADER_ID = PhotoPickerActivity.class.hashCode();
+    private static final String KEY_SAVED_PHOTOS = "saved_photos";
+    private static final String KEY_SAVED_CHECKED_PHOTOS = "saved_checked_photos";
 
     public static final String KEY_PHOTOS = PhotoPickerActivity.class.getSimpleName() + ".photos";
 
@@ -51,7 +53,22 @@ public class PhotoPickerActivity extends BaseActivity implements LoaderManager.L
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_picker);
-        getSupportActionBar().setTitle(R.string.photo_picker_title);
+        ActionBar ab = getSupportActionBar();
+        ab.setTitle(R.string.photo_picker_title);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SAVED_PHOTOS)) {
+            List<String> photos = savedInstanceState.getStringArrayList(KEY_SAVED_PHOTOS);
+            List<String> checkedPhotos = savedInstanceState.getStringArrayList(KEY_SAVED_CHECKED_PHOTOS);
+            mAdapter = new PhotoPickerAdapter(getApplicationContext(), mGrid, photos, this);
+
+            if (checkedPhotos != null) {
+                mAdapter.setCheckedPhotos(checkedPhotos);
+                ab.setTitle(getString(R.string.photos_selected, checkedPhotos.size()));
+            }
+
+            mGrid.setAdapter(mAdapter);
+            mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+        }
     }
 
     @Override
@@ -69,6 +86,7 @@ public class PhotoPickerActivity extends BaseActivity implements LoaderManager.L
     @Override
     protected void onDestroy() {
         getLoaderManager().destroyLoader(LOADER_ID);
+        if (mAdapter != null) mAdapter.onDestroy();
         super.onDestroy();
     }
 
@@ -152,6 +170,16 @@ public class PhotoPickerActivity extends BaseActivity implements LoaderManager.L
     @Override
     protected int getStyleRes() {
         return R.style.Theme_AppCompat;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (mAdapter != null) {
+            outState.putStringArrayList(KEY_SAVED_PHOTOS, mAdapter.retainItems());
+            outState.putStringArrayList(KEY_SAVED_CHECKED_PHOTOS, mAdapter.getCheckedPhotos());
+        }
     }
 
     private static class FetchImagesTask extends AsyncTaskLoader<List<String>> {

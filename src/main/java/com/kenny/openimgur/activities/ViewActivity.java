@@ -434,7 +434,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         dismissDialogFragment("comment");
 
         if (mCommentAdapter != null) {
-            mCommentAdapter.destroy();
+            mCommentAdapter.onDestroy();
             mCommentAdapter = null;
         }
 

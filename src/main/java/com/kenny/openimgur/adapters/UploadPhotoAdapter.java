@@ -35,6 +35,12 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
         mListener = listener;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mListener = null;
+    }
+
     public void onItemMove(int from, int to) {
         Collections.swap(getAllItems(), from, to);
         notifyItemMoved(from, to);
