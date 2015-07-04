@@ -20,6 +20,8 @@ import com.kenny.openimgur.fragments.UploadLinkDialogFragment;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.snackbar.SnackBar;
+import com.kenny.snackbar.SnackBarItem;
+import com.kenny.snackbar.SnackBarListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -179,8 +181,29 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
 
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-            mAdapter.removeItem(viewHolder.getAdapterPosition());
+            Upload upload = mAdapter.removeItem(viewHolder.getAdapterPosition());
             if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+
+            SnackBar.cancelSnackBars(UploadActivity2.this);
+            new SnackBarItem.Builder(UploadActivity2.this)
+                    .setMessageResource(R.string.upload_photo_removed)
+                    .setActionMessageResource(R.string.undo)
+                    .setObject(upload)
+                    .setSnackBarListener(new SnackBarListener() {
+                        @Override
+                        public void onSnackBarStarted(Object o) {
+
+                        }
+
+                        @Override
+                        public void onSnackBarFinished(Object object, boolean actionPressed) {
+                            if (actionPressed && object instanceof Upload) {
+                                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                                mAdapter.addItem((Upload) object);
+                            }
+                        }
+                    })
+                    .show();
         }
     };
 }

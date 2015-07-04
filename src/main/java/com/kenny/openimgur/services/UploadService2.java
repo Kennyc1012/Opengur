@@ -67,7 +67,7 @@ public class UploadService2 extends IntentService {
     }
 
     /**
-     * Creates servuce for uploading photos. Call this when uploading to Gallery
+     * Creates service for uploading photos. Call this when uploading to Gallery
      *
      * @param context App context
      * @param uploads Photos being uploaded
@@ -408,7 +408,7 @@ public class UploadService2 extends IntentService {
                     LogUtil.v(TAG, "Album creation successful");
                     onSuccessfulUpload(album);
                 } else {
-                    LogUtil.v(TAG, "Submitting album to gallery with tite " + title + " and topic " + topic.getName());
+                    LogUtil.v(TAG, "Submitting album to gallery with title " + title + " and topic " + topic.getName());
                     submitToGallery(title, topic, album);
                 }
             } else {

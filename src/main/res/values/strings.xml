@@ -86,6 +86,7 @@
     <string name="copy_album_link">Copy Album Link</string>
     <string name="done">Done</string>
     <string name="add">Add</string>
+    <string name="undo">Undo</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -280,6 +281,7 @@
     <string name="upload_gallery_failed_long">There was a problem while submitting to the Imgur Gallery. The photos were still uploaded however.</string>
     <string name="upload_album_failed">There was an error creating the album</string>
     <string name="upload_album_failed_long">There was a problem while creating the album. The photos were still uploaded however.</string>
+    <string name="upload_photo_removed">Photo Removed</string>
 
     <plurals name="upload_notif_photos">
         <item quantity="one">Uploading Photo&#8230;</item>
