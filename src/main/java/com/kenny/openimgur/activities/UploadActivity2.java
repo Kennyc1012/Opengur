@@ -9,6 +9,8 @@ import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.kenny.openimgur.R;
@@ -58,6 +60,31 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
         setContentView(R.layout.activity_upload2);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         new ItemTouchHelper(mSimpleItemTouchCallback).attachToRecyclerView(mRecyclerView);
+        getSupportActionBar().setTitle(R.string.upload);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.upload_activity,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.upload);
+        item.setVisible(mAdapter!=null && !mAdapter.isEmpty());
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.upload:
+                // TODO
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @OnClick({R.id.cameraBtn, R.id.linkBtn, R.id.galleryBtn})
@@ -109,6 +136,7 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
                     }
 
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    supportInvalidateOptionsMenu();
                 }
                 break;
 
@@ -129,6 +157,7 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
 
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                     mTempFile = null;
+                    supportInvalidateOptionsMenu();
                 } else {
                     SnackBar.show(this, R.string.upload_camera_error);
                 }
@@ -157,6 +186,7 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
         }
 
         mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        supportInvalidateOptionsMenu();
     }
 
     @Override
@@ -171,6 +201,7 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
     @Override
     public void onItemEdited(Upload upload) {
         mAdapter.notifyDataSetChanged();
+        supportInvalidateOptionsMenu();
     }
 
     private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -201,10 +232,13 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
                             if (actionPressed && object instanceof Upload) {
                                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                                 mAdapter.addItem((Upload) object);
+                                supportInvalidateOptionsMenu();
                             }
                         }
                     })
                     .show();
+
+            supportInvalidateOptionsMenu();
         }
     };
 }
