@@ -49,6 +49,10 @@ public class UploadService2 extends IntentService {
 
     private static final String KEY_TOPIC = TAG + ".topic";
 
+    private static final String KEY_DESC = TAG + ".desc";
+
+    private static final String KEY_SUBMIT_TO_GALLERY = TAG + ".submit.to.gallery";
+
     private NotificationManager mManager;
 
     private NotificationCompat.Builder mBuilder;
@@ -56,27 +60,26 @@ public class UploadService2 extends IntentService {
     private int mNotificationId;
 
     /**
-     * Creates service for uploading photos. Call this when not uploading to Gallery
+     * Creates service for uploading photos.
      *
-     * @param context App    context
-     * @param uploads Photos being uploaded
+     * @param context         App context
+     * @param uploads         Photos being uploaded
+     * @param submitToGallery If the upload is being submitted to the Imgur Gallery
+     * @param title           The title for the Gallery
+     * @param desc            The description for the upload
+     * @param topic           The Topic for the Gallery
      * @return
      */
-    public static Intent createIntent(Context context, @NonNull ArrayList<Upload> uploads) {
-        return new Intent(context, UploadService2.class).putExtra(KEY_UPLOADS, uploads);
-    }
+    public static Intent createIntent(Context context, @NonNull ArrayList<Upload> uploads, boolean submitToGallery, @Nullable String title, @Nullable String desc, @Nullable ImgurTopic topic) {
+        Intent intent = new Intent(context, UploadService2.class)
+                .putExtra(KEY_UPLOADS, uploads)
+                .putExtra(KEY_SUBMIT_TO_GALLERY, submitToGallery);
 
-    /**
-     * Creates service for uploading photos. Call this when uploading to Gallery
-     *
-     * @param context App context
-     * @param uploads Photos being uploaded
-     * @param title   The title for the Gallery
-     * @param topic   The Topic for the Gallery
-     * @return
-     */
-    public static Intent createIntent(Context context, @NonNull ArrayList<Upload> uploads, String title, ImgurTopic topic) {
-        return createIntent(context, uploads).putExtra(KEY_TITLE, title).putExtra(KEY_TOPIC, topic);
+        if (!TextUtils.isEmpty(title)) intent.putExtra(KEY_TITLE, title);
+        if (!TextUtils.isEmpty(desc)) intent.putExtra(KEY_DESC, desc);
+        if (topic != null) intent.putExtra(KEY_TOPIC, topic);
+
+        return intent;
     }
 
     public UploadService2() {
@@ -99,9 +102,13 @@ public class UploadService2 extends IntentService {
         try {
             OpengurApp app = OpengurApp.getInstance(getApplicationContext());
             onUploadStarted(app);
+
             ImgurTopic topic = intent.getParcelableExtra(KEY_TOPIC);
             String title = intent.getStringExtra(KEY_TITLE);
+            String desc = intent.getStringExtra(KEY_DESC);
             ArrayList<Upload> uploads = intent.getParcelableArrayListExtra(KEY_UPLOADS);
+            boolean submitToGallery = intent.getBooleanExtra(KEY_SUBMIT_TO_GALLERY, false);
+
             int totalUploads = uploads.size();
             LogUtil.v(TAG, "Starting upload of " + uploads.size() + " images");
             ApiClient client = new ApiClient(Endpoints.UPLOAD.getUrl(), ApiClient.HttpRequest.POST);
@@ -132,11 +139,11 @@ public class UploadService2 extends IntentService {
             if (uploads.size() == uploadedPhotos.size()) {
                 // All photos uploaded correctly
                 LogUtil.v(TAG, "All photos successfully uploaded, number of photos uploaded " + uploadedPhotos.size());
-                onPhotosUploaded(uploadedPhotos, title, topic);
+                onPhotosUploaded(uploadedPhotos, submitToGallery, title, desc, topic);
             } else if (uploadedPhotos.size() > 1) {
                 // Some of the photos did not upload correctly
                 LogUtil.w(TAG, uploadedPhotos.size() + " of " + uploads.size() + " photos were uploaded successfully");
-                onPartialPhotoUpload(uploadedPhotos, uploads.size());
+                onPartialPhotoUpload(uploadedPhotos, uploads.size(), title, desc);
             } else {
                 // No photos were uploaded, double you tee eff mate
                 LogUtil.w(TAG, "No photos were uploaded");
@@ -209,8 +216,10 @@ public class UploadService2 extends IntentService {
      *
      * @param uploadedPhotos The photos that were uploaded successfully
      * @param total          The total number of photos that should have been uploaded
+     * @param title          The optional title of the upload
+     * @param desc           The optional title of the upload
      */
-    private void onPartialPhotoUpload(List<ImgurPhoto> uploadedPhotos, int total) {
+    private void onPartialPhotoUpload(List<ImgurPhoto> uploadedPhotos, int total, @Nullable String title, @Nullable String desc) {
         if (uploadedPhotos.size() == 1) {
             // Show the notification immediately as an album will not be created for only 1 photo
             String msg = getString(R.string.upload_notif_error_upload_complete_long, uploadedPhotos.size(), total);
@@ -229,22 +238,24 @@ public class UploadService2 extends IntentService {
 
             mManager.notify(mNotificationId, mBuilder.build());
         } else {
-            createAlbum(uploadedPhotos, null, null);
+            createAlbum(uploadedPhotos, false, title, desc, null);
         }
     }
 
     /**
      * Called when all photos have successfully been uploaded. Will attempt to create an album and/or upload to the gallery if desired
      *
-     * @param uploadedPhotos The photos that were uploaded
-     * @param title          The optional title when submitting to the gallery
-     * @param topic          The optional topic when submitting to the gallery
+     * @param uploadedPhotos  The photos that were uploaded
+     * @param submitToGallery If submitting to the gallery
+     * @param title           The optional title of the upload
+     * @param desc            The optional title of the upload
+     * @param topic           The optional topic when submitting to the gallery
      */
-    private void onPhotosUploaded(List<ImgurPhoto> uploadedPhotos, @Nullable String title, @Nullable ImgurTopic topic) {
+    private void onPhotosUploaded(List<ImgurPhoto> uploadedPhotos, boolean submitToGallery, @Nullable String title, @Nullable String desc, @Nullable ImgurTopic topic) {
         if (uploadedPhotos.size() == 1) {
             ImgurPhoto photo = uploadedPhotos.get(0);
 
-            if (TextUtils.isEmpty(title) || topic == null) {
+            if (!submitToGallery) {
                 LogUtil.v(TAG, "Image uploaded successfully, not submitting to gallery");
                 onSuccessfulUpload(photo);
             } else {
@@ -254,7 +265,7 @@ public class UploadService2 extends IntentService {
             }
         } else {
             LogUtil.v(TAG, "Creating album");
-            createAlbum(uploadedPhotos, title, topic);
+            createAlbum(uploadedPhotos, submitToGallery, title, desc, topic);
         }
     }
 
@@ -377,12 +388,14 @@ public class UploadService2 extends IntentService {
     /**
      * Creates the album from the uploaded photos
      *
-     * @param uploadedPhotos The list of photos to be included in the album
-     * @param title          The optional title of the album
-     * @param topic          The optional topic for galery submission
+     * @param uploadedPhotos  The photos that were uploaded
+     * @param submitToGallery If submitting to the gallery
+     * @param title           The optional title of the upload
+     * @param desc            The optional title of the upload
+     * @param topic           The optional topic when submitting to the gallery
      * @return
      */
-    private void createAlbum(@NonNull List<ImgurPhoto> uploadedPhotos, @Nullable String title, @Nullable ImgurTopic topic) {
+    private void createAlbum(@NonNull List<ImgurPhoto> uploadedPhotos, boolean submitToGallery, @Nullable String title, @Nullable String desc, @Nullable ImgurTopic topic) {
         try {
             ApiClient client = new ApiClient(Endpoints.ALBUM_CREATION.getUrl(), ApiClient.HttpRequest.POST);
             String coverId = uploadedPhotos.get(0).getId();
@@ -397,6 +410,7 @@ public class UploadService2 extends IntentService {
                     .add("ids", sb.toString())
                     .add("cover", coverId);
             if (!TextUtils.isEmpty(title)) builder.add("title", title);
+            if (!TextUtils.isEmpty(desc)) builder.add("description", desc);
 
             JSONObject json = client.doWork(builder.build());
             int status = json.getInt(ApiClient.KEY_STATUS);
@@ -404,7 +418,7 @@ public class UploadService2 extends IntentService {
             if (status == ApiClient.STATUS_OK) {
                 ImgurAlbum album = new ImgurAlbum(json.getJSONObject(ApiClient.KEY_DATA));
 
-                if (TextUtils.isEmpty(title)) {
+                if (!submitToGallery) {
                     LogUtil.v(TAG, "Album creation successful");
                     onSuccessfulUpload(album);
                 } else {

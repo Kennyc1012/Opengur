@@ -10,4 +10,6 @@ public interface PhotoUploadListener {
     void onItemClicked(int position);
 
     void onItemEdited(Upload upload);
+
+    void onUpload(boolean submitToGallery, String title, String description, ImgurTopic topic);
 }

@@ -25,8 +25,6 @@
     <string name="favorite">Favorite</string>
     <string name="upload">Upload</string>
     <string name="link_upload_desc">Enter URL to Upload From Web</string>
-    <string name="upload_desc">Description</string>
-    <string name="upload_title">Title</string>
     <string name="logout">Logout</string>
     <string name="logout_confirm">Are you sure you want to logout?</string>
     <string name="user_not_logged_in">You must be logged in to complete this action</string>
@@ -282,6 +280,11 @@
     <string name="upload_album_failed">There was an error creating the album</string>
     <string name="upload_album_failed_long">There was a problem while creating the album. The photos were still uploaded however.</string>
     <string name="upload_photo_removed">Photo Removed</string>
+    <string name="upload_info">Upload Information</string>
+    <string name="upload_title">Title</string>
+    <string name="upload_desc">Description</string>
+    <string name="upload_submit_to_gallery">Submit to Imgur</string>
+    <string name="upload_gallery_no_title">Gallery Submissions must have a title</string>
 
     <plurals name="upload_notif_photos">
         <item quantity="one">Uploading Photo&#8230;</item>
