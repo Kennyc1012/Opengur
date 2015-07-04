@@ -3,17 +3,21 @@ package com.kenny.openimgur.activities;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.UploadPhotoAdapter;
@@ -53,6 +57,8 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
 
     private static final int REQUEST_CODE_GALLERY = 321;
 
+    private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
+
     @InjectView(R.id.multiView)
     MultiStateView mMultiView;
 
@@ -75,6 +81,7 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
         new ItemTouchHelper(mSimpleItemTouchCallback).attachToRecyclerView(mRecyclerView);
         getSupportActionBar().setTitle(R.string.upload);
         checkForTopics();
+        checkForNag();
     }
 
     @Override
@@ -258,6 +265,39 @@ public class UploadActivity2 extends BaseActivity implements PhotoUploadListener
             new ApiClient(Endpoints.TOPICS_DEFAULTS.getUrl(), ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.TOPICS, null, null);
         } else {
             LogUtil.v(TAG, "Topics in database");
+        }
+    }
+
+    /**
+     * Checks if the user is not logged in and if we should nag about it
+     */
+    private void checkForNag() {
+        boolean nag = app.getPreferences().getBoolean(PREF_NOTIFY_NO_USER, true);
+
+        if (nag && user == null) {
+            View nagView = LayoutInflater.from(this).inflate(R.layout.no_user_nag, null);
+            final CheckBox cb = (CheckBox) nagView.findViewById(R.id.dontNotify);
+
+            new AlertDialog.Builder(this, theme.getAlertDialogTheme())
+                    .setTitle(R.string.not_logged_in)
+                    .setNegativeButton(R.string.cancel, null)
+                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            if (cb.isChecked()) {
+                                app.getPreferences().edit().putBoolean(PREF_NOTIFY_NO_USER, false).apply();
+                            }
+                        }
+                    })
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(ProfileActivity.createIntent(getApplicationContext(), null));
+                            finish();
+                        }
+                    })
+                    .setView(nagView)
+                    .show();
         }
     }
 
