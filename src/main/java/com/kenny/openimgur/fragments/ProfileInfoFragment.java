@@ -207,6 +207,10 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                             .show(getFragmentManager(), "popup");
                     break;
 
+                case IMAGE_URL_QUERY:
+                    int index = url.indexOf("?");
+                    url = url.substring(0, index);
+                    // Intentional fallthrough
                 case DIRECT_LINK:
                     boolean isAnimated = LinkUtils.isLinkAnimated(url);
                     boolean isVideo = LinkUtils.isVideoLink(url);
