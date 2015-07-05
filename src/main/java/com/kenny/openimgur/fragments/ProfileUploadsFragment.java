@@ -215,10 +215,10 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
                             }
                         }
 
-                        SnackBar.show(getActivity(), R.string.profile_delete_success);
+                        SnackBar.show(getActivity(), R.string.profile_delete_success_image);
                     } else {
                         mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
-                        SnackBar.show(getActivity(), R.string.profile_delete_failure);
+                        SnackBar.show(getActivity(), R.string.profile_delete_failure_image);
                     }
                     break;
             }

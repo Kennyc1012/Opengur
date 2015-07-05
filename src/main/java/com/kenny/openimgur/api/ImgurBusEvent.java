@@ -39,6 +39,7 @@ public class ImgurBusEvent {
         MEME,
         GALLERY_SEARCH,
         TAGS,
+        ALBUM_DELETE,
         USER_ALBUMS
     }
 
