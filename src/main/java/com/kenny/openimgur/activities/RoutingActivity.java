@@ -50,6 +50,10 @@ public class RoutingActivity extends BaseActivity {
                 routingIntent = ViewActivity.createIntent(getApplicationContext(), link, match == LinkUtils.LinkMatch.ALBUM);
                 break;
 
+            case IMAGE_URL_QUERY:
+                int index = link.indexOf("?");
+                link = link.substring(0,index);
+                // Intentional fallthrough
             case DIRECT_LINK:
                 routingIntent = FullScreenPhotoActivity.createIntent(getApplicationContext(), link);
                 break;

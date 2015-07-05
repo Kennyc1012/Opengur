@@ -12,6 +12,7 @@ import android.text.format.DateUtils;
 import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 import com.kenny.openimgur.activities.MuzeiSettingsActivity;
+import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.classes.ImgurFilters;
@@ -110,10 +111,15 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
                 LogUtil.v(TAG, "Link does not exist in database");
             }
 
-            url = photo.getLink();
-            title = photo.getTitle();
-            byline = TextUtils.isEmpty(photo.getAccount()) ? "?????" : photo.getAccount();
             sql.addMuzeiLink(photo.getLink());
+            url = !TextUtils.isEmpty(photo.getRedditLink()) ? photo.getRedditLink() : photo.getLink();
+            title = photo.getTitle();
+
+            if (source.equals(MuzeiSettingsActivity.SOURCE_REDDIT)) {
+                byline = pref.getString(MuzeiSettingsActivity.KEY_INPUT, FALLBACK_SUBREDDIT);
+            } else {
+                byline = TextUtils.isEmpty(photo.getAccount()) ? "?????" : photo.getAccount();
+            }
         } else {
             url = FALLBACK_URL;
             title = FALLBACK_TITLE;

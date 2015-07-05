@@ -695,6 +695,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     startActivity(intent);
                     break;
 
+                case IMAGE_URL_QUERY:
+                    int index = url.indexOf("?");
+                    url = url.substring(0,index);
+                    // Intentional fallthrough
                 case IMAGE_URL:
                     getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true, false), "popup").commitAllowingStateLoss();
                     break;
