@@ -308,13 +308,7 @@ public class UploadService2 extends IntentService {
      * @param obj
      */
     private void onSuccessfulUpload(ImgurBaseObject obj) {
-        String url;
-        if (obj instanceof ImgurAlbum) {
-            // A newly created album won't contain its link, so we will create it
-            url = "https://imgur.com/a/" + obj.getId();
-        } else {
-            url = obj.getLink();
-        }
+        String url = obj.getLink();
         Intent intent = NotificationReceiver.createCopyIntent(getApplicationContext(), url, mNotificationId);
         PendingIntent pIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -417,6 +411,10 @@ public class UploadService2 extends IntentService {
 
             if (status == ApiClient.STATUS_OK) {
                 ImgurAlbum album = new ImgurAlbum(json.getJSONObject(ApiClient.KEY_DATA));
+                // The object will not be fully completed, add the needed fields
+                album.setLink("https://imgur.com/a/" + album.getId());
+                album.setCoverId(coverId);
+                OpengurApp.getInstance(getApplicationContext()).getSql().insertUploadedAlbum(album);
 
                 if (!submitToGallery) {
                     LogUtil.v(TAG, "Album creation successful");

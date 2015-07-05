@@ -97,6 +97,10 @@ public class DBContracts {
 
         public static final String COLUMN_DELETE_HASH = "delete_hash";
 
+        public static final String COLUMN_IS_ALBUM = "is_album";
+
+        public static final String COLUMN_COVER_ID = "cover_id";
+
         public static final int COLUMN_INDEX_ID = 0;
 
         public static final int COLUMN_INDEX_URL = 1;
@@ -105,11 +109,17 @@ public class DBContracts {
 
         public static final int COLUMN_INDEX_DELETE_HASH = 3;
 
+        public static final int COLUMN_INDEX_IS_ALBUM = 4;
+
+        public static final int COLUMN_INDEX_COVER_ID = 5;
+
         public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
                 " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
                 COLUMN_URL + " TEXT NOT NULL, " +
                 COLUMN_DATE + " INTEGER, " +
-                COLUMN_DELETE_HASH + " TEXT);";
+                COLUMN_DELETE_HASH + " TEXT, " +
+                COLUMN_IS_ALBUM + " INTEGER, " +
+                COLUMN_COVER_ID + " TEXT);";
 
         public static final String GET_UPLOADS_SQL = "SELECT * FROM " + TABLE_NAME +
                 " ORDER BY " + COLUMN_DATE + " %s";

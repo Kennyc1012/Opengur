@@ -133,7 +133,8 @@
     <!-- Uploaded Photos-->
     <string name="uploaded_photos_empty">You have not uploaded any photos from this device</string>
     <string name="uploaded_photos_title">Uploads</string>
-    <string name="uploaded_remove_message">Are you sure you want to remove this photo?</string>
+    <string name="uploaded_remove_photo_message">Are you sure you want to remove this photo?</string>
+    <string name="uploaded_remove_album_message">Are you sure you want to remove this Album?</string>
     <string name="uploaded_remove_imgur">Remove from Imgur</string>
     <string name="upload_in_background">Upload In Background</string>
 

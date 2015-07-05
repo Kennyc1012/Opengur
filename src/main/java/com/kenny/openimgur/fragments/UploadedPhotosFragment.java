@@ -16,10 +16,12 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.UploadActivity;
+import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.UploadAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
@@ -110,7 +112,12 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
 
         if (adapterPosition >= 0) {
             UploadedPhoto photo = mAdapter.getItem(adapterPosition);
-            startActivity(FullScreenPhotoActivity.createIntent(getActivity(), photo.getUrl()));
+
+            if (photo.isAlbum()) {
+                startActivity(ViewActivity.createIntent(getActivity(), photo.getUrl(), true));
+            } else {
+                startActivity(FullScreenPhotoActivity.createIntent(getActivity(), photo.getUrl()));
+            }
         }
     }
 
@@ -145,12 +152,14 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                                 case 1:
                                     ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                                     clipboard.setPrimaryClip(ClipData.newPlainText("link", photo.getUrl()));
-                                    SnackBar.show(getActivity(),R.string.link_copied);
+                                    SnackBar.show(getActivity(), R.string.link_copied);
                                     break;
 
                                 case 2:
                                     View deleteView = LayoutInflater.from(getActivity()).inflate(R.layout.upload_delete_confirm, null);
                                     final CheckBox cb = (CheckBox) deleteView.findViewById(R.id.imgurDelete);
+                                    ((TextView) deleteView.findViewById(R.id.message)).setText(photo.isAlbum()
+                                            ? R.string.uploaded_remove_album_message : R.string.uploaded_remove_photo_message);
 
                                     new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                                             .setNegativeButton(R.string.cancel, null)
@@ -158,7 +167,8 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     if (cb.isChecked()) {
-                                                        String url = String.format(Endpoints.IMAGE_DELETE.getUrl(), photo.getDeleteHash());
+                                                        Endpoints ep = photo.isAlbum() ? Endpoints.ALBUM_DELETE : Endpoints.IMAGE_DELETE;
+                                                        String url = String.format(ep.getUrl(), photo.getDeleteHash());
                                                         // We don't care about any conformation here
                                                         new ApiClient(url, ApiClient.HttpRequest.DELETE).doWork(null, null, null);
                                                     }

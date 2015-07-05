@@ -117,7 +117,10 @@ public enum Endpoints {
     ALBUM_CREATION("https://api.imgur.com/3/album"),
 
     // Username/Page
-    USER_ALBUMS("https://api.imgur.com/3/account/%s/albums/%d");
+    USER_ALBUMS("https://api.imgur.com/3/account/%s/albums/%d"),
+
+    // Albumid/delete hash
+    ALBUM_DELETE("https://api.imgur.com/3/album/%s");
 
     private final String mUrl;
 
