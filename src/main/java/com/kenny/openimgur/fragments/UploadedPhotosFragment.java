@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
-import com.kenny.openimgur.activities.UploadActivity;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.UploadAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -208,27 +207,5 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
         }
 
         mPreviousItem = firstVisibleItem;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK && requestCode == UploadActivity.REQUEST_CODE) {
-            // A new photo was uploaded, refresh the data
-            mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
-            List<UploadedPhoto> photos = app.getSql().getUploadedPhotos(true);
-
-            if (mAdapter != null) {
-                mAdapter.clear();
-                mAdapter.addItems(photos);
-            } else {
-                mAdapter = new UploadAdapter(getActivity(), photos);
-                mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
-                mGrid.setAdapter(mAdapter);
-            }
-
-            mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -208,10 +208,7 @@ public class MemeActivity extends BaseActivity {
                                     break;
 
                                 case R.id.upload:
-                                    Intent uploadIntent = new Intent(getApplicationContext(), UploadActivity.class);
-                                    uploadIntent.setAction(Intent.ACTION_SEND);
-                                    uploadIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                                    startActivity(uploadIntent);
+                                    // TODO
                                     break;
                             }
                         }

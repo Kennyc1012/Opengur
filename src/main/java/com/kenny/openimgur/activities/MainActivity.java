@@ -365,7 +365,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab:
-                startActivityForResult(UploadActivity2.createIntent(getApplicationContext()), UploadActivity.REQUEST_CODE);
+                startActivity(UploadActivity.createIntent(getApplicationContext()));
                 break;
         }
     }
@@ -435,11 +435,6 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                     overridePendingTransition(0, 0);
                     startActivity(intent);
                 }
-                break;
-
-            case UploadActivity.REQUEST_CODE:
-                Fragment current = getFragmentManager().findFragmentById(R.id.container);
-                if (current != null) current.onActivityResult(requestCode, resultCode, data);
                 break;
 
             case ProfileActivity.REQUEST_CODE:

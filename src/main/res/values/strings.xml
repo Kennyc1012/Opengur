@@ -24,11 +24,9 @@
     <string name="profile">Profile</string>
     <string name="favorite">Favorite</string>
     <string name="upload">Upload</string>
-    <string name="link_upload_desc">Enter URL to Upload From Web</string>
     <string name="logout">Logout</string>
     <string name="logout_confirm">Are you sure you want to logout?</string>
     <string name="user_not_logged_in">You must be logged in to complete this action</string>
-    <string name="invalid_url">The url does not appear to be an image</string>
     <string name="post">Post</string>
     <string name="up_vote">Up Vote</string>
     <string name="down_vote">Down Vote</string>
@@ -44,10 +42,6 @@
     <string name="version">Version</string>
     <string name="vote_cast">Vote Cast</string>
     <string name="one_moment">One Moment…</string>
-    <string name="uploading">Uploading, One Moment…</string>
-    <string name="decoding_image">Decoding Image, One Moment…</string>
-    <string name="add_to_gallery">Add To Gallery</string>
-    <string name="gallery_no_user">You must be logged in to upload to the gallery.</string>
     <string name="not_logged_in">Not Logged In</string>
     <string name="not_logged_in_msg">Are you sure you want to upload this image without being logged in?</string>
     <string name="copy_link">Copy Link</string>
@@ -57,8 +51,6 @@
     <string name="upload_complete">Upload Complete</string>
     <string name="view_licenses">View Open Source Licenses</string>
     <string name="retry">Retry</string>
-    <string name="empty_upload">No Photo has been selected for upload</string>
-    <string name="gallery_upload_no_title">Gallery Submissions must have a title</string>
     <string name="gallery">Gallery</string>
     <string name="subreddit">Subreddit</string>
     <string name="send_feedback">Send Feedback</string>
@@ -72,7 +64,6 @@
     <string name="close">Close</string>
     <string name="exit">Exit</string>
     <string name="exit_confirm">Are you sure you want to exit?</string>
-    <string name="image_uploading">Uploading Image</string>
     <string name="link_copied">Link copied</string>
     <string name="link_copy_failed">Unable to copy link</string>
     <string name="caution">Caution</string>
@@ -94,9 +85,6 @@
     <string name="download_error">An error occurred while downloading</string>
     <string name="error">Error</string>
     <string name="upload_camera_error">An error occurred while capturing your photo. Please try again</string>
-    <string name="upload_gallery_error">An error occurred while opening the selected image. Please try again</string>
-    <string name="upload_decode_error">An error occurred while decoding image. Please try again</string>
-    <string name="upload_error">An error occurred while uploading.</string>
 
     <!-- Notoriety -->
     <string name="notoriety_forever_alone">Forever Alone</string>
@@ -136,7 +124,6 @@
     <string name="uploaded_remove_photo_message">Are you sure you want to remove this photo?</string>
     <string name="uploaded_remove_album_message">Are you sure you want to remove this Album?</string>
     <string name="uploaded_remove_imgur">Remove from Imgur</string>
-    <string name="upload_in_background">Upload In Background</string>
 
     <!-- Convos -->
     <string name="convo_message_hint">Enter a message</string>
@@ -321,7 +308,6 @@
     <string name="muzei_wifi_off">Refresh regardless of network</string>
     <string name="muzei_source">Image Source</string>
     <string name="muzei_description">Imgur images for Muzei</string>
-    <string name="muzei_subreddit">Subreddit</string>
     <string name="muzei_topic">Topic</string>
 
 </resources>

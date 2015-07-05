@@ -1,100 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:layout_marginTop="?actionBarSize">
+    android:orientation="vertical">
+
+    <com.kenny.openimgur.ui.MultiStateView
+        android:id="@+id/multiView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="?actionBarSize"
+        android:layout_weight="1"
+        app:emptyView="@layout/uploads_empty"
+        app:loadingView="@layout/loading_view"
+        app:viewState="empty">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </com.kenny.openimgur.ui.MultiStateView>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <!-- TODO Wrap in Horizontal Scroll View for Album Support -->
-        <ImageView
-            android:id="@+id/previewImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/upload_image_margin"
-            android:layout_marginRight="@dimen/upload_image_margin"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/photo_placeholder" />
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/infoContainer"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:cardBackgroundColor="?cardBG">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <CheckBox
-                    android:id="@+id/galleryUpload"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/add_to_gallery"
-                    android:checked="false"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin" />
-
-                <CheckBox
-                    android:id="@+id/backgroundUpload"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/upload_in_background"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin" />
-
-                <EditText
-                    android:id="@+id/url"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:inputType="textUri"
-                    android:hint="@string/link_upload_desc"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin" />
-
-                <EditText
-                    android:id="@+id/title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:inputType="textCapSentences|textMultiLine"
-                    android:hint="@string/upload_title"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin" />
-
-                <EditText
-                    android:id="@+id/desc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:inputType="textCapSentences|textMultiLine"
-                    android:hint="@string/upload_desc"
-                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin" />
-
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDark"
+        android:orientation="horizontal"
+        tools:background="@color/theme_blue_dark">
 
         <Button
-            android:id="@+id/uploadButton"
+            android:id="@+id/cameraBtn"
             style="?android:borderlessButtonStyle"
-            android:layout_marginTop="8dp"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/upload"
-            android:textColor="?colorAccent"/>
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/ic_action_camera"
+            android:text="@string/upload_camera"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/galleryBtn"
+            style="?android:borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/ic_action_gallery"
+            android:text="@string/upload_gallery"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/linkBtn"
+            style="?android:borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/ic_action_link"
+            android:text="@string/upload_link"
+            android:textColor="@android:color/white" />
 
     </LinearLayout>
-</ScrollView>
+
+</LinearLayout>

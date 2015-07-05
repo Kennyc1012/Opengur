@@ -28,7 +28,7 @@
             android:label="@string/action_settings" />
         <activity android:name=".activities.ProfileActivity" />
         <activity
-            android:name=".activities.UploadActivity2"
+            android:name=".activities.UploadActivity"
             android:label="@string/upload">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.SEND" />
@@ -227,7 +227,6 @@
 
         <service android:name=".services.DownloaderService" />
         <service android:name=".services.UploadService" />
-        <service android:name=".services.UploadService2" />
 
         <service
             android:name=".services.ImgurMuzeiService"
