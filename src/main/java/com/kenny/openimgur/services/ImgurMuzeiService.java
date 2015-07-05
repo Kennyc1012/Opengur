@@ -112,7 +112,7 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
             }
 
             sql.addMuzeiLink(photo.getLink());
-            url = !TextUtils.isEmpty(photo.getRedditLink()) ? photo.getRedditLink() : photo.getLink();
+            url = photo.getLink();
             title = photo.getTitle();
 
             if (source.equals(MuzeiSettingsActivity.SOURCE_REDDIT)) {
