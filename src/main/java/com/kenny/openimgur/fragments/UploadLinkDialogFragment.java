@@ -36,6 +36,8 @@ import butterknife.OnClick;
 public class UploadLinkDialogFragment extends DialogFragment implements TextWatcher {
     public static final String TAG = UploadLinkDialogFragment.class.getSimpleName();
 
+    private static final String KEY_LINK = "link";
+
     private static final long TEXT_DELAY = DateUtils.SECOND_IN_MILLIS;
 
     @InjectView(R.id.link)
@@ -54,6 +56,18 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
     ProgressBar mLoadingIndicator;
 
     private PhotoUploadListener mListener;
+
+    public static final DialogFragment newInstance(@Nullable String link) {
+        UploadLinkDialogFragment fragment = new UploadLinkDialogFragment();
+
+        if (!TextUtils.isEmpty(link)) {
+            Bundle args = new Bundle(1);
+            args.putString(KEY_LINK, link);
+            fragment.setArguments(args);
+        }
+
+        return fragment;
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -92,6 +106,11 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.inject(this, view);
         mLink.addTextChangedListener(this);
+        Bundle args = getArguments();
+
+        if (args != null && args.containsKey(KEY_LINK)) {
+            mLink.setText(args.getString(KEY_LINK, null));
+        }
     }
 
     @Override

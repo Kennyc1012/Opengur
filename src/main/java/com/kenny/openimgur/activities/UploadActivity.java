@@ -2,6 +2,7 @@ package com.kenny.openimgur.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,6 +55,7 @@ import de.greenrobot.event.EventBus;
  * Created by Kenny-PC on 6/20/2015.
  */
 public class UploadActivity extends BaseActivity implements PhotoUploadListener {
+    private static final String KEY_PASSED_FILE = "passed_file";
     private static final String KEY_SAVED_ITEMS = "saved_items";
 
     private static final int REQUEST_CODE_CAMERA = 123;
@@ -75,11 +78,16 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         return new Intent(context, UploadActivity.class);
     }
 
+    public static Intent createIntent(Context context, @NonNull File file) {
+        return createIntent(context).putExtra(KEY_PASSED_FILE, file.getAbsolutePath());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        mMultiView.setEmptyText(R.id.emptyMessage, R.string.upload_empty_message);
         new ItemTouchHelper(mSimpleItemTouchCallback).attachToRecyclerView(mRecyclerView);
         getSupportActionBar().setTitle(R.string.upload);
         checkForTopics();
@@ -87,6 +95,62 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SAVED_ITEMS)) {
             List<Upload> uploads = savedInstanceState.getParcelableArrayList(KEY_SAVED_ITEMS);
+            mAdapter = new UploadPhotoAdapter(this, uploads, this);
+            mRecyclerView.setAdapter(mAdapter);
+            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        } else {
+            checkIntent(getIntent());
+        }
+    }
+
+    private void checkIntent(@Nullable Intent intent) {
+        if (intent == null) return;
+
+        List<Upload> uploads = null;
+
+        if (intent.hasExtra(KEY_PASSED_FILE)) {
+            LogUtil.v(TAG, "Received file from intent");
+            uploads = new ArrayList<>(1);
+            uploads.add(new Upload(intent.getStringExtra(KEY_PASSED_FILE)));
+
+        } else if (Intent.ACTION_SEND.equals(intent.getAction())) {
+            String type = intent.getType();
+            LogUtil.v(TAG, "Received an image via Share intent, type " + type);
+
+            if ("text/plain".equals(type)) {
+                String link = intent.getStringExtra(Intent.EXTRA_TEXT);
+                getFragmentManager().beginTransaction()
+                        .add(UploadLinkDialogFragment.newInstance(link), UploadLinkDialogFragment.TAG)
+                        .commit();
+            } else {
+                Uri photoUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                File file = FileUtil.createFile(photoUri, getContentResolver());
+
+                if (FileUtil.isFileValid(file)) {
+                    uploads = new ArrayList<>(1);
+                    uploads.add(new Upload(file.getAbsolutePath()));
+                } else {
+                    SnackBar.show(this, R.string.upload_decode_failure);
+                }
+            }
+        } else if (Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction())) {
+            ArrayList<Uri> photoUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+
+            if (photoUris != null && !photoUris.isEmpty()) {
+                // TODO This should probably be done in a background thread
+                LogUtil.v(TAG, "Received " + photoUris.size() + " images via Share intent");
+
+                uploads = new ArrayList<>(photoUris.size());
+                ContentResolver resolver = getContentResolver();
+
+                for (Uri uri : photoUris) {
+                    File file = FileUtil.createFile(uri, resolver);
+                    if (FileUtil.isFileValid(file)) uploads.add(new Upload(file.getAbsolutePath()));
+                }
+            }
+        }
+
+        if (uploads != null && !uploads.isEmpty()) {
             mAdapter = new UploadPhotoAdapter(this, uploads, this);
             mRecyclerView.setAdapter(mAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -144,7 +208,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
             case R.id.linkBtn:
                 getFragmentManager().beginTransaction()
-                        .add(new UploadLinkDialogFragment(), UploadLinkDialogFragment.TAG)
+                        .add(UploadLinkDialogFragment.newInstance(null), UploadLinkDialogFragment.TAG)
                         .commit();
                 break;
         }

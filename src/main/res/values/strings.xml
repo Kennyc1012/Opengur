@@ -277,6 +277,8 @@
     <string name="upload_desc">Description</string>
     <string name="upload_submit_to_gallery">Submit to Imgur</string>
     <string name="upload_gallery_no_title">Gallery Submissions must have a title</string>
+    <string name="upload_decode_failure">Unable to open image, please try again</string>
+    <string name="upload_empty_message">You have not added any photos for upload</string>
 
     <plurals name="upload_notif_photos">
         <item quantity="one">Uploading Photo&#8230;</item>
