@@ -6,10 +6,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -19,6 +17,7 @@ import android.text.format.DateUtils;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
@@ -83,11 +82,16 @@ public class DownloaderService extends IntentService {
             File photoFile = new File(file.getAbsolutePath(), photoFileName);
             LogUtil.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
             int notificationId = photoId.hashCode();
-            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setContentTitle(getString(R.string.image_downloading))
-                    .setContentText(getString(R.string.downloading_msg)).setAutoCancel(true).setProgress(0, 0, true).setLargeIcon(icon)
-                    .setSmallIcon(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ? R.drawable.ic_launcher : R.drawable.ic_i);
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                    .setContentTitle(getString(R.string.image_downloading))
+                    .setContentText(getString(R.string.downloading_msg))
+                    .setAutoCancel(true)
+                    .setProgress(0, 0, true)
+                    .setSmallIcon(R.drawable.ic_notif)
+                    .setColor(getResources().getColor(OpengurApp.getInstance(getApplicationContext()).getImgurTheme().primaryColor));
+
             manager.notify(notificationId, builder.build());
 
             boolean saved;
@@ -119,7 +123,7 @@ public class DownloaderService extends IntentService {
                 shareIntent.setType(photoType);
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), 0, Intent.createChooser(shareIntent, getString(R.string.share)), PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), 0, Intent.createChooser(shareIntent, getString(R.string.share)), PendingIntent.FLAG_UPDATE_CURRENT);
 
                 Intent viewIntent = new Intent(Intent.ACTION_VIEW);
                 viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -134,13 +138,18 @@ public class DownloaderService extends IntentService {
                     NotificationCompat.BigPictureStyle bigPicStyle = new NotificationCompat.BigPictureStyle();
                     bigPicStyle.setBigContentTitle(getString(R.string.download_complete));
                     bigPicStyle.setSummaryText(getString(R.string.tap_to_view));
-                    bigPicStyle.bigLargeIcon(icon);
                     bigPicStyle.bigPicture(bm);
                     builder.setStyle(bigPicStyle);
                 }
 
-                builder.setProgress(0, 0, false).setContentIntent(viewP).addAction(R.drawable.ic_share_white_24dp, getString(R.string.share), shareP)
-                        .setContentTitle(getString(R.string.download_complete)).setContentText(getString(R.string.tap_to_view)).setLargeIcon(bm);
+                builder.setProgress(0, 0, false)
+                        .setContentIntent(viewP)
+                        .addAction(R.drawable.ic_share_white_24dp, getString(R.string.share), shareP)
+                        .setContentTitle(getString(R.string.download_complete))
+                        .setContentText(getString(R.string.tap_to_view))
+                        .setLargeIcon(bm)
+                        .setAutoCancel(true);
+
                 manager.notify(notificationId, builder.build());
             } else {
                 LogUtil.w(TAG, "Image download failed");
