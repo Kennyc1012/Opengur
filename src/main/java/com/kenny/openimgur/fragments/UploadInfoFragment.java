@@ -19,6 +19,7 @@ import com.kenny.openimgur.adapters.TopicsAdapter;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.PhotoUploadListener;
+import com.kenny.snackbar.SnackBar;
 
 import java.util.List;
 
@@ -102,6 +103,12 @@ public class UploadInfoFragment extends BaseFragment {
 
     @OnCheckedChanged(R.id.gallerySwitch)
     public void onCheckChanged(boolean checked) {
+        if (checked && app.getUser() == null) {
+            mGallerySwitch.setChecked(false);
+            SnackBar.show(getActivity(), R.string.upload_gallery_no_user);
+            return;
+        }
+
         int visibility = checked ? View.VISIBLE : View.GONE;
         mTopicSpinner.setVisibility(visibility);
         mTopicHeader.setVisibility(visibility);
