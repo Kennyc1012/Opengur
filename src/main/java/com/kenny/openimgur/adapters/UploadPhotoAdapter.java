@@ -1,24 +1,19 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,6 +28,11 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
     public UploadPhotoAdapter(Context context, List<Upload> uploads, PhotoUploadListener listener) {
         super(context, uploads, true);
         mListener = listener;
+    }
+
+    public UploadPhotoAdapter(Context context, Upload upload, PhotoUploadListener listener) {
+        this(context, new ArrayList<Upload>(1), listener);
+        addItem(upload);
     }
 
     @Override

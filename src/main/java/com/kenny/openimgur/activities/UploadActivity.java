@@ -249,9 +249,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                     Upload upload = new Upload(fileLocation);
 
                     if (mAdapter == null) {
-                        List<Upload> uploadList = new ArrayList<>(1);
-                        uploadList.add(upload);
-                        mAdapter = new UploadPhotoAdapter(this, uploadList, this);
+                        mAdapter = new UploadPhotoAdapter(this, upload, this);
                         mRecyclerView.setAdapter(mAdapter);
                     } else {
                         mAdapter.addItem(upload);
@@ -279,9 +277,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         Upload upload = new Upload(link, true);
 
         if (mAdapter == null) {
-            List<Upload> uploadList = new ArrayList<>(1);
-            uploadList.add(upload);
-            mAdapter = new UploadPhotoAdapter(this, uploadList, this);
+            mAdapter = new UploadPhotoAdapter(this, upload, this);
             mRecyclerView.setAdapter(mAdapter);
         } else {
             mAdapter.addItem(upload);

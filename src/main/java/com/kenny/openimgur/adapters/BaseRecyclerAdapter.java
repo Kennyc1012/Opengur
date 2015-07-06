@@ -217,7 +217,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
     }
 
     /**
-     * Frees up any resources tied to the adapter. Should be called in an activities onDestroy lifecycle method
+     * Frees up any resources tied to the adapter. Should be called in an activities onDestroy lifecycle method if needed
      */
     public void onDestroy() {
         LogUtil.v(TAG, "onDestroy");
