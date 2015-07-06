@@ -288,7 +288,8 @@ public class ImageUtil {
 
     public static DisplayImageOptions.Builder getDisplayOptionsForPhotoPicker() {
         return getDefaultDisplayOptions()
-                .cacheOnDisk(false);
+                .cacheOnDisk(false)
+                .considerExifParams(true);
     }
 
     /**
