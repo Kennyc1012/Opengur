@@ -56,6 +56,7 @@ import de.greenrobot.event.EventBus;
  */
 public class UploadActivity extends BaseActivity implements PhotoUploadListener {
     private static final String KEY_PASSED_FILE = "passed_file";
+
     private static final String KEY_SAVED_ITEMS = "saved_items";
 
     private static final int REQUEST_CODE_CAMERA = 123;
@@ -353,7 +354,12 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
             new AlertDialog.Builder(this, theme.getAlertDialogTheme())
                     .setTitle(R.string.not_logged_in)
-                    .setNegativeButton(R.string.cancel, null)
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
                     .setOnDismissListener(new DialogInterface.OnDismissListener() {
                         @Override
                         public void onDismiss(DialogInterface dialog) {
@@ -362,13 +368,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                             }
                         }
                     })
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            startActivity(ProfileActivity.createIntent(getApplicationContext(), null));
-                            finish();
-                        }
-                    })
+                    .setPositiveButton(R.string.yes, null)
                     .setView(nagView)
                     .show();
         }
