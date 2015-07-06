@@ -180,7 +180,10 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                         .add(android.R.id.content, UploadInfoFragment.newInstance(), UploadInfoFragment.class.getSimpleName())
                         .commit();
                 getSupportActionBar().hide();
-                break;
+                return true;
+
+            case android.R.id.home:
+                if (showCancelDialog()) return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -322,9 +325,26 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                     .commit();
 
             getSupportActionBar().show();
-        } else {
+        } else if (!showCancelDialog()) {
             super.onBackPressed();
         }
+    }
+
+    private boolean showCancelDialog() {
+        if (mAdapter == null || mAdapter.isEmpty()) return false;
+
+        new AlertDialog.Builder(this, app.getImgurTheme().getAlertDialogTheme())
+                .setTitle(R.string.upload_cancel_title)
+                .setMessage(R.string.upload_cancel_msg)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                }).show();
+
+        return true;
     }
 
     /**

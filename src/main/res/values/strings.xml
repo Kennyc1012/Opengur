@@ -279,6 +279,8 @@
     <string name="upload_decode_failure">Unable to open image, please try again</string>
     <string name="upload_empty_message">You have not added any photos for upload</string>
     <string name="upload_no_user">You are currently not logged in. Do you want to continue with your upload without logging in?</string>
+    <string name="upload_cancel_title">Cancel Upload</string>
+    <string name="upload_cancel_msg">Are you sure you want to cancel your upload?</string>
 
     <plurals name="upload_notif_photos">
         <item quantity="one">Uploading Photo&#8230;</item>
