@@ -58,6 +58,19 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
     }
 
     /**
+     * Adds an item to the list at the given position, {@link #notifyItemRangeInserted(int, int)} will be called
+     *
+     * @param object   Object to add to the adapter
+     * @param position Position to add the object
+     */
+    public void addItem(T object, int position) {
+        // An exception is thrown instead of creating a List object since the type of list in unknown
+        if (mItems == null) throw new NullPointerException("Adapter list has not been initialized");
+        mItems.add(position, object);
+        notifyItemRangeInserted(position, 1);
+    }
+
+    /**
      * Adds a list of items to the adapter list, {@link #notifyItemRangeInserted(int, int)} will be called
      *
      * @param items List of items to add to the adapter

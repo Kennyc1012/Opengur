@@ -445,14 +445,15 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-            Upload upload = mAdapter.removeItem(viewHolder.getAdapterPosition());
+            int adapterPosition = viewHolder.getAdapterPosition();
+            Upload upload = mAdapter.removeItem(adapterPosition);
             if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
 
             SnackBar.cancelSnackBars(UploadActivity.this);
             new SnackBarItem.Builder(UploadActivity.this)
                     .setMessageResource(R.string.upload_photo_removed)
                     .setActionMessageResource(R.string.undo)
-                    .setObject(upload)
+                    .setObject(new Object[]{adapterPosition, upload})
                     .setSnackBarListener(new SnackBarListener() {
                         @Override
                         public void onSnackBarStarted(Object o) {
@@ -461,9 +462,12 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
                         @Override
                         public void onSnackBarFinished(Object object, boolean actionPressed) {
-                            if (actionPressed && object instanceof Upload) {
+                            if (actionPressed && object instanceof Object[]) {
+                                Object[] objects = (Object[]) object;
+                                int position = (int) objects[0];
+                                Upload upload = (Upload) objects[1];
                                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                                mAdapter.addItem((Upload) object);
+                                mAdapter.addItem(upload, position);
                                 supportInvalidateOptionsMenu();
                             }
                         }
