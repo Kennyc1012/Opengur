@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -44,6 +45,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,20 +140,23 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
             ArrayList<Uri> photoUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 
             if (photoUris != null && !photoUris.isEmpty()) {
-                // TODO This should probably be done in a background thread
                 LogUtil.v(TAG, "Received " + photoUris.size() + " images via Share intent");
-
-                uploads = new ArrayList<>(photoUris.size());
-                ContentResolver resolver = getContentResolver();
-
-                for (Uri uri : photoUris) {
-                    File file = FileUtil.createFile(uri, resolver);
-                    if (FileUtil.isFileValid(file)) uploads.add(new Upload(file.getAbsolutePath()));
-                }
+                new DecodeImagesTask(this).execute(photoUris);
+                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
             }
         }
 
         if (uploads != null && !uploads.isEmpty()) {
+            mAdapter = new UploadPhotoAdapter(this, uploads, this);
+            mRecyclerView.setAdapter(mAdapter);
+            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        }
+    }
+
+    private void onUrisDecoded(@Nullable List<Upload> uploads) {
+        if (uploads == null || uploads.isEmpty()) {
+            mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+        } else {
             mAdapter = new UploadPhotoAdapter(this, uploads, this);
             mRecyclerView.setAdapter(mAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -468,4 +473,40 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
             supportInvalidateOptionsMenu();
         }
     };
+
+    private static class DecodeImagesTask extends AsyncTask<List<Uri>, Void, List<Upload>> {
+        WeakReference<UploadActivity> mActivty;
+
+        public DecodeImagesTask(@NonNull UploadActivity activity) {
+            mActivty = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected List<Upload> doInBackground(List<Uri>... params) {
+            if (params != null && params[0] != null && !params[0].isEmpty()) {
+                ContentResolver resolver = mActivty.get().getContentResolver();
+                List<Uri> photoUris = params[0];
+
+                List<Upload> uploads = new ArrayList<>(photoUris.size());
+
+                for (Uri uri : photoUris) {
+                    File file = FileUtil.createFile(uri, resolver);
+                    if (FileUtil.isFileValid(file)) uploads.add(new Upload(file.getAbsolutePath()));
+                }
+
+                return uploads;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<Upload> uploads) {
+            if (mActivty != null && mActivty.get() != null) {
+                mActivty.get().onUrisDecoded(uploads);
+                mActivty.clear();
+                mActivty = null;
+            }
+        }
+    }
 }
