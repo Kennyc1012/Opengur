@@ -70,6 +70,13 @@ public class UploadInfoFragment extends BaseFragment {
         super.onDetach();
     }
 
+    @Override
+    public void onPause() {
+        mTitle.setCursorVisible(false);
+        mDesc.setCursorVisible(false);
+        super.onPause();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

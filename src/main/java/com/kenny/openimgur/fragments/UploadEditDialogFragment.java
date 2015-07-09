@@ -67,6 +67,13 @@ public class UploadEditDialogFragment extends DialogFragment {
     }
 
     @Override
+    public void onPause() {
+        mTitle.setCursorVisible(false);
+        mDesc.setCursorVisible(false);
+        super.onPause();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         setStyle(DialogFragment.STYLE_NO_TITLE, OpengurApp.getInstance(getActivity()).getImgurTheme().getDialogTheme());
         super.onCreate(savedInstanceState);
