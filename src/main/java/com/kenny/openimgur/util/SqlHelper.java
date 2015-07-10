@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
@@ -33,7 +34,7 @@ import java.util.List;
 public class SqlHelper extends SQLiteOpenHelper {
     private static final String TAG = "SqlHelper";
 
-    private static final int DB_VERSION = 7;
+    private static final int DB_VERSION = 9;
 
     private static final String DB_NAME = "open_imgur.db";
 
@@ -64,7 +65,26 @@ public class SqlHelper extends SQLiteOpenHelper {
          v4 Added Subreddits Table
          V5 Added Meme Table
          V6 Added GallerySearch Table
-         v7 Added Muzei Table*/
+         v7 Added Muzei Table
+         v8 Alter Uploads table for albums*/
+
+        // Checking for is_album and cover_id column
+        Cursor cursor = db.rawQuery("SELECT * FROM " + UploadContract.TABLE_NAME + " LIMIT 0,1", null);
+
+        if (cursor.moveToFirst()) {
+            int index = cursor.getColumnIndex(UploadContract.COLUMN_IS_ALBUM);
+
+            if (index == -1) {
+                // Column doesn't exist, add it
+                db.execSQL("ALTER TABLE " + UploadContract.TABLE_NAME + "  ADD COLUMN " + UploadContract.COLUMN_IS_ALBUM + "  INTEGER");
+                db.execSQL("ALTER TABLE " + UploadContract.TABLE_NAME + "  ADD COLUMN " + UploadContract.COLUMN_COVER_ID + "  TEXT");
+            }
+        } else {
+            // No records found to see if the column exists, delete it and it will get recreated
+            db.execSQL("DROP TABLE IF EXISTS " + UploadContract.TABLE_NAME);
+        }
+
+        cursor.close();
         onCreate(db);
     }
 
@@ -227,11 +247,33 @@ public class SqlHelper extends SQLiteOpenHelper {
 
         LogUtil.v(TAG, "Inserting Uploaded photo: " + photo.getLink());
         SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues(3);
+        ContentValues values = new ContentValues(4);
         values.put(UploadContract.COLUMN_URL, photo.getLink());
         values.put(UploadContract.COLUMN_DELETE_HASH, photo.getDeleteHash());
         values.put(UploadContract.COLUMN_DATE, System.currentTimeMillis());
+        values.put(UploadContract.COLUMN_IS_ALBUM, 0);
         db.insert(UploadContract.TABLE_NAME, null, values);
+    }
+
+    /**
+     * Inserts an uploaded album to the database
+     *
+     * @param album
+     */
+    public void insertUploadedAlbum(ImgurAlbum album) {
+        if (album == null || TextUtils.isEmpty(album.getLink())) {
+            LogUtil.w(TAG, "Null album can not be inserted");
+            return;
+        }
+
+        LogUtil.v(TAG, "Inserting Uploaded album: " + album.getLink());
+        ContentValues values = new ContentValues(5);
+        values.put(UploadContract.COLUMN_URL, album.getLink());
+        values.put(UploadContract.COLUMN_DELETE_HASH, album.getDeleteHash());
+        values.put(UploadContract.COLUMN_DATE, System.currentTimeMillis());
+        values.put(UploadContract.COLUMN_IS_ALBUM, 1);
+        values.put(UploadContract.COLUMN_COVER_ID, album.getCoverId());
+        getWritableDatabase().insert(UploadContract.TABLE_NAME, null, values);
     }
 
     /**

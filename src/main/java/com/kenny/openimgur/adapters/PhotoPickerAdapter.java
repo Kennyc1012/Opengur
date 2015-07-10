@@ -3,6 +3,7 @@ package com.kenny.openimgur.adapters;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -44,6 +45,12 @@ public class PhotoPickerAdapter extends BaseRecyclerAdapter<String> {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mClickListener = null;
+    }
+
+    @Override
     protected DisplayImageOptions getDisplayOptions() {
         return ImageUtil.getDisplayOptionsForPhotoPicker().build();
     }
@@ -65,7 +72,7 @@ public class PhotoPickerAdapter extends BaseRecyclerAdapter<String> {
         displayImage(photoHolder.image, "file://" + path);
     }
 
-    public void onSelected(String path, View view) {
+    public int onSelected(String path, View view) {
         boolean isSelected = mCheckPhotos.contains(path);
 
         if (!isSelected) {
@@ -75,18 +82,33 @@ public class PhotoPickerAdapter extends BaseRecyclerAdapter<String> {
             mCheckPhotos.remove(path);
             view.findViewById(R.id.checkMark).setVisibility(View.GONE);
         }
+
+        return mCheckPhotos.size();
     }
 
-    @NonNull
-    public List<String> getSelectedPhotos() {
-        List<String> selected = new ArrayList<>();
-        Iterator<String> iterator = mCheckPhotos.iterator();
+    public int getSelectedCount() {
+        return mCheckPhotos.size();
+    }
 
-        while (iterator.hasNext()) {
-            selected.add(iterator.next());
+    @Nullable
+    public ArrayList<String> getCheckedPhotos() {
+        if (mCheckPhotos.size() > 0) {
+            ArrayList<String> checkedPhotos = new ArrayList<>(mCheckPhotos.size());
+            Iterator<String> iterator = mCheckPhotos.iterator();
+
+            while (iterator.hasNext()) {
+                checkedPhotos.add(iterator.next());
+            }
+
+            return checkedPhotos;
         }
 
-        return selected;
+        return null;
+    }
+
+    public void setCheckedPhotos(List<String> checkedPhotos){
+        mCheckPhotos.addAll(checkedPhotos);
+        notifyDataSetChanged();
     }
 
     static class PhotoViewHolder extends BaseViewHolder {

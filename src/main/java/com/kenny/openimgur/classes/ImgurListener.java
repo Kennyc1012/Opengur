@@ -1,11 +1,11 @@
 package com.kenny.openimgur.classes;
 
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.ui.VideoView;
 
 public interface ImgurListener {

@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,7 +32,6 @@ import android.widget.ProgressBar;
 
 import com.cocosw.bottomsheet.BottomSheet;
 import com.cocosw.bottomsheet.BottomSheetListener;
-import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -434,7 +434,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         dismissDialogFragment("comment");
 
         if (mCommentAdapter != null) {
-            mCommentAdapter.destroy();
+            mCommentAdapter.onDestroy();
             mCommentAdapter = null;
         }
 
@@ -695,6 +695,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     startActivity(intent);
                     break;
 
+                case IMAGE_URL_QUERY:
+                    int index = url.indexOf("?");
+                    url = url.substring(0,index);
+                    // Intentional fallthrough
                 case IMAGE_URL:
                     getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true, false), "popup").commitAllowingStateLoss();
                     break;

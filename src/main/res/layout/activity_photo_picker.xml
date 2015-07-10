@@ -4,6 +4,7 @@
     android:id="@+id/multiView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="?actionBarSize"
     app:emptyView="@layout/uploads_empty"
     app:loadingView="@layout/loading_view"
     app:viewState="loading">

@@ -199,13 +199,13 @@ public class FileUtil {
         }
 
         // Create files from a uri in our cache directory so they eventually get deleted
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = String.valueOf(System.currentTimeMillis());
         File cacheDir = OpengurApp.getInstance().getImageLoader().getDiskCache().getDirectory();
-        File tempFile = new File(cacheDir,timeStamp+extension);
+        File tempFile = new File(cacheDir, timeStamp + extension);
 
-        if (tempFile != null && writeInputStreamToFile(in, tempFile)) {
+        if (writeInputStreamToFile(in, tempFile)) {
             return tempFile;
-        } else if (tempFile != null) {
+        } else {
             // If writeInputStreamToFile fails, delete the excess file
             tempFile.delete();
         }

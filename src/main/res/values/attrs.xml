@@ -19,7 +19,6 @@
     <attr name="emptyDrawableMessages" format="reference" />
     <attr name="repliesDrawable" format="reference" />
     <attr name="cardBG" format="color" />
-    <attr name="fabPressed" format="color" />
     <attr name="toolBarPopupTheme" format="reference" />
     <attr name="dividerColor" format="color" />
 

@@ -31,6 +31,10 @@ public class LinkUtils {
 
     private static final String REGEX_IMGUR_USER_CALLOUT = "@\\w+";
 
+    private static final String REGEX_IMAGE_URL_QUERY = "([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://\\S+(.jpg|.jpeg|.gif|.png)\\?\\w+$";
+
+    private static final String REGEX_IMGUR_PHOTO_PNG = "([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/(m.imgur.com\\/|imgur.com\\/|i.imgur.com\\/)\\w+\\.png$";
+
     // Pattern used to extra an ID from a url
     private static final Pattern ID_PATTERN = Pattern.compile(".com\\/(.*)\\W");
 
@@ -42,6 +46,7 @@ public class LinkUtils {
         ALBUM,
         DIRECT_LINK,
         USER_CALLOUT,
+        IMAGE_URL_QUERY,
         NONE
     }
 
@@ -69,6 +74,8 @@ public class LinkUtils {
                 match = LinkMatch.ALBUM;
             } else if (url.matches(REGEX_IMGUR_USER_CALLOUT)) {
                 match = LinkMatch.USER_CALLOUT;
+            } else if (url.matches(REGEX_IMAGE_URL_QUERY)) {
+                match = LinkMatch.IMAGE_URL_QUERY;
             }
         }
 
@@ -140,5 +147,17 @@ public class LinkUtils {
         }
 
         return false;
+    }
+
+    /**
+     * Returns if the link is a png photo hosted on Imgur
+     *
+     * @param url
+     * @return
+     */
+    public static boolean isImgurPNG(@Nullable String url) {
+        if (TextUtils.isEmpty(url)) return false;
+
+        return url.matches(REGEX_IMGUR_PHOTO_PNG);
     }
 }

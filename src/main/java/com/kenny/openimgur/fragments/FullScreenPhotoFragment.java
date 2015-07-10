@@ -70,6 +70,8 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
     private PhotoHandler mHandler = new PhotoHandler();
 
+    private boolean mReplacedPNG = false;
+
     public static FullScreenPhotoFragment createInstance(@NonNull ImgurPhoto photo) {
         FullScreenPhotoFragment fragment = new FullScreenPhotoFragment();
         Bundle args = new Bundle(1);
@@ -149,11 +151,24 @@ public class FullScreenPhotoFragment extends BaseFragment {
      * Displays the image
      */
     private void displayImage() {
+        if (!mReplacedPNG && LinkUtils.isImgurPNG(mUrl)) {
+            mReplacedPNG = true;
+            LogUtil.v(TAG, "Replacing png link with jpeg");
+            mUrl = mUrl.replace(".png", ".jpeg");
+        }
+
         app.getImageLoader().loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForFullscreen().build(), new SimpleImageLoadingListener() {
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
                 mStartedToLoad = false;
                 if (getActivity() == null | !isAdded() || isRemoving()) return;
+
+                if (mReplacedPNG) {
+                    LogUtil.w(TAG, "Replacing png with jpeg failed, reverting back to png");
+                    mUrl = mUrl.replace(".jpeg", ".png");
+                    displayImage();
+                    return;
+                }
 
                 mMultiView.setViewState(MultiStateView.ViewState.ERROR);
             }
