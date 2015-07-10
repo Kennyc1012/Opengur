@@ -1,4 +1,9 @@
 #Open Imgur Changelog
+<b>3.2.0</b> July 10,2015
+- Album upload support
+- Albums tab added to Profile 
+- More improvements to full screen photo viewing
+
 <b>3.1.1</b> June 30,2015
 - Display subreddit in Muzei settings
 - Reduce duplicate images in Muzei
