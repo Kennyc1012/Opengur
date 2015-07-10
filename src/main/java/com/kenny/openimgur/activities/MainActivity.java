@@ -88,6 +88,8 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     private boolean mNagOnExit;
 
+    private boolean mIsFABShowing = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -351,11 +353,13 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     private void toggleFAB(boolean shouldShow) {
         if (shouldShow) {
-            if (mUploadButton.getTranslationY() == mUploadButton.getHeight() * 2) {
+            if (mIsFABShowing) {
+                mIsFABShowing = false;
                 mUploadButton.animate().translationY(0);
             }
         } else {
-            if (mUploadButton.getTranslationY() == 0) {
+            if (!mIsFABShowing) {
+                mIsFABShowing = true;
                 mUploadButton.animate().translationY(mUploadButton.getHeight() * 2);
             }
         }
