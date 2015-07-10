@@ -72,7 +72,7 @@ public enum Endpoints {
 
     UPLOAD("https://api.imgur.com/3/upload"),
 
-    // Image id
+    // Image/Album id
     GALLERY_UPLOAD("https://api.imgur.com/3/gallery/%s"),
 
     // ConvoId, page
@@ -112,7 +112,15 @@ public enum Endpoints {
     GALLERY_SEARCH_TOP("https://api.imgur.com/3/gallery/search/%s/%s/%d?q=%s"),
 
     // Tags
-    TAGS("https://api.imgur.com/3/gallery/%s/tags");
+    TAGS("https://api.imgur.com/3/gallery/%s/tags"),
+
+    ALBUM_CREATION("https://api.imgur.com/3/album"),
+
+    // Username/Page
+    USER_ALBUMS("https://api.imgur.com/3/account/%s/albums/%d"),
+
+    // Albumid/delete hash
+    ALBUM_DELETE("https://api.imgur.com/3/album/%s");
 
     private final String mUrl;
 

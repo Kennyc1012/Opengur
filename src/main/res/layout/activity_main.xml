@@ -22,15 +22,16 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="?toolBarPopupTheme" />
 
-        <include
-            android:id="@+id/uploadMenu"
-            layout="@layout/upload_menu"
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="bottom|right"
-            android:layout_marginBottom="@dimen/upload_button_margin_bottom"
-            android:layout_marginRight="@dimen/upload_button_margin_right"
-            android:visibility="visible" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_add_white_18dp"
+            app:fabSize="normal"
+            app:elevation="4dp"
+            android:elevation="4dp" />
 
     </FrameLayout>
 

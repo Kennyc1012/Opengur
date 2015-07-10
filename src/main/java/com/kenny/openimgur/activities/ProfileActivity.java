@@ -32,6 +32,7 @@ import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.fragments.ProfileAlbumsFragment;
 import com.kenny.openimgur.fragments.ProfileCommentsFragment;
 import com.kenny.openimgur.fragments.ProfileFavoritesFragment;
 import com.kenny.openimgur.fragments.ProfileInfoFragment;
@@ -419,9 +420,9 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     }
 
     private static class ProfilePager extends FragmentStatePagerAdapter {
-        private static final int NUM_PAGES_SELF = 6;
+        private static final int NUM_PAGES_SELF = 7;
 
-        private static final int NUM_PAGES_FAR = 4;
+        private static final int NUM_PAGES_FAR = 5;
 
         private String[] mTitles;
 
@@ -451,16 +452,20 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                 case 2:
                     return ProfileFavoritesFragment.createInstance(mUser);
 
-                // Comments
+                // Albums
                 case 3:
+                    return ProfileAlbumsFragment.createInstance(mUser);
+
+                // Comments
+                case 4:
                     return ProfileCommentsFragment.createInstance(mUser);
 
                 // Uploads
-                case 4:
+                case 5:
                     return new ProfileUploadsFragment();
 
                 // Messages
-                case 5:
+                case 6:
                     return new ProfileMessagesFragment();
 
                 default:

@@ -180,7 +180,7 @@ public class MemeActivity extends BaseActivity {
         });
     }
 
-    private void onMemeCreated(@Nullable File file) {
+    private void onMemeCreated(@Nullable final File file) {
         dismissDialogFragment("saving");
 
         if (FileUtil.isFileValid(file)) {
@@ -208,10 +208,7 @@ public class MemeActivity extends BaseActivity {
                                     break;
 
                                 case R.id.upload:
-                                    Intent uploadIntent = new Intent(getApplicationContext(), UploadActivity.class);
-                                    uploadIntent.setAction(Intent.ACTION_SEND);
-                                    uploadIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                                    startActivity(uploadIntent);
+                                    startActivity(UploadActivity.createIntent(getApplicationContext(), file));
                                     break;
                             }
                         }

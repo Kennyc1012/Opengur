@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -54,6 +55,19 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
         if (mItems == null) throw new NullPointerException("Adapter list has not been initialized");
         mItems.add(object);
         notifyItemInserted(mItems.size());
+    }
+
+    /**
+     * Adds an item to the list at the given position, {@link #notifyItemRangeInserted(int, int)} will be called
+     *
+     * @param object   Object to add to the adapter
+     * @param position Position to add the object
+     */
+    public void addItem(T object, int position) {
+        // An exception is thrown instead of creating a List object since the type of list in unknown
+        if (mItems == null) throw new NullPointerException("Adapter list has not been initialized");
+        mItems.add(position, object);
+        notifyItemRangeInserted(position, 1);
     }
 
     /**
@@ -213,6 +227,13 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
      */
     protected DisplayImageOptions getDisplayOptions() {
         return ImageUtil.getDefaultDisplayOptions().build();
+    }
+
+    /**
+     * Frees up any resources tied to the adapter. Should be called in an activities onDestroy lifecycle method if needed
+     */
+    public void onDestroy() {
+        LogUtil.v(TAG, "onDestroy");
     }
 
     public abstract static class BaseViewHolder extends RecyclerView.ViewHolder {

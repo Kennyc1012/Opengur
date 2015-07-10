@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -22,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
-import com.github.clans.fab.FloatingActionMenu;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurTheme;
@@ -71,8 +71,8 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     @InjectView(R.id.drawerLayout)
     DrawerLayout mDrawer;
 
-    @InjectView(R.id.uploadMenu)
-    FloatingActionMenu mUploadMenu;
+    @InjectView(R.id.fab)
+    FloatingActionButton mUploadButton;
 
     @InjectView(R.id.toolBar)
     Toolbar mToolBar;
@@ -87,6 +87,8 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     private boolean mIsDarkTheme;
 
     private boolean mNagOnExit;
+
+    private boolean mIsFABShowing = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -326,26 +328,22 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     @Override
     public void onUpdateActionBar(boolean shouldShow) {
         setActionBarVisibility(mToolBar, shouldShow);
-        if (shouldShow) {
-            mUploadMenu.showMenuButton(true);
-        } else {
-            mUploadMenu.hideMenuButton(true);
-        }
+        toggleFAB(shouldShow);
     }
 
     @Override
     public void onLoadingComplete() {
-        if (mUploadMenu.isMenuButtonHidden()) mUploadMenu.showMenuButton(false);
+        toggleFAB(true);
     }
 
     @Override
     public void onLoadingStarted() {
-        if (!mUploadMenu.isMenuButtonHidden()) mUploadMenu.hideMenuButton(false);
+        toggleFAB(false);
     }
 
     @Override
     public void onError(int errorCode) {
-        if (!mUploadMenu.isMenuButtonHidden()) mUploadMenu.hideMenuButton(false);
+        toggleFAB(false);
     }
 
     @Override
@@ -353,22 +351,25 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         getSupportActionBar().setTitle(title);
     }
 
-    @OnClick({R.id.linkUpload, R.id.cameraUpload, R.id.galleryUpload})
+    private void toggleFAB(boolean shouldShow) {
+        if (shouldShow) {
+            if (mIsFABShowing) {
+                mIsFABShowing = false;
+                mUploadButton.animate().translationY(0);
+            }
+        } else {
+            if (!mIsFABShowing) {
+                mIsFABShowing = true;
+                mUploadButton.animate().translationY(mUploadButton.getHeight() * 2);
+            }
+        }
+    }
+
+    @OnClick({R.id.fab})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.cameraUpload:
-                startActivityForResult(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_CAMERA), UploadActivity.REQUEST_CODE);
-                mUploadMenu.close(true);
-                break;
-
-            case R.id.galleryUpload:
-                startActivityForResult(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_GALLERY), UploadActivity.REQUEST_CODE);
-                mUploadMenu.close(true);
-                break;
-
-            case R.id.linkUpload:
-                startActivityForResult(UploadActivity.createIntent(getApplicationContext(), UploadActivity.UPLOAD_TYPE_LINK), UploadActivity.REQUEST_CODE);
-                mUploadMenu.close(true);
+            case R.id.fab:
+                startActivity(UploadActivity.createIntent(getApplicationContext()));
                 break;
         }
     }
@@ -390,9 +391,6 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                 fm.beginTransaction().remove(fragment).commit();
             }
 
-            return;
-        } else if (mUploadMenu.isOpened()) {
-            mUploadMenu.close(true);
             return;
         } else if (mNagOnExit) {
             showExitNag();
@@ -441,11 +439,6 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                     overridePendingTransition(0, 0);
                     startActivity(intent);
                 }
-                break;
-
-            case UploadActivity.REQUEST_CODE:
-                Fragment current = getFragmentManager().findFragmentById(R.id.container);
-                if (current != null) current.onActivityResult(requestCode, resultCode, data);
                 break;
 
             case ProfileActivity.REQUEST_CODE:

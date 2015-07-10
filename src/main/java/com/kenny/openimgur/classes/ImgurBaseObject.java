@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.kenny.openimgur.R;
 import com.kenny.openimgur.util.LogUtil;
 
 import org.json.JSONException;
@@ -338,6 +337,10 @@ public class ImgurBaseObject implements Parcelable {
      */
     public String getGalleryLink() {
         return "https://imgur.com/gallery/" + getId();
+    }
+
+    public void setLink(String link) {
+        mLink = link;
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -15,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.github.clans.fab.FloatingActionButton;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurListener;
@@ -61,7 +61,9 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
     /**
      * Removes all items from list and ImgurListener is removed
      */
-    public void destroy() {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         clear();
         mListener = null;
     }

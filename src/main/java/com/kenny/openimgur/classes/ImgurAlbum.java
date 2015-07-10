@@ -79,6 +79,10 @@ public class ImgurAlbum extends ImgurBaseObject {
         in.readTypedList(mAlbumPhotos, ImgurPhoto.CREATOR);
     }
 
+    public void setCoverId(String id) {
+        mCoverId = id;
+    }
+
     public String getCoverId() {
         return mCoverId;
     }

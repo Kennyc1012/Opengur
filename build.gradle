@@ -22,8 +22,8 @@ repositories {
     jcenter()
 }
 
-def VERSION_NAME = '3.1.1'
-def VERSION_CODE = 36
+def VERSION_NAME = '3.2.0'
+def VERSION_CODE = 38
 
 android {
     compileSdkVersion 22
@@ -89,7 +89,6 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
-    compile 'com.github.clans:fab:1.5.0'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.1.4'
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
     compile(name: 'sliding_panel', ext: 'aar')

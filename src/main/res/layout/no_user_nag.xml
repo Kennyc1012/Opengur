@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/not_logged_in_msg"
+        android:text="@string/upload_no_user"
         android:textSize="18sp"
         android:textAppearance="@style/TextAppearance.Regular" />
 
