@@ -40,9 +40,6 @@ public class UploadInfoFragment extends BaseFragment {
     @InjectView(R.id.titleInputLayout)
     TextInputLayout mTitleInputLayout;
 
-    @InjectView(R.id.descInputLayout)
-    TextInputLayout mDescInputLayout;
-
     @InjectView(R.id.topicSpinner)
     Spinner mTopicSpinner;
 
@@ -103,7 +100,7 @@ public class UploadInfoFragment extends BaseFragment {
 
         tb.setTitle(R.string.upload_info);
 
-        // Theres an issue with the TextInputLayout where hints aren't being honored via XML
+        // There is an issue with the TextInputLayout where hints aren't being honored via XML
         mTitle.setHint(R.string.upload_title);
         mDesc.setHint(R.string.upload_desc);
     }

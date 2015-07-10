@@ -272,8 +272,8 @@
     <string name="upload_album_failed_long">There was a problem while creating the album. The photos were still uploaded however.</string>
     <string name="upload_photo_removed">Photo Removed</string>
     <string name="upload_info">Upload Information</string>
-    <string name="upload_title">Title</string>
-    <string name="upload_desc">Description</string>
+    <string name="upload_title">Title (Optional)</string>
+    <string name="upload_desc">Description (Optional)</string>
     <string name="upload_submit_to_gallery">Submit to Imgur</string>
     <string name="upload_gallery_no_title">Gallery Submissions must have a title</string>
     <string name="upload_decode_failure">Unable to open image, please try again</string>

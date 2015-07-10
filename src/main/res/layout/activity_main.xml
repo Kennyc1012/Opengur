@@ -30,7 +30,8 @@
             android:layout_margin="16dp"
             android:src="@drawable/ic_add_white_18dp"
             app:fabSize="normal"
-            app:elevation="4dp"/>
+            app:elevation="4dp"
+            android:elevation="4dp" />
 
     </FrameLayout>
 
