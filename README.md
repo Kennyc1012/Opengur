@@ -11,9 +11,11 @@ Want to become a beta tester? [Click Here!](https://plus.google.com/u/0/communit
 - Built in native java
 - Native support for both Gifs and GifV image formats
 - Tablet Support
+- Album Support
 - Material Design
 - Dark Theme
 - Meme Generator
+- Muzei Support
 - Support for Api 17+
 
 #What's New
