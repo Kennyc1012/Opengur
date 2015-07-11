@@ -55,10 +55,10 @@ public interface ImgurService {
     void getConversations();
 
     @GET("/gallery/r/{subreddit}/{sort}/{page}")
-    void getSubReddit(@Path("subreddit") String query, @Path("sort") String sort, @Path("page") int page);
+    void getSubReddit(@Path("subreddit") String query, @Path("sort") String sort, @Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/gallery/r/{subreddit}/top/{window}/{page}")
-    void getSubRedditForTopSorted(@Path("subreddit") String query, @Path("window") String window, @Path("page") int page);
+    void getSubRedditForTopSorted(@Path("subreddit") String query, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/gallery/random/{page}")
     void getRandomGallery(@Path("path") int page);

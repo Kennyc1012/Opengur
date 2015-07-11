@@ -289,9 +289,28 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
         return 0;
     }
 
+    /**
+     * Callback for when an item is selected from the grid
+     *
+     * @param position The position of the item in the list of items
+     * @param items    The list of items that will be able to paged between
+     */
+    protected void onItemSelected(int position, ArrayList<ImgurBaseObject2> items) {
+        // TODO
+    }
+
+    /**
+     * Configured the ApiClient to make the api request
+     */
+    protected void fetchGallery() {
+        mIsLoading = true;
+    }
+
     @Override
     public void success(GalleryResponse galleryResponse, Response response) {
-        if (galleryResponse.data != null && !galleryResponse.data.isEmpty()) {
+        if (!canDoFragmentTransaction()) return;
+
+        if (!galleryResponse.data.isEmpty()) {
             if (getAdapter() == null) {
                 setUpGridTop();
                 setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(galleryResponse.data)));
@@ -300,29 +319,50 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
             }
 
             mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+
+            if (mCurrentPage == 0) {
+                mListener.onLoadingComplete();
+
+                mGrid.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mGrid != null) mGrid.setSelection(0);
+                    }
+                });
+            }
+        } else {
+            onEmptyResults();
         }
+
+        mIsLoading = false;
+        if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void failure(RetrofitError error) {
-        // TODO Error
+        if (!canDoFragmentTransaction()) return;
+
+        if (getAdapter() == null || getAdapter().isEmpty()) {
+            if (mListener != null) {
+            }
+            // TODO Error
+
+        }
+
+        mIsLoading = false;
+        if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
+    }
+
+    protected void onEmptyResults() {
+        if (getAdapter() == null || getAdapter().isEmpty()) {
+            mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+        }
+
+        if (mListener != null) mListener.onUpdateActionBar(true);
     }
 
     /**
      * Save any filter settings when the fragment is destroyed
      */
     protected abstract void saveFilterSettings();
-
-    /**
-     * Configured the ApiClient to make the api request
-     */
-    protected abstract void fetchGallery();
-
-    /**
-     * Callback for when an item is selected from the grid
-     *
-     * @param position The position of the item in the list of items
-     * @param items    The list of items that will be able to paged between
-     */
-    protected abstract void onItemSelected(int position, ArrayList<ImgurBaseObject2> items);
 }

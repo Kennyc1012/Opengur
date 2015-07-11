@@ -21,17 +21,13 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.GallerySearchActivity;
 import com.kenny.openimgur.adapters.SearchAdapter;
 import com.kenny.openimgur.api.ApiClient2;
-import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurService;
-import com.kenny.openimgur.classes.ImgurBaseObject2;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySection;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
 import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
-
-import java.util.ArrayList;
 
 /**
  * Created by kcampagna on 8/14/14.
@@ -73,12 +69,6 @@ public class GalleryFragment2 extends BaseGridFragment2 implements GalleryFilter
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_gallery, container, false);
-    }
-
-    @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject2> items) {
-       // TODO
-       // startActivity(ViewActivity.createIntent(getActivity(), items, position));
     }
 
     @Override
@@ -190,20 +180,6 @@ public class GalleryFragment2 extends BaseGridFragment2 implements GalleryFilter
         super.onDestroyView();
     }
 
-    /**
-     * Returns the URL based on the selected sort and section
-     *
-     * @return
-     */
-    protected String getGalleryUrl() {
-        if (mSort == GallerySort.HIGHEST_SCORING) {
-            return String.format(Endpoints.GALLERY_TOP.getUrl(), mSection.getSection(), mSort.getSort(),
-                    mTimeSort.getSort(), mCurrentPage, mShowViral);
-        }
-
-        return String.format(Endpoints.GALLERY.getUrl(), mSection.getSection(), mSort.getSort(), mCurrentPage, mShowViral);
-    }
-
     @Override
     public void onFilterChange(GallerySection section, GallerySort sort, TimeSort timeSort, boolean showViral) {
         FragmentManager fm = getFragmentManager();
@@ -239,6 +215,7 @@ public class GalleryFragment2 extends BaseGridFragment2 implements GalleryFilter
 
     @Override
     protected void fetchGallery() {
+        super.fetchGallery();
         ImgurService apiService = ApiClient2.getService();
 
         if (mSort == GallerySort.HIGHEST_SCORING) {
