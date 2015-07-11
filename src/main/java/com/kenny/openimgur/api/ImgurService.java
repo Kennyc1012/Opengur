@@ -76,10 +76,10 @@ public interface ImgurService {
     void getDefaultMemes(Callback<GalleryResponse> callback);
 
     @GET("/gallery/search/{sort}/{page}")
-    void searchGallery(@Path("sort") String sort, @Path("page") int page, @Query("q") String query);
+    void searchGallery(@Path("sort") String sort, @Path("page") int page, @Query("q") String query, Callback<GalleryResponse> callback);
 
     @GET("/gallery/search/top/{window}/{page}")
-    void searchGalleryForTopSorted(@Path("window") String window, @Path("page") int page, @Query("q") String query);
+    void searchGalleryForTopSorted(@Path("window") String window, @Path("page") int page, @Query("q") String query, Callback<GalleryResponse> callback);
 
     @GET("/gallery/{id}/tags")
     void getTags(@Path("id") String itemId);

@@ -11,12 +11,15 @@ import android.view.MenuItem;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.SearchAdapter;
-import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ImgurService;
+import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
+
+import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 3/21/15.
@@ -64,26 +67,17 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
     }
 
     @Override
-    public ImgurBusEvent.EventType getEventType() {
-        return ImgurBusEvent.EventType.GALLERY_SEARCH;
-    }
-
-    @Override
-    protected String getGalleryUrl() {
-        // Format spaces to use HTML encoded values
-        String formattedQuery = mQuery.replace(" ", "%20");
-
-        if (mSort == ImgurFilters.GallerySort.HIGHEST_SCORING) {
-            return String.format(Endpoints.GALLERY_SEARCH_TOP.getUrl(), mSort.getSort(), mTimeSort.getSort(), mCurrentPage, formattedQuery);
-        }
-
-        return String.format(Endpoints.GALLERY_SEARCH.getUrl(), mSort.getSort(), mCurrentPage, formattedQuery);
-    }
-
-    @Override
     protected void fetchGallery() {
         if (TextUtils.isEmpty(mQuery)) return;
-        super.fetchGallery();
+
+        ImgurService apiService = ApiClient2.getService();
+        mIsLoading = true;
+
+        if (mSort == ImgurFilters.GallerySort.HIGHEST_SCORING) {
+            apiService.searchGalleryForTopSorted(mTimeSort.getSort(), mCurrentPage, mQuery, this);
+        } else {
+            apiService.searchGallery(mSort.getSort(), mCurrentPage, mQuery, this);
+        }
     }
 
     @Override
@@ -111,30 +105,10 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
     }
 
     /**
-     * Called when we receive no results from the API
-     */
-    public void onEmptyResults() {
-        if (getAdapter() == null || getAdapter().isEmpty()) {
-            mMultiStateView.setErrorText(R.id.errorMessage, getString(R.string.reddit_empty, mQuery));
-            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
-            if (mListener != null) mListener.onUpdateActionBar(true);
-        }
-    }
-
-    /**
      * Called when a successful search has been completed by the API
      */
     public void onSuccessfulSearch() {
-        app.getSql().addPreviousGallerySearch(mQuery);
 
-        if (mSearchAdapter == null) {
-            mSearchAdapter = new SearchAdapter(getActivity(), app.getSql().getPreviousGallerySearches(mQuery), DBContracts.GallerySearchContract.COLUMN_NAME);
-            mSearchView.setSuggestionsAdapter(mSearchAdapter);
-        } else {
-            mSearchAdapter.changeCursor(app.getSql().getPreviousGallerySearches(mQuery));
-        }
-
-        mSearchAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -160,5 +134,34 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
         mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
         if (mListener != null) mListener.onLoadingStarted();
         fetchGallery();
+    }
+
+    @Override
+    public void success(GalleryResponse galleryResponse, Response response) {
+        super.success(galleryResponse, response);
+
+        if (mCurrentPage == 0 && !galleryResponse.data.isEmpty()) {
+            app.getSql().addPreviousGallerySearch(mQuery);
+
+            if (mSearchAdapter == null) {
+                mSearchAdapter = new SearchAdapter(getActivity(), app.getSql().getPreviousGallerySearches(mQuery), DBContracts.GallerySearchContract.COLUMN_NAME);
+                mSearchView.setSuggestionsAdapter(mSearchAdapter);
+            } else {
+                mSearchAdapter.changeCursor(app.getSql().getPreviousGallerySearches(mQuery));
+            }
+
+            mSearchAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    protected void onEmptyResults() {
+        mHasMore = false;
+
+        if (getAdapter() == null || getAdapter().isEmpty()) {
+            mMultiStateView.setErrorText(R.id.errorMessage, getString(R.string.reddit_empty, mQuery));
+            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+            if (mListener != null) mListener.onUpdateActionBar(true);
+        }
     }
 }
