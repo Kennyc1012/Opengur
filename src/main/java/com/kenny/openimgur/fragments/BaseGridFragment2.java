@@ -364,5 +364,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
     /**
      * Save any filter settings when the fragment is destroyed
      */
-    protected abstract void saveFilterSettings();
+    protected void saveFilterSettings() {
+
+    }
 }

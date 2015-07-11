@@ -61,7 +61,7 @@ public interface ImgurService {
     void getSubRedditForTopSorted(@Path("subreddit") String query, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/gallery/random/{page}")
-    void getRandomGallery(@Path("path") int page);
+    void getRandomGallery(@Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/topics/defaults")
     void getDefaultTopics();
