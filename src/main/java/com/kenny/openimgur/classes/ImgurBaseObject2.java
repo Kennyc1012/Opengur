@@ -21,10 +21,10 @@ public class ImgurBaseObject2 implements Parcelable {
     public static final String VOTE_DOWN = "down";
 
     @SerializedName("ups")
-    private int mUpVotes = Integer.MIN_VALUE;
+    private int mUpVotes;
 
     @SerializedName("downs")
-    private int mDownVotes = Integer.MIN_VALUE;
+    private int mDownVotes;
 
     @SerializedName("views")
     private int mViews;

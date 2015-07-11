@@ -19,7 +19,7 @@ public class ImgurSerializer implements JsonDeserializer<ImgurBaseObject2> {
     @Override
     public ImgurBaseObject2 deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject object = json.getAsJsonObject();
-        boolean isAlbum = object.get("is_album").getAsBoolean();
+        boolean isAlbum = object.has("is_album") && object.get("is_album").getAsBoolean();
 
         if (isAlbum) {
             return new GsonBuilder().create().fromJson(json, ImgurAlbum2.class);

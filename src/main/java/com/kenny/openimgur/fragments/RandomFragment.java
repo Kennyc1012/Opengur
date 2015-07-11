@@ -17,7 +17,7 @@ import com.kenny.openimgur.api.ApiClient2;
  */
 public class RandomFragment extends BaseGridFragment2 {
 
-    public static RandomFragment createInstance() {
+    public static RandomFragment newInstance() {
         return new RandomFragment();
     }
 

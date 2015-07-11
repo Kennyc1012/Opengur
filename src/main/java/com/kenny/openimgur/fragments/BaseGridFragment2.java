@@ -221,7 +221,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
                 ArrayList<ImgurBaseObject2> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
                 setUpGridTop();
-                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(items)));
+                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(items), showPoints()));
                 mGrid.setSelection(currentPosition);
 
                 if (mListener != null) {
@@ -313,7 +313,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
         if (!galleryResponse.data.isEmpty()) {
             if (getAdapter() == null) {
                 setUpGridTop();
-                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(galleryResponse.data)));
+                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(galleryResponse.data), showPoints()));
             } else {
                 getAdapter().addItems(galleryResponse.data);
             }
@@ -354,6 +354,8 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
     }
 
     protected void onEmptyResults() {
+        mHasMore = false;
+
         if (getAdapter() == null || getAdapter().isEmpty()) {
             mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
         }
@@ -366,5 +368,14 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
      */
     protected void saveFilterSettings() {
 
+    }
+
+    /**
+     * If the adapter should show the points on the images
+     *
+     * @return
+     */
+    protected boolean showPoints() {
+        return true;
     }
 }

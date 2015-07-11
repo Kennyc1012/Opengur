@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.classes.ImgurAlbum;
-import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.classes.ImgurBaseObject2;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.ImgurUser;
@@ -432,7 +432,7 @@ public class SqlHelper extends SQLiteOpenHelper {
      *
      * @param memes
      */
-    public void addMemes(List<ImgurBaseObject> memes) {
+    public void addMemes(List<ImgurBaseObject2> memes) {
         if (memes == null || memes.isEmpty()) {
             LogUtil.w(TAG, "Memes list null or is empty");
             return;
@@ -441,7 +441,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         SQLiteDatabase db = getWritableDatabase();
 
-        for (ImgurBaseObject i : memes) {
+        for (ImgurBaseObject2 i : memes) {
             values.clear();
             values.put(MemeContract._ID, i.getId());
             values.put(MemeContract.COLUMN_TITLE, i.getTitle());
@@ -455,15 +455,15 @@ public class SqlHelper extends SQLiteOpenHelper {
      *
      * @return
      */
-    public List<ImgurBaseObject> getMemes() {
-        List<ImgurBaseObject> memes = new ArrayList<>();
+    public List<ImgurBaseObject2> getMemes() {
+        List<ImgurBaseObject2> memes = new ArrayList<>();
         Cursor cursor = getReadableDatabase().rawQuery(MemeContract.GET_MEMES_SQL, null);
 
         while (cursor.moveToNext()) {
             String id = cursor.getString(MemeContract.COLUMN_INDEX_ID);
             String title = cursor.getString(MemeContract.COLUMN_INDEX_TITLE);
             String link = cursor.getString(MemeContract.COLUMN_INDEX_LINK);
-            memes.add(new ImgurBaseObject(id, title, link));
+            memes.add(new ImgurBaseObject2(id, title, link));
         }
 
         cursor.close();

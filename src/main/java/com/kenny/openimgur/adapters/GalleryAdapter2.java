@@ -40,6 +40,8 @@ public class GalleryAdapter2 extends ImgurBaseAdapter<ImgurBaseObject2> {
 
     private boolean mAllowNSFWThumb;
 
+    private boolean mShowPoints = true;
+
     private String mThumbnailQuality;
 
     public GalleryAdapter2(Context context, SetUniqueList<ImgurBaseObject2> objects) {
@@ -49,6 +51,11 @@ public class GalleryAdapter2 extends ImgurBaseAdapter<ImgurBaseObject2> {
         SharedPreferences pref = OpengurApp.getInstance(context).getPreferences();
         mAllowNSFWThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
         mThumbnailQuality = pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY);
+    }
+
+    public GalleryAdapter2(Context context, SetUniqueList<ImgurBaseObject2> objects, boolean showPoints) {
+        this(context, objects);
+        mShowPoints = showPoints;
     }
 
     @Override
@@ -147,7 +154,7 @@ public class GalleryAdapter2 extends ImgurBaseAdapter<ImgurBaseObject2> {
             displayImage(holder.image, url);
         }
 
-        if (obj.getUpVotes() != Integer.MIN_VALUE) {
+        if (mShowPoints) {
             holder.score.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.score.getContext().getString(R.string.points));
             holder.score.setVisibility(View.VISIBLE);
         } else {

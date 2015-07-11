@@ -52,7 +52,7 @@ public class RedditFragment extends BaseGridFragment2 implements RedditFilterFra
 
     private SearchView mSearchView;
 
-    public static RedditFragment createInstance() {
+    public static RedditFragment newInstance() {
         return new RedditFragment();
     }
 
@@ -266,7 +266,7 @@ public class RedditFragment extends BaseGridFragment2 implements RedditFilterFra
     @Override
     public void success(GalleryResponse galleryResponse, Response response) {
         super.success(galleryResponse, response);
-        if (mCurrentPage == 0) {
+        if (mCurrentPage == 0 && !galleryResponse.data.isEmpty()) {
             app.getSql().addSubReddit(mQuery);
 
             if (mCursorAdapter == null) {

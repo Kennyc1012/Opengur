@@ -241,13 +241,13 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
             case R.id.nav_reddit:
                 if (mCurrentPage == PAGE_SUBREDDIT) return;
-                fragment = RedditFragment.createInstance();
+                fragment = RedditFragment.newInstance();
                 mCurrentPage = PAGE_SUBREDDIT;
                 break;
 
             case R.id.nav_random:
                 if (mCurrentPage == PAGE_RANDOM) return;
-                fragment = RandomFragment.createInstance();
+                fragment = RandomFragment.newInstance();
                 mCurrentPage = PAGE_RANDOM;
                 break;
 

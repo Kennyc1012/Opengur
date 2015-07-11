@@ -73,7 +73,7 @@ public interface ImgurService {
     void getTopicForTopSorted(@Path("topic") int topicId, @Path("window") String window, @Path("page") int page);
 
     @GET("/memegen/defaults")
-    void getDefaultMemes();
+    void getDefaultMemes(Callback<GalleryResponse> callback);
 
     @GET("/gallery/search/{sort}/{page}")
     void searchGallery(@Path("sort") String sort, @Path("page") int page, @Query("q") String query);
