@@ -332,6 +332,8 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
         ApiClient2.getService().getDefaultTopics(new Callback<TopicResponse>() {
             @Override
             public void success(TopicResponse topicResponse, Response response) {
+                if (!isAdded()) return;
+
                 if (!topicResponse.data.isEmpty()) {
                     app.getSql().addTopics(topicResponse.data);
                     mSpinner.setAdapter(new TopicsAdapter(getActivity(), topicResponse.data));
@@ -343,6 +345,7 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
 
             @Override
             public void failure(RetrofitError error) {
+                if (!isAdded()) return;
                 // TODO
             }
         });

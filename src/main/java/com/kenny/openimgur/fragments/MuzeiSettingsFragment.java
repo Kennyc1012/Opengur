@@ -58,6 +58,8 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
             ApiClient2.getService().getDefaultTopics(new Callback<TopicResponse>() {
                 @Override
                 public void success(TopicResponse topicResponse, Response response) {
+                    if (!isAdded()) return;
+
                     mApp.getSql().addTopics(topicResponse.data);
 
                     if (!topicResponse.data.isEmpty()) {
@@ -79,6 +81,7 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
 
                 @Override
                 public void failure(RetrofitError error) {
+                    if (!isAdded()) return;
                     LogUtil.e(TAG, "Failed to receive topics with status code " + error.getResponse().getStatus(), error);
                     // TODO Some error?
                 }
