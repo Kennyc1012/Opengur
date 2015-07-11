@@ -68,10 +68,10 @@ public interface ImgurService {
     void getDefaultTopics(Callback<TopicResponse> callback);
 
     @GET("/topics/{topic}/{sort}/{page}")
-    void getTopic(@Path("topic") int topicId, @Path("sort") String sort, @Path("page") int page);
+    void getTopic(@Path("topic") int topicId, @Path("sort") String sort, @Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/topics/{topic}/top/{window}/{page}")
-    void getTopicForTopSorted(@Path("topic") int topicId, @Path("window") String window, @Path("page") int page);
+    void getTopicForTopSorted(@Path("topic") int topicId, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/memegen/defaults")
     void getDefaultMemes(Callback<GalleryResponse> callback);
