@@ -48,7 +48,7 @@ public interface ImgurService {
     void getProfileComments(@Path("user") String username, @Path("sort") String sort, @Path("page") int page, Callback<CommentResponse> callback);
 
     @GET("/account/{user}/albums/{page}")
-    void getProfileAlbums(@Path("user") String username, @Path("page") int page);
+    void getProfileAlbums(@Path("user") String username, @Path("page") int page, Callback<GalleryResponse> callback);
 
     /**
      * User <b>MUST</b> be logged in for this endpoint to work
