@@ -308,6 +308,8 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
 
     @Override
     public void success(GalleryResponse galleryResponse, Response response) {
+        if (!isAdded()) return;
+
         if (!galleryResponse.data.isEmpty()) {
             if (getAdapter() == null) {
                 setUpGridTop();
@@ -338,6 +340,8 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
 
     @Override
     public void failure(RetrofitError error) {
+        if (!isAdded()) return;
+
         if (getAdapter() == null || getAdapter().isEmpty()) {
             if (mListener != null) {
             }

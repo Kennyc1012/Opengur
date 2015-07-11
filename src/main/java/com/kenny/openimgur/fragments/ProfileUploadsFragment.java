@@ -49,6 +49,7 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements Adapter
 
     @Override
     protected void fetchGallery() {
+        super.fetchGallery();
         ApiClient2.getService().getProfileUploads(user.getUsername(), mCurrentPage, this);
     }
 
@@ -127,6 +128,7 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements Adapter
     @Override
     protected void onEmptyResults() {
         mHasMore = false;
+        mIsLoading = false;
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
             String errorMessage = getString(R.string.profile_no_uploads);

@@ -450,7 +450,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
 
                 // Favorites
                 case 2:
-                    return ProfileFavoritesFragment.createInstance(mUser);
+                    return ProfileFavoritesFragment.newInstance(mUser);
 
                 // Albums
                 case 3:

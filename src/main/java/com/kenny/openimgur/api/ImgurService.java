@@ -35,10 +35,10 @@ public interface ImgurService {
     void getProfile(@Path("user") String username);
 
     @GET("/account/{user}/favorites")
-    void getProfileFavorites(@Path("user") String username);
+    void getProfileFavorites(@Path("user") String username, Callback<GalleryResponse> callback);
 
     @GET("/account/{user}/gallery_favorites/{page}/newest")
-    void getProfileGalleryFavorites(@Path("user") String username, @Path("page") int page);
+    void getProfileGalleryFavorites(@Path("user") String username, @Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/account/{user}/submissions/{page}")
     void getProfileSubmissions(@Path("user") String username, @Path("page") int page, Callback<GalleryResponse> callback);

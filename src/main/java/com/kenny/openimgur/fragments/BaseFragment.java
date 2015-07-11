@@ -1,7 +1,6 @@
 package com.kenny.openimgur.fragments;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.Fragment;
 import android.os.Build;
 import android.os.Bundle;
@@ -73,16 +72,6 @@ abstract public class BaseFragment extends Fragment {
         LogUtil.v(TAG, "onDestroyView");
         ButterKnife.reset(this);
         super.onDestroyView();
-    }
-
-    /**
-     * Returns if the fragment is able to complete a FragmentTransaction based on its lifecycle phase
-     *
-     * @return
-     */
-    protected boolean canDoFragmentTransaction() {
-        Activity activity = getActivity();
-        return activity != null && !activity.isFinishing() && !activity.isChangingConfigurations() && isAdded() && !isRemoving() && getUserVisibleHint();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

@@ -36,6 +36,7 @@ public class ProfileSubmissionsFragment extends BaseGridFragment2 {
 
     @Override
     protected void fetchGallery() {
+        super.fetchGallery();
         ApiClient2.getService().getProfileSubmissions(mSelectedUser.getUsername(), mCurrentPage, this);
     }
 
@@ -75,6 +76,7 @@ public class ProfileSubmissionsFragment extends BaseGridFragment2 {
     @Override
     protected void onEmptyResults() {
         mHasMore = false;
+        mIsLoading = false;
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
             String errorMessage = getString(R.string.profile_no_submissions, mSelectedUser.getUsername());
