@@ -1,6 +1,7 @@
 package com.kenny.openimgur.api;
 
 import com.kenny.openimgur.api.responses.GalleryResponse;
+import com.kenny.openimgur.api.responses.TopicResponse;
 
 import retrofit.Callback;
 import retrofit.http.GET;
@@ -64,7 +65,7 @@ public interface ImgurService {
     void getRandomGallery(@Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/topics/defaults")
-    void getDefaultTopics();
+    void getDefaultTopics(Callback<TopicResponse> callback);
 
     @GET("/topics/{topic}/{sort}/{page}")
     void getTopic(@Path("topic") int topicId, @Path("sort") String sort, @Path("page") int page);

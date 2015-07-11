@@ -24,9 +24,8 @@ import android.widget.CheckBox;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.UploadPhotoAdapter;
-import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
@@ -41,9 +40,6 @@ import com.kenny.snackbar.SnackBar;
 import com.kenny.snackbar.SnackBarItem;
 import com.kenny.snackbar.SnackBarListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -51,7 +47,9 @@ import java.util.List;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by Kenny-PC on 6/20/2015.
@@ -356,8 +354,18 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
         if (topics == null || topics.isEmpty()) {
             LogUtil.v(TAG, "No topics found, fetching");
-            EventBus.getDefault().register(this);
-            new ApiClient(Endpoints.TOPICS_DEFAULTS.getUrl(), ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.TOPICS, null, null);
+            ApiClient2.getService().getDefaultTopics(new Callback<TopicResponse>() {
+                @Override
+                public void success(TopicResponse topicResponse, Response response) {
+                    app.getSql().addTopics(topicResponse.data);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    LogUtil.e(TAG, "Failed to receive topics with status code " + error.getResponse().getStatus(), error);
+                    // TODO Some error?
+                }
+            });
         } else {
             LogUtil.v(TAG, "Topics in database");
         }
@@ -395,31 +403,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         }
     }
 
-    public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == ImgurBusEvent.EventType.TOPICS) {
-            try {
-                int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
-
-                if (statusCode == ApiClient.STATUS_OK) {
-                    List<ImgurTopic> topics = new ArrayList<>();
-                    JSONArray array = event.json.getJSONArray(ApiClient.KEY_DATA);
-
-                    for (int i = 0; i < array.length(); i++) {
-                        topics.add(new ImgurTopic(array.getJSONObject(i)));
-                    }
-
-                    app.getSql().addTopics(topics);
-                } else {
-                    // TODO Some error?
-                }
-
-            } catch (JSONException e) {
-                LogUtil.e(TAG, "Error parsing JSON", e);
-                // What to do on error?
-            }
-        }
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -431,7 +414,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
     @Override
     protected void onDestroy() {
-        if (EventBus.getDefault().isRegistered(this)) EventBus.getDefault().unregister(this);
         if (mAdapter != null) mAdapter.onDestroy();
         super.onDestroy();
     }

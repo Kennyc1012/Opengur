@@ -97,9 +97,6 @@ public enum Endpoints {
 
     CONVO_BLOCK("https://api.imgur.com/3/conversations/block/%s"),
 
-    // DONE
-    TOPICS_DEFAULTS("https://api.imgur.com/3/topics/defaults"),
-
     // topic id/sort/page DONE
     TOPICS("https://api.imgur.com/3/topics/%d/%s/%d"),
 

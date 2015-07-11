@@ -3,7 +3,6 @@ package com.kenny.openimgur.fragments;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -20,27 +19,21 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.TopicsAdapter;
-import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurFilters;
-import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.util.ThrowableFailureEvent;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 2/21/15.
@@ -126,7 +119,6 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
 
         Bundle args = getArguments();
         if (args == null || args.isEmpty()) throw new IllegalStateException("No arguments passed to filter");
-        if (!EventBus.getDefault().isRegistered(this)) EventBus.getDefault().register(this);
 
         configToolBar((Toolbar) view.findViewById(R.id.toolBar));
         ImgurFilters.GallerySort sort = ImgurFilters.GallerySort.getSortFromString(args.getString(KEY_SORT, null));
@@ -214,12 +206,6 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
                 return false;
             }
         });
-    }
-
-    @Override
-    public void onPause() {
-        EventBus.getDefault().unregister(this);
-        super.onPause();
     }
 
     private void setupSpinner(ImgurTopic topic) {
@@ -342,8 +328,24 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
     @OnClick(R.id.errorButton)
     public void fetchTopics() {
         mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
-        new ApiClient(Endpoints.TOPICS_DEFAULTS.getUrl(), ApiClient.HttpRequest.GET)
-                .doWork(ImgurBusEvent.EventType.TOPICS, "topics", null);
+
+        ApiClient2.getService().getDefaultTopics(new Callback<TopicResponse>() {
+            @Override
+            public void success(TopicResponse topicResponse, Response response) {
+                if (!topicResponse.data.isEmpty()) {
+                    app.getSql().addTopics(topicResponse.data);
+                    mSpinner.setAdapter(new TopicsAdapter(getActivity(), topicResponse.data));
+                    mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                } else {
+                    // TODO
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO
+            }
+        });
     }
 
     @OnClick({R.id.negative, R.id.positive})
@@ -409,84 +411,6 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
 
         getView().startAnimation(anim);
     }
-
-    /**
-     * Event Method that receives events from the Bus
-     *
-     * @param event
-     */
-    public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == ImgurBusEvent.EventType.TOPICS) {
-            try {
-                int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
-
-                if (statusCode == ApiClient.STATUS_OK) {
-                    List<ImgurTopic> topics = new ArrayList<>();
-                    JSONArray array = event.json.getJSONArray(ApiClient.KEY_DATA);
-
-                    for (int i = 0; i < array.length(); i++) {
-                        topics.add(new ImgurTopic(array.getJSONObject(i)));
-                    }
-
-                    app.getSql().addTopics(topics);
-                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, topics);
-                } else {
-                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
-                }
-
-            } catch (JSONException e) {
-                LogUtil.e(TAG, "Error parsing JSON", e);
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-            }
-        }
-    }
-
-    /**
-     * Event Method that is fired if EventBus throws an error
-     *
-     * @param event
-     */
-    public void onEventMainThread(ThrowableFailureEvent event) {
-        Throwable e = event.getThrowable();
-
-        if (e instanceof IOException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
-        } else if (e instanceof JSONException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-        } else {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
-        }
-
-        LogUtil.e(TAG, "Error received from Event Bus", e);
-    }
-
-    private ImgurHandler mHandler = new ImgurHandler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MESSAGE_ACTION_FAILED:
-                    mMultiStateView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
-                    mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
-                    break;
-
-                case MESSAGE_ACTION_COMPLETE:
-                    if (msg.obj instanceof List) {
-                        List<ImgurTopic> topics = (List<ImgurTopic>) msg.obj;
-
-                        // Shouldn't happen
-                        if (topics.isEmpty()) {
-                            LogUtil.w(TAG, "Did not receive any topics");
-                            sendMessage(MESSAGE_ACTION_FAILED, R.string.error_generic);
-                            return;
-                        }
-
-                        mSpinner.setAdapter(new TopicsAdapter(getActivity(), topics));
-                        mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
-                    }
-                    break;
-            }
-        }
-    };
 
     public interface FilterListener {
         void onFilterChange(ImgurTopic topic, ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort);
