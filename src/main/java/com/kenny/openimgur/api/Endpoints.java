@@ -48,7 +48,7 @@ public enum Endpoints {
     // DONE
     ACCOUNT_CONVOS("https://api.imgur.com/3/conversations"),
 
-    // Username/Page
+    // Username/Page DONE
     ACCOUNT_IMAGES("https://api.imgur.com/3/account/%s/images/%d"),
 
     // comment id/vote

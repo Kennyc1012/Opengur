@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -16,28 +14,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.activities.FullScreenPhotoActivity;
-import com.kenny.openimgur.adapters.GalleryAdapter;
-import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.api.ImgurBusEvent;
-import com.kenny.openimgur.classes.ImgurBaseObject;
-import com.kenny.openimgur.classes.ImgurHandler;
-import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.classes.ImgurBaseObject2;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
-import org.apache.commons.collections15.list.SetUniqueList;
-import org.json.JSONException;
-
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by kcampagna on 12/27/14.
  */
-public class ProfileUploadsFragment extends BaseGridFragment implements AdapterView.OnItemLongClickListener {
+public class ProfileUploadsFragment extends BaseGridFragment2 implements AdapterView.OnItemLongClickListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,35 +48,13 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
     }
 
     @Override
-    protected void saveFilterSettings() {
-        // NOOP
-    }
-
-    @Override
-    public ImgurBusEvent.EventType getEventType() {
-        return ImgurBusEvent.EventType.ACCOUNT_UPLOADS;
-    }
-
-    @Override
     protected void fetchGallery() {
-        String url = String.format(Endpoints.ACCOUNT_IMAGES.getUrl(), user.getUsername(), mCurrentPage);
-        makeRequest(url);
+        ApiClient2.getService().getProfileUploads(user.getUsername(), mCurrentPage, this);
     }
 
     @Override
-    protected ImgurHandler getHandler() {
-        return mHandler;
-    }
-
-    @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        ImgurBaseObject obj = items.get(position);
-
-        if (obj instanceof ImgurPhoto) {
-            startActivity(FullScreenPhotoActivity.createIntent(getActivity(), (ImgurPhoto) obj));
-        } else {
-            startActivity(FullScreenPhotoActivity.createIntent(getActivity(), obj.getLink()));
-        }
+    protected void onItemSelected(int position, ArrayList<ImgurBaseObject2> items) {
+        // TODO
     }
 
     @Override
@@ -98,7 +63,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
         int adapterPosition = position - headerSize;
 
         if (adapterPosition >= 0) {
-            final ImgurBaseObject photo = getAdapter().getItem(adapterPosition);
+            final ImgurBaseObject2 photo = getAdapter().getItem(adapterPosition);
 
             new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                     .setItems(R.array.uploaded_photos_options, new DialogInterface.OnClickListener() {
@@ -132,9 +97,8 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
                                             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    String url = String.format(Endpoints.IMAGE_DELETE.getUrl(), photo.getDeleteHash());
-                                                    new ApiClient(url, ApiClient.HttpRequest.DELETE).doWork(ImgurBusEvent.EventType.IMAGE_DELETE, photo.getId(), null);
                                                     mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+                                                    // TODO Delete Call
                                                 }
                                             }).show();
                                     break;
@@ -145,88 +109,6 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
         }
         return false;
     }
-
-    @Override
-    public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == ImgurBusEvent.EventType.IMAGE_DELETE) {
-            try {
-                int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
-                boolean success = event.json.getBoolean(ApiClient.KEY_DATA);
-
-                if (statusCode == ApiClient.STATUS_OK && success) {
-                    mHandler.sendMessage(ImgurHandler.MESSAGE_IMAGE_DELETED, event.id);
-                } else {
-                    mHandler.sendMessage(ImgurHandler.MESSAGE_IMAGE_DELETED, false);
-                }
-            } catch (JSONException e) {
-                LogUtil.e(TAG, "Error parsing JSON", e);
-                getHandler().sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-            }
-        } else {
-            super.onEventAsync(event);
-        }
-    }
-
-    private ImgurHandler mHandler = new ImgurHandler() {
-        @Override
-        public void handleMessage(Message msg) {
-            mRefreshLayout.setRefreshing(false);
-            switch (msg.what) {
-                case ImgurHandler.MESSAGE_ACTION_COMPLETE:
-                    List<ImgurBaseObject> items = (List<ImgurBaseObject>) msg.obj;
-                    GalleryAdapter adapter = getAdapter();
-
-                    if (adapter == null) {
-                        setUpGridTop();
-                        setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items)));
-                    } else {
-                        adapter.addItems(items);
-                    }
-
-                    mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
-                    break;
-
-                case ImgurHandler.MESSAGE_ACTION_FAILED:
-                    if (getAdapter() == null || getAdapter().isEmpty()) {
-                        mMultiStateView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
-                        mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
-                    }
-                    break;
-
-                case MESSAGE_EMPTY_RESULT:
-                    if (getAdapter() == null || getAdapter().isEmpty()) {
-                        String errorMessage = getString(R.string.profile_no_uploads);
-                        mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
-                        mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
-                    }
-                    break;
-
-                case MESSAGE_IMAGE_DELETED:
-                    if (msg.obj instanceof String) {
-                        GalleryAdapter gAdapter = getAdapter();
-
-                        if (gAdapter != null) {
-                            gAdapter.removeItem((String) msg.obj);
-
-                            if (gAdapter.isEmpty()) {
-                                mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
-                            } else {
-                                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
-                            }
-                        }
-
-                        SnackBar.show(getActivity(), R.string.profile_delete_success_image);
-                    } else {
-                        mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
-                        SnackBar.show(getActivity(), R.string.profile_delete_failure_image);
-                    }
-                    break;
-            }
-
-            mIsLoading = false;
-            super.handleMessage(msg);
-        }
-    };
 
     @Override
     protected int getAdditionalHeaderSpace() {
@@ -240,5 +122,21 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
         if (isVisibleToUser && mGrid != null && mGrid.getFirstVisiblePosition() <= 1 && mListener != null) {
             mListener.onUpdateActionBar(true);
         }
+    }
+
+    @Override
+    protected void onEmptyResults() {
+        mHasMore = false;
+
+        if (getAdapter() == null || getAdapter().isEmpty()) {
+            String errorMessage = getString(R.string.profile_no_uploads);
+            mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
+            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+        }
+    }
+
+    @Override
+    protected boolean showPoints() {
+        return false;
     }
 }

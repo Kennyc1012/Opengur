@@ -52,6 +52,12 @@ public interface ImgurService {
     /**
      * User <b>MUST</b> be logged in for this endpoint to work
      */
+    @GET("/account/{user}/images/{page}")
+    void getProfileUploads(@Path("user") String username, @Path("page") int page, Callback<GalleryResponse> callback);
+
+    /**
+     * User <b>MUST</b> be logged in for this endpoint to work
+     */
     @GET("/conversations")
     void getConversations();
 
