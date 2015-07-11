@@ -29,7 +29,7 @@ import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.fragments.GalleryFilterFragment;
-import com.kenny.openimgur.fragments.GalleryFragment;
+import com.kenny.openimgur.fragments.GalleryFragment2;
 import com.kenny.openimgur.fragments.MemeFragment;
 import com.kenny.openimgur.fragments.RandomFragment;
 import com.kenny.openimgur.fragments.RedditFilterFragment;
@@ -235,7 +235,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         switch (menuItemId) {
             case R.id.nav_gallery:
                 if (mCurrentPage == PAGE_GALLERY) return;
-                fragment = GalleryFragment.createInstance();
+                fragment = GalleryFragment2.newInstance();
                 mCurrentPage = PAGE_GALLERY;
                 break;
 

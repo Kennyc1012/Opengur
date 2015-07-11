@@ -1,5 +1,8 @@
 package com.kenny.openimgur.api;
 
+import com.kenny.openimgur.api.responses.GalleryResponse;
+
+import retrofit.Callback;
 import retrofit.http.GET;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -10,10 +13,10 @@ import retrofit.http.Query;
 public interface ImgurService {
 
     @GET("/gallery/{section}/{sort}/{page}")
-    void getGallery(@Path("section") String section, @Path("sort") String sort, @Path("page") int page, @Query("showViral") String showViral);
+    void getGallery(@Path("section") String section, @Path("sort") String sort, @Path("page") int page, @Query("showViral") boolean showViral, Callback<GalleryResponse> callback);
 
     @GET("/{section}/top/{window}/{page}")
-    void getGalleryForTopSorted(@Path("section") String section, @Path("window") String window, @Path("page") int page);
+    void getGalleryForTopSorted(@Path("section") String section, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/gallery/{id}")
     void getGalleryDetails(@Path("id") String itemId);

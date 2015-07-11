@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
-import com.kenny.openimgur.api.Endpoints;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,7 @@ import java.util.List;
  * Created by kcampagna on 7/11/15.
  */
 public class ImgurAlbum2 extends ImgurBaseObject2 {
+    private static final String ALBUM_COVER_URL = "https://i.imgur.com/%s.jpg";
 
     @SerializedName("cover")
     private String mCoverId;
@@ -68,9 +68,9 @@ public class ImgurAlbum2 extends ImgurBaseObject2 {
      */
     public String getCoverUrl(@Nullable String size) {
         if (TextUtils.isEmpty(size)) {
-            return String.format(Endpoints.ALBUM_COVER.getUrl(), mCoverId);
+            return String.format(ALBUM_COVER_URL, mCoverId);
         } else {
-            return String.format(Endpoints.ALBUM_COVER.getUrl(), mCoverId + size);
+            return String.format(ALBUM_COVER_URL, mCoverId + size);
         }
     }
 

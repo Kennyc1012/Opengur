@@ -1,10 +1,11 @@
 package com.kenny.openimgur.api;
 
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kenny.openimgur.BuildConfig;
-import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.classes.ImgurBaseObject2;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
@@ -88,7 +89,8 @@ public class ApiClient2 {
 
     private static GsonConverter getConverter() {
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(ImgurBaseObject.class, new ImgurSerializer())
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(ImgurBaseObject2.class, new ImgurSerializer())
                 .create();
 
         return new GsonConverter(gson);
