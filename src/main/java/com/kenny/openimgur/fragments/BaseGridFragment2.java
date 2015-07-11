@@ -308,8 +308,6 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
 
     @Override
     public void success(GalleryResponse galleryResponse, Response response) {
-        if (!canDoFragmentTransaction()) return;
-
         if (!galleryResponse.data.isEmpty()) {
             if (getAdapter() == null) {
                 setUpGridTop();
@@ -318,7 +316,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
                 getAdapter().addItems(galleryResponse.data);
             }
 
-            mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+            if (mMultiStateView != null) mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
 
             if (mCurrentPage == 0) {
                 mListener.onLoadingComplete();
@@ -340,8 +338,6 @@ public abstract class BaseGridFragment2 extends BaseFragment implements AbsListV
 
     @Override
     public void failure(RetrofitError error) {
-        if (!canDoFragmentTransaction()) return;
-
         if (getAdapter() == null || getAdapter().isEmpty()) {
             if (mListener != null) {
             }

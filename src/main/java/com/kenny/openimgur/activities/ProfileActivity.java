@@ -446,7 +446,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
 
                 // Submissions
                 case 1:
-                    return ProfileSubmissionsFragment.createInstance(mUser);
+                    return ProfileSubmissionsFragment.newInstance(mUser);
 
                 // Favorites
                 case 2:
