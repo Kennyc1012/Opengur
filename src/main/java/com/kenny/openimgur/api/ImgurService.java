@@ -1,5 +1,6 @@
 package com.kenny.openimgur.api;
 
+import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.api.responses.TopicResponse;
 
@@ -44,7 +45,7 @@ public interface ImgurService {
     void getProfileSubmissions(@Path("user") String username, @Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/account/{user}/comments/{sort}/{page}")
-    void getProfileComments(@Path("user") String username, @Path("sort") String sort, @Path("page") int page);
+    void getProfileComments(@Path("user") String username, @Path("sort") String sort, @Path("page") int page, Callback<CommentResponse> callback);
 
     @GET("/account/{user}/albums/{page}")
     void getProfileAlbums(@Path("user") String username, @Path("page") int page);

@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -23,29 +22,23 @@ import android.widget.ListView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.ProfileCommentAdapter;
-import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.classes.FragmentListener;
-import com.kenny.openimgur.classes.ImgurComment;
+import com.kenny.openimgur.classes.ImgurComment2;
 import com.kenny.openimgur.classes.ImgurFilters.CommentSort;
-import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ScrollHelper;
 import com.kenny.openimgur.util.ViewUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.InjectView;
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.util.ThrowableFailureEvent;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 12/22/14.
@@ -76,8 +69,6 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     private ImgurUser mSelectedUser;
 
     private ProfileCommentAdapter mAdapter;
-
-    private ApiClient mClient;
 
     private CommentSort mSort;
 
@@ -166,7 +157,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
             mSort = CommentSort.getSortType(savedInstanceState.getString(KEY_SORT, null));
 
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
-                ArrayList<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
+                ArrayList<ImgurComment2> comments = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 mPage = savedInstanceState.getInt(KEY_PAGE, 0);
                 mAdapter = new ProfileCommentAdapter(getActivity(), comments);
                 mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
@@ -226,7 +217,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
         position = position - mListView.getHeaderViewsCount();
 
         if (position >= 0 && position < mAdapter.getCount()) {
-            ImgurComment comment = mAdapter.getItem(position);
+            ImgurComment2 comment = mAdapter.getItem(position);
             String url = "https://imgur.com/gallery/" + comment.getImageId();
             startActivity(ViewActivity.createIntent(getActivity(), url, false));
         }
@@ -235,38 +226,64 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     @Override
     public void onResume() {
         super.onResume();
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this);
-        }
-
         if (mAdapter == null || mAdapter.isEmpty()) {
+            mMultiStatView.setViewState(MultiStateView.ViewState.LOADING);
             fetchComments();
         }
     }
 
     private void fetchComments() {
-        String url = String.format(Endpoints.ACCOUNT_COMMENTS.getUrl(), mSelectedUser.getUsername(), mSort.getSort(), mPage);
+        ApiClient2.getService().getProfileComments(mSelectedUser.getUsername(), mSort.getSort(), mPage, new Callback<CommentResponse>() {
+            @Override
+            public void success(CommentResponse commentResponse, Response response) {
+                if (!isAdded()) return;
 
-        if (mClient == null) {
-            mClient = new ApiClient(url, ApiClient.HttpRequest.GET);
-        } else {
-            mClient.setUrl(url);
-        }
+                if (!commentResponse.data.isEmpty()) {
+                    if (mAdapter == null) {
+                        mAdapter = new ProfileCommentAdapter(getActivity(), commentResponse.data);
+                        mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
+                        mListView.setAdapter(mAdapter);
+                    } else {
+                        mAdapter.addItems(commentResponse.data);
+                    }
 
-        mIsLoading = true;
-        mClient.doWork(ImgurBusEvent.EventType.ACCOUNT_COMMENTS, null, null);
+                    mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
+
+                    if (mPage == 0) {
+                        mMultiStatView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mListView != null) mListView.setSelection(0);
+                            }
+                        });
+                    }
+                } else {
+                    mHasMore = false;
+                    LogUtil.v(TAG, "No more comments to be fetched");
+
+                    // Only show empty view when the user has posted no comments
+                    if (mAdapter == null || mAdapter.isEmpty()) {
+                        mMultiStatView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_comments, mSelectedUser.getUsername()));
+                        mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
+                    }
+                }
+
+                mIsLoading = false;
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (!isAdded()) return;
+                // TODO
+                mIsLoading = false;
+            }
+        });
     }
 
     @Override
     public void onDestroyView() {
         app.getPreferences().edit().putString(KEY_SORT, mSort.getSort()).apply();
         super.onDestroyView();
-    }
-
-    @Override
-    public void onPause() {
-        EventBus.getDefault().unregister(this);
-        super.onPause();
     }
 
     @Override
@@ -281,110 +298,6 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
             outState.putInt(KEY_PAGE, mPage);
         }
     }
-
-    public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == ImgurBusEvent.EventType.ACCOUNT_COMMENTS) {
-            try {
-                int status = event.json.getInt(ApiClient.KEY_STATUS);
-
-                if (status == ApiClient.STATUS_OK) {
-                    JSONArray data = event.json.getJSONArray(ApiClient.KEY_DATA);
-                    List<ImgurComment> comments = new ArrayList<>(data.length());
-
-                    for (int i = 0; i < data.length(); i++) {
-                        comments.add(new ImgurComment(data.getJSONObject(i)));
-                    }
-
-                    if (comments.isEmpty()) {
-                        mHandler.sendEmptyMessage(ImgurHandler.MESSAGE_EMPTY_RESULT);
-                    } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, comments);
-                    }
-
-                } else {
-                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
-                }
-
-            } catch (JSONException ex) {
-                LogUtil.e(TAG, "Error parsing profile comments", ex);
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-            }
-        }
-    }
-
-    public void onEventMainThread(ThrowableFailureEvent event) {
-        Throwable e = event.getThrowable();
-
-        if (e instanceof IOException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
-        } else if (e instanceof JSONException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-        } else {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
-        }
-
-        LogUtil.e(TAG, "Error received from Event Bus", e);
-
-    }
-
-    private ImgurHandler mHandler = new ImgurHandler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (!isAdded()) return;
-
-            switch (msg.what) {
-                case MESSAGE_ACTION_COMPLETE:
-                    List<ImgurComment> comments = (List<ImgurComment>) msg.obj;
-
-                    if (mAdapter == null) {
-                        mAdapter = new ProfileCommentAdapter(getActivity(), comments);
-                        mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                            mListView.addFooterView(ViewUtils.getFooterViewForComments(getActivity()));
-                        }
-
-                        mListView.setAdapter(mAdapter);
-                    } else {
-                        mAdapter.addItems(comments);
-                    }
-
-                    mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
-
-                    if (mPage == 0) {
-                        mMultiStatView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mListView != null) mListView.setSelection(0);
-                            }
-                        });
-                    }
-                    break;
-
-                case MESSAGE_ACTION_FAILED:
-                    // Only show Error view when the user has posted no comments
-                    if (mAdapter == null || mAdapter.isEmpty()) {
-                        mMultiStatView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
-                        mMultiStatView.setViewState(MultiStateView.ViewState.ERROR);
-                    }
-                    break;
-
-                case MESSAGE_EMPTY_RESULT:
-                    mHasMore = false;
-                    LogUtil.v(TAG, "No more comments to be fetched");
-
-                    // Only show empty view when the user has posted no comments
-                    if (mAdapter == null || mAdapter.isEmpty()) {
-                        mMultiStatView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_comments, mSelectedUser.getUsername()));
-                        mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
-                    }
-                    break;
-            }
-
-            mIsLoading = false;
-            super.handleMessage(msg);
-        }
-    };
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {

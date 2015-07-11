@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.classes.ImgurComment;
+import com.kenny.openimgur.classes.ImgurComment2;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -26,9 +26,9 @@ import butterknife.InjectView;
 /**
  * Created by kcampagna on 12/22/14.
  */
-public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
+public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment2> {
 
-    public ProfileCommentAdapter(Context context, List<ImgurComment> comments) {
+    public ProfileCommentAdapter(Context context, List<ImgurComment2> comments) {
         super(context, comments, true);
     }
 
@@ -40,7 +40,7 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         CommentViewHolder holder;
-        ImgurComment comment = getItem(position);
+        ImgurComment2 comment = getItem(position);
         String photoUrl;
 
         if (convertView == null) {
@@ -70,7 +70,7 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
      * @param context
      * @return
      */
-    private Spannable constructSpan(ImgurComment comment, Context context) {
+    private Spannable constructSpan(ImgurComment2 comment, Context context) {
         CharSequence date = getDateFormattedTime(comment.getDate() * 1000L, context);
         String author = comment.getAuthor();
         StringBuilder sb = new StringBuilder(author);

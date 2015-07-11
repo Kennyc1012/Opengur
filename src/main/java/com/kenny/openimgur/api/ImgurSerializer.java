@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.kenny.openimgur.classes.ImgurAlbum2;
 import com.kenny.openimgur.classes.ImgurBaseObject2;
+import com.kenny.openimgur.classes.ImgurComment2;
 import com.kenny.openimgur.classes.ImgurPhoto2;
 
 import java.lang.reflect.Type;
@@ -20,11 +21,15 @@ public class ImgurSerializer implements JsonDeserializer<ImgurBaseObject2> {
     public ImgurBaseObject2 deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject object = json.getAsJsonObject();
         boolean isAlbum = object.has("is_album") && object.get("is_album").getAsBoolean();
+        boolean isComment = !isAlbum && object.has("comment");
+
 
         if (isAlbum) {
             return new GsonBuilder().create().fromJson(json, ImgurAlbum2.class);
-        } else {
+        } else if (!isComment) {
             return new GsonBuilder().create().fromJson(json, ImgurPhoto2.class);
+        } else {
+            return new GsonBuilder().create().fromJson(json, ImgurComment2.class);
         }
     }
 }
