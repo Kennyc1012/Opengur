@@ -135,7 +135,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
             LogUtil.v(TAG, "Selected user is null or data is too old, fetching new data");
             String userName = mSelectedUser == null ? username : mSelectedUser.getUsername();
             getSupportActionBar().setTitle(userName);
-            fetchProfile(username);
+            fetchProfile(userName);
         } else {
             LogUtil.v(TAG, "Selected user present in database and has valid data");
             mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);

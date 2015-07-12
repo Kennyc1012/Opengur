@@ -5,6 +5,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kenny.openimgur.BuildConfig;
+import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject2;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
@@ -91,6 +92,7 @@ public class ApiClient2 {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(ImgurBaseObject2.class, new ImgurSerializer())
+                .registerTypeAdapter(ConvoResponse.class, new ConvoResponse())
                 .create();
 
         return new GsonConverter(gson);

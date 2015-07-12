@@ -126,7 +126,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
         switch (item.getItemId()) {
             case R.id.message:
                 if (app.getUser() != null) {
-                    ImgurConvo convo = ImgurConvo.createConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
+                    ImgurConvo convo = new ImgurConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
                     startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
                 } else {
                     SnackBar.show(getActivity(), R.string.user_not_logged_in);

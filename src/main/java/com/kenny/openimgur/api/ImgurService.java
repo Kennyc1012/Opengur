@@ -1,6 +1,7 @@
 package com.kenny.openimgur.api;
 
 import com.kenny.openimgur.api.responses.CommentResponse;
+import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.api.responses.UserResponse;
@@ -61,7 +62,7 @@ public interface ImgurService {
      * User <b>MUST</b> be logged in for this endpoint to work
      */
     @GET("/conversations")
-    void getConversations();
+    void getConversations(Callback<ConvoResponse> callback);
 
     @GET("/gallery/r/{subreddit}/{sort}/{page}")
     void getSubReddit(@Path("subreddit") String query, @Path("sort") String sort, @Path("page") int page, Callback<GalleryResponse> callback);
