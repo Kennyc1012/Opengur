@@ -14,7 +14,7 @@ import java.util.List;
  * Created by kcampagna on 7/11/15.
  */
 public class ImgurAlbum2 extends ImgurBaseObject2 {
-    private static final String ALBUM_COVER_URL = "https://i.imgur.com/%s.jpg";
+    public static final String ALBUM_COVER_URL = "https://i.imgur.com/%s.jpg";
 
     @SerializedName("cover")
     private String mCoverId;

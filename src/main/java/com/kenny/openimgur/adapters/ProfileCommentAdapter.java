@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.api.Endpoints;
+import com.kenny.openimgur.classes.ImgurAlbum2;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.util.ImageUtil;
@@ -54,7 +54,7 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
         holder.comment.setText(comment.getComment());
 
         if (comment.isAlbumComment() && !TextUtils.isEmpty(comment.getAlbumCoverId())) {
-            photoUrl = String.format(Endpoints.ALBUM_COVER.getUrl(), comment.getAlbumCoverId() + ImgurPhoto.THUMBNAIL_SMALL);
+            photoUrl = String.format(ImgurAlbum2.ALBUM_COVER_URL, comment.getAlbumCoverId() + ImgurPhoto.THUMBNAIL_SMALL);
         } else {
             photoUrl = "https://imgur.com/" + comment.getImageId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
         }

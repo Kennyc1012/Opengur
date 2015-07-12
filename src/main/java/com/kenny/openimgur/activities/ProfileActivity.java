@@ -25,7 +25,6 @@ import android.webkit.WebViewClient;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient2;
-import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.responses.UserResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurUser;
@@ -49,6 +48,8 @@ import retrofit.client.Response;
  * Created by kcampagna on 12/14/14.
  */
 public class ProfileActivity extends BaseActivity implements FragmentListener {
+    private static final String LOGIN_URL = "https://api.imgur.com/oauth2/authorize?client_id=" + ApiClient2.CLIENT_ID + "&response_type=token";
+
     private static final String REDIRECT_URL = "https://com.kenny.openimgur";
 
     public static final int REQUEST_CODE = 101;
@@ -192,7 +193,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         getSupportActionBar().hide();
         mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
         WebView webView = (WebView) mMultiView.getView(MultiStateView.ViewState.EMPTY).findViewById(R.id.loginWebView);
-        webView.loadUrl(Endpoints.LOGIN.getUrl());
+        webView.loadUrl(LOGIN_URL);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -201,7 +202,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
 
                     if (url.contains("/?error=")) {
                         LogUtil.v(TAG, "Error received from URL " + url);
-                        view.loadUrl(Endpoints.LOGIN.getUrl());
+                        view.loadUrl(LOGIN_URL);
                         return true;
                     }
 

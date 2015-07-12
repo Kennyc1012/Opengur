@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.util.LogUtil;
 
 import org.json.JSONException;
@@ -53,7 +52,7 @@ public class ImgurAlbum extends ImgurBaseObject {
         try {
             if (!json.isNull(KEY_COVER_ID)) {
                 mCoverId = json.getString(KEY_COVER_ID);
-                mCoverUrl = String.format(Endpoints.ALBUM_COVER.getUrl(), mCoverId + ImgurPhoto.THUMBNAIL_MEDIUM);
+                mCoverUrl = String.format(ImgurAlbum2.ALBUM_COVER_URL, mCoverId + ImgurPhoto.THUMBNAIL_MEDIUM);
             }
 
             if (!json.isNull(KEY_COVER_HEIGHT)) {
@@ -103,9 +102,9 @@ public class ImgurAlbum extends ImgurBaseObject {
      */
     public String getCoverUrl(@Nullable String size) {
         if (TextUtils.isEmpty(size)) {
-            return String.format(Endpoints.ALBUM_COVER.getUrl(), mCoverId);
+            return String.format(ImgurAlbum2.ALBUM_COVER_URL, mCoverId);
         } else {
-            return String.format(Endpoints.ALBUM_COVER.getUrl(), mCoverId + size);
+            return String.format(ImgurAlbum2.ALBUM_COVER_URL, mCoverId + size);
         }
     }
 
