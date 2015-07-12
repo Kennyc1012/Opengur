@@ -28,7 +28,7 @@ public class ImgurAlbum2 extends ImgurBaseObject2 {
     @SerializedName("cover_height")
     private int mCoverHeight;
 
-    private List<ImgurPhoto> mAlbumPhotos;
+    private List<ImgurPhoto2> mAlbumPhotos;
 
     public ImgurAlbum2(String id, String title, String link) {
         super(id, title, link);
@@ -41,7 +41,7 @@ public class ImgurAlbum2 extends ImgurBaseObject2 {
         mCoverWidth = in.readInt();
         mCoverHeight = in.readInt();
         mAlbumPhotos = new ArrayList<>();
-        in.readTypedList(mAlbumPhotos, ImgurPhoto.CREATOR);
+        in.readTypedList(mAlbumPhotos, ImgurPhoto2.CREATOR);
     }
 
     public void setCoverId(String id) {
@@ -79,7 +79,7 @@ public class ImgurAlbum2 extends ImgurBaseObject2 {
      *
      * @param photo
      */
-    public void addPhotoToAlbum(ImgurPhoto photo) {
+    public void addPhotoToAlbum(ImgurPhoto2 photo) {
         if (mAlbumPhotos == null) {
             mAlbumPhotos = new ArrayList<>();
         }
@@ -87,7 +87,7 @@ public class ImgurAlbum2 extends ImgurBaseObject2 {
         mAlbumPhotos.add(photo);
     }
 
-    public void addPhotosToAlbum(List<ImgurPhoto> photos) {
+    public void addPhotosToAlbum(List<ImgurPhoto2> photos) {
         if (mAlbumPhotos == null) {
             mAlbumPhotos = photos;
         } else {
@@ -95,7 +95,7 @@ public class ImgurAlbum2 extends ImgurBaseObject2 {
         }
     }
 
-    public List<ImgurPhoto> getAlbumPhotos() {
+    public List<ImgurPhoto2> getAlbumPhotos() {
         return mAlbumPhotos;
     }
 

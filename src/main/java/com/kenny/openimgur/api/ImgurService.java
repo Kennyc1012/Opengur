@@ -1,5 +1,6 @@
 package com.kenny.openimgur.api;
 
+import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
@@ -23,13 +24,13 @@ public interface ImgurService {
     void getGalleryForTopSorted(@Path("section") String section, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/gallery/{id}")
-    void getGalleryDetails(@Path("id") String itemId);
+    void getGalleryDetails(@Path("id") String itemId, Callback<GalleryResponse> callback);
 
     @GET("/image/{id}")
     void getImageDtails(@Path("id") String imageId);
 
     @GET("/gallery/{id}/images")
-    void getAlbumImages(@Path("id") String albumId);
+    void getAlbumImages(@Path("id") String albumId, Callback<AlbumResponse> callback);
 
     @GET("/gallery/{id}/comments/{sort}")
     void getComments(@Path("id") String itemId, @Path("sort") String commentSort, Callback<CommentResponse> callback);

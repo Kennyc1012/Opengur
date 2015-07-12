@@ -38,14 +38,16 @@ import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
+import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum;
+import com.kenny.openimgur.classes.ImgurAlbum2;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
-import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.fragments.CommentPopupFragment;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
@@ -62,7 +64,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.RequestBody;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -328,19 +329,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             // Check if the activity was opened externally by a link click
             if (!TextUtils.isEmpty(mGalleryId)) {
                 boolean isAlbumLink = getIntent().getBooleanExtra(KEY_VIEW_FOR_ALBUM, false);
-                String url;
-                ImgurBusEvent.EventType eventType;
-
-                if (isAlbumLink) {
-                    url = String.format(Endpoints.ALBUM.getUrl(), mGalleryId);
-                    eventType = ImgurBusEvent.EventType.ALBUM_DETAILS;
-                } else {
-                    url = String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mGalleryId);
-                    eventType = ImgurBusEvent.EventType.GALLERY_ITEM_INFO;
-                }
-
-                mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
-                mApiClient.doWork(eventType, mGalleryId, null);
+                fetchItemDetails(mGalleryId, isAlbumLink);
             } else {
                 mViewPager.setAdapter(mPagerAdapter);
 
@@ -546,61 +535,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     }
                     break;
 
-                case GALLERY_ITEM_INFO:
-                    if (!TextUtils.isEmpty(mGalleryId) && mGalleryId.equals(event.id)) {
-                        mGalleryId = null;
-
-                        if (statusCode == ApiClient.STATUS_OK) {
-                            JSONObject json = event.json.getJSONObject(ApiClient.KEY_DATA);
-                            Object imgurObject;
-
-                            if (json.has("is_album") && json.getBoolean("is_album")) {
-                                imgurObject = new ImgurAlbum(json);
-
-                                if (json.has("images")) {
-                                    JSONArray array = json.getJSONArray("images");
-
-                                    for (int i = 0; i < array.length(); i++) {
-                                        ((ImgurAlbum) imgurObject).addPhotoToAlbum(new ImgurPhoto(array.getJSONObject(i)));
-                                    }
-                                }
-                            } else {
-                                imgurObject = new ImgurPhoto(json);
-                            }
-
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ITEM_DETAILS, imgurObject);
-                        } else {
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
-                        }
-                    }
-                    break;
-
                 case FAVORITE:
                     ImgurBaseObject obj = mPagerAdapter.getImgurItem(mCurrentPosition);
                     if (obj.getId().equals(event.id)) {
                         obj.setIsFavorite(!obj.isFavorited());
                         invalidateOptionsMenu();
                     }
-                    break;
-
-                case ALBUM_DETAILS:
-                    if (!TextUtils.isEmpty(mGalleryId) && mGalleryId.equals(event.id)) {
-                        ImgurAlbum album = new ImgurAlbum(mGalleryId, null, getIntent().getData().toString());
-                        mGalleryId = null;
-
-                        if (statusCode == ApiClient.STATUS_OK) {
-                            JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
-
-                            for (int i = 0; i < arr.length(); i++) {
-                                album.addPhotoToAlbum(new ImgurPhoto(arr.getJSONObject(i)));
-                            }
-
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ITEM_DETAILS, album);
-                        } else {
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
-                        }
-                    }
-
                     break;
             }
         } catch (JSONException e) {
@@ -936,36 +876,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     showDialogFragment(LoadingDialogFragment.createInstance(R.string.posting_comment, false), DIALOG_LOADING);
                     break;
 
-                case MESSAGE_ACTION_COMPLETE:
-                    if (mPagerAdapter == null) return;
-                    List<ImgurComment> comments = (List<ImgurComment>) msg.obj;
-
-                    if (!comments.isEmpty()) {
-                        ImgurBaseObject imgurObject = mPagerAdapter.getImgurItem(mCurrentPosition);
-
-                        if (mCommentAdapter == null) {
-                            mCommentAdapter = new CommentAdapter(ViewActivity.this, comments, ViewActivity.this);
-                            mCommentAdapter.setOP(imgurObject.getAccount());
-                            mCommentList.setAdapter(mCommentAdapter);
-                        } else {
-                            mCommentAdapter.setOP(imgurObject.getAccount());
-                            mCommentAdapter.clearExpansionInfo();
-                            mCommentAdapter.addItems(comments);
-                        }
-
-                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-
-                        mMultiView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mCommentList.scrollToPosition(0);
-                            }
-                        });
-                    } else {
-                        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-                    }
-                    break;
-
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -978,15 +888,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     } else {
                         SnackBar.show(ViewActivity.this, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
                     }
-                    break;
-
-                case MESSAGE_ITEM_DETAILS:
-                    final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
-                    objects.add((ImgurBaseObject) msg.obj);
-                    mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
-                    mViewPager.setAdapter(mPagerAdapter);
-                    invalidateOptionsMenu();
-                    fetchComments();
                     break;
 
                 default:
@@ -1044,12 +945,55 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 @Override
                 public void failure(RetrofitError error) {
-
+                    //TODO
                 }
             });
         } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.ViewState.ERROR) {
             mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
             mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+        }
+    }
+
+    private void fetchItemDetails(final String id, final boolean isAlbum) {
+        if (isAlbum) {
+            ApiClient2.getService().getAlbumImages(id, new Callback<AlbumResponse>() {
+                @Override
+                public void success(AlbumResponse albumResponse, Response response) {
+                    ImgurAlbum2 album = new ImgurAlbum2(mGalleryId, null, getIntent().getData().toString());
+                    mGalleryId = null;
+                    album.addPhotosToAlbum(albumResponse.data);
+                   /* final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
+                    objects.add(album);
+                    mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
+                    mViewPager.setAdapter(mPagerAdapter);
+                    invalidateOptionsMenu();
+                    fetchComments();*/
+                    // TODO
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    // TODO
+                }
+            });
+        } else {
+            ApiClient2.getService().getGalleryDetails(id, new Callback<GalleryResponse>() {
+                @Override
+                public void success(GalleryResponse galleryResponse, Response response) {
+                    /* final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
+                    objects.add(album);
+                    mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
+                    mViewPager.setAdapter(mPagerAdapter);
+                    invalidateOptionsMenu();
+                    fetchComments();*/
+                    // TODO
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    // TODO
+                }
+            });
         }
     }
 
