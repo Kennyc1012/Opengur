@@ -27,8 +27,10 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.adapters.PhotoAdapter;
 import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurAlbum2;
@@ -64,6 +66,9 @@ import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 import pl.droidsonroids.gif.GifDrawable;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 7/12/14.
@@ -197,9 +202,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 api.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, mImgurObject.getId(), null);
             }
         } else if (((ImgurAlbum2) mImgurObject).getAlbumPhotos() == null || ((ImgurAlbum2) mImgurObject).getAlbumPhotos().isEmpty()) {
-            String url = String.format(Endpoints.ALBUM.getUrl(), mImgurObject.getId());
-            ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
-            api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
+            fetchAlbumImages();
         } else {
             mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum2) mImgurObject).getAlbumPhotos(), mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
@@ -276,20 +279,6 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         try {
             int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
             switch (event.eventType) {
-                case ALBUM_DETAILS:
-                    if (statusCode == ApiClient.STATUS_OK) {
-                        JSONArray arr = event.json.getJSONArray(ApiClient.KEY_DATA);
-                        List<ImgurPhoto> photos = new ArrayList<>();
-
-                        for (int i = 0; i < arr.length(); i++) {
-                            photos.add(new ImgurPhoto(arr.getJSONObject(i)));
-                        }
-
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photos);
-                    } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
-                    }
-                    break;
 
                 case GALLERY_ITEM_INFO:
                     if (statusCode == ApiClient.STATUS_OK) {
@@ -550,12 +539,6 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
                     if (msg.obj instanceof ImgurBaseObject) {
                         setupFragmentWithObject((ImgurBaseObject2) msg.obj);
-                    } else if (msg.obj instanceof List && mImgurObject instanceof ImgurAlbum2) {
-                        ((ImgurAlbum2) mImgurObject).addPhotosToAlbum((List<ImgurPhoto2>) msg.obj);
-                        mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum2) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
-                        mListView.setAdapter(mPhotoAdapter);
-                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                        checkForTags();
                     } else {
                         mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
                         mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -592,5 +575,27 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         outState.putBoolean(KEY_DISPLAY_TAGS, mDisplayTags);
         outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);
+    }
+
+    private void fetchAlbumImages() {
+        ApiClient2.getService().getAlbumImages(mImgurObject.getId(), new Callback<AlbumResponse>() {
+            @Override
+            public void success(AlbumResponse albumResponse, Response response) {
+                if (!albumResponse.data.isEmpty()) {
+                    ((ImgurAlbum2) mImgurObject).addPhotosToAlbum(albumResponse.data);
+                    mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum2) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
+                    mListView.setAdapter(mPhotoAdapter);
+                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    checkForTags();
+                } else {
+                    // TODO
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO
+            }
+        });
     }
 }
