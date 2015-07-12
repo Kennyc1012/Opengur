@@ -3,35 +3,19 @@ package com.kenny.openimgur.classes;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
+import com.google.gson.annotations.SerializedName;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.DBContracts.UserContract;
-import com.kenny.openimgur.util.LogUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by kcampagna on 7/25/14.
  */
 public class ImgurUser implements Parcelable {
-    private static final String KEY_DATA = "data";
-
-    private static final String KEY_ID = "id";
-
-    private static final String KEY_USERNAME = "url";
-
-    private static final String KEY_BIO = "bio";
-
-    private static final String KEY_CREATED = "created";
-
-    private static final String KEY_PRO_EXPIRATION = "pro_expiration";
-
-    private static final String KEY_REPUTATION = "reputation";
-
     public static final String KEY_ACCESS_TOKEN = "access_token";
 
     public static final String KEY_REFRESH_TOKEN = "refresh_token";
@@ -41,16 +25,19 @@ public class ImgurUser implements Parcelable {
     // We will get a new refresh token when it expires in 5 minutes or less
     private static final long TOKEN_CUTOFF_TIME = DateUtils.MINUTE_IN_MILLIS * 5;
 
+    @SerializedName("id")
     private int mId;
 
+    @SerializedName("url")
     private String mUsername;
 
+    @SerializedName("bio")
     private String mBio;
 
+    @SerializedName("created")
     private long mCreated;
 
-    private long mProExpiration = -1;
-
+    @SerializedName("reputation")
     private long mReputation;
 
     private long mLastSeen;
@@ -147,10 +134,6 @@ public class ImgurUser implements Parcelable {
         }
     }
 
-    public ImgurUser(JSONObject json) {
-        parseJsonForValues(json);
-    }
-
     public ImgurUser(String username, String accessToken, String refreshToken, long accessTokenExpiration) {
         mUsername = username;
         mAccessToken = accessToken;
@@ -163,7 +146,6 @@ public class ImgurUser implements Parcelable {
             mId = cursor.getInt(UserContract.COLUMN_INDEX_ID);
             mUsername = cursor.getString(UserContract.COLUMN_INDEX_NAME);
             mCreated = cursor.getLong(UserContract.COLUMN_INDEX_CREATED);
-            mProExpiration = cursor.getLong(UserContract.COLUMN_INDEX_PRO_EXPIRATION);
             mAccessToken = cursor.getString(UserContract.COLUMN_INDEX_ACCESS_TOKEN);
             mRefreshToken = cursor.getString(UserContract.COLUMN_INDEX_REFRESH_TOKEN);
             mAccessTokenExpiration = cursor.getLong(UserContract.COLUMN_INDEX_ACCESS_TOKEN_EXPIRATION);
@@ -187,59 +169,19 @@ public class ImgurUser implements Parcelable {
         mRefreshToken = in.readString();
         mId = in.readInt();
         mAccessTokenExpiration = in.readLong();
-        mProExpiration = in.readLong();
         mCreated = in.readLong();
         mReputation = in.readLong();
         mLastSeen = in.readLong();
         mNotoriety = Notoriety.getNotoriety(mReputation);
     }
 
-    /**
-     * Parses the given json object for a Member's values
-     *
-     * @param json
-     * @return If successful
-     */
-    public boolean parseJsonForValues(JSONObject json) {
-        try {
-            if (!json.isNull(KEY_DATA)) {
-                JSONObject data = json.getJSONObject(KEY_DATA);
-
-                if (!data.isNull(KEY_ID)) {
-                    mId = data.getInt(KEY_ID);
-                }
-
-                if (!data.isNull(KEY_USERNAME)) {
-                    mUsername = data.getString(KEY_USERNAME);
-                }
-
-                if (!data.isNull(KEY_BIO)) {
-                    mBio = data.getString(KEY_BIO);
-                }
-
-                if (!data.isNull(KEY_REPUTATION)) {
-                    mReputation = data.getLong(KEY_REPUTATION);
-                    mNotoriety = Notoriety.getNotoriety(mReputation);
-                }
-
-                if (!data.isNull(KEY_CREATED)) {
-                    mCreated = data.getLong(KEY_CREATED) * 1000L;
-                }
-
-                // Can be a boolean if they are not a pro user
-                if (!data.isNull(KEY_PRO_EXPIRATION) && data.get(KEY_PRO_EXPIRATION) instanceof Long) {
-                    mProExpiration = data.getLong(KEY_PRO_EXPIRATION) * 1000L;
-                }
-
-                mLastSeen = System.currentTimeMillis();
-                return true;
-            }
-
-        } catch (JSONException ex) {
-            LogUtil.e("ImgurUser", "Error Decoding JSON", ex);
-        }
-
-        return false;
+    public void copy(ImgurUser user) {
+        if (user == null) return;
+        mId = user.getId();
+        mUsername = user.getUsername();
+        mBio = user.getBio();
+        mCreated = user.getCreated();
+        mReputation = user.getReputation();
     }
 
     public long getAccessTokenExpiration() {
@@ -258,10 +200,6 @@ public class ImgurUser implements Parcelable {
         return mReputation;
     }
 
-    public long getProExpiration() {
-        return mProExpiration;
-    }
-
     public String getBio() {
         return mBio;
     }
@@ -278,7 +216,9 @@ public class ImgurUser implements Parcelable {
         return mId;
     }
 
+    @NonNull
     public Notoriety getNotoriety() {
+        if (mNotoriety == null) mNotoriety = Notoriety.getNotoriety(mReputation);
         return mNotoriety;
     }
 
@@ -312,7 +252,6 @@ public class ImgurUser implements Parcelable {
         parcel.writeString(mRefreshToken);
         parcel.writeInt(mId);
         parcel.writeLong(mAccessTokenExpiration);
-        parcel.writeLong(mProExpiration);
         parcel.writeLong(mCreated);
         parcel.writeLong(mReputation);
         parcel.writeLong(mLastSeen);

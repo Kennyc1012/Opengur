@@ -9,8 +9,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -26,11 +24,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.api.responses.UserResponse;
 import com.kenny.openimgur.classes.FragmentListener;
-import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.fragments.ProfileAlbumsFragment;
 import com.kenny.openimgur.fragments.ProfileCommentsFragment;
@@ -43,13 +40,10 @@ import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LogUtil;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-
 import butterknife.InjectView;
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.util.ThrowableFailureEvent;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 12/14/14.
@@ -113,18 +107,6 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    protected void onPause() {
-        EventBus.getDefault().unregister(this);
-        super.onPause();
-    }
-
     private void handleData(Bundle savedInstanceState, Intent args) {
         if (savedInstanceState == null) {
             if (args.hasExtra(KEY_USERNAME)) {
@@ -152,9 +134,8 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         if (mSelectedUser == null || System.currentTimeMillis() - mSelectedUser.getLastSeen() >= DateUtils.DAY_IN_MILLIS) {
             LogUtil.v(TAG, "Selected user is null or data is too old, fetching new data");
             String userName = mSelectedUser == null ? username : mSelectedUser.getUsername();
-            String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), userName);
             getSupportActionBar().setTitle(userName);
-            new ApiClient(detailsUrls, ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, userName, null);
+            fetchProfile(username);
         } else {
             LogUtil.v(TAG, "Selected user present in database and has valid data");
             mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);
@@ -275,8 +256,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                         user = newUser;
                         mSelectedUser = newUser;
                         LogUtil.v(TAG, "User " + newUser.getUsername() + " logged in");
-                        String detailsUrls = String.format(Endpoints.PROFILE.getUrl(), newUser.getUsername());
-                        new ApiClient(detailsUrls, ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.PROFILE_DETAILS, newUser.getUsername(), null);
+                        fetchProfile(mSelectedUser.getUsername());
                         CookieManager.getInstance().removeAllCookie();
                         view.clearHistory();
                         view.clearCache(true);
@@ -285,7 +265,8 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                         getSupportActionBar().setTitle(user.getUsername());
                         setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_LOGGED_IN, true));
                     } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, R.string.error_generic);
+                        mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                 } else {
                     view.loadUrl(url);
@@ -296,16 +277,15 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         });
     }
 
-    public void onEventAsync(@NonNull ImgurBusEvent event) {
-        if (event.eventType == ImgurBusEvent.EventType.PROFILE_DETAILS) {
-            try {
-                int status = event.json.getInt(ApiClient.KEY_STATUS);
-
-                if (status == ApiClient.STATUS_OK) {
-                    if (mSelectedUser == null) {
-                        mSelectedUser = new ImgurUser(event.json);
+    private void fetchProfile(String username) {
+        ApiClient2.getService().getProfile(username, new Callback<UserResponse>() {
+            @Override
+            public void success(UserResponse userResponse, Response response) {
+                if (userResponse.data != null) {
+                    if (mSelectedUser != null) {
+                        mSelectedUser.copy(userResponse.data);
                     } else {
-                        mSelectedUser.parseJsonForValues(event.json);
+                        mSelectedUser = userResponse.data;
                     }
 
                     if (mSelectedUser.isSelf(app)) {
@@ -314,31 +294,21 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                         app.getSql().insertProfile(mSelectedUser);
                     }
 
-                    mHandler.sendEmptyMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE);
+                    mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);
+                    mPager.setAdapter(mAdapter);
+                    mSlidingTabs.setupWithViewPager(mPager);
+                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    supportInvalidateOptionsMenu();
                 } else {
-                    mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
+                    // TODO Error
                 }
-
-            } catch (JSONException ex) {
-
             }
 
-        }
-    }
-
-    public void onEventMainThread(ThrowableFailureEvent event) {
-        Throwable e = event.getThrowable();
-
-        if (e instanceof IOException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
-        } else if (e instanceof JSONException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-        } else {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
-        }
-
-        LogUtil.e(TAG, "Error received from Event Bus", e);
-
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO Error
+            }
+        });
     }
 
     @Override
@@ -348,26 +318,6 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
             outState.putParcelable(KEY_USER, mSelectedUser);
         }
     }
-
-    private ImgurHandler mHandler = new ImgurHandler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MESSAGE_ACTION_COMPLETE:
-                    mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);
-                    mPager.setAdapter(mAdapter);
-                    mSlidingTabs.setupWithViewPager(mPager);
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                    supportInvalidateOptionsMenu();
-                    break;
-
-                case MESSAGE_ACTION_FAILED:
-                    mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                    break;
-            }
-        }
-    };
 
     @Override
     public void onUpdateActionBarTitle(String title) {

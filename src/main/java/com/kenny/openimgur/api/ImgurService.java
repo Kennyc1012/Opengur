@@ -3,6 +3,7 @@ package com.kenny.openimgur.api;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.api.responses.TopicResponse;
+import com.kenny.openimgur.api.responses.UserResponse;
 
 import retrofit.Callback;
 import retrofit.http.GET;
@@ -33,7 +34,7 @@ public interface ImgurService {
     void getComments(@Path("id") String itemId, @Path("sort") String commentSort);
 
     @GET("/account/{user}")
-    void getProfile(@Path("user") String username);
+    void getProfile(@Path("user") String username, Callback<UserResponse> callback);
 
     @GET("/account/{user}/favorites")
     void getProfileFavorites(@Path("user") String username, Callback<GalleryResponse> callback);
