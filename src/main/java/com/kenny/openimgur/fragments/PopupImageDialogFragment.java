@@ -4,8 +4,6 @@ import android.app.DialogFragment;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,31 +15,26 @@ import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
-import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.api.ImgurBusEvent;
-import com.kenny.openimgur.classes.ImgurHandler;
-import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.responses.PhotoResponse;
+import com.kenny.openimgur.classes.ImgurPhoto2;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
-import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
-import org.json.JSONException;
-
 import java.io.File;
-import java.io.IOException;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.util.ThrowableFailureEvent;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 7/19/14.
@@ -115,8 +108,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
                 displayImage(mImageUrl, isAnimated);
             }
         } else {
-            ApiClient api = new ApiClient(String.format(Endpoints.IMAGE_DETAILS.getUrl(), mImageUrl), ApiClient.HttpRequest.GET);
-            api.doWork(ImgurBusEvent.EventType.ITEM_DETAILS, null, null);
+            fetchImageDetails();
         }
 
         mImage.setOnClickListener(new View.OnClickListener() {
@@ -141,8 +133,6 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().register(this);
-
         if (mVideo != null && mVideo.getDuration() > 0) {
             mVideo.start();
         }
@@ -150,59 +140,18 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
 
     @Override
     public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-
         if (mVideo != null && mVideo.isPlaying()) {
             mVideo.stopPlayback();
         }
+
+        super.onPause();
     }
 
     @Override
     public void onDestroyView() {
         OpengurApp.getInstance(getActivity()).getImageLoader().cancelDisplayTask(mImage);
-        mHandler.removeCallbacksAndMessages(null);
         ButterKnife.reset(this);
         super.onDestroyView();
-    }
-
-    /**
-     * Event Method that receives events from the Bus
-     *
-     * @param event
-     */
-    public void onEventAsync(@NonNull ImgurBusEvent event) {
-        try {
-            int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
-            if (statusCode == ApiClient.STATUS_OK && event.eventType == ImgurBusEvent.EventType.ITEM_DETAILS) {
-                final ImgurPhoto photo = new ImgurPhoto(event.json.getJSONObject(ApiClient.KEY_DATA));
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, photo);
-            } else if (event.eventType == ImgurBusEvent.EventType.ITEM_DETAILS && statusCode != ApiClient.STATUS_OK) {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(R.string.loading_image_error));
-            }
-        } catch (JSONException e) {
-            LogUtil.e("PopupImageDialogFramgent", "Unable to parse json result", e);
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(R.string.error_generic));
-        }
-    }
-
-    /**
-     * Event Method that is fired if EventBus throws an error
-     *
-     * @param event
-     */
-    public void onEventMainThread(ThrowableFailureEvent event) {
-        Throwable e = event.getThrowable();
-
-        if (e instanceof IOException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION)));
-        } else if (e instanceof JSONException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION)));
-        } else {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, getString(R.string.loading_image_error));
-        }
-
-        LogUtil.e("PopupImageDialogFragment", "Error received from Event Bus", e);
     }
 
     /**
@@ -288,42 +237,9 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
         mVideo.start();
     }
 
-    private ImgurHandler mHandler = new ImgurHandler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MESSAGE_ACTION_COMPLETE:
-                    ImgurPhoto photo = (ImgurPhoto) msg.obj;
-
-                    if (photo.isAnimated()) {
-                        if (photo.isLinkAThumbnail() || photo.getSize() > PHOTO_SIZE_LIMIT) {
-                            mImageUrl = photo.getMP4Link();
-                            displayVideo(mImageUrl);
-                        } else {
-                            mImageUrl = photo.getLink();
-                            displayImage(mImageUrl, photo.isAnimated());
-                        }
-                    } else {
-                        mImageUrl = photo.getLink();
-                        displayImage(mImageUrl, photo.isAnimated());
-                    }
-                    break;
-
-                case MESSAGE_ACTION_FAILED:
-                    SnackBar.show(getActivity(), (String) msg.obj);
-                    dismiss();
-                    break;
-
-                default:
-                    super.handleMessage(msg);
-                    break;
-            }
-        }
-    };
-
     @Override
     public void onVideoDownloadStart(String key, String url) {
-
+        // NOOP
     }
 
     @Override
@@ -339,5 +255,39 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
         if (isAdded() && isResumed()) {
             displayVideo(file);
         }
+    }
+
+    private void fetchImageDetails() {
+        ApiClient2.getService().getImageDtails(mImageUrl, new Callback<PhotoResponse>() {
+            @Override
+            public void success(PhotoResponse photoResponse, Response response) {
+                if (photoResponse.data != null) {
+                    ImgurPhoto2 photo = photoResponse.data;
+
+                    if (photo.isAnimated()) {
+                        if (photo.isLinkAThumbnail() || photo.getSize() > PHOTO_SIZE_LIMIT) {
+                            mImageUrl = photo.getMP4Link();
+                            displayVideo(mImageUrl);
+                        } else {
+                            mImageUrl = photo.getLink();
+                            displayImage(mImageUrl, photo.isAnimated());
+                        }
+                    } else {
+                        mImageUrl = photo.getLink();
+                        displayImage(mImageUrl, photo.isAnimated());
+                    }
+                } else {
+                    SnackBar.show(getActivity(), R.string.error_generic);
+                    dismissAllowingStateLoss();
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO Error message
+                SnackBar.show(getActivity(), R.string.error_generic);
+                dismissAllowingStateLoss();
+            }
+        });
     }
 }

@@ -581,6 +581,8 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         ApiClient2.getService().getAlbumImages(mImgurObject.getId(), new Callback<AlbumResponse>() {
             @Override
             public void success(AlbumResponse albumResponse, Response response) {
+                if (!isAdded()) return;
+
                 if (!albumResponse.data.isEmpty()) {
                     ((ImgurAlbum2) mImgurObject).addPhotosToAlbum(albumResponse.data);
                     mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum2) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
@@ -594,6 +596,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
             @Override
             public void failure(RetrofitError error) {
+                if (!isAdded()) return;
                 // TODO
             }
         });
