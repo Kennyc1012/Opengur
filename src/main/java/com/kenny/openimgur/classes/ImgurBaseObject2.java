@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by kcampagna on 7/11/15.
@@ -80,7 +81,7 @@ public class ImgurBaseObject2 implements Parcelable {
     @SerializedName("nsfw")
     private boolean mIsNSFW;
 
-    private ArrayList<String> mTags;
+    private List<ImgurTag> mTags;
 
     public ImgurBaseObject2(String id, String title, String link) {
         mId = id;
@@ -203,11 +204,11 @@ public class ImgurBaseObject2 implements Parcelable {
         mVote = vote;
     }
 
-    public void setTags(ArrayList tags) {
+    public void setTags(List tags) {
         mTags = tags;
     }
 
-    public ArrayList getTags() {
+    public List<ImgurTag> getTags() {
         return mTags;
     }
 
@@ -246,7 +247,7 @@ public class ImgurBaseObject2 implements Parcelable {
         out.writeInt(mIsNSFW ? 1 : 0);
         out.writeLong(mDate);
         out.writeLong(mBandwidth);
-        out.writeStringList(mTags);
+        out.writeTypedList(mTags);
     }
 
     public static final Parcelable.Creator<ImgurBaseObject2> CREATOR = new Parcelable.Creator<ImgurBaseObject2>() {
@@ -286,7 +287,7 @@ public class ImgurBaseObject2 implements Parcelable {
         mDate = in.readLong();
         mBandwidth = in.readLong();
         mTags = new ArrayList<>();
-        in.readStringList(mTags);
+        in.readTypedList(mTags, ImgurTag.CREATOR);
     }
 
     @Override

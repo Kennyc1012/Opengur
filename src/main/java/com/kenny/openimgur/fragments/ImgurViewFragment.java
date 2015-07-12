@@ -34,6 +34,7 @@ import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.api.responses.AlbumResponse;
+import com.kenny.openimgur.api.responses.TagResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurAlbum2;
@@ -56,7 +57,6 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -234,7 +234,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             mPhotoAdapter = new PhotoAdapter(getActivity(), photos, mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-            checkForTags();
+            fetchTags();
         } else {
             mDisplayTags = args.getBoolean(KEY_DISPLAY_TAGS, true);
             setupFragmentWithObject((ImgurBaseObject2) args.getParcelable(KEY_IMGUR_OBJECT));
@@ -256,7 +256,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 mPhotoAdapter = new PhotoAdapter(getActivity(), photo, mImgurObject, this);
                 mListView.setAdapter(mPhotoAdapter);
                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                checkForTags();
+                fetchTags();
             } else {
                 LogUtil.v(TAG, "Item does not contain scores, fetching from api");
                 String url = String.format(Endpoints.GALLERY_ITEM_DETAILS.getUrl(), mImgurObject.getId());
@@ -269,15 +269,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum2) mImgurObject).getAlbumPhotos(), mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-            checkForTags();
-        }
-    }
-
-    private void checkForTags() {
-        // No need to request if the object already has tags, they will be set in the adapter
-        if (mDisplayTags && (mImgurObject.getTags() == null || mImgurObject.getTags().isEmpty())) {
-            String tagsUrl = String.format(Endpoints.TAGS.getUrl(), mImgurObject.getId());
-            new ApiClient(tagsUrl, ApiClient.HttpRequest.GET).doWork(ImgurBusEvent.EventType.TAGS, mImgurObject.getId(), null);
+            fetchTags();
         }
     }
 
@@ -356,32 +348,6 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, object);
                     } else {
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, statusCode);
-                    }
-                    break;
-
-                case TAGS:
-                    if (statusCode == ApiClient.STATUS_OK) {
-                        JSONObject data = event.json.getJSONObject(ApiClient.KEY_DATA);
-
-                        if (data.has("tags")) {
-                            JSONArray tags = data.getJSONArray("tags");
-
-                            if (tags.length() > 0) {
-                                ArrayList<String> tagList = new ArrayList<>(tags.length());
-
-                                for (int i = 0; i < tags.length(); i++) {
-                                    JSONObject tag = tags.getJSONObject(i);
-                                    tagList.add(tag.getString("name"));
-                                }
-
-                                LogUtil.v(TAG, "Received " + tagList.size() + " tags");
-                                mHandler.sendMessage(ImgurHandler.MESSAGE_TAGS_RECEIVED, tagList);
-                            }
-                        }
-                        LogUtil.v(TAG, "No tags received");
-                    } else {
-                        // Just ignore any bad tag responses
-                        LogUtil.w(TAG, "Status came back " + statusCode + " for tags");
                     }
                     break;
             }
@@ -612,14 +578,6 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
 
-                case MESSAGE_TAGS_RECEIVED:
-                    if (msg.obj instanceof ArrayList) {
-                        ArrayList<String> tags = (ArrayList<String>) msg.obj;
-                        mImgurObject.setTags(tags);
-                        if (mPhotoAdapter != null) mPhotoAdapter.setTags(tags);
-                    }
-                    break;
-
                 default:
                     super.handleMessage(msg);
                     break;
@@ -650,7 +608,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum2) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
                     mListView.setAdapter(mPhotoAdapter);
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                    checkForTags();
+                    fetchTags();
                 } else {
                     // TODO
                 }
@@ -662,5 +620,31 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 // TODO
             }
         });
+    }
+
+    private void fetchTags() {
+        // No need to request if the object already has tags, they will be set in the adapter
+        if (mDisplayTags && (mImgurObject.getTags() == null || mImgurObject.getTags().isEmpty())) {
+            ApiClient2.getService().getTags(mImgurObject.getId(), new Callback<TagResponse>() {
+                @Override
+                public void success(TagResponse tagResponse, Response response) {
+                    if (!isAdded()) return;
+
+                    if (tagResponse.data != null && !tagResponse.data.tags.isEmpty()) {
+                        mImgurObject.setTags(tagResponse.data.tags);
+                        if (mPhotoAdapter != null) mPhotoAdapter.setTags(tagResponse.data.tags);
+                    } else {
+                        LogUtil.v(TAG, "Did not receive any tags");
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    if (!isAdded()) return;
+                    // Just ignore any bad tag responses
+                    LogUtil.e(TAG, "Received an error while fetching tags", error);
+                }
+            });
+        }
     }
 }

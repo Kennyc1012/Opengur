@@ -6,6 +6,7 @@ import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.api.responses.PhotoResponse;
+import com.kenny.openimgur.api.responses.TagResponse;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.api.responses.UserResponse;
 
@@ -104,5 +105,5 @@ public interface ImgurService {
     void searchGalleryForTopSorted(@Path("window") String window, @Path("page") int page, @Query("q") String query, Callback<GalleryResponse> callback);
 
     @GET("/gallery/{id}/tags")
-    void getTags(@Path("id") String itemId);
+    void getTags(@Path("id") String itemId, Callback<TagResponse> callback);
 }

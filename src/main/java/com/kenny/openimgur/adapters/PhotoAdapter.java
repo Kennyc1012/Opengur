@@ -21,6 +21,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurBaseObject2;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto2;
+import com.kenny.openimgur.classes.ImgurTag;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.VideoView;
@@ -29,7 +30,6 @@ import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
@@ -147,7 +147,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto2> {
                 }
 
                 for (int i = 0; i < size; i++) {
-                    builder.append(mImgurObject.getTags().get(i));
+                    builder.append(mImgurObject.getTags().get(i).getName());
                     if (i != size - 1) builder.append(", ");
                 }
 
@@ -321,7 +321,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto2> {
         return false;
     }
 
-    public void setTags(ArrayList<String> tags) {
+    public void setTags(List<ImgurTag> tags) {
         mImgurObject.setTags(tags);
         notifyDataSetChanged();
     }
