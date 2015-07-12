@@ -32,7 +32,7 @@ public interface ImgurService {
     void getAlbumImages(@Path("id") String albumId);
 
     @GET("/gallery/{id}/comments/{sort}")
-    void getComments(@Path("id") String itemId, @Path("sort") String commentSort);
+    void getComments(@Path("id") String itemId, @Path("sort") String commentSort, Callback<CommentResponse> callback);
 
     @GET("/account/{user}")
     void getProfile(@Path("user") String username, Callback<UserResponse> callback);

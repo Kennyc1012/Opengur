@@ -1,13 +1,13 @@
 package com.kenny.openimgur.classes;
 
+/**
+ * Created by kcampagna on 7/11/15.
+ */
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.kenny.openimgur.util.LogUtil;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,103 +15,36 @@ import java.util.List;
 /**
  * Created by kcampagna on 6/21/14.
  */
-public class ImgurComment extends ImgurBaseObject {
-    private static final String KEY_AUTHOR = "author";
-
-    private static final String KEY_AUTHOR_ID = "author_id";
-
-    private static final String KEY_DELETED = "deleted";
-
-    private static final String KEY_CHILDREN = "children";
-
-    private static final String KEY_PARENT_ID = "parent_id";
-
-    private static final String KEY_COMMENT = "comment";
-
-    private static final String KEY_POINTS = "points";
-
-    private static final String KEY_IMAGE_ID = "image_id";
-
-    private static final String KEY_ON_ALBUM = "on_album";
-
-    private static final String KEY_ALBUM_COVER_ID = "album_cover";
-
+public class ImgurComment extends ImgurBaseObject2 {
+    @SerializedName("author")
     private String mAuthor;
 
+    @SerializedName("author_id")
     private String mAuthorId;
 
+    @SerializedName("comment")
     private String mComment;
 
+    @SerializedName("image_id")
     private String mImageId;
 
+    @SerializedName("album_cover")
     private String mAlbumCoverId;
 
+    @SerializedName("on_album")
     private boolean mIsAlbumComment;
 
+    @SerializedName("deleted")
     private boolean mIsDeleted;
 
+    @SerializedName("children")
     private List<ImgurComment> mChildrenComments;
 
+    @SerializedName("parent_id")
     private long mParentId;
 
+    @SerializedName("points")
     private long mPoints;
-
-    public ImgurComment(JSONObject json) {
-        super(json);
-        parseJson(json);
-    }
-
-    private void parseJson(JSONObject json) {
-        try {
-            if (!json.isNull(KEY_AUTHOR)) {
-                mAuthor = json.getString(KEY_AUTHOR);
-            }
-
-            if (!json.isNull(KEY_AUTHOR_ID)) {
-                mAuthorId = json.getString(KEY_AUTHOR_ID);
-            }
-
-            if (!json.isNull(KEY_DELETED)) {
-                mIsDeleted = json.getBoolean(KEY_DELETED);
-            }
-
-            if (!json.isNull(KEY_CHILDREN)) {
-                JSONArray arr = json.getJSONArray(KEY_CHILDREN);
-                mChildrenComments = new ArrayList<>(arr.length());
-                for (int i = 0; i < arr.length(); i++) {
-                    ImgurComment comment = new ImgurComment(arr.getJSONObject(i));
-                    mChildrenComments.add(comment);
-                }
-            }
-
-            if (!json.isNull(KEY_PARENT_ID)) {
-                mParentId = json.getLong(KEY_PARENT_ID);
-            }
-
-            if (!json.isNull(KEY_COMMENT)) {
-                mComment = json.getString(KEY_COMMENT);
-            }
-
-            if (!json.isNull(KEY_POINTS)) {
-                mPoints = json.getLong(KEY_POINTS);
-            }
-
-            if (!json.isNull(KEY_IMAGE_ID)) {
-                mImageId = json.getString(KEY_IMAGE_ID);
-            }
-
-            if (!json.isNull(KEY_ALBUM_COVER_ID)) {
-                mAlbumCoverId = json.getString(KEY_ALBUM_COVER_ID);
-            }
-
-            if (!json.isNull(KEY_ON_ALBUM)) {
-                mIsAlbumComment = json.getBoolean(KEY_ON_ALBUM);
-            }
-
-        } catch (JSONException ex) {
-            LogUtil.e(TAG, "Error Decoding JSON", ex);
-        }
-    }
 
     private ImgurComment(Parcel in) {
         super(in);

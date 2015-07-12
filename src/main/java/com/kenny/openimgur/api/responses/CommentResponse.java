@@ -2,7 +2,7 @@ package com.kenny.openimgur.api.responses;
 
 import android.support.annotation.NonNull;
 
-import com.kenny.openimgur.classes.ImgurComment2;
+import com.kenny.openimgur.classes.ImgurComment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,5 +12,5 @@ import java.util.List;
  */
 public class CommentResponse extends BaseResponse {
     @NonNull
-    public List<ImgurComment2> data = new ArrayList<>();
+    public List<ImgurComment> data = new ArrayList<>();
 }

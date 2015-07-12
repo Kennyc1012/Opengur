@@ -25,7 +25,7 @@ import com.kenny.openimgur.adapters.ProfileCommentAdapter;
 import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.classes.FragmentListener;
-import com.kenny.openimgur.classes.ImgurComment2;
+import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurFilters.CommentSort;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -157,7 +157,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
             mSort = CommentSort.getSortType(savedInstanceState.getString(KEY_SORT, null));
 
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
-                ArrayList<ImgurComment2> comments = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
+                ArrayList<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 mPage = savedInstanceState.getInt(KEY_PAGE, 0);
                 mAdapter = new ProfileCommentAdapter(getActivity(), comments);
                 mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
@@ -217,7 +217,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
         position = position - mListView.getHeaderViewsCount();
 
         if (position >= 0 && position < mAdapter.getCount()) {
-            ImgurComment2 comment = mAdapter.getItem(position);
+            ImgurComment comment = mAdapter.getItem(position);
             String url = "https://imgur.com/gallery/" + comment.getImageId();
             startActivity(ViewActivity.createIntent(getActivity(), url, false));
         }

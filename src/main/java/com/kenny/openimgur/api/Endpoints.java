@@ -8,9 +8,6 @@ public enum Endpoints {
     // section/sort/page/show viral DONE
     GALLERY("https://api.imgur.com/3/gallery/%s/%s/%d?showViral=%s"),
 
-    // section/sort/time sort/page DONE
-    GALLERY_TOP("https://api.imgur.com/3/gallery/%s/%s/%s/%d"),
-
     // item id DONE
     IMAGE_DETAILS("https://api.imgur.com/3/image/%s"),
 

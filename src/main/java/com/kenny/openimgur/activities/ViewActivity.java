@@ -35,8 +35,10 @@ import com.cocosw.bottomsheet.BottomSheetListener;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
@@ -72,6 +74,9 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 7/12/14.
@@ -218,7 +223,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             public void onPageSelected(int position) {
                 if (!mIsResuming) {
                     mCurrentPosition = position;
-                    loadComments();
+                    fetchComments();
                     invalidateOptionsMenu();
 
                     if (mSideGalleryFragment != null) {
@@ -303,37 +308,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    @OnClick(R.id.errorButton)
-    public void loadComments() {
-        if (mLoadComments && mPagerAdapter != null) {
-            ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
-
-            if (imgurBaseObject == null) {
-                LogUtil.w(TAG, "Object returned is null, can not load comments");
-                return;
-            }
-
-            String url = String.format(Endpoints.COMMENTS.getUrl(), imgurBaseObject.getId(), mCommentSort.getSort());
-
-            if (mApiClient == null) {
-                mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
-            } else {
-                mApiClient.setRequestType(ApiClient.HttpRequest.GET);
-                mApiClient.setUrl(url);
-            }
-
-            if (mCommentAdapter != null) {
-                mCommentAdapter.clear();
-            }
-
-            mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-            mApiClient.doWork(ImgurBusEvent.EventType.COMMENTS, imgurBaseObject.getId(), null);
-        } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.ViewState.ERROR) {
-            mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
-            mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-        }
-    }
-
     @Override
     public void onBackPressed() {
         if (mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
@@ -372,7 +346,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 // If we start on the 0 page, the onPageSelected event won't fire
                 if (mCurrentPosition == 0) {
-                    loadComments();
+                    fetchComments();
                 } else {
                     mViewPager.setCurrentItem(mCurrentPosition);
                 }
@@ -507,7 +481,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                                     // Don't bother making an Api call if the item has no comments
                                     if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
-                                        loadComments();
+                                        fetchComments();
                                     }
                                 }
                             }
@@ -518,7 +492,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 // Set load comments to true, load comments, then set it back to its original value to persist its state
                 boolean loadComments = mLoadComments;
                 mLoadComments = true;
-                loadComments();
+                fetchComments();
                 mLoadComments = loadComments;
                 break;
         }
@@ -539,23 +513,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         try {
             int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
             switch (event.eventType) {
-                case COMMENTS:
-                    ImgurBaseObject imgurItem = mPagerAdapter.getImgurItem(mCurrentPosition);
-
-                    if (imgurItem.getId().equals(event.id)) {
-                        if (statusCode == ApiClient.STATUS_OK) {
-                            JSONArray data = event.json.getJSONArray(ApiClient.KEY_DATA);
-                            List<ImgurComment> comments = new ArrayList<>(data.length());
-                            for (int i = 0; i < data.length(); i++) {
-                                comments.add(new ImgurComment(data.getJSONObject(i)));
-                            }
-
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, comments);
-                        } else {
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
-                        }
-                    }
-                    break;
 
                 case COMMENT_POSTED:
                     if (statusCode == ApiClient.STATUS_OK) {
@@ -697,7 +654,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 case IMAGE_URL_QUERY:
                     int index = url.indexOf("?");
-                    url = url.substring(0,index);
+                    url = url.substring(0, index);
                     // Intentional fallthrough
                 case IMAGE_URL:
                     getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true, false), "popup").commitAllowingStateLoss();
@@ -1014,19 +971,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     break;
 
-                case MESSAGE_COMMENT_POSTED:
-                    dismissDialogFragment(DIALOG_LOADING);
-
-                    if (msg.obj instanceof Boolean) {
-                        int messageResId = (Boolean) msg.obj ? R.string.comment_post_successful : R.string.comment_post_unsuccessful;
-                        SnackBar.show(ViewActivity.this, messageResId);
-                        // Manually refresh the comments when we successfully post a comment
-                        loadComments();
-                    } else {
-                        SnackBar.show(ViewActivity.this, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
-                    }
-                    break;
-
                 case MESSAGE_COMMENT_VOTED:
                     if (msg.obj instanceof Boolean) {
                         int stringId = (Boolean) msg.obj ? R.string.vote_cast : R.string.error_generic;
@@ -1042,7 +986,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
                     mViewPager.setAdapter(mPagerAdapter);
                     invalidateOptionsMenu();
-                    loadComments();
+                    fetchComments();
                     break;
 
                 default:
@@ -1051,6 +995,63 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
     };
+
+    @OnClick(R.id.errorButton)
+    public void fetchComments() {
+        if (mLoadComments && mPagerAdapter != null) {
+            ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
+
+            if (imgurBaseObject == null) {
+                LogUtil.w(TAG, "Object returned is null, can not load comments");
+                return;
+            }
+
+            ApiClient2.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort(), new Callback<CommentResponse>() {
+                @Override
+                public void success(CommentResponse commentResponse, Response response) {
+                    if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
+                        return;
+                    }
+
+                    if (!commentResponse.data.isEmpty()) {
+                        ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
+                        ImgurComment comment = commentResponse.data.get(0);
+
+                        if (comment.getImageId().equals(imgurBaseObject.getId())) {
+                            // We only show the comments for the correct gallery item
+                            if (mCommentAdapter == null) {
+                                mCommentAdapter = new CommentAdapter(ViewActivity.this, commentResponse.data, ViewActivity.this);
+                                mCommentList.setAdapter(mCommentAdapter);
+                            } else {
+                                mCommentAdapter.addItems(commentResponse.data);
+                            }
+
+                            mCommentAdapter.setOP(imgurBaseObject.getAccount());
+                            mCommentAdapter.clearExpansionInfo();
+                            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+
+                            mMultiView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (mCommentList != null) mCommentList.scrollToPosition(0);
+                                }
+                            });
+                        }
+                    } else {
+                        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.ViewState.ERROR) {
+            mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
+            mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+        }
+    }
 
     @Override
     protected int getStyleRes() {
