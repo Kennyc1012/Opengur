@@ -28,7 +28,7 @@ import retrofit.client.Response;
 /**
  * Created by Kenny-PC on 3/7/2015.
  */
-public class MemeFragment extends BaseGridFragment2 {
+public class MemeFragment extends BaseGridFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

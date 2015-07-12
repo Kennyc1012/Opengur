@@ -27,7 +27,7 @@ import retrofit.client.Response;
 /**
  * Created by Kenny-PC on 7/4/2015.
  */
-public class ProfileAlbumsFragment extends BaseGridFragment2 implements AdapterView.OnItemLongClickListener {
+public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterView.OnItemLongClickListener {
     private static final String KEY_USER = "user";
 
     private ImgurUser mSelectedUser;

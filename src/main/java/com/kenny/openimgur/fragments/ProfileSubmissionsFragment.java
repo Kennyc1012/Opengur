@@ -15,7 +15,7 @@ import com.kenny.openimgur.ui.MultiStateView;
 /**
  * Created by kcampagna on 12/23/14.
  */
-public class ProfileSubmissionsFragment extends BaseGridFragment2 {
+public class ProfileSubmissionsFragment extends BaseGridFragment {
     private static final String KEY_USER = "user";
 
     private ImgurUser mSelectedUser;

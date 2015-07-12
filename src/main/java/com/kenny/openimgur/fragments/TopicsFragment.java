@@ -23,7 +23,7 @@ import com.kenny.openimgur.util.LogUtil;
 /**
  * Created by kcampagna on 2/19/15.
  */
-public class TopicsFragment extends BaseGridFragment2 implements TopicsFilterFragment.FilterListener {
+public class TopicsFragment extends BaseGridFragment implements TopicsFilterFragment.FilterListener {
     private static final String KEY_TOPIC_ID = "topics_id";
 
     private static final String KEY_SORT = "topics_sort";

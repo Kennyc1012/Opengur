@@ -32,7 +32,7 @@ import com.kenny.openimgur.util.LogUtil;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class GalleryFragment extends BaseGridFragment2 implements GalleryFilterFragment.FilterListener {
+public class GalleryFragment extends BaseGridFragment implements GalleryFilterFragment.FilterListener {
     private static final String KEY_SECTION = "section";
 
     private static final String KEY_SORT = "sort";

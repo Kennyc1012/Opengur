@@ -24,7 +24,7 @@ import java.util.ArrayList;
 /**
  * Created by kcampagna on 12/27/14.
  */
-public class ProfileUploadsFragment extends BaseGridFragment2 implements AdapterView.OnItemLongClickListener {
+public class ProfileUploadsFragment extends BaseGridFragment implements AdapterView.OnItemLongClickListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

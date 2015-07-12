@@ -26,7 +26,7 @@ import retrofit.client.Response;
 /**
  * Created by kcampagna on 12/20/14.
  */
-public class ProfileFavoritesFragment extends BaseGridFragment2 {
+public class ProfileFavoritesFragment extends BaseGridFragment {
     private static final String KEY_USER = "user";
 
     private ImgurUser mSelectedUser;

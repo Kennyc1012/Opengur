@@ -32,7 +32,7 @@ import retrofit.client.Response;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class RedditFragment extends BaseGridFragment2 implements RedditFilterFragment.FilterListener {
+public class RedditFragment extends BaseGridFragment implements RedditFilterFragment.FilterListener {
 
     private static final String KEY_QUERY = "query";
 
