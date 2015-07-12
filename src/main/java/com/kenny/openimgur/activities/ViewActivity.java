@@ -22,8 +22,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
@@ -655,95 +653,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onItemSelected(int position) {
         mViewPager.setCurrentItem(position);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.view_activity, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
-            LogUtil.w(TAG, "Unable to retrieve Imgur object from adapter");
-            return false;
-        }
-
-        final ImgurBaseObject2 imgurObj = mPagerAdapter.getImgurItem(mCurrentPosition);
-
-        switch (item.getItemId()) {
-            case R.id.favorite:
-                if (user != null) {
-                    String url;
-
-                    if (imgurObj instanceof ImgurAlbum2) {
-                        url = String.format(Endpoints.FAVORITE_ALBUM.getUrl(), imgurObj.getId());
-                    } else {
-                        url = String.format(Endpoints.FAVORITE_IMAGE.getUrl(), imgurObj.getId());
-                    }
-
-                    final RequestBody body = new FormEncodingBuilder().add("id", imgurObj.getId()).build();
-
-                    if (mApiClient == null) {
-                        mApiClient = new ApiClient(url, ApiClient.HttpRequest.POST);
-                    } else {
-                        mApiClient.setUrl(url);
-                        mApiClient.setRequestType(ApiClient.HttpRequest.POST);
-                    }
-
-                    mApiClient.doWork(ImgurBusEvent.EventType.FAVORITE, imgurObj.getId(), body);
-                } else {
-                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
-                }
-                return true;
-
-            case R.id.profile:
-                startActivity(ProfileActivity.createIntent(getApplicationContext(), imgurObj.getAccount()));
-                return true;
-
-            case R.id.reddit:
-                if (TextUtils.isEmpty(imgurObj.getRedditLink())) {
-                    LogUtil.w(TAG, "Item does not have a reddit link");
-                    return false;
-                }
-
-                String url = String.format("https://reddit.com%s", imgurObj.getRedditLink());
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                if (browserIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(browserIntent);
-                } else {
-                    SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
-                }
-                return true;
-
-
-            case R.id.share:
-                startActivity(Intent.createChooser(imgurObj.getShareIntent(), getString(R.string.share)));
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
-            ImgurBaseObject2 imgurObject = mPagerAdapter.getImgurItem(mCurrentPosition);
-
-            if (TextUtils.isEmpty(imgurObject.getAccount())) {
-                menu.findItem(R.id.profile).setVisible(false);
-            }
-
-            if (TextUtils.isEmpty(imgurObject.getRedditLink())) {
-                menu.findItem(R.id.reddit).setVisible(false);
-            }
-
-            menu.findItem(R.id.favorite).setIcon(imgurObject.isFavorited() ?
-                    R.drawable.ic_action_favorite : R.drawable.ic_action_unfavorite);
-        }
-
-        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

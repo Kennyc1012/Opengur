@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +27,7 @@ import android.widget.ProgressBar;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
+import com.kenny.openimgur.activities.ProfileActivity;
 import com.kenny.openimgur.adapters.PhotoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ApiClient2;
@@ -146,6 +149,54 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     SnackBar.show(getActivity(), R.string.link_copied);
                 }
                 break;
+
+            case R.id.favorite:
+                if (user != null) {
+                   /* String url;
+                    // TODO
+                    if (imgurObj instanceof ImgurAlbum2) {
+                        url = String.format(Endpoints.FAVORITE_ALBUM.getUrl(), imgurObj.getId());
+                    } else {
+                        url = String.format(Endpoints.FAVORITE_IMAGE.getUrl(), imgurObj.getId());
+                    }
+
+                    final RequestBody body = new FormEncodingBuilder().add("id", imgurObj.getId()).build();
+
+                    if (mApiClient == null) {
+                        mApiClient = new ApiClient(url, ApiClient.HttpRequest.POST);
+                    } else {
+                        mApiClient.setUrl(url);
+                        mApiClient.setRequestType(ApiClient.HttpRequest.POST);
+                    }
+
+                    mApiClient.doWork(ImgurBusEvent.EventType.FAVORITE, imgurObj.getId(), body);*/
+                } else {
+                    SnackBar.show(getActivity(), R.string.user_not_logged_in);
+                }
+                return true;
+
+            case R.id.profile:
+                startActivity(ProfileActivity.createIntent(getActivity(), mImgurObject.getAccount()));
+                return true;
+
+            case R.id.reddit:
+                if (TextUtils.isEmpty(mImgurObject.getRedditLink())) {
+                    LogUtil.w(TAG, "Item does not have a reddit link");
+                    return false;
+                }
+
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://reddit.com" + mImgurObject.getRedditLink()));
+                if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(browserIntent);
+                } else {
+                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                }
+                return true;
+
+
+            case R.id.share:
+                startActivity(Intent.createChooser(mImgurObject.getShareIntent(), getString(R.string.share)));
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -155,6 +206,17 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.findItem(R.id.copy_album_link).setVisible(mImgurObject instanceof ImgurAlbum2);
+
+        if (TextUtils.isEmpty(mImgurObject.getAccount())) {
+            menu.findItem(R.id.profile).setVisible(false);
+        }
+
+        if (TextUtils.isEmpty(mImgurObject.getRedditLink())) {
+            menu.findItem(R.id.reddit).setVisible(false);
+        }
+
+        menu.findItem(R.id.favorite).setIcon(mImgurObject.isFavorited() ?
+                R.drawable.ic_action_favorite : R.drawable.ic_action_unfavorite);
     }
 
     /**
