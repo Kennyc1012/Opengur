@@ -6,29 +6,28 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 import com.kenny.openimgur.activities.MuzeiSettingsActivity;
-import com.kenny.openimgur.activities.SettingsActivity;
-import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.Endpoints;
+import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.responses.GalleryResponse;
+import com.kenny.openimgur.classes.ImgurBaseObject2;
 import com.kenny.openimgur.classes.ImgurFilters;
-import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.ImgurPhoto2;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import retrofit.RetrofitError;
 
 /**
  * Created by Kenny-PC on 6/21/2015.
@@ -85,10 +84,10 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
         String title;
         String byline;
         Uri uri;
-        List<ImgurPhoto> photos = makeRequest(getClientForSource(source, pref), allowNSFW);
+        List<ImgurPhoto2> photos = fetchImages(source, pref, allowNSFW);
 
         if (photos != null && !photos.isEmpty()) {
-            ImgurPhoto photo = photos.get(sRandom.nextInt(photos.size()));
+            ImgurPhoto2 photo = photos.get(sRandom.nextInt(photos.size()));
             SqlHelper sql = app.getSql();
 
             if (sql.getMuzeiLastSeen(photo.getLink()) != -1) {
@@ -137,51 +136,6 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
         scheduleUpdate(System.currentTimeMillis() + getNextUpdateTime(updateInterval));
     }
 
-    private List<ImgurPhoto> makeRequest(ApiClient client, boolean allowNSFW) {
-        try {
-            JSONObject json = client.doWork(null);
-            int statusCode = json.getInt(ApiClient.KEY_STATUS);
-
-            if (statusCode == ApiClient.STATUS_OK) {
-                JSONArray arr = json.getJSONArray(ApiClient.KEY_DATA);
-
-                if (arr == null || arr.length() <= 0) {
-                    LogUtil.v(TAG, "Did not receive any items in the json array");
-                    return null;
-                }
-
-                List<ImgurPhoto> objects = new ArrayList<>();
-
-                for (int i = 0; i < arr.length(); i++) {
-                    JSONObject item = arr.getJSONObject(i);
-                    ImgurPhoto photo = null;
-
-                    // Ignore albums
-                    if (item.has("is_album") && item.getBoolean("is_album")) {
-                        // Skip albums
-                    } else {
-                        photo = new ImgurPhoto(item);
-                    }
-
-                    // Gifs can not be used for Muzei
-                    boolean canAdd = photo != null && !photo.isAnimated();
-
-                    if (canAdd && (allowNSFW || !photo.isNSFW())) {
-                        objects.add(photo);
-                    }
-                }
-
-                return objects;
-            }
-        } catch (IOException ex) {
-            LogUtil.e(TAG, "Exception while making API request", ex);
-        } catch (JSONException ex) {
-            LogUtil.e(TAG, "Unable to parse JSON response", ex);
-        }
-
-        return null;
-    }
-
     /**
      * Returns the time until the next update
      *
@@ -202,28 +156,39 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
         return DateUtils.HOUR_IN_MILLIS * 3;
     }
 
-    /**
-     * Returns the Api client to use for getting photos
-     *
-     * @param source The source for displaying photos
-     * @return
-     */
-    private ApiClient getClientForSource(String source, SharedPreferences pref) {
-        String url;
+    @Nullable
+    private List<ImgurPhoto2> fetchImages(String source, SharedPreferences pref, boolean allowNSFW) {
+        GalleryResponse response = null;
 
-        if (MuzeiSettingsActivity.SOURCE_REDDIT.equals(source)) {
-            String query = pref.getString(MuzeiSettingsActivity.KEY_INPUT, FALLBACK_SUBREDDIT);
-            url = String.format(Endpoints.SUBREDDIT.getUrl(), query.replaceAll("\\s", ""), ImgurFilters.RedditSort.TIME.getSort(), ImgurFilters.TimeSort.ALL.getSort(), 0);
-        } else if (MuzeiSettingsActivity.SOURCE_USER_SUB.equals(source)) {
-            url = String.format(Endpoints.GALLERY.getUrl(), ImgurFilters.GallerySection.USER.getSection(), ImgurFilters.GallerySort.VIRAL.getSort(), 0, false);
-        } else if (MuzeiSettingsActivity.SOURCE_TOPICS.equals(source)) {
-            int topicId = Integer.valueOf(pref.getString(MuzeiSettingsActivity.KEY_TOPIC, FALLBACK_TOPIC_ID));
-            url = String.format(Endpoints.TOPICS.getUrl(), topicId, ImgurFilters.GallerySort.VIRAL.getSort(), 0);
-        } else {
-            url = String.format(Endpoints.GALLERY.getUrl(), ImgurFilters.GallerySection.HOT.getSection(), ImgurFilters.GallerySort.TIME.getSort(), 0, false);
+        try {
+            if (MuzeiSettingsActivity.SOURCE_REDDIT.equals(source)) {
+                String query = pref.getString(MuzeiSettingsActivity.KEY_INPUT, FALLBACK_SUBREDDIT).replaceAll("\\s", "");
+                response = ApiClient2.getService().getSubReddit(query, ImgurFilters.RedditSort.TIME.getSort(), 0);
+            } else if (MuzeiSettingsActivity.SOURCE_USER_SUB.equals(source)) {
+                response = ApiClient2.getService().getGallery(ImgurFilters.GallerySection.USER.getSection(), ImgurFilters.GallerySort.VIRAL.getSort(), 0, false);
+            } else if (MuzeiSettingsActivity.SOURCE_TOPICS.equals(source)) {
+                int topicId = Integer.valueOf(pref.getString(MuzeiSettingsActivity.KEY_TOPIC, FALLBACK_TOPIC_ID));
+                response = ApiClient2.getService().getTopic(topicId, ImgurFilters.GallerySort.VIRAL.getSort(), 0);
+            } else {
+                response = ApiClient2.getService().getGallery(ImgurFilters.GallerySection.HOT.getSection(), ImgurFilters.GallerySort.TIME.getSort(), 0, false);
+            }
+        } catch (RetrofitError ex) {
+            Log.e(TAG, "Error fetching images for muzei", ex);
         }
 
+        if (response != null && !response.data.isEmpty()) {
+            // Go through the responses and exclude albums, gifs, and check NSFW status
+            List<ImgurPhoto2> photos = new ArrayList<>();
 
-        return new ApiClient(url, ApiClient.HttpRequest.GET);
+            for (ImgurBaseObject2 obj : response.data) {
+                if (obj instanceof ImgurPhoto2 && !((ImgurPhoto2) obj).isAnimated() && (allowNSFW || !obj.isNSFW())) {
+                    photos.add((ImgurPhoto2) obj);
+                }
+            }
+
+            return photos;
+        }
+
+        return null;
     }
 }

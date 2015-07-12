@@ -21,6 +21,9 @@ public interface ImgurService {
     @GET("/gallery/{section}/{sort}/{page}")
     void getGallery(@Path("section") String section, @Path("sort") String sort, @Path("page") int page, @Query("showViral") boolean showViral, Callback<GalleryResponse> callback);
 
+    @GET("/gallery/{section}/{sort}/{page}")
+    GalleryResponse getGallery(@Path("section") String section, @Path("sort") String sort, @Path("page") int page, @Query("showViral") boolean showViral);
+
     @GET("/{section}/top/{window}/{page}")
     void getGalleryForTopSorted(@Path("section") String section, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
@@ -69,6 +72,9 @@ public interface ImgurService {
     @GET("/gallery/r/{subreddit}/{sort}/{page}")
     void getSubReddit(@Path("subreddit") String query, @Path("sort") String sort, @Path("page") int page, Callback<GalleryResponse> callback);
 
+    @GET("/gallery/r/{subreddit}/{sort}/{page}")
+    GalleryResponse getSubReddit(@Path("subreddit") String query, @Path("sort") String sort, @Path("page") int page);
+
     @GET("/gallery/r/{subreddit}/top/{window}/{page}")
     void getSubRedditForTopSorted(@Path("subreddit") String query, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
@@ -80,6 +86,9 @@ public interface ImgurService {
 
     @GET("/topics/{topic}/{sort}/{page}")
     void getTopic(@Path("topic") int topicId, @Path("sort") String sort, @Path("page") int page, Callback<GalleryResponse> callback);
+
+    @GET("/topics/{topic}/{sort}/{page}")
+    GalleryResponse getTopic(@Path("topic") int topicId, @Path("sort") String sort, @Path("page") int page);
 
     @GET("/topics/{topic}/top/{window}/{page}")
     void getTopicForTopSorted(@Path("topic") int topicId, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
