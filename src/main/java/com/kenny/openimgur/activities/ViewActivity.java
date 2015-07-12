@@ -40,8 +40,8 @@ import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.api.responses.AlbumResponse;
+import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
-import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum2;
 import com.kenny.openimgur.classes.ImgurBaseObject2;
@@ -351,7 +351,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             mViewPager.setCurrentItem(mCurrentPosition);
 
             if (mSideGalleryFragment != null) {
-                 mSideGalleryFragment.addGalleryItems(objects);
+                mSideGalleryFragment.addGalleryItems(objects);
             }
 
             List<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_COMMENT);
@@ -962,13 +962,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     ImgurAlbum2 album = new ImgurAlbum2(mGalleryId, null, getIntent().getData().toString());
                     mGalleryId = null;
                     album.addPhotosToAlbum(albumResponse.data);
-                   /* final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
+                    final ArrayList<ImgurBaseObject2> objects = new ArrayList<>(1);
                     objects.add(album);
                     mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
                     mViewPager.setAdapter(mPagerAdapter);
                     invalidateOptionsMenu();
-                    fetchComments();*/
-                    // TODO
+                    fetchComments();
                 }
 
                 @Override
@@ -977,16 +976,19 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
             });
         } else {
-            ApiClient2.getService().getGalleryDetails(id, new Callback<GalleryResponse>() {
+            ApiClient2.getService().getGalleryDetails(id, new Callback<BasicResponse>() {
                 @Override
-                public void success(GalleryResponse galleryResponse, Response response) {
-                    /* final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
-                    objects.add(album);
-                    mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
-                    mViewPager.setAdapter(mPagerAdapter);
-                    invalidateOptionsMenu();
-                    fetchComments();*/
-                    // TODO
+                public void success(BasicResponse basicResponse, Response response) {
+                    if (basicResponse.data != null) {
+                        final ArrayList<ImgurBaseObject2> objects = new ArrayList<>(1);
+                        objects.add(basicResponse.data);
+                        mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
+                        mViewPager.setAdapter(mPagerAdapter);
+                        invalidateOptionsMenu();
+                        fetchComments();
+                    } else {
+                        // TODO Error
+                    }
                 }
 
                 @Override
