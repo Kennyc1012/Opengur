@@ -38,7 +38,7 @@ import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.api.responses.AlbumResponse;
-import com.kenny.openimgur.api.responses.BasicResponse;
+import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum2;
@@ -885,12 +885,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
             });
         } else {
-            ApiClient2.getService().getGalleryDetails(id, new Callback<BasicResponse>() {
+            ApiClient2.getService().getGalleryDetails(id, new Callback<BasicObjectResponse>() {
                 @Override
-                public void success(BasicResponse basicResponse, Response response) {
-                    if (basicResponse.data != null) {
+                public void success(BasicObjectResponse basicObjectResponse, Response response) {
+                    if (basicObjectResponse.data != null) {
                         final ArrayList<ImgurBaseObject2> objects = new ArrayList<>(1);
-                        objects.add(basicResponse.data);
+                        objects.add(basicObjectResponse.data);
                         mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
                         mViewPager.setAdapter(mPagerAdapter);
                         invalidateOptionsMenu();

@@ -30,6 +30,7 @@ import com.kenny.openimgur.activities.ProfileActivity;
 import com.kenny.openimgur.adapters.PhotoAdapter;
 import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.responses.AlbumResponse;
+import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.TagResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
@@ -137,24 +138,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
             case R.id.favorite:
                 if (user != null) {
-                   /* String url;
-                    // TODO
-                    if (imgurObj instanceof ImgurAlbum2) {
-                        url = String.format(Endpoints.FAVORITE_ALBUM.getUrl(), imgurObj.getId());
-                    } else {
-                        url = String.format(Endpoints.FAVORITE_IMAGE.getUrl(), imgurObj.getId());
-                    }
-
-                    final RequestBody body = new FormEncodingBuilder().add("id", imgurObj.getId()).build();
-
-                    if (mApiClient == null) {
-                        mApiClient = new ApiClient(url, ApiClient.HttpRequest.POST);
-                    } else {
-                        mApiClient.setUrl(url);
-                        mApiClient.setRequestType(ApiClient.HttpRequest.POST);
-                    }
-
-                    mApiClient.doWork(ImgurBusEvent.EventType.FAVORITE, imgurObj.getId(), body);*/
+                    favoriteItem();
                 } else {
                     SnackBar.show(getActivity(), R.string.user_not_logged_in);
                 }
@@ -546,13 +530,13 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     }
 
     private void fetchGalleryDetails() {
-        ApiClient2.getService().getGalleryDetails(mImgurObject.getId(), new Callback<BasicResponse>() {
+        ApiClient2.getService().getGalleryDetails(mImgurObject.getId(), new Callback<BasicObjectResponse>() {
             @Override
-            public void success(BasicResponse basicResponse, Response response) {
+            public void success(BasicObjectResponse basicObjectResponse, Response response) {
                 if (!isAdded()) return;
 
-                if (basicResponse.data != null) {
-                    setupFragmentWithObject(basicResponse.data);
+                if (basicObjectResponse.data != null) {
+                    setupFragmentWithObject(basicObjectResponse.data);
                 } else {
                     mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -565,5 +549,34 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 // TODO
             }
         });
+    }
+
+    private void favoriteItem() {
+        String id = mImgurObject.getId();
+        Callback<BasicResponse> cb = new Callback<BasicResponse>() {
+            @Override
+            public void success(BasicResponse basicResponse, Response response) {
+                if (!isAdded()) return;
+
+                if (basicResponse.success) {
+                    mImgurObject.setIsFavorite(!mImgurObject.isFavorited());
+                    getActivity().invalidateOptionsMenu();
+
+                }
+                // Ignore bad responses
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (!isAdded()) return;
+                // TODO
+            }
+        };
+
+        if (mImgurObject instanceof ImgurPhoto2) {
+            ApiClient2.getService().favoriteImage(id, id, cb);
+        } else {
+            ApiClient2.getService().favoriteAlbum(id, id, cb);
+        }
     }
 }

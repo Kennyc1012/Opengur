@@ -1,6 +1,7 @@
 package com.kenny.openimgur.api;
 
 import com.kenny.openimgur.api.responses.AlbumResponse;
+import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
@@ -11,7 +12,10 @@ import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.api.responses.UserResponse;
 
 import retrofit.Callback;
+import retrofit.http.Field;
+import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
+import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
@@ -19,6 +23,8 @@ import retrofit.http.Query;
  * Created by kcampagna on 7/10/15.
  */
 public interface ImgurService {
+
+    // Get Requests
 
     @GET("/gallery/{section}/{sort}/{page}")
     void getGallery(@Path("section") String section, @Path("sort") String sort, @Path("page") int page, @Query("showViral") boolean showViral, Callback<GalleryResponse> callback);
@@ -30,7 +36,7 @@ public interface ImgurService {
     void getGalleryForTopSorted(@Path("section") String section, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/gallery/{id}")
-    void getGalleryDetails(@Path("id") String itemId, Callback<BasicResponse> callback);
+    void getGalleryDetails(@Path("id") String itemId, Callback<BasicObjectResponse> callback);
 
     @GET("/image/{id}")
     void getImageDtails(@Path("id") String imageId, Callback<PhotoResponse> callback);
@@ -106,4 +112,14 @@ public interface ImgurService {
 
     @GET("/gallery/{id}/tags")
     void getTags(@Path("id") String itemId, Callback<TagResponse> callback);
+
+
+    // Post Requests
+    @FormUrlEncoded
+    @POST("/image/{id}/favorite")
+    void favoriteImage(@Path("id") String imageId, @Field("id") String id, Callback<BasicResponse> callback);
+
+    @FormUrlEncoded
+    @POST("/album/{id}/favorite")
+    void favoriteAlbum(@Path("id") String albumId, @Field("id") String id, Callback<BasicResponse> callback);
 }

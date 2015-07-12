@@ -49,7 +49,7 @@ public class ApiClient2 {
         if (sRestAdapter == null || sService == null) {
             sRestAdapter = new RestAdapter.Builder()
                     .setEndpoint(API_URL)
-                    .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.BASIC : RestAdapter.LogLevel.NONE)
+                    .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
                     .setRequestInterceptor(getRequestInterceptor())
                     .setClient(getClient())
                     .setConverter(getConverter())
