@@ -12,7 +12,7 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.ImgurPhoto2;
 import com.kenny.openimgur.fragments.FullScreenPhotoFragment;
 import com.kenny.openimgur.ui.ViewPager;
 
@@ -38,7 +38,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
     private FullScreenPagerAdapter mAdapter;
 
-    public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {
+    public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto2 photo) {
         return new Intent(context, FullScreenPhotoActivity.class).putExtra(KEY_IMAGE, photo);
     }
 
@@ -46,7 +46,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
         return new Intent(context, FullScreenPhotoActivity.class).putExtra(KEY_URL, url);
     }
 
-    public static Intent createIntent(@NonNull Context context, @NonNull ArrayList<ImgurPhoto> photos, int startingPosition) {
+    public static Intent createIntent(@NonNull Context context, @NonNull ArrayList<ImgurPhoto2> photos, int startingPosition) {
         return new Intent(context, FullScreenPhotoActivity.class).putExtra(KEY_IMAGES, photos).putExtra(KEY_START_POSITION, startingPosition);
     }
 
@@ -68,7 +68,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
     }
 
     private void handleArguments(Bundle savedInstanceState, Intent intent) {
-        ArrayList<ImgurPhoto> photos;
+        ArrayList<ImgurPhoto2> photos;
         int startingPosition;
 
         if (savedInstanceState != null) {
@@ -80,11 +80,11 @@ public class FullScreenPhotoActivity extends BaseActivity {
                 photos = intent.getParcelableArrayListExtra(KEY_IMAGES);
             } else if (intent.hasExtra(KEY_IMAGE)) {
                 photos = new ArrayList<>(1);
-                photos.add((ImgurPhoto) intent.getParcelableExtra(KEY_IMAGE));
+                photos.add((ImgurPhoto2) intent.getParcelableExtra(KEY_IMAGE));
             } else {
                 photos = new ArrayList<>(1);
                 String url = intent.getStringExtra(KEY_URL);
-                photos.add(new ImgurPhoto(url));
+                photos.add(new ImgurPhoto2(url));
             }
 
             startingPosition = intent.getIntExtra(KEY_START_POSITION, 0);
@@ -129,9 +129,9 @@ public class FullScreenPhotoActivity extends BaseActivity {
     }
 
     private static class FullScreenPagerAdapter extends FragmentStatePagerAdapter {
-        private List<ImgurPhoto> mPhotos;
+        private List<ImgurPhoto2> mPhotos;
 
-        public FullScreenPagerAdapter(List<ImgurPhoto> photos, FragmentManager fm) {
+        public FullScreenPagerAdapter(List<ImgurPhoto2> photos, FragmentManager fm) {
             super(fm);
             mPhotos = photos;
         }
@@ -146,7 +146,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
             return mPhotos != null ? mPhotos.size() : 0;
         }
 
-        public ArrayList<ImgurPhoto> retainItems() {
+        public ArrayList<ImgurPhoto2> retainItems() {
             return new ArrayList<>(mPhotos);
         }
     }

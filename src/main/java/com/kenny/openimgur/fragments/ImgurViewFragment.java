@@ -31,10 +31,13 @@ import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum;
+import com.kenny.openimgur.classes.ImgurAlbum2;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.classes.ImgurBaseObject2;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.ImgurPhoto2;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -78,7 +81,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     @InjectView(R.id.list)
     RecyclerView mListView;
 
-    private ImgurBaseObject mImgurObject;
+    private ImgurBaseObject2 mImgurObject;
 
     private PhotoAdapter mPhotoAdapter;
 
@@ -86,7 +89,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     private static final long FIVE_MB = 5 * 1024 * 1024;
 
-    public static ImgurViewFragment createInstance(@NonNull ImgurBaseObject obj, boolean displayTags) {
+    public static ImgurViewFragment createInstance(@NonNull ImgurBaseObject2 obj, boolean displayTags) {
         ImgurViewFragment fragment = new ImgurViewFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_IMGUR_OBJECT, obj);
@@ -132,7 +135,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 return true;
 
             case R.id.copy_album_link:
-                if (mImgurObject instanceof ImgurAlbum) {
+                if (mImgurObject instanceof ImgurAlbum2) {
                     ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                     clipboard.setPrimaryClip(ClipData.newPlainText("link", mImgurObject.getLink()));
                     SnackBar.show(getActivity(), R.string.link_copied);
@@ -146,7 +149,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        menu.findItem(R.id.copy_album_link).setVisible(mImgurObject instanceof ImgurAlbum);
+        menu.findItem(R.id.copy_album_link).setVisible(mImgurObject instanceof ImgurAlbum2);
     }
 
     /**
@@ -160,14 +163,14 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         if (savedInstanceState != null) {
             mDisplayTags = savedInstanceState.getBoolean(KEY_DISPLAY_TAGS, true);
             mImgurObject = savedInstanceState.getParcelable(KEY_IMGUR_OBJECT);
-            List<ImgurPhoto> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
+            List<ImgurPhoto2> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
             mPhotoAdapter = new PhotoAdapter(getActivity(), photos, mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
             checkForTags();
         } else {
             mDisplayTags = args.getBoolean(KEY_DISPLAY_TAGS, true);
-            setupFragmentWithObject((ImgurBaseObject) args.getParcelable(KEY_IMGUR_OBJECT));
+            setupFragmentWithObject((ImgurBaseObject2) args.getParcelable(KEY_IMGUR_OBJECT));
         }
     }
 
@@ -176,13 +179,13 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
      *
      * @param object
      */
-    private void setupFragmentWithObject(ImgurBaseObject object) {
+    private void setupFragmentWithObject(ImgurBaseObject2 object) {
         mImgurObject = object;
 
-        if (mImgurObject instanceof ImgurPhoto) {
+        if (mImgurObject instanceof ImgurPhoto2) {
             if (mImgurObject.getUpVotes() != Integer.MIN_VALUE) {
-                List<ImgurPhoto> photo = new ArrayList<>(1);
-                photo.add(((ImgurPhoto) mImgurObject));
+                List<ImgurPhoto2> photo = new ArrayList<>(1);
+                photo.add(((ImgurPhoto2) mImgurObject));
                 mPhotoAdapter = new PhotoAdapter(getActivity(), photo, mImgurObject, this);
                 mListView.setAdapter(mPhotoAdapter);
                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
@@ -193,12 +196,12 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
                 api.doWork(ImgurBusEvent.EventType.GALLERY_ITEM_INFO, mImgurObject.getId(), null);
             }
-        } else if (((ImgurAlbum) mImgurObject).getAlbumPhotos() == null || ((ImgurAlbum) mImgurObject).getAlbumPhotos().isEmpty()) {
+        } else if (((ImgurAlbum2) mImgurObject).getAlbumPhotos() == null || ((ImgurAlbum2) mImgurObject).getAlbumPhotos().isEmpty()) {
             String url = String.format(Endpoints.ALBUM.getUrl(), mImgurObject.getId());
             ApiClient api = new ApiClient(url, ApiClient.HttpRequest.GET);
             api.doWork(ImgurBusEvent.EventType.ALBUM_DETAILS, mImgurObject.getId(), null);
         } else {
-            mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurObject, this);
+            mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum2) mImgurObject).getAlbumPhotos(), mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
             checkForTags();
@@ -376,7 +379,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     .setItems(R.array.photo_long_press_options, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            ImgurPhoto photo = mPhotoAdapter.getItem(position);
+                            ImgurPhoto2 photo = mPhotoAdapter.getItem(position);
                             String link;
 
                             if (photo.isLinkAThumbnail() && photo.hasMP4Link()) {
@@ -415,7 +418,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     public void onPlayTap(final ProgressBar prog, final FloatingActionButton play, final ImageView image, final VideoView video, final View view) {
         // Adjust position for header
         final int position = mListView.getLayoutManager().getPosition(view) - 1;
-        final ImgurPhoto photo = mPhotoAdapter.getItem(position);
+        final ImgurPhoto2 photo = mPhotoAdapter.getItem(position);
 
         if (image.getVisibility() == View.VISIBLE && image.getDrawable() instanceof GifDrawable) {
             play.setVisibility(View.GONE);
@@ -546,10 +549,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     if (getActivity() == null || !isAdded() || isRemoving()) return;
 
                     if (msg.obj instanceof ImgurBaseObject) {
-                        setupFragmentWithObject((ImgurBaseObject) msg.obj);
-                    } else if (msg.obj instanceof List && mImgurObject instanceof ImgurAlbum) {
-                        ((ImgurAlbum) mImgurObject).addPhotosToAlbum((List<ImgurPhoto>) msg.obj);
-                        mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
+                        setupFragmentWithObject((ImgurBaseObject2) msg.obj);
+                    } else if (msg.obj instanceof List && mImgurObject instanceof ImgurAlbum2) {
+                        ((ImgurAlbum2) mImgurObject).addPhotosToAlbum((List<ImgurPhoto2>) msg.obj);
+                        mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum2) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
                         mListView.setAdapter(mPhotoAdapter);
                         mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                         checkForTags();

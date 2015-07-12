@@ -11,8 +11,8 @@ import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
+import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
-import com.kenny.openimgur.adapters.GalleryAdapter2;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurBaseObject2;
@@ -71,7 +71,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
     protected boolean mHasMore = true;
 
-    private GalleryAdapter2 mAdapter;
+    private GalleryAdapter mAdapter;
 
     private ScrollHelper mScrollHelper = new ScrollHelper();
 
@@ -107,7 +107,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     @Override
     public void onResume() {
         super.onResume();
-        GalleryAdapter2 adapter = getAdapter();
+        GalleryAdapter adapter = getAdapter();
         SharedPreferences pref = app.getPreferences();
         boolean nsfwThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
         mAllowNSFW = pref.getBoolean(SettingsActivity.NSFW_KEY, false);
@@ -129,7 +129,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         }
     }
 
-    protected void setAdapter(GalleryAdapter2 adapter) {
+    protected void setAdapter(GalleryAdapter adapter) {
         mAdapter = adapter;
         mGrid.setAdapter(mAdapter);
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -140,7 +140,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         });
     }
 
-    protected GalleryAdapter2 getAdapter() {
+    protected GalleryAdapter getAdapter() {
         return mAdapter;
     }
 
@@ -221,7 +221,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
                 ArrayList<ImgurBaseObject2> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
                 setUpGridTop();
-                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(items), showPoints()));
+                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items), showPoints()));
                 mGrid.setSelection(currentPosition);
 
                 if (mListener != null) {
@@ -296,7 +296,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
      * @param items    The list of items that will be able to paged between
      */
     protected void onItemSelected(int position, ArrayList<ImgurBaseObject2> items) {
-        // TODO
+        startActivity(ViewActivity.createIntent(getActivity(), items, position));
     }
 
     /**
@@ -313,7 +313,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         if (!galleryResponse.data.isEmpty()) {
             if (getAdapter() == null) {
                 setUpGridTop();
-                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(galleryResponse.data), showPoints()));
+                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(galleryResponse.data), showPoints()));
             } else {
                 getAdapter().addItems(galleryResponse.data);
             }
