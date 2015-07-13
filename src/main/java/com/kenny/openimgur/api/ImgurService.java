@@ -12,6 +12,7 @@ import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.api.responses.UserResponse;
 
 import retrofit.Callback;
+import retrofit.http.DELETE;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
@@ -142,4 +143,12 @@ public interface ImgurService {
     @FormUrlEncoded
     @POST("/album")
     BasicObjectResponse createAlbum(@Field("ids") String ids, @Field("cover") String coverId, @Field("title") String title, @Field("description") String description);
+
+
+    // Delete Requests
+    @DELETE("/album/{deleteHash}")
+    void deleteAlbum(@Path("deleteHash") String deleteHash, Callback<BasicResponse> callback);
+
+    @DELETE("/image/{deleteHash}")
+    void deletePhoto(@Path("deleteHash") String deleteHash, Callback<BasicResponse> callback);
 }
