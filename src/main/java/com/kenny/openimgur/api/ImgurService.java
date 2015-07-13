@@ -151,4 +151,8 @@ public interface ImgurService {
 
     @DELETE("/image/{deleteHash}")
     void deletePhoto(@Path("deleteHash") String deleteHash, Callback<BasicResponse> callback);
+
+    @FormUrlEncoded
+    @POST("/gallery/{id}/vote/{vote}")
+    void voteOnGallery(@Path("id") String itemId, @Path("vote") String vote, @Field("vote") String itemVote, Callback<BasicResponse> callback);
 }

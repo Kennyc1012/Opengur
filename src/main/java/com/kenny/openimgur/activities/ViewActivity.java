@@ -39,6 +39,7 @@ import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
+import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum;
@@ -424,23 +425,18 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.downVoteBtn:
                 if (user != null) {
                     ImgurBaseObject obj = mPagerAdapter.getImgurItem(mCurrentPosition);
+                    if (obj == null) return;
+
                     String vote = view.getId() == R.id.upVoteBtn ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
-                    String upVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(), obj.getId(), vote);
                     obj.setVote(vote);
 
-                    if (mApiClient == null) {
-                        mApiClient = new ApiClient(upVoteUrl, ApiClient.HttpRequest.POST);
-                    } else {
-                        mApiClient.setUrl(upVoteUrl);
-                        mApiClient.setRequestType(ApiClient.HttpRequest.POST);
-                    }
-
-                    mApiClient.doWork(ImgurBusEvent.EventType.GALLERY_VOTE, vote, new FormEncodingBuilder().add("vote", vote).build());
                     ImgurViewFragment fragment = (ImgurViewFragment) mPagerAdapter.instantiateItem(mViewPager, mCurrentPosition);
 
                     if (fragment != null && fragment.isAdded() && fragment.getUserVisibleHint()) {
                         fragment.setVote(vote);
                     }
+
+                    voteOnGallery(obj.getId(), vote);
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
@@ -762,24 +758,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MESSAGE_GALLERY_VOTE_COMPLETE:
-                    if (msg.obj instanceof String) {
-                        // To show conformation of a vote on an image/gallery, we will animate whichever vote button was pressed
-                        String vote = (String) msg.obj;
-                        View animateView = ImgurBaseObject.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
-                        AnimatorSet set = new AnimatorSet();
-                        set.playTogether(
-                                ObjectAnimator.ofFloat(animateView, "scaleY", 1.0f, 2.0f, 1.0f),
-                                ObjectAnimator.ofFloat(animateView, "scaleX", 1.0f, 2.0f, 1.0f)
-                        );
-
-                        set.setDuration(1500L).setInterpolator(new OvershootInterpolator());
-                        set.start();
-                    } else {
-                        SnackBar.show(ViewActivity.this, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
-                    }
-                    break;
-
                 case MESSAGE_COMMENT_POSTING:
                     // We want to popup a "Loading" dialog while the comment is being posted
                     showDialogFragment(LoadingDialogFragment.createInstance(R.string.posting_comment, false), DIALOG_LOADING);
@@ -909,6 +887,32 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
             });
         }
+    }
+
+    private void voteOnGallery(String id, final String vote) {
+        ApiClient2.getService().voteOnGallery(id, vote, vote, new Callback<BasicResponse>() {
+            @Override
+            public void success(BasicResponse basicResponse, Response response) {
+                if (basicResponse.data) {
+                    View animateView = ImgurBaseObject.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
+                    AnimatorSet set = new AnimatorSet();
+                    set.playTogether(
+                            ObjectAnimator.ofFloat(animateView, "scaleY", 1.0f, 2.0f, 1.0f),
+                            ObjectAnimator.ofFloat(animateView, "scaleX", 1.0f, 2.0f, 1.0f)
+                    );
+
+                    set.setDuration(1500L).setInterpolator(new OvershootInterpolator());
+                    set.start();
+                } else {
+                    // TODO Error message
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO
+            }
+        });
     }
 
     @Override
