@@ -155,4 +155,8 @@ public interface ImgurService {
     @FormUrlEncoded
     @POST("/gallery/{id}/vote/{vote}")
     void voteOnGallery(@Path("id") String itemId, @Path("vote") String vote, @Field("vote") String itemVote, Callback<BasicResponse> callback);
+
+    @FormUrlEncoded
+    @POST("/comment/{id}/vote/{vote}")
+    void voteOnComment(@Path("id") String itemId, @Path("vote") String vote, @Field("vote") String itemVote, Callback<BasicResponse> callback);
 }

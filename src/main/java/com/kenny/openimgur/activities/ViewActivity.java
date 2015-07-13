@@ -35,7 +35,6 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ApiClient2;
-import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
@@ -60,8 +59,6 @@ import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.RequestBody;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -506,36 +503,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
                     }
                     break;
-
-                case COMMENT_VOTE:
-                    if (statusCode == ApiClient.STATUS_OK) {
-                        boolean success = event.json.getBoolean(ApiClient.KEY_SUCCESS);
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_VOTED, success);
-                    } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_VOTED, ApiClient.getErrorCodeStringResource(statusCode));
-                    }
-
-                    break;
-
-                case GALLERY_VOTE:
-                    if (statusCode == ApiClient.STATUS_OK) {
-                        if (event.json.getBoolean(ApiClient.KEY_SUCCESS)) {
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_GALLERY_VOTE_COMPLETE, event.id);
-                        } else {
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_GALLERY_VOTE_COMPLETE, R.string.error_generic);
-                        }
-                    } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_GALLERY_VOTE_COMPLETE, ApiClient.getErrorCodeStringResource(statusCode));
-                    }
-                    break;
-
-                case FAVORITE:
-                    ImgurBaseObject obj = mPagerAdapter.getImgurItem(mCurrentPosition);
-                    if (obj.getId().equals(event.id)) {
-                        obj.setIsFavorite(!obj.isFavorited());
-                        invalidateOptionsMenu();
-                    }
-                    break;
             }
         } catch (JSONException e) {
             LogUtil.e(TAG, "Error Decoding JSON", e);
@@ -708,17 +675,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.downVote:
                 if (user != null) {
                     String vote = id == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
-                    String url = String.format(Endpoints.COMMENT_VOTE.getUrl(), comment.getId(), vote);
-                    RequestBody body = new FormEncodingBuilder().add("id", comment.getId()).build();
-
-                    if (mApiClient == null) {
-                        mApiClient = new ApiClient(url, ApiClient.HttpRequest.POST);
-                    } else {
-                        mApiClient.setUrl(url);
-                        mApiClient.setRequestType(ApiClient.HttpRequest.POST);
-                    }
-
-                    mApiClient.doWork(ImgurBusEvent.EventType.COMMENT_VOTE, null, body);
+                    comment.setVote(vote);
+                    mCommentAdapter.notifyDataSetChanged();
+                    voteOnComment(comment.getId(), vote);
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
                 }
@@ -766,15 +725,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                    break;
-
-                case MESSAGE_COMMENT_VOTED:
-                    if (msg.obj instanceof Boolean) {
-                        int stringId = (Boolean) msg.obj ? R.string.vote_cast : R.string.error_generic;
-                        SnackBar.show(ViewActivity.this, stringId);
-                    } else {
-                        SnackBar.show(ViewActivity.this, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
-                    }
                     break;
 
                 default:
@@ -906,6 +856,21 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 } else {
                     // TODO Error message
                 }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO
+            }
+        });
+    }
+
+    private void voteOnComment(String id, final String vote) {
+        ApiClient2.getService().voteOnComment(id, vote, vote, new Callback<BasicResponse>() {
+            @Override
+            public void success(BasicResponse basicResponse, Response response) {
+                int stringId = basicResponse.data ? R.string.vote_cast : R.string.error_generic;
+                SnackBar.show(ViewActivity.this, stringId);
             }
 
             @Override
