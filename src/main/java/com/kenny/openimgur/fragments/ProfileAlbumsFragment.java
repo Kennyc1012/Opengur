@@ -15,13 +15,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.snackbar.SnackBar;
 
+import retrofit.Callback;
+import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 /**
@@ -63,10 +67,11 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
         int adapterPosition = position - headerSize;
 
         if (adapterPosition >= 0) {
-            final ImgurBaseObject photo = getAdapter().getItem(adapterPosition);
+            final ImgurBaseObject album = getAdapter().getItem(adapterPosition);
+            String[] options = getResources().getStringArray(mSelectedUser.isSelf(app) ? R.array.uploaded_photos_options : R.array.uploaded_albums_options_not_self);
 
             new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
-                    .setItems(R.array.uploaded_photos_options, new DialogInterface.OnClickListener() {
+                    .setItems(options, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             // 0. Share 1. Copy Link 2. Delete
@@ -76,7 +81,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
                                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                                     shareIntent.setType("text/plain");
                                     shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
-                                    shareIntent.putExtra(Intent.EXTRA_TEXT, photo.getLink());
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, album.getLink());
 
                                     if (shareIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                                         startActivity(Intent.createChooser(shareIntent, getString(R.string.send_feedback)));
@@ -87,7 +92,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
 
                                 case 1:
                                     ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", photo.getLink()));
+                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", album.getLink()));
                                     break;
 
                                 case 2:
@@ -97,7 +102,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
                                             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    // TODO Delete
+                                                    deleteAlbum(album);
                                                 }
                                             }).show();
                                     break;
@@ -159,5 +164,37 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
             mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
             mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
         }
+    }
+
+    private void deleteAlbum(final ImgurBaseObject album) {
+        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+
+        ApiClient2.getService().deleteAlbum(album.getDeleteHash(), new Callback<BasicResponse>() {
+            @Override
+            public void success(BasicResponse basicResponse, Response response) {
+                if (!isAdded()) return;
+
+                if (basicResponse.data) {
+                    GalleryAdapter adapter = getAdapter();
+
+                    if (adapter != null) {
+                        adapter.removeItem(album);
+                    }
+
+                    mMultiStateView.setViewState(adapter != null && adapter.isEmpty() ? MultiStateView.ViewState.EMPTY : MultiStateView.ViewState.CONTENT);
+                    SnackBar.show(getActivity(), R.string.profile_delete_success_album);
+                } else {
+                    SnackBar.show(getActivity(), R.string.error_generic);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (!isAdded()) return;
+                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                // TODO Error
+            }
+        });
+
     }
 }

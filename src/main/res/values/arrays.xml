@@ -43,6 +43,11 @@
         <item>Remove</item>
     </string-array>
 
+    <string-array name="uploaded_albums_options_not_self">
+        <item>Share Link</item>
+        <item>Copy Link</item>
+    </string-array>
+
     <string-array name="comments_sort">
         <item>Newest</item>
         <item>Oldest</item>
