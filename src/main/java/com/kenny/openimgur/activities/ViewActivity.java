@@ -816,6 +816,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 return;
             }
 
+            mMultiView.setViewState(MultiStateView.ViewState.LOADING);
             ApiClient2.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort(), new Callback<CommentResponse>() {
                 @Override
                 public void success(CommentResponse commentResponse, Response response) {
@@ -833,6 +834,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                                 mCommentAdapter = new CommentAdapter(ViewActivity.this, commentResponse.data, ViewActivity.this);
                                 mCommentList.setAdapter(mCommentAdapter);
                             } else {
+                                mCommentAdapter.clear();
+                                mCommentAdapter.clearExpansionInfo();
                                 mCommentAdapter.addItems(commentResponse.data);
                             }
 
