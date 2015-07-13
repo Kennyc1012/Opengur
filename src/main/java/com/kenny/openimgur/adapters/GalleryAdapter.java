@@ -10,11 +10,9 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
-import com.kenny.openimgur.classes.ImgurAlbum2;
+import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
-import com.kenny.openimgur.classes.ImgurBaseObject2;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.ImgurPhoto2;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
@@ -31,7 +29,7 @@ import butterknife.InjectView;
 /**
  * Created by kcampagna on 7/27/14.
  */
-public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject2> {
+public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
     public static final int MAX_ITEMS = 200;
 
     private int mUpvoteColor;
@@ -44,7 +42,7 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject2> {
 
     private String mThumbnailQuality;
 
-    public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject2> objects) {
+    public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects) {
         super(context, objects, true);
         mUpvoteColor = context.getResources().getColor(R.color.notoriety_positive);
         mDownVoteColor = context.getResources().getColor(R.color.notoriety_negative);
@@ -53,7 +51,7 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject2> {
         mThumbnailQuality = pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY);
     }
 
-    public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject2> objects, boolean showPoints) {
+    public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects, boolean showPoints) {
         this(context, objects);
         mShowPoints = showPoints;
     }
@@ -70,8 +68,8 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject2> {
      * @param position The position of the selected items
      * @return
      */
-    public ArrayList<ImgurBaseObject2> getItems(int position) {
-        List<ImgurBaseObject2> objects;
+    public ArrayList<ImgurBaseObject> getItems(int position) {
+        List<ImgurBaseObject> objects;
         int size = getCount();
 
         if (position - MAX_ITEMS / 2 < 0) {
@@ -90,10 +88,10 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject2> {
      * @return If the item was removed
      */
     public boolean removeItem(String id) {
-        List<ImgurBaseObject2> items = getAllItems();
+        List<ImgurBaseObject> items = getAllItems();
         boolean removed = false;
 
-        for (ImgurBaseObject2 obj : items) {
+        for (ImgurBaseObject obj : items) {
             if (obj.getId().equals(id)) {
                 removeItem(obj);
                 removed = true;
@@ -122,7 +120,7 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject2> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         GalleryHolder holder;
-        ImgurBaseObject2 obj = getItem(position);
+        ImgurBaseObject obj = getItem(position);
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.gallery_item, parent, false);
@@ -134,21 +132,21 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject2> {
         // Get the appropriate photo to display
         if (obj.isNSFW() && !mAllowNSFWThumb) {
             holder.image.setImageResource(R.drawable.ic_nsfw);
-        } else if (obj instanceof ImgurPhoto2) {
-            ImgurPhoto2 photoObject = ((ImgurPhoto2) obj);
+        } else if (obj instanceof ImgurPhoto) {
+            ImgurPhoto photoObject = ((ImgurPhoto) obj);
             String photoUrl;
 
             // Check if the link is a thumbed version of a large gif
             if (photoObject.hasMP4Link() && photoObject.isLinkAThumbnail() && ImgurPhoto.IMAGE_TYPE_GIF.equals(photoObject.getType())) {
                 photoUrl = photoObject.getThumbnail(mThumbnailQuality, true, FileUtil.EXTENSION_GIF);
             } else {
-                photoUrl = ((ImgurPhoto2) obj).getThumbnail(mThumbnailQuality, false, null);
+                photoUrl = ((ImgurPhoto) obj).getThumbnail(mThumbnailQuality, false, null);
             }
 
             displayImage(holder.image, photoUrl);
 
-        } else if (obj instanceof ImgurAlbum2) {
-            displayImage(holder.image, ((ImgurAlbum2) obj).getCoverUrl(mThumbnailQuality));
+        } else if (obj instanceof ImgurAlbum) {
+            displayImage(holder.image, ((ImgurAlbum) obj).getCoverUrl(mThumbnailQuality));
         } else {
             String url = ImgurBaseObject.getThumbnail(obj.getId(), obj.getLink(), mThumbnailQuality);
             displayImage(holder.image, url);

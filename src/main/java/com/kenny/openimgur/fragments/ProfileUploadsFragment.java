@@ -15,7 +15,7 @@ import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient2;
-import com.kenny.openimgur.classes.ImgurBaseObject2;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.snackbar.SnackBar;
 
@@ -54,7 +54,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
     }
 
     @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject2> items) {
+    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
         // TODO
     }
 
@@ -64,7 +64,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
         int adapterPosition = position - headerSize;
 
         if (adapterPosition >= 0) {
-            final ImgurBaseObject2 photo = getAdapter().getItem(adapterPosition);
+            final ImgurBaseObject photo = getAdapter().getItem(adapterPosition);
 
             new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                     .setItems(R.array.uploaded_photos_options, new DialogInterface.OnClickListener() {

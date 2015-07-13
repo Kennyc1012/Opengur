@@ -18,9 +18,8 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurBaseObject;
-import com.kenny.openimgur.classes.ImgurBaseObject2;
 import com.kenny.openimgur.classes.ImgurListener;
-import com.kenny.openimgur.classes.ImgurPhoto2;
+import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTag;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.PointsBar;
@@ -35,7 +34,7 @@ import java.util.List;
 import butterknife.InjectView;
 import pl.droidsonroids.gif.GifDrawable;
 
-public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto2> {
+public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
     private static final int NUM_VIEW = 2;
 
     private static final int VIEW_HEADER = 1;
@@ -48,11 +47,11 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto2> {
 
     private ImgurListener mListener;
 
-    private ImgurBaseObject2 mImgurObject;
+    private ImgurBaseObject mImgurObject;
 
     private boolean mIsDarkTheme;
 
-    public PhotoAdapter(Context context, List<ImgurPhoto2> photos, ImgurBaseObject2 object, ImgurListener listener) {
+    public PhotoAdapter(Context context, List<ImgurPhoto> photos, ImgurBaseObject object, ImgurListener listener) {
         super(context, photos, true);
         mListener = listener;
         mImgurObject = object;
@@ -157,7 +156,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto2> {
             }
         } else {
             PhotoViewHolder photoHolder = (PhotoViewHolder) holder;
-            ImgurPhoto2 photo = getItem(position);
+            ImgurPhoto photo = getItem(position);
             String url = getPhotoUrl(photo);
             photoHolder.prog.setVisibility(View.GONE);
             photoHolder.video.setVisibility(View.GONE);
@@ -275,18 +274,18 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto2> {
      * @param photo
      * @return
      */
-    private String getPhotoUrl(ImgurPhoto2 photo) {
+    private String getPhotoUrl(ImgurPhoto photo) {
         String url;
 
         // Check if we have an mp4 and if we should load its thumbnail
         if (photo.isAnimated() && photo.hasMP4Link() && photo.isLinkAThumbnail()) {
             if (photo.getSize() > PHOTO_SIZE_LIMIT || photo.getHeight() > PHOTO_PIXEL_LIMIT || photo.getWidth() > PHOTO_PIXEL_LIMIT) {
-                url = photo.getThumbnail(ImgurPhoto2.THUMBNAIL_HUGE, true, FileUtil.EXTENSION_GIF);
+                url = photo.getThumbnail(ImgurPhoto.THUMBNAIL_HUGE, true, FileUtil.EXTENSION_GIF);
             } else {
                 url = photo.getLink();
             }
         } else if (photo.getSize() > PHOTO_SIZE_LIMIT || photo.getHeight() > PHOTO_PIXEL_LIMIT || photo.getWidth() > PHOTO_PIXEL_LIMIT) {
-            url = photo.getThumbnail(ImgurPhoto2.THUMBNAIL_HUGE, false, null);
+            url = photo.getThumbnail(ImgurPhoto.THUMBNAIL_HUGE, false, null);
         } else {
             url = photo.getLink();
         }

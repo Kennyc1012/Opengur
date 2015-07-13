@@ -15,7 +15,7 @@ import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.FragmentListener;
-import com.kenny.openimgur.classes.ImgurBaseObject2;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -177,7 +177,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         // Don't respond to the header being clicked
 
         if (adapterPosition >= 0) {
-            ArrayList<ImgurBaseObject2> items = getAdapter().getItems(adapterPosition);
+            ArrayList<ImgurBaseObject> items = getAdapter().getItems(adapterPosition);
             int itemPosition = adapterPosition;
 
             // Get the correct array index of the selected item
@@ -218,7 +218,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
             mHasMore = savedInstanceState.getBoolean(KEY_HAS_MORE, true);
 
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
-                ArrayList<ImgurBaseObject2> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
+                ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
                 setUpGridTop();
                 setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items), showPoints()));
@@ -295,7 +295,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
      * @param position The position of the item in the list of items
      * @param items    The list of items that will be able to paged between
      */
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject2> items) {
+    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
         startActivity(ViewActivity.createIntent(getActivity(), items, position));
     }
 

@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.classes.ImgurAlbum2;
+import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.ImageUtil;
@@ -44,7 +44,7 @@ public class UploadAdapter extends ImgurBaseAdapter<UploadedPhoto> {
         String url;
 
         if (photo.isAlbum()) {
-            url = String.format(ImgurAlbum2.ALBUM_COVER_URL, photo.getCoverId() + ImgurPhoto.THUMBNAIL_GALLERY);
+            url = String.format(ImgurAlbum.ALBUM_COVER_URL, photo.getCoverId() + ImgurPhoto.THUMBNAIL_GALLERY);
             holder.albumIndicator.setVisibility(View.VISIBLE);
         } else {
             url = ImageUtil.getThumbnail(photo.getUrl(), ImgurPhoto.THUMBNAIL_GALLERY);

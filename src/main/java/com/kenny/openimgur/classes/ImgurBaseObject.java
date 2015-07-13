@@ -6,15 +6,13 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.kenny.openimgur.util.LogUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Base class to hold common values between Imgur Api responses
+ * Created by kcampagna on 7/11/15.
  */
 public class ImgurBaseObject implements Parcelable {
     protected final String TAG = getClass().getSimpleName();
@@ -23,87 +21,67 @@ public class ImgurBaseObject implements Parcelable {
 
     public static final String VOTE_DOWN = "down";
 
-    public static final String KEY_ID = "id";
+    @SerializedName("ups")
+    private int mUpVotes;
 
-    private static final String KEY_UP_VOTES = "ups";
+    @SerializedName("downs")
+    private int mDownVotes;
 
-    private static final String KEY_DOWN_VOTES = "downs";
-
-    private static final String KEY_VIEWS = "views";
-
-    private static final String KEY_TITLE = "title";
-
-    private static final String KEY_DESCRIPTION = "description";
-
-    private static final String KEY_ACCOUNT = "account_url";
-
-    private static final String KEY_ACCOUNT_ID = "account_id";
-
-    public static final String KEY_DATE = "datetime";
-
-    private static final String KEY_BANDWIDTH = "bandwidth";
-
-    private static final String KEY_LINK = "link";
-
-    private static final String KEY_SCORE = "score";
-
-    private static final String KEY_REDDIT_LINK = "reddit_comments";
-
-    private static final String KEY_FAVORITE = "favorite";
-
-    private static final String KEY_VOTE = "vote";
-
-    private static final String KEY_DELETE_HASH = "deletehash";
-
-    private static final String KEY_NSFW = "nsfw";
-
-    private static final String KEY_GIFV = "gifv";
-
-    private static final String KEY_MP4 = "mp4";
-
-    private static final String KEY_TOPIC = "topic";
-
-    private int mUpVotes = Integer.MIN_VALUE;
-
-    private int mDownVotes = Integer.MIN_VALUE;
-
+    @SerializedName("views")
     private int mViews;
 
+    @SerializedName("score")
     private int mScore;
 
+    @SerializedName("id")
     private String mId;
 
+    @SerializedName("title")
     private String mTitle;
 
+    @SerializedName("description")
     private String mDescription;
 
+    @SerializedName("account_url")
     private String mAccount;
 
+    @SerializedName("account_id")
     private String mAccountId;
 
+    @SerializedName("link")
     private String mLink;
 
+    @SerializedName("gifv")
     private String mGifVLink;
 
+    @SerializedName("mp4")
     private String mMP4Link;
 
+    @SerializedName("reddit_comments")
     private String mRedditLink;
 
+    @SerializedName("vote")
     private String mVote;
 
+    @SerializedName("deletehash")
     private String mDeleteHash;
 
+    @SerializedName("topic")
     private String mTopic;
 
+    @SerializedName("datetime")
     private long mDate;
 
+    @SerializedName("bandwidth")
     private long mBandwidth;
 
+    @SerializedName("favorite")
     private boolean mIsFavorited;
 
-    private boolean mIsNSFW = false;
+    @SerializedName("nsfw")
+    private boolean mIsNSFW;
 
-    private ArrayList<String> mTags;
+    private List<ImgurTag> mTags;
 
     public ImgurBaseObject(String id, String title, String link) {
         mId = id;
@@ -111,100 +89,9 @@ public class ImgurBaseObject implements Parcelable {
         mLink = link;
     }
 
-    protected ImgurBaseObject(JSONObject json) {
-        parseJson(json);
-    }
-
-    /**
-     * Parses the JSON for common values
-     *
-     * @param json
-     */
-    private void parseJson(JSONObject json) {
-        try {
-            if (!json.isNull(KEY_ID)) {
-                mId = json.getString(KEY_ID);
-            }
-
-            if (!json.isNull(KEY_UP_VOTES)) {
-                mUpVotes = json.getInt(KEY_UP_VOTES);
-            }
-
-            if (!json.isNull(KEY_DOWN_VOTES)) {
-                mDownVotes = json.getInt(KEY_DOWN_VOTES);
-            }
-
-            if (!json.isNull(KEY_VIEWS)) {
-                mViews = json.getInt(KEY_VIEWS);
-            }
-
-            if (!json.isNull(KEY_TITLE)) {
-                mTitle = json.getString(KEY_TITLE);
-            }
-
-            if (!json.isNull(KEY_DESCRIPTION)) {
-                mDescription = json.getString(KEY_DESCRIPTION);
-            }
-
-            if (!json.isNull(KEY_DATE)) {
-                mDate = json.getLong(KEY_DATE);
-            }
-
-            if (!json.isNull(KEY_BANDWIDTH)) {
-                mBandwidth = json.getLong(KEY_BANDWIDTH);
-            }
-
-            if (!json.isNull(KEY_ACCOUNT)) {
-                mAccount = json.getString(KEY_ACCOUNT);
-            }
-
-            if (!json.isNull(KEY_ACCOUNT_ID)) {
-                mAccountId = json.getString(KEY_ACCOUNT_ID);
-            }
-
-            if (!json.isNull(KEY_LINK)) {
-                mLink = json.getString(KEY_LINK);
-            }
-
-            if (!json.isNull(KEY_SCORE)) {
-                mScore = json.getInt(KEY_SCORE);
-            }
-
-            if (!json.isNull(KEY_REDDIT_LINK)) {
-                mRedditLink = json.getString(KEY_REDDIT_LINK);
-            }
-
-            if (!json.isNull(KEY_FAVORITE)) {
-                mIsFavorited = json.getBoolean(KEY_FAVORITE);
-            }
-
-            if (!json.isNull(KEY_VOTE)) {
-                mVote = json.getString(KEY_VOTE);
-            }
-
-            if (!json.isNull(KEY_DELETE_HASH)) {
-                mDeleteHash = json.getString(KEY_DELETE_HASH);
-            }
-
-            if (!json.isNull(KEY_NSFW)) {
-                mIsNSFW = json.getBoolean(KEY_NSFW);
-            }
-
-            if (!json.isNull(KEY_GIFV)) {
-                mGifVLink = json.getString(KEY_GIFV);
-            }
-
-            if (!json.isNull(KEY_MP4)) {
-                mMP4Link = json.getString(KEY_MP4);
-            }
-
-            if (!json.isNull(KEY_TOPIC)) {
-                mTopic = json.getString(KEY_TOPIC);
-            }
-
-        } catch (JSONException ex) {
-            LogUtil.e(TAG, "Error Decoding JSON", ex);
-        }
+    public ImgurBaseObject(String id, String title, String link, String deleteHash) {
+        this(id, title, link);
+        mDeleteHash = deleteHash;
     }
 
     public int getUpVotes() {
@@ -322,11 +209,11 @@ public class ImgurBaseObject implements Parcelable {
         mVote = vote;
     }
 
-    public void setTags(ArrayList tags) {
+    public void setTags(List tags) {
         mTags = tags;
     }
 
-    public ArrayList getTags() {
+    public List<ImgurTag> getTags() {
         return mTags;
     }
 
@@ -365,7 +252,7 @@ public class ImgurBaseObject implements Parcelable {
         out.writeInt(mIsNSFW ? 1 : 0);
         out.writeLong(mDate);
         out.writeLong(mBandwidth);
-        out.writeStringList(mTags);
+        out.writeTypedList(mTags);
     }
 
     public static final Parcelable.Creator<ImgurBaseObject> CREATOR = new Parcelable.Creator<ImgurBaseObject>() {
@@ -405,7 +292,7 @@ public class ImgurBaseObject implements Parcelable {
         mDate = in.readLong();
         mBandwidth = in.readLong();
         mTags = new ArrayList<>();
-        in.readStringList(mTags);
+        in.readTypedList(mTags, ImgurTag.CREATOR);
     }
 
     @Override

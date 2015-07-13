@@ -6,14 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
 import com.kenny.openimgur.util.LinkUtils;
-import com.kenny.openimgur.util.LogUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
- * Object for Photos
+ * Created by kcampagna on 7/11/15.
  */
 public class ImgurPhoto extends ImgurBaseObject {
     // 160x160
@@ -30,71 +27,30 @@ public class ImgurPhoto extends ImgurBaseObject {
 
     public static final String THUMBNAIL_GALLERY = "b";
 
-    private static final String KEY_TYPE = "type";
-
-    private static final String KEY_WIDTH = "width";
-
-    private static final String KEY_HEIGHT = "height";
-
-    private static final String KEY_ANIMATED = "animated";
-
-    private static final String KEY_SIZE = "size";
-
     public static final String IMAGE_TYPE_PNG = "image/png";
 
     public static final String IMAGE_TYPE_JPEG = "image/jpeg";
 
     public static final String IMAGE_TYPE_GIF = "image/gif";
 
+    @SerializedName("type")
     private String mType;
 
+    @SerializedName("width")
     private int mWidth;
 
+    @SerializedName("height")
     private int mHeight;
 
+    @SerializedName("animated")
     private boolean mIsAnimated;
 
+    @SerializedName("size")
     private long mSize;
 
     public ImgurPhoto(String link) {
         super(null, null, link);
         mIsAnimated = LinkUtils.isLinkAnimated(link);
-    }
-
-    public ImgurPhoto(JSONObject json) {
-        super(json);
-        parseJson(json);
-    }
-
-    /**
-     * Parses the JSON for related values
-     *
-     * @param json
-     */
-    private void parseJson(JSONObject json) {
-        try {
-            if (!json.isNull(KEY_TYPE)) {
-                mType = json.getString(KEY_TYPE);
-            }
-
-            if (!json.isNull(KEY_ANIMATED)) {
-                mIsAnimated = json.getBoolean(KEY_ANIMATED);
-            }
-
-            if (!json.isNull(KEY_HEIGHT)) {
-                mHeight = json.getInt(KEY_HEIGHT);
-            }
-
-            if (!json.isNull(KEY_WIDTH)) {
-                mWidth = json.getInt(KEY_WIDTH);
-            }
-
-            if (!json.isNull(KEY_SIZE)) {
-                mSize = json.getInt(KEY_SIZE);
-            }
-        } catch (JSONException ex) {
-            LogUtil.e(TAG, "Error Decoding JSON", ex);
-        }
     }
 
     public long getSize() {

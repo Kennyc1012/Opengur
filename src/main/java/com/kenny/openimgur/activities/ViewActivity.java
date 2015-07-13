@@ -41,8 +41,8 @@ import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
-import com.kenny.openimgur.classes.ImgurAlbum2;
-import com.kenny.openimgur.classes.ImgurBaseObject2;
+import com.kenny.openimgur.classes.ImgurAlbum;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
@@ -192,7 +192,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private SideGalleryFragment mSideGalleryFragment;
 
-    public static Intent createIntent(Context context, ArrayList<ImgurBaseObject2> objects, int position) {
+    public static Intent createIntent(Context context, ArrayList<ImgurBaseObject> objects, int position) {
         Intent intent = new Intent(context, ViewActivity.class);
         intent.putExtra(KEY_POSITION, position);
         intent.putExtra(KEY_OBJECTS, objects);
@@ -298,7 +298,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             finish();
         } else {
             mCurrentPosition = intent.getIntExtra(KEY_POSITION, 0);
-            ArrayList<ImgurBaseObject2> objects = intent.getParcelableArrayListExtra(KEY_OBJECTS);
+            ArrayList<ImgurBaseObject> objects = intent.getParcelableArrayListExtra(KEY_OBJECTS);
             mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
 
             if (mSideGalleryFragment != null) {
@@ -343,7 +343,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             mLoadComments = savedInstanceState.getBoolean(KEY_LOAD_COMMENTS, true);
             mIsResuming = true;
             mCurrentPosition = savedInstanceState.getInt(KEY_POSITION, 0);
-            ArrayList<ImgurBaseObject2> objects = savedInstanceState.getParcelableArrayList(KEY_OBJECTS);
+            ArrayList<ImgurBaseObject> objects = savedInstanceState.getParcelableArrayList(KEY_OBJECTS);
             mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
             mViewPager.setAdapter(mPagerAdapter);
             mViewPager.setCurrentItem(mCurrentPosition);
@@ -423,8 +423,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.upVoteBtn:
             case R.id.downVoteBtn:
                 if (user != null) {
-                    ImgurBaseObject2 obj = mPagerAdapter.getImgurItem(mCurrentPosition);
-                    String vote = view.getId() == R.id.upVoteBtn ? ImgurBaseObject2.VOTE_UP : ImgurBaseObject2.VOTE_DOWN;
+                    ImgurBaseObject obj = mPagerAdapter.getImgurItem(mCurrentPosition);
+                    String vote = view.getId() == R.id.upVoteBtn ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
                     String upVoteUrl = String.format(Endpoints.GALLERY_VOTE.getUrl(), obj.getId(), vote);
                     obj.setVote(vote);
 
@@ -534,7 +534,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     break;
 
                 case FAVORITE:
-                    ImgurBaseObject2 obj = mPagerAdapter.getImgurItem(mCurrentPosition);
+                    ImgurBaseObject obj = mPagerAdapter.getImgurItem(mCurrentPosition);
                     if (obj.getId().equals(event.id)) {
                         obj.setIsFavorite(!obj.isFavorited());
                         invalidateOptionsMenu();
@@ -711,7 +711,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.upVote:
             case R.id.downVote:
                 if (user != null) {
-                    String vote = id == R.id.upVote ? ImgurBaseObject2.VOTE_UP : ImgurBaseObject2.VOTE_DOWN;
+                    String vote = id == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
                     String url = String.format(Endpoints.COMMENT_VOTE.getUrl(), comment.getId(), vote);
                     RequestBody body = new FormEncodingBuilder().add("id", comment.getId()).build();
 
@@ -766,7 +766,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     if (msg.obj instanceof String) {
                         // To show conformation of a vote on an image/gallery, we will animate whichever vote button was pressed
                         String vote = (String) msg.obj;
-                        View animateView = ImgurBaseObject2.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
+                        View animateView = ImgurBaseObject.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
                         AnimatorSet set = new AnimatorSet();
                         set.playTogether(
                                 ObjectAnimator.ofFloat(animateView, "scaleY", 1.0f, 2.0f, 1.0f),
@@ -809,7 +809,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @OnClick(R.id.errorButton)
     public void fetchComments() {
         if (mLoadComments && mPagerAdapter != null) {
-            ImgurBaseObject2 imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
+            ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
 
             if (imgurBaseObject == null) {
                 LogUtil.w(TAG, "Object returned is null, can not load comments");
@@ -824,7 +824,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     }
 
                     if (!commentResponse.data.isEmpty()) {
-                        ImgurBaseObject2 imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
+                        ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
                         ImgurComment comment = commentResponse.data.get(0);
 
                         if (comment.getImageId().equals(imgurBaseObject.getId())) {
@@ -868,10 +868,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             ApiClient2.getService().getAlbumImages(id, new Callback<AlbumResponse>() {
                 @Override
                 public void success(AlbumResponse albumResponse, Response response) {
-                    ImgurAlbum2 album = new ImgurAlbum2(mGalleryId, null, getIntent().getData().toString());
+                    ImgurAlbum album = new ImgurAlbum(mGalleryId, null, getIntent().getData().toString());
                     mGalleryId = null;
                     album.addPhotosToAlbum(albumResponse.data);
-                    final ArrayList<ImgurBaseObject2> objects = new ArrayList<>(1);
+                    final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
                     objects.add(album);
                     mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
                     mViewPager.setAdapter(mPagerAdapter);
@@ -889,7 +889,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 @Override
                 public void success(BasicObjectResponse basicObjectResponse, Response response) {
                     if (basicObjectResponse.data != null) {
-                        final ArrayList<ImgurBaseObject2> objects = new ArrayList<>(1);
+                        final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
                         objects.add(basicObjectResponse.data);
                         mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
                         mViewPager.setAdapter(mPagerAdapter);
@@ -955,11 +955,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private static class BrowsingAdapter extends FragmentStatePagerAdapter {
-        private ArrayList<ImgurBaseObject2> objects;
+        private ArrayList<ImgurBaseObject> objects;
 
         private boolean mDisplayTags;
 
-        public BrowsingAdapter(Context context, FragmentManager fm, ArrayList<ImgurBaseObject2> objects) {
+        public BrowsingAdapter(Context context, FragmentManager fm, ArrayList<ImgurBaseObject> objects) {
             super(fm);
             this.objects = objects;
             mDisplayTags = OpengurApp.getInstance(context).getPreferences().getBoolean(SettingsActivity.KEY_TAGS, true);
@@ -976,7 +976,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         @Nullable
-        public ImgurBaseObject2 getImgurItem(int position) {
+        public ImgurBaseObject getImgurItem(int position) {
             if (objects == null || position >= objects.size()) return null;
             return objects.get(position);
         }
@@ -991,7 +991,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             return objects == null || objects.isEmpty();
         }
 
-        public ArrayList<ImgurBaseObject2> retainItems() {
+        public ArrayList<ImgurBaseObject> retainItems() {
             return new ArrayList<>(objects);
         }
     }

@@ -21,7 +21,7 @@ import android.widget.TextView;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.cocosw.bottomsheet.BottomSheetListener;
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.classes.ImgurBaseObject2;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.util.FileUtil;
@@ -58,9 +58,9 @@ public class MemeActivity extends BaseActivity {
     @InjectView(R.id.progressBar)
     ProgressBar mProgressBar;
 
-    private ImgurBaseObject2 mObject;
+    private ImgurBaseObject mObject;
 
-    public static Intent createIntent(Context context, ImgurBaseObject2 object) {
+    public static Intent createIntent(Context context, ImgurBaseObject object) {
         return new Intent(context, MemeActivity.class).putExtra(KEY_OBJECT, object);
     }
 

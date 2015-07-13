@@ -12,8 +12,10 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.Endpoints;
+import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.responses.BasicObjectResponse;
+import com.kenny.openimgur.api.responses.BasicResponse;
+import com.kenny.openimgur.api.responses.PhotoResponse;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -23,19 +25,14 @@ import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.RequestBody;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit.RetrofitError;
+import retrofit.mime.TypedFile;
+import retrofit.mime.TypedString;
 
 /**
  * Created by kcampagna on 6/30/15.
@@ -111,28 +108,50 @@ public class UploadService extends IntentService {
 
             int totalUploads = uploads.size();
             LogUtil.v(TAG, "Starting upload of " + uploads.size() + " images");
-            ApiClient client = new ApiClient(Endpoints.UPLOAD.getUrl(), ApiClient.HttpRequest.POST);
             List<ImgurPhoto> uploadedPhotos = new ArrayList<>(totalUploads);
             SqlHelper sql = app.getSql();
 
             for (int i = 0; i < totalUploads; i++) {
                 Upload u = uploads.get(i);
-                RequestBody body = createUploadRequestBody(u);
                 onPhotoUploading(totalUploads, i + 1);
+                PhotoResponse response = null;
 
-                if (body != null) {
+                try {
                     LogUtil.v(TAG, "Uploading photo " + (i + 1) + " of " + totalUploads);
-                    // This will be synchronous
-                    JSONObject json = client.doWork(body);
-                    int status = json.getInt(ApiClient.KEY_STATUS);
 
-                    if (status == ApiClient.STATUS_OK) {
-                        ImgurPhoto photo = new ImgurPhoto(json.getJSONObject(ApiClient.KEY_DATA));
-                        uploadedPhotos.add(photo);
-                        sql.insertUploadedPhoto(photo);
+                    if (u.isLink()) {
+                        response = ApiClient2.getService().uploadLink(u.getLocation(), u.getTitle(), u.getDescription(), "URL");
                     } else {
-                        LogUtil.w(TAG, "Photo failed to uploaded, status code returned " + status);
+                        File file = new File(u.getLocation());
+
+                        if (FileUtil.isFileValid(file)) {
+                            String type;
+
+                            if (file.getAbsolutePath().endsWith("png")) {
+                                type = "image/png";
+                            } else if (file.getAbsolutePath().endsWith("gif")) {
+                                type = "image/gif";
+                            } else {
+                                type = "image/jpeg";
+                            }
+
+                            TypedFile uploadFile = new TypedFile(type, file);
+                            TypedString uploadTitle = !TextUtils.isEmpty(u.getTitle()) ? new TypedString(u.getTitle()) : null;
+                            TypedString uploadDesc = !TextUtils.isEmpty(u.getDescription()) ? new TypedString(u.getDescription()) : null;
+                            TypedString uploadType = new TypedString("file");
+                            response = ApiClient2.getService().uploadPhoto(uploadFile, uploadTitle, uploadDesc, uploadType);
+                        } else {
+                            LogUtil.w(TAG, "Unable to find file at location " + u.getLocation());
+                        }
                     }
+                } catch (RetrofitError ex) {
+                    LogUtil.e(TAG, "Error uploading image", ex);
+                    response = null;
+                }
+
+                if (response != null && response.data != null) {
+                    sql.insertUploadedPhoto(response.data);
+                    uploadedPhotos.add(response.data);
                 }
             }
 
@@ -149,12 +168,6 @@ public class UploadService extends IntentService {
                 LogUtil.w(TAG, "No photos were uploaded");
                 onPhotoUploadFailed();
             }
-        } catch (JSONException ex) {
-            LogUtil.e(TAG, "Error parsing JSON", ex);
-            onPhotoUploadFailed();
-        } catch (IOException ex) {
-            LogUtil.e(TAG, "Error while uploading", ex);
-            onPhotoUploadFailed();
         } finally {
             if (wakeLock.isHeld()) wakeLock.release();
         }
@@ -322,64 +335,6 @@ public class UploadService extends IntentService {
     }
 
     /**
-     * Creates the {@link RequestBody} for the image upload
-     *
-     * @param upload
-     * @return
-     */
-    @Nullable
-    private RequestBody createUploadRequestBody(@NonNull Upload upload) {
-        RequestBody body = null;
-
-        if (upload.isLink()) {
-            FormEncodingBuilder builder = new FormEncodingBuilder()
-                    .add("image", upload.getLocation())
-                    .add("type", "URL");
-
-            if (!TextUtils.isEmpty(upload.getTitle())) {
-                builder.add("title", upload.getTitle());
-            }
-
-            if (!TextUtils.isEmpty(upload.getDescription())) {
-                builder.add("description", upload.getDescription());
-            }
-
-            body = builder.build();
-        } else {
-            File file = new File(upload.getLocation());
-            if (FileUtil.isFileValid(file)) {
-                MediaType type;
-
-                if (file.getAbsolutePath().endsWith("png")) {
-                    type = MediaType.parse("image/png");
-                } else if (file.getAbsolutePath().endsWith("gif")) {
-                    type = MediaType.parse("image/gif");
-                } else {
-                    type = MediaType.parse("image/jpeg");
-                }
-
-                MultipartBuilder builder = new MultipartBuilder().type(MultipartBuilder.FORM)
-                        .addPart(Headers.of("Content-Disposition", "form-data; name=\"image\""), RequestBody.create(type, file))
-                        .addPart(Headers.of("Content-Disposition", "form-data; name=\"type\""), RequestBody.create(null, "file"));
-
-                if (!TextUtils.isEmpty(upload.getTitle())) {
-                    builder.addPart(Headers.of("Content-Disposition", "form-data; name=\"title\""), RequestBody.create(null, upload.getTitle()));
-                }
-
-                if (!TextUtils.isEmpty(upload.getDescription())) {
-                    builder.addPart(Headers.of("Content-Disposition", "form-data; name=\"description\""), RequestBody.create(null, upload.getDescription()));
-                }
-
-                body = builder.build();
-            } else {
-                LogUtil.w(TAG, "Invalid file, unable to create RequestBody");
-            }
-        }
-
-        return body;
-    }
-
-    /**
      * Creates the album from the uploaded photos
      *
      * @param uploadedPhotos  The photos that were uploaded
@@ -391,7 +346,6 @@ public class UploadService extends IntentService {
      */
     private void createAlbum(@NonNull List<ImgurPhoto> uploadedPhotos, boolean submitToGallery, @Nullable String title, @Nullable String desc, @Nullable ImgurTopic topic) {
         try {
-            ApiClient client = new ApiClient(Endpoints.ALBUM_CREATION.getUrl(), ApiClient.HttpRequest.POST);
             String coverId = uploadedPhotos.get(0).getId();
             StringBuilder sb = new StringBuilder();
 
@@ -400,19 +354,12 @@ public class UploadService extends IntentService {
                 if (i != uploadedPhotos.size() - 1) sb.append(",");
             }
 
-            FormEncodingBuilder builder = new FormEncodingBuilder()
-                    .add("ids", sb.toString())
-                    .add("cover", coverId);
-            if (!TextUtils.isEmpty(title)) builder.add("title", title);
-            if (!TextUtils.isEmpty(desc)) builder.add("description", desc);
+            BasicObjectResponse response = ApiClient2.getService().createAlbum(sb.toString(), coverId, title, desc);
 
-            JSONObject json = client.doWork(builder.build());
-            int status = json.getInt(ApiClient.KEY_STATUS);
-
-            if (status == ApiClient.STATUS_OK) {
-                ImgurAlbum album = new ImgurAlbum(json.getJSONObject(ApiClient.KEY_DATA));
-                // The object will not be fully completed, add the needed fields
-                album.setLink("https://imgur.com/a/" + album.getId());
+            if (response.data != null) {
+                // The response only contains the id and the delete hash, we need to construct the object from them
+                String link = "https://imgur.com/a/" + response.data.getId();
+                ImgurAlbum album = new ImgurAlbum(response.data.getId(), title, link, response.data.getDeleteHash());
                 album.setCoverId(coverId);
                 OpengurApp.getInstance(getApplicationContext()).getSql().insertUploadedAlbum(album);
 
@@ -424,13 +371,10 @@ public class UploadService extends IntentService {
                     submitToGallery(title, topic, album);
                 }
             } else {
-                LogUtil.v(TAG, "Unable to submit to gallery with status " + status);
+                LogUtil.w(TAG, "Response did not receive an object");
                 onAlbumCreationFailed();
             }
-        } catch (JSONException ex) {
-            LogUtil.e(TAG, "Error while parsing JSON while creating album", ex);
-            onAlbumCreationFailed();
-        } catch (IOException ex) {
+        } catch (RetrofitError ex) {
             LogUtil.e(TAG, "Error while creating album", ex);
             onAlbumCreationFailed();
         }
@@ -451,35 +395,16 @@ public class UploadService extends IntentService {
         mManager.notify(mNotificationId, mBuilder.build());
 
         try {
-            ApiClient client = new ApiClient(String.format(Endpoints.GALLERY_UPLOAD.getUrl(), upload.getId()), ApiClient.HttpRequest.POST);
+            BasicResponse response = ApiClient2.getService().submitToGallery(upload.getId(), title, topic.getId(), "1");
+            LogUtil.v(TAG, "Result of gallery submission " + response.data);
 
-            RequestBody body = new FormEncodingBuilder()
-                    .add("title", title)
-                    .add("topic", String.valueOf(topic.getId()))
-                    .add("terms", "1").build();
-
-            JSONObject json = client.doWork(body);
-            int status = json.getInt(ApiClient.KEY_STATUS);
-
-            if (status == ApiClient.STATUS_OK) {
-                boolean result = json.getBoolean(ApiClient.KEY_DATA);
-                LogUtil.v(TAG, "Result of gallery submission " + result);
-
-                if (result) {
-                    onSuccessfulUpload(upload);
-                } else {
-                    onGallerySubmitFailed(upload);
-                }
-
+            if (response.data) {
+                onSuccessfulUpload(upload);
             } else {
-                LogUtil.v(TAG, "Unable to submit to gallery with status " + status);
                 onGallerySubmitFailed(upload);
             }
-        } catch (JSONException ex) {
-            LogUtil.e(TAG, "Error while parsing JSON while uploading", ex);
-            onGallerySubmitFailed(upload);
-        } catch (IOException ex) {
-            LogUtil.e(TAG, "Error while uploading", ex);
+        } catch (RetrofitError ex) {
+            LogUtil.e(TAG, "Error while submitting to gallery", ex);
             onGallerySubmitFailed(upload);
         }
     }

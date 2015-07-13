@@ -14,7 +14,7 @@ import com.kenny.openimgur.activities.MemeActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.responses.GalleryResponse;
-import com.kenny.openimgur.classes.ImgurBaseObject2;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
 
@@ -74,7 +74,7 @@ public class MemeFragment extends BaseGridFragment {
     }
 
     @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject2> items) {
+    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
         startActivity(MemeActivity.createIntent(getActivity(), items.get(position)));
     }
 
@@ -83,7 +83,7 @@ public class MemeFragment extends BaseGridFragment {
         super.onRestoreSavedInstance(savedInstanceState);
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
-            List<ImgurBaseObject2> memes = app.getSql().getMemes();
+            List<ImgurBaseObject> memes = app.getSql().getMemes();
 
             if (memes != null && !memes.isEmpty()) {
                 LogUtil.v(TAG, "Memes found in database");

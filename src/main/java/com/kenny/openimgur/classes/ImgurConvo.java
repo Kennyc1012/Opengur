@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by kcampagna on 12/24/14.
  */
-public class ImgurConvo extends ImgurBaseObject2 {
+public class ImgurConvo extends ImgurBaseObject {
     @SerializedName("with_account")
     private String mWithAccount;
 

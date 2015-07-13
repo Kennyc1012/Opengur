@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by kcampagna on 6/21/14.
  */
-public class ImgurComment extends ImgurBaseObject2 {
+public class ImgurComment extends ImgurBaseObject {
     @SerializedName("author")
     private String mAuthor;
 

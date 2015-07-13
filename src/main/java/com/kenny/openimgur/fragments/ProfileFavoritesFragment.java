@@ -14,8 +14,8 @@ import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;
-import com.kenny.openimgur.classes.ImgurAlbum2;
-import com.kenny.openimgur.classes.ImgurBaseObject2;
+import com.kenny.openimgur.classes.ImgurAlbum;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
 
@@ -64,7 +64,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
     }
 
     @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject2> items) {
+    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
         // NOOP see onItemClick
     }
 
@@ -75,12 +75,12 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
         // Don't respond to the header being clicked
 
         if (adapterPosition >= 0) {
-            ImgurBaseObject2 obj = getAdapter().getItem(adapterPosition);
+            ImgurBaseObject obj = getAdapter().getItem(adapterPosition);
             Intent intent;
 
             // TODO
-            if (obj instanceof ImgurAlbum2 || obj.getUpVotes() > Integer.MIN_VALUE) {
-                ArrayList<ImgurBaseObject2> items = new ArrayList<>(1);
+            if (obj instanceof ImgurAlbum || obj.getUpVotes() > Integer.MIN_VALUE) {
+                ArrayList<ImgurBaseObject> items = new ArrayList<>(1);
                 items.add(obj);
                 //intent = ViewActivity.createIntent(getActivity(), items, 0);
             } else {

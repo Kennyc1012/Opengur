@@ -22,7 +22,7 @@ import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurHandler;
-import com.kenny.openimgur.classes.ImgurPhoto2;
+import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -62,7 +62,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
     @InjectView(R.id.gifImage)
     ImageView mGifImageView;
 
-    private ImgurPhoto2 mPhoto;
+    private ImgurPhoto mPhoto;
 
     private String mUrl;
 
@@ -72,7 +72,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
     private boolean mReplacedPNG = false;
 
-    public static FullScreenPhotoFragment createInstance(@NonNull ImgurPhoto2 photo) {
+    public static FullScreenPhotoFragment createInstance(@NonNull ImgurPhoto photo) {
         FullScreenPhotoFragment fragment = new FullScreenPhotoFragment();
         Bundle args = new Bundle(1);
         args.putParcelable(KEY_IMGUR_OBJECT, photo);

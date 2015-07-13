@@ -17,7 +17,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.responses.PhotoResponse;
-import com.kenny.openimgur.classes.ImgurPhoto2;
+import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -262,7 +262,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             @Override
             public void success(PhotoResponse photoResponse, Response response) {
                 if (photoResponse.data != null) {
-                    ImgurPhoto2 photo = photoResponse.data;
+                    ImgurPhoto photo = photoResponse.data;
 
                     if (photo.isAnimated()) {
                         if (photo.isLinkAThumbnail() || photo.getSize() > PHOTO_SIZE_LIMIT) {

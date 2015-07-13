@@ -2,7 +2,6 @@ package com.kenny.openimgur.classes;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.format.DateUtils;
 
 import com.kenny.openimgur.util.LogUtil;
 
@@ -30,8 +29,8 @@ public class ImgurMessage extends ImgurBaseObject {
     private boolean mIsSending = false;
 
     public ImgurMessage(JSONObject json) {
-        super(json);
-
+        super(null);
+        // TODO
         try {
             if (!json.isNull(KEY_BODY)) {
                 mBody = json.getString(KEY_BODY);
@@ -104,7 +103,7 @@ public class ImgurMessage extends ImgurBaseObject {
     };
 
     public static ImgurMessage createMessage(String message, int senderId) {
-        JSONObject json = new JSONObject();
+      /*  JSONObject json = new JSONObject();
         long currentTime = System.currentTimeMillis() / DateUtils.SECOND_IN_MILLIS;
 
         try {
@@ -120,7 +119,8 @@ public class ImgurMessage extends ImgurBaseObject {
 
         if (json != null) {
             return new ImgurMessage(json);
-        }
+        }*/
+        // TODO
 
         return null;
     }

@@ -16,9 +16,9 @@ import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 import com.kenny.openimgur.activities.MuzeiSettingsActivity;
 import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.responses.GalleryResponse;
-import com.kenny.openimgur.classes.ImgurBaseObject2;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurFilters;
-import com.kenny.openimgur.classes.ImgurPhoto2;
+import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
@@ -84,10 +84,10 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
         String title;
         String byline;
         Uri uri;
-        List<ImgurPhoto2> photos = fetchImages(source, pref, allowNSFW);
+        List<ImgurPhoto> photos = fetchImages(source, pref, allowNSFW);
 
         if (photos != null && !photos.isEmpty()) {
-            ImgurPhoto2 photo = photos.get(sRandom.nextInt(photos.size()));
+            ImgurPhoto photo = photos.get(sRandom.nextInt(photos.size()));
             SqlHelper sql = app.getSql();
 
             if (sql.getMuzeiLastSeen(photo.getLink()) != -1) {
@@ -157,7 +157,7 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
     }
 
     @Nullable
-    private List<ImgurPhoto2> fetchImages(String source, SharedPreferences pref, boolean allowNSFW) {
+    private List<ImgurPhoto> fetchImages(String source, SharedPreferences pref, boolean allowNSFW) {
         GalleryResponse response = null;
 
         try {
@@ -178,11 +178,11 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
 
         if (response != null && !response.data.isEmpty()) {
             // Go through the responses and exclude albums, gifs, and check NSFW status
-            List<ImgurPhoto2> photos = new ArrayList<>();
+            List<ImgurPhoto> photos = new ArrayList<>();
 
-            for (ImgurBaseObject2 obj : response.data) {
-                if (obj instanceof ImgurPhoto2 && !((ImgurPhoto2) obj).isAnimated() && (allowNSFW || !obj.isNSFW())) {
-                    photos.add((ImgurPhoto2) obj);
+            for (ImgurBaseObject obj : response.data) {
+                if (obj instanceof ImgurPhoto && !((ImgurPhoto) obj).isAnimated() && (allowNSFW || !obj.isNSFW())) {
+                    photos.add((ImgurPhoto) obj);
                 }
             }
 

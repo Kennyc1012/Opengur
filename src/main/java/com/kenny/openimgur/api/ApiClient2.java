@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.api.responses.ConvoResponse;
-import com.kenny.openimgur.classes.ImgurBaseObject2;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
@@ -49,7 +49,7 @@ public class ApiClient2 {
         if (sRestAdapter == null || sService == null) {
             sRestAdapter = new RestAdapter.Builder()
                     .setEndpoint(API_URL)
-                    .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
+                    .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.BASIC : RestAdapter.LogLevel.NONE)
                     .setRequestInterceptor(getRequestInterceptor())
                     .setClient(getClient())
                     .setConverter(getConverter())
@@ -91,7 +91,7 @@ public class ApiClient2 {
     private static GsonConverter getConverter() {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .registerTypeAdapter(ImgurBaseObject2.class, new ImgurSerializer())
+                .registerTypeAdapter(ImgurBaseObject.class, new ImgurSerializer())
                 .registerTypeAdapter(ConvoResponse.class, new ConvoResponse())
                 .create();
 

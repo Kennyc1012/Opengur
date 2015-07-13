@@ -15,9 +15,13 @@ import retrofit.Callback;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
+import retrofit.http.Multipart;
 import retrofit.http.POST;
+import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Query;
+import retrofit.mime.TypedFile;
+import retrofit.mime.TypedString;
 
 /**
  * Created by kcampagna on 7/10/15.
@@ -122,4 +126,20 @@ public interface ImgurService {
     @FormUrlEncoded
     @POST("/album/{id}/favorite")
     void favoriteAlbum(@Path("id") String albumId, @Field("id") String id, Callback<BasicResponse> callback);
+
+    @Multipart
+    @POST("/upload")
+    PhotoResponse uploadPhoto(@Part("image") TypedFile file, @Part("title") TypedString title, @Part("description") TypedString description, @Part("type") TypedString type);
+
+    @FormUrlEncoded
+    @POST("/upload")
+    PhotoResponse uploadLink(@Field("image") String link, @Field("title") String title, @Field("description") String description, @Field("type") String type);
+
+    @FormUrlEncoded
+    @POST("/gallery/{id}")
+    BasicResponse submitToGallery(@Path("id") String id, @Field("title") String title, @Field("topic") int topicId, @Field("terms") String terms);
+
+    @FormUrlEncoded
+    @POST("/album")
+    BasicObjectResponse createAlbum(@Field("ids") String ids, @Field("cover") String coverId, @Field("title") String title, @Field("description") String description);
 }
