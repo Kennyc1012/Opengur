@@ -58,6 +58,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
 
     @Override
     protected void fetchGallery() {
+        super.fetchGallery();
         ApiClient2.getService().getProfileAlbums(mSelectedUser.getUsername(), mCurrentPage, this);
     }
 
@@ -181,7 +182,12 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
                         adapter.removeItem(album);
                     }
 
-                    mMultiStateView.setViewState(adapter != null && adapter.isEmpty() ? MultiStateView.ViewState.EMPTY : MultiStateView.ViewState.CONTENT);
+                    if (adapter == null || adapter.isEmpty()) {
+                        onEmptyResults();
+                    } else {
+                        mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                    }
+
                     SnackBar.show(getActivity(), R.string.profile_delete_success_album);
                 } else {
                     SnackBar.show(getActivity(), R.string.error_generic);

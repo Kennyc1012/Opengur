@@ -14,12 +14,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.snackbar.SnackBar;
 
 import java.util.ArrayList;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 12/27/14.
@@ -99,7 +105,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
-                                                    // TODO Delete Call
+                                                    deletePhoto(photo);
                                                 }
                                             }).show();
                                     break;
@@ -140,5 +146,42 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
     @Override
     protected boolean showPoints() {
         return false;
+    }
+
+    private void deletePhoto(final ImgurBaseObject photo) {
+        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+
+        ApiClient2.getService().deletePhoto(photo.getDeleteHash(), new Callback<BasicResponse>() {
+            @Override
+            public void success(BasicResponse basicResponse, Response response) {
+                if (!isAdded()) return;
+
+                if (basicResponse.data) {
+                    GalleryAdapter adapter = getAdapter();
+
+                    if (adapter != null) {
+                        adapter.removeItem(photo);
+                    }
+
+                    if (adapter == null || adapter.isEmpty()) {
+                        onEmptyResults();
+                    } else {
+                        mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                    }
+                    
+                    SnackBar.show(getActivity(), R.string.profile_delete_success_image);
+                } else {
+                    SnackBar.show(getActivity(), R.string.error_generic);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (!isAdded()) return;
+                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                // TODO Error
+            }
+        });
+
     }
 }
