@@ -24,6 +24,7 @@ public class ImgurConvo extends ImgurBaseObject {
     @SerializedName("with_account_id")
     private int mWithAccountId;
 
+    @SerializedName("messages")
     private ArrayList<ImgurMessage> mMessages;
 
     private ImgurConvo(Parcel in) {
@@ -33,7 +34,7 @@ public class ImgurConvo extends ImgurBaseObject {
         mMessageCount = in.readInt();
         mWithAccountId = in.readInt();
         mMessages = new ArrayList<>();
-        in.readList(mMessages, null);
+        in.readTypedList(mMessages, ImgurMessage.CREATOR);
     }
 
     public ImgurConvo(String with, int withAccountId) {
@@ -64,6 +65,10 @@ public class ImgurConvo extends ImgurBaseObject {
 
     public List<ImgurMessage> getMessages() {
         return mMessages;
+    }
+
+    public boolean hasMessages(){
+        return mMessages!=null && !mMessages.isEmpty();
     }
 
     public void writeToParcel(Parcel out, int flags) {

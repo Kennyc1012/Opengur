@@ -2,54 +2,31 @@ package com.kenny.openimgur.classes;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.format.DateUtils;
 
-import com.kenny.openimgur.util.LogUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by kcampagna on 12/25/14.
  */
 public class ImgurMessage extends ImgurBaseObject {
-    private static final String KEY_SENDER_ID = "sender_id";
-
-    private static final String KEY_BODY = "body";
-
-    private static final String KEY_FROM = "from";
-
-    private static final String KEY_IS_SENDING = "is_sending";
-
+    @SerializedName("body")
     private String mBody;
 
+    @SerializedName("from")
     private String mFrom;
 
+    @SerializedName("sender_id")
     private int mSenderId;
 
     private boolean mIsSending = false;
 
-    public ImgurMessage(JSONObject json) {
-        super(null);
-        // TODO
-        try {
-            if (!json.isNull(KEY_BODY)) {
-                mBody = json.getString(KEY_BODY);
-            }
-
-            if (!json.isNull(KEY_SENDER_ID)) {
-                mSenderId = json.getInt(KEY_SENDER_ID);
-            }
-
-            if (!json.isNull(KEY_FROM)) {
-                mFrom = json.getString(KEY_FROM);
-            }
-
-            if (!json.isNull(KEY_IS_SENDING)) {
-                mIsSending = json.getBoolean(KEY_IS_SENDING);
-            }
-        } catch (JSONException ex) {
-            LogUtil.e(TAG, "Error Decoding JSON", ex);
-        }
+    private ImgurMessage(String id, String message, int senderId, long date, boolean isSending) {
+        super(id, null, null);
+        mBody = message;
+        mSenderId = senderId;
+        mIsSending = isSending;
+        setDate(date);
     }
 
     public int getSenderId() {
@@ -103,25 +80,8 @@ public class ImgurMessage extends ImgurBaseObject {
     };
 
     public static ImgurMessage createMessage(String message, int senderId) {
-      /*  JSONObject json = new JSONObject();
         long currentTime = System.currentTimeMillis() / DateUtils.SECOND_IN_MILLIS;
-
-        try {
-            json.put(KEY_SENDER_ID, senderId);
-            json.put(KEY_BODY, message);
-            json.put(KEY_ID, String.valueOf(currentTime));
-            json.put(KEY_DATE, currentTime);
-            json.put(KEY_IS_SENDING, true);
-        } catch (JSONException ex) {
-            LogUtil.e("ImgurMessage", "Error creating json object", ex);
-            json = null;
-        }
-
-        if (json != null) {
-            return new ImgurMessage(json);
-        }*/
-        // TODO
-
-        return null;
+        String id = String.valueOf(currentTime);
+        return new ImgurMessage(id, message, senderId, currentTime, true);
     }
 }

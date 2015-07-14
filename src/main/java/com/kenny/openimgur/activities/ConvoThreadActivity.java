@@ -18,8 +18,10 @@ import android.widget.ListView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.api.responses.ConverastionResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurMessage;
@@ -28,7 +30,6 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 import com.squareup.okhttp.FormEncodingBuilder;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -39,6 +40,9 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 12/25/14.
@@ -220,28 +224,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         }
     }
 
-    private void fetchMessages() {
-        // Having an id of -1 means that they are starting the convo from the Info fragment where an id is not known
-        if (mConvo.getId().equals("-1")) {
-            if (mAdapter == null || mAdapter.isEmpty()) {
-                mHandler.sendEmptyMessage(ImgurHandler.MESSAGE_EMPTY_RESULT);
-                return;
-            }
-        }
-
-        String url = String.format(Endpoints.MESSAGES.getUrl(), mConvo.getId(), mCurrentPage);
-
-        if (mApiClient == null) {
-            mApiClient = new ApiClient(url, ApiClient.HttpRequest.GET);
-        } else {
-            mApiClient.setUrl(url);
-            mApiClient.setRequestType(ApiClient.HttpRequest.GET);
-        }
-
-        mIsLoading = true;
-        mApiClient.doWork(ImgurBusEvent.EventType.CONVO_MESSAGES, mConvo.getId(), null);
-    }
-
     @Override
     protected void onPause() {
         EventBus.getDefault().unregister(this);
@@ -270,23 +252,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
 
             if (status == ApiClient.STATUS_OK) {
                 switch (event.eventType) {
-                    case CONVO_MESSAGES:
-                        if (!mConvo.getId().equals(event.id)) return;
-
-                        JSONArray array = event.json.getJSONObject(ApiClient.KEY_DATA).getJSONArray("messages");
-                        List<ImgurMessage> messages = new ArrayList<>(array.length());
-
-                        for (int i = 0; i < array.length(); i++) {
-                            messages.add(new ImgurMessage(array.getJSONObject(i)));
-                        }
-
-                        if (messages.isEmpty()) {
-                            mHandler.sendEmptyMessage(ImgurHandler.MESSAGE_EMPTY_RESULT);
-                        } else {
-                            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_COMPLETE, messages);
-                        }
-                        break;
-
                     case MESSAGE_SEND:
                         boolean success = event.json.getBoolean(ApiClient.KEY_SUCCESS);
                         mHandler.sendMessage(ImgurHandler.MESSAGE_MESSAGE_SENT, new Object[]{success, event.id});
@@ -329,47 +294,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MESSAGE_ACTION_COMPLETE:
-                    List<ImgurMessage> messages = (ArrayList<ImgurMessage>) msg.obj;
-                    boolean scrollToBottom = false;
-
-                    if (mAdapter == null) {
-                        mAdapter = new MessagesAdapter(getApplicationContext(), messages);
-                        mListView.setAdapter(mAdapter);
-                        // Start at the bottom of the list when we receive the first set of messages
-                        scrollToBottom = true;
-                    } else {
-                        // The list needs to be reorder so that the newly fetch messages will
-                        // be at the top of the list as they will be older
-                        List<ImgurMessage> retainedMessages = mAdapter.retainItems();
-                        messages.addAll(retainedMessages);
-                        mAdapter.clear();
-                        mAdapter.addItems(messages);
-                    }
-
-
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-
-                    if (scrollToBottom) {
-                        mMultiView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mListView.setSelection(mAdapter.getCount() - 1);
-                                mHasScrolledInitially = true;
-                            }
-                        });
-                    }
-                    break;
-
-                case MESSAGE_EMPTY_RESULT:
-                    if (mAdapter == null || mAdapter.isEmpty()) {
-                        mMultiView.setEmptyText(R.id.emptyMessage, getString(R.string.convo_message_hint));
-                        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-                    }
-
-                    mHasMore = false;
-                    break;
-
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -416,6 +340,62 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
             super.handleMessage(msg);
         }
     };
+
+
+    private void fetchMessages() {
+        // Having an id of -1 means that they are starting the convo from the Info fragment where an id is not known
+        if (mConvo.getId().equals("-1")) onEmpty();
+        mIsLoading = true;
+        ApiClient2.getService().getMessages(mConvo.getId(), mCurrentPage, new Callback<ConverastionResponse>() {
+            @Override
+            public void success(ConverastionResponse converastionResponse, Response response) {
+                if (converastionResponse.data.hasMessages()) {
+                    boolean scrollToBottom = false;
+
+                    if (mAdapter == null) {
+                        mAdapter = new MessagesAdapter(getApplicationContext(), converastionResponse.data.getMessages());
+                        mListView.setAdapter(mAdapter);
+                        // Start at the bottom of the list when we receive the first set of messages
+                        scrollToBottom = true;
+                    } else {
+                        // The list needs to be reorder so that the newly fetch messages will
+                        // be at the top of the list as they will be older
+                        List<ImgurMessage> retainedMessages = mAdapter.retainItems();
+                        converastionResponse.data.getMessages().addAll(retainedMessages);
+                        mAdapter.clear();
+                        mAdapter.addItems(converastionResponse.data.getMessages());
+                    }
+
+
+                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+
+                    if (scrollToBottom) {
+                        mMultiView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mListView != null) mListView.setSelection(mAdapter.getCount() - 1);
+                                mHasScrolledInitially = true;
+                            }
+                        });
+                    }
+                } else {
+                    onEmpty();
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO
+            }
+        });
+    }
+
+    private void onEmpty() {
+        if (mAdapter == null || mAdapter.isEmpty()) {
+            mMultiView.setEmptyText(R.id.emptyMessage, getString(R.string.convo_message_hint));
+            mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+        }
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
