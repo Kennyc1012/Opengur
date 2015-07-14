@@ -3,6 +3,7 @@ package com.kenny.openimgur.api;
 import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.BasicResponse;
+import com.kenny.openimgur.api.responses.CommentPostResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
@@ -70,15 +71,9 @@ public interface ImgurService {
     @GET("/account/{user}/albums/{page}")
     void getProfileAlbums(@Path("user") String username, @Path("page") int page, Callback<GalleryResponse> callback);
 
-    /**
-     * User <b>MUST</b> be logged in for this endpoint to work
-     */
     @GET("/account/{user}/images/{page}")
     void getProfileUploads(@Path("user") String username, @Path("page") int page, Callback<GalleryResponse> callback);
 
-    /**
-     * User <b>MUST</b> be logged in for this endpoint to work
-     */
     @GET("/conversations")
     void getConversations(Callback<ConvoResponse> callback);
 
@@ -144,14 +139,6 @@ public interface ImgurService {
     @POST("/album")
     BasicObjectResponse createAlbum(@Field("ids") String ids, @Field("cover") String coverId, @Field("title") String title, @Field("description") String description);
 
-
-    // Delete Requests
-    @DELETE("/album/{deleteHash}")
-    void deleteAlbum(@Path("deleteHash") String deleteHash, Callback<BasicResponse> callback);
-
-    @DELETE("/image/{deleteHash}")
-    void deletePhoto(@Path("deleteHash") String deleteHash, Callback<BasicResponse> callback);
-
     @FormUrlEncoded
     @POST("/gallery/{id}/vote/{vote}")
     void voteOnGallery(@Path("id") String itemId, @Path("vote") String vote, @Field("vote") String itemVote, Callback<BasicResponse> callback);
@@ -159,4 +146,20 @@ public interface ImgurService {
     @FormUrlEncoded
     @POST("/comment/{id}/vote/{vote}")
     void voteOnComment(@Path("id") String itemId, @Path("vote") String vote, @Field("vote") String itemVote, Callback<BasicResponse> callback);
+
+    @FormUrlEncoded
+    @POST("/gallery/{galleryId}/comment")
+    void postComment(@Path("galleryId") String galleryId, @Field("comment") String comment, Callback<CommentPostResponse> callback);
+
+    @FormUrlEncoded
+    @POST("/gallery/{galleryId}/comment/{parentId}")
+    void postCommentReply(@Path("galleryId") String galleryId, @Path("parentId") String parentId, @Field("comment") String comment, Callback<CommentPostResponse> callback);
+
+
+    // Delete Requests
+    @DELETE("/album/{deleteHash}")
+    void deleteAlbum(@Path("deleteHash") String deleteHash, Callback<BasicResponse> callback);
+
+    @DELETE("/image/{deleteHash}")
+    void deletePhoto(@Path("deleteHash") String deleteHash, Callback<BasicResponse> callback);
 }

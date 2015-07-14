@@ -12,9 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -35,16 +33,16 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ApiClient2;
-import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.BasicResponse;
+import com.kenny.openimgur.api.responses.CommentPostResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
-import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.fragments.CommentPopupFragment;
@@ -60,17 +58,11 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.util.ThrowableFailureEvent;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -79,7 +71,7 @@ import retrofit.client.Response;
  * Created by kcampagna on 7/12/14.
  */
 public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener,
-        SideGalleryFragment.SideGalleryListener, BottomSheetListener {
+        SideGalleryFragment.SideGalleryListener, BottomSheetListener, CommentPopupFragment.CommentListener {
     private enum CommentSort {
         BEST("best"),
         NEW("new"),
@@ -372,7 +364,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onResume() {
         super.onResume();
-        EventBus.getDefault().register(this);
 
         if (mCommentAdapter != null) {
             CustomLinkMovement.getInstance().addListener(this);
@@ -381,14 +372,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
         CustomLinkMovement.getInstance().removeListener(this);
+        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        mHandler.removeCallbacksAndMessages(null);
         dismissDialogFragment(DIALOG_LOADING);
         dismissDialogFragment("comment");
 
@@ -476,57 +465,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mLoadComments = loadComments;
                 break;
         }
-    }
-
-    /**
-     * Event Method that receives events from the Bus
-     *
-     * @param event
-     */
-    public void onEventAsync(@NonNull ImgurBusEvent event) {
-        // If the event is COMMENT_POSTING, it will not contain a json object or HTTPRequest type
-        if (ImgurBusEvent.EventType.COMMENT_POSTING.equals(event.eventType)) {
-            mHandler.sendEmptyMessage(ImgurHandler.MESSAGE_COMMENT_POSTING);
-            return;
-        }
-
-        try {
-            int statusCode = event.json.getInt(ApiClient.KEY_STATUS);
-            switch (event.eventType) {
-
-                case COMMENT_POSTED:
-                    if (statusCode == ApiClient.STATUS_OK) {
-                        JSONObject json = event.json.getJSONObject(ApiClient.KEY_DATA);
-                        // A successful comment post will return its id
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_COMMENT_POSTED, json.has("id"));
-                    } else {
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(statusCode));
-                    }
-                    break;
-            }
-        } catch (JSONException e) {
-            LogUtil.e(TAG, "Error Decoding JSON", e);
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-        }
-    }
-
-    /**
-     * Event Method that is fired if EventBus throws an error
-     *
-     * @param event
-     */
-    public void onEventMainThread(ThrowableFailureEvent event) {
-        Throwable e = event.getThrowable();
-
-        if (e instanceof IOException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
-        } else if (e instanceof JSONException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-        } else {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
-        }
-
-        LogUtil.e(TAG, "Error received from Event Bus", e);
     }
 
     @Override
@@ -712,28 +650,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    private ImgurHandler mHandler = new ImgurHandler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MESSAGE_COMMENT_POSTING:
-                    // We want to popup a "Loading" dialog while the comment is being posted
-                    showDialogFragment(LoadingDialogFragment.createInstance(R.string.posting_comment, false), DIALOG_LOADING);
-                    break;
-
-                case MESSAGE_ACTION_FAILED:
-                    mMultiView.setErrorText(R.id.errorMessage, msg.obj instanceof Integer ? (Integer) msg.obj : R.string.error_generic);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                    break;
-
-                default:
-                    super.handleMessage(msg);
-                    break;
-            }
-        }
-    };
-
     @OnClick(R.id.errorButton)
     public void fetchComments() {
         if (mLoadComments && mPagerAdapter != null) {
@@ -878,6 +794,37 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 // TODO
             }
         });
+    }
+
+    @Override
+    public void onPostComment(String comment, String galleryId, String parentId) {
+        showDialogFragment(LoadingDialogFragment.createInstance(R.string.posting_comment, false), DIALOG_LOADING);
+        ImgurService apiService = ApiClient2.getService();
+        Callback<CommentPostResponse> cb = new Callback<CommentPostResponse>() {
+            @Override
+            public void success(CommentPostResponse commentPostResponse, Response response) {
+                if (!TextUtils.isEmpty(commentPostResponse.data)) {
+                    SnackBar.show(ViewActivity.this, R.string.comment_post_successful);
+                    fetchComments();
+                } else {
+                    SnackBar.show(ViewActivity.this, R.string.comment_post_unsuccessful);
+                }
+
+                dismissDialogFragment(DIALOG_LOADING);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                dismissDialogFragment(DIALOG_LOADING);
+                // TODO
+            }
+        };
+
+        if (!TextUtils.isEmpty(parentId)) {
+            apiService.postCommentReply(galleryId, parentId, comment, cb);
+        } else {
+            apiService.postComment(galleryId, comment, cb);
+        }
     }
 
     @Override
