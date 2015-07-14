@@ -159,6 +159,10 @@ public interface ImgurService {
     @POST("/gallery/{galleryId}/comment/{parentId}")
     void postCommentReply(@Path("galleryId") String galleryId, @Path("parentId") String parentId, @Field("comment") String comment, Callback<CommentPostResponse> callback);
 
+    @FormUrlEncoded
+    @POST("/conversations/{recipient}")
+    void sendMessage(@Path("recipient") String recipientId, @Field("body") String message, Callback<BasicResponse> callback);
+
 
     // Delete Requests
     @DELETE("/album/{deleteHash}")

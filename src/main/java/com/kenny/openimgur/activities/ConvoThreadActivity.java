@@ -21,6 +21,7 @@ import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
+import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConverastionResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurHandler;
@@ -174,38 +175,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         String message = mMessageInput.getText().toString();
 
         if (!TextUtils.isEmpty(message.trim())) {
-            String url = String.format(Endpoints.SEND_MESSAGE.getUrl(), mConvo.getWithAccount());
-
-            if (mApiClient == null) {
-                mApiClient = new ApiClient(url, ApiClient.HttpRequest.POST);
-            } else {
-                mApiClient.setUrl(url);
-                mApiClient.setRequestType(ApiClient.HttpRequest.POST);
-            }
-
-            FormEncodingBuilder builder = new FormEncodingBuilder()
-                    .add("body", message)
-                    .add("recipient", mConvo.getWithAccount());
-
-            ImgurMessage newMessage = ImgurMessage.createMessage(message, user.getId());
-
-            if (newMessage != null) {
-                if (mAdapter == null) {
-                    List<ImgurMessage> messages = new ArrayList<>();
-                    messages.add(newMessage);
-                    mAdapter = new MessagesAdapter(getApplicationContext(), messages);
-                    mListView.setAdapter(mAdapter);
-                } else {
-                    mAdapter.addItem(newMessage);
-                }
-
-                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-                mListView.setSelection(mAdapter.getCount() - 1);
-                mApiClient.doWork(ImgurBusEvent.EventType.MESSAGE_SEND, newMessage.getId(), builder.build());
-                mMessageInput.setText(null);
-            } else {
-                SnackBar.show(this, R.string.error_generic);
-            }
+            sendMessage(ImgurMessage.createMessage(message, user.getId()));
         } else {
             SnackBar.show(this, R.string.convo_message_hint);
         }
@@ -252,10 +222,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
 
             if (status == ApiClient.STATUS_OK) {
                 switch (event.eventType) {
-                    case MESSAGE_SEND:
-                        boolean success = event.json.getBoolean(ApiClient.KEY_SUCCESS);
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_MESSAGE_SENT, new Object[]{success, event.id});
-                        break;
 
                     case CONVO_REPORT:
                         mHandler.sendMessage(ImgurHandler.MESSAGE_CONVO_REPORTED, event.json.getBoolean(ApiClient.KEY_SUCCESS));
@@ -297,16 +263,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                 case MESSAGE_ACTION_FAILED:
                     mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                    break;
-
-                case MESSAGE_MESSAGE_SENT:
-                    Object[] results = (Object[]) msg.obj;
-                    boolean success = Boolean.TRUE.equals(results[0]);
-                    String id = (String) results[1];
-
-                    if (mAdapter != null) {
-                        mAdapter.onMessageSendComplete(success, id);
-                    }
                     break;
 
                 case MESSAGE_CONVO_BLOCKED:
@@ -386,6 +342,33 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
             @Override
             public void failure(RetrofitError error) {
                 // TODO
+            }
+        });
+    }
+
+    private void sendMessage(final ImgurMessage message) {
+        if (mAdapter == null) {
+            List<ImgurMessage> messages = new ArrayList<>();
+            messages.add(message);
+            mAdapter = new MessagesAdapter(getApplicationContext(), messages);
+            mListView.setAdapter(mAdapter);
+        } else {
+            mAdapter.addItem(message);
+        }
+
+        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        mListView.setSelection(mAdapter.getCount() - 1);
+        mMessageInput.setText(null);
+
+        ApiClient2.getService().sendMessage(mConvo.getWithAccount(), message.getBody(), new Callback<BasicResponse>() {
+            @Override
+            public void success(BasicResponse basicResponse, Response response) {
+                if (mAdapter != null) mAdapter.onMessageSendComplete(basicResponse.data, message.getId());
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO Error
             }
         });
     }

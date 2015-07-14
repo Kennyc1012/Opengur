@@ -8,12 +8,6 @@ public enum Endpoints {
 
     REFRESH_TOKEN("https://api.imgur.com/oauth2/token"),
 
-    // ConvoId, page
-    MESSAGES("https://api.imgur.com/3/conversations/%s/%d/0"),
-
-    // recipient
-    SEND_MESSAGE("https://api.imgur.com/3/conversations/%s"),
-
     // Username
     CONVO_REPORT("https://api.imgur.com/3/conversations/report/%s"),
 
