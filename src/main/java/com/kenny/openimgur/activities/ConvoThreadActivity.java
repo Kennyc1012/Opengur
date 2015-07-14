@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -17,30 +16,19 @@ import android.widget.ListView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
-import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ApiClient2;
-import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.api.ImgurBusEvent;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConverastionResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
-import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurMessage;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
-import com.squareup.okhttp.FormEncodingBuilder;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
-import de.greenrobot.event.util.ThrowableFailureEvent;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -63,8 +51,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
 
     @InjectView(R.id.messageInput)
     EditText mMessageInput;
-
-    private ApiClient mApiClient;
 
     private ImgurConvo mConvo;
 
@@ -109,11 +95,11 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                 break;
 
             case R.id.block:
-                reportBlockUser(Endpoints.CONVO_BLOCK);
+                blockUser();
                 break;
 
             case R.id.report:
-                reportBlockUser(Endpoints.CONVO_REPORT);
+                reportUser();
                 break;
 
             case R.id.profile:
@@ -122,35 +108,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void reportBlockUser(final Endpoints endpoint) {
-        String title;
-        String message;
-
-        if (endpoint == Endpoints.CONVO_REPORT) {
-            title = getString(R.string.convo_report_title, mConvo.getWithAccount());
-            message = getString(R.string.convo_report_message, mConvo.getWithAccount());
-        } else {
-            title = getString(R.string.convo_block_title, mConvo.getWithAccount());
-            message = getString(R.string.convo_block_message, mConvo.getWithAccount());
-        }
-
-        new AlertDialog.Builder(this, theme.getAlertDialogTheme())
-                .setTitle(title)
-                .setMessage(message)
-                .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ImgurBusEvent.EventType event = endpoint == Endpoints.CONVO_REPORT ?
-                                ImgurBusEvent.EventType.CONVO_REPORT : ImgurBusEvent.EventType.CONVO_BLOCK;
-
-                        ApiClient client = new ApiClient(String.format(endpoint.getUrl(), mConvo.getWithAccount()), ApiClient.HttpRequest.POST);
-                        client.doWork(event, mConvo.getId(), new FormEncodingBuilder().add("username", mConvo.getWithAccount()).build());
-                        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-                    }
-                }).show();
     }
 
     private void handleData(Bundle savedInstance) {
@@ -184,20 +141,10 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
     @Override
     protected void onResume() {
         super.onResume();
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this);
-        }
-
         if (mAdapter == null || mAdapter.isEmpty()) {
             mMultiView.setViewState(MultiStateView.ViewState.LOADING);
             fetchMessages();
         }
-    }
-
-    @Override
-    protected void onPause() {
-        EventBus.getDefault().unregister(this);
-        super.onPause();
     }
 
     @Override
@@ -215,88 +162,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
             fetchMessages();
         }
     }
-
-    public void onEventAsync(@NonNull ImgurBusEvent event) {
-        try {
-            int status = event.json.getInt(ApiClient.KEY_STATUS);
-
-            if (status == ApiClient.STATUS_OK) {
-                switch (event.eventType) {
-
-                    case CONVO_REPORT:
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_CONVO_REPORTED, event.json.getBoolean(ApiClient.KEY_SUCCESS));
-                        break;
-
-                    case CONVO_BLOCK:
-                        mHandler.sendMessage(ImgurHandler.MESSAGE_CONVO_BLOCKED, event.json.getBoolean(ApiClient.KEY_SUCCESS));
-                        break;
-
-                }
-            } else {
-                mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(status));
-            }
-        } catch (JSONException ex) {
-            LogUtil.e(TAG, "Error decoding JSON", ex);
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-        }
-    }
-
-    public void onEventMainThread(ThrowableFailureEvent event) {
-        Throwable e = event.getThrowable();
-
-        if (e instanceof IOException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_IO_EXCEPTION));
-        } else if (e instanceof JSONException) {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_JSON_EXCEPTION));
-        } else {
-            mHandler.sendMessage(ImgurHandler.MESSAGE_ACTION_FAILED, ApiClient.getErrorCodeStringResource(ApiClient.STATUS_INTERNAL_ERROR));
-        }
-
-        LogUtil.e(TAG, "Error received from Event Bus", e);
-
-    }
-
-    private ImgurHandler mHandler = new ImgurHandler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MESSAGE_ACTION_FAILED:
-                    mMultiView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
-                    break;
-
-                case MESSAGE_CONVO_BLOCKED:
-                    if (msg.obj instanceof Boolean) {
-                        if ((Boolean) msg.obj) {
-                            setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_BLOCKED_CONVO, mConvo));
-                            finish();
-                        } else {
-                            SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
-                        }
-                    } else {
-                        SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
-                    }
-                    break;
-
-                case MESSAGE_CONVO_REPORTED:
-                    if (msg.obj instanceof Boolean) {
-                        if ((Boolean) msg.obj) {
-                            SnackBar.show(ConvoThreadActivity.this, getString(R.string.convo_user_reported, mConvo.getWithAccount()));
-                        } else {
-                            SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
-                        }
-                    } else {
-                        SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
-                    }
-
-                    break;
-            }
-
-            mIsLoading = false;
-            super.handleMessage(msg);
-        }
-    };
-
 
     private void fetchMessages() {
         // Having an id of -1 means that they are starting the convo from the Info fragment where an id is not known
@@ -371,6 +236,61 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                 // TODO Error
             }
         });
+    }
+
+    private void blockUser() {
+        new AlertDialog.Builder(this, theme.getAlertDialogTheme())
+                .setTitle(getString(R.string.convo_block_title, mConvo.getWithAccount()))
+                .setMessage(getString(R.string.convo_block_message, mConvo.getWithAccount()))
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ApiClient2.getService().blockUser(mConvo.getWithAccount(), mConvo.getWithAccount(), new Callback<BasicResponse>() {
+                            @Override
+                            public void success(BasicResponse basicResponse, Response response) {
+                                if (basicResponse.data) {
+                                    setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_BLOCKED_CONVO, mConvo));
+                                    finish();
+                                } else {
+                                    SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
+                                }
+                            }
+
+                            @Override
+                            public void failure(RetrofitError error) {
+                                // TODO Error
+                            }
+                        });
+                    }
+                }).show();
+    }
+
+    private void reportUser() {
+        new AlertDialog.Builder(this, theme.getAlertDialogTheme())
+                .setTitle(getString(R.string.convo_report_title, mConvo.getWithAccount()))
+                .setMessage(getString(R.string.convo_report_message, mConvo.getWithAccount()))
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ApiClient2.getService().reportUser(mConvo.getWithAccount(), mConvo.getWithAccount(), new Callback<BasicResponse>() {
+                            @Override
+                            public void success(BasicResponse basicResponse, Response response) {
+                                if (basicResponse.data) {
+                                    SnackBar.show(ConvoThreadActivity.this, getString(R.string.convo_user_reported, mConvo.getWithAccount()));
+                                } else {
+                                    SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
+                                }
+                            }
+
+                            @Override
+                            public void failure(RetrofitError error) {
+                                // TODO Error
+                            }
+                        });
+                    }
+                }).show();
     }
 
     private void onEmpty() {

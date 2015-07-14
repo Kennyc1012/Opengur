@@ -118,7 +118,7 @@ public interface ImgurService {
     void getMessages(@Path("id") String conversationId, @Path("page") int page, Callback<ConverastionResponse> callback);
 
 
-    // Post Requests
+    // Post Requests. Some of the POST requests have fields when they are not needed. This is because OKHTTP requires a body when posting
     @FormUrlEncoded
     @POST("/image/{id}/favorite")
     void favoriteImage(@Path("id") String imageId, @Field("id") String id, Callback<BasicResponse> callback);
@@ -162,6 +162,14 @@ public interface ImgurService {
     @FormUrlEncoded
     @POST("/conversations/{recipient}")
     void sendMessage(@Path("recipient") String recipientId, @Field("body") String message, Callback<BasicResponse> callback);
+
+    @FormUrlEncoded
+    @POST("/conversations/block/{username}")
+    void blockUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> respoonse);
+
+    @FormUrlEncoded
+    @POST("/conversations/report/{username}")
+    void reportUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> respoonse);
 
 
     // Delete Requests

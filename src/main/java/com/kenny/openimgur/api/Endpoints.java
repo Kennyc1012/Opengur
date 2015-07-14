@@ -6,12 +6,7 @@ package com.kenny.openimgur.api;
  */
 public enum Endpoints {
 
-    REFRESH_TOKEN("https://api.imgur.com/oauth2/token"),
-
-    // Username
-    CONVO_REPORT("https://api.imgur.com/3/conversations/report/%s"),
-
-    CONVO_BLOCK("https://api.imgur.com/3/conversations/block/%s");
+    REFRESH_TOKEN("https://api.imgur.com/oauth2/token");
 
     private final String mUrl;
 
