@@ -31,7 +31,6 @@ import com.cocosw.bottomsheet.BottomSheet;
 import com.cocosw.bottomsheet.BottomSheetListener;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
-import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ApiClient2;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.AlbumResponse;
@@ -165,8 +164,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private CommentAdapter mCommentAdapter;
 
     private int mCurrentPosition = 0;
-
-    private ApiClient mApiClient;
 
     private boolean mIsActionBarShowing = true;
 

@@ -25,9 +25,11 @@ import retrofit.converter.GsonConverter;
  */
 
 public class ApiClient2 {
-    private static final String TAG = ApiClient.class.getSimpleName();
+    private static final String TAG = ApiClient2.class.getSimpleName();
 
     private static final String API_URL = "https://api.imgur.com/3";
+
+    private static final String TOKEN_REFRESH_URL = "https://api.imgur.com/oauth2/token";
 
     private static RestAdapter sRestAdapter;
 
@@ -79,14 +81,12 @@ public class ApiClient2 {
         };
     }
 
-
     private static OkClient getClient() {
         OkHttpClient client = new OkHttpClient();
         client.setConnectTimeout(15, TimeUnit.SECONDS);
         // TODO More customization
         return new OkClient(client);
     }
-
 
     private static GsonConverter getConverter() {
         Gson gson = new GsonBuilder()

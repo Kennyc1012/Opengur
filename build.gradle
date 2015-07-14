@@ -95,7 +95,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile(name: 'sliding_panel', ext: 'aar')
     compile(name: 'bottom-sheet-1.0', ext: 'aar')
-    compile project(':libraries:EventBus')
     compile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;
     }
