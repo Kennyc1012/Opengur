@@ -162,4 +162,7 @@ public interface ImgurService {
 
     @DELETE("/image/{deleteHash}")
     void deletePhoto(@Path("deleteHash") String deleteHash, Callback<BasicResponse> callback);
+
+    @DELETE("/conversations/{id}")
+    void deleteConversation(@Path("id") String conversationId, Callback<BasicResponse> callback);
 }

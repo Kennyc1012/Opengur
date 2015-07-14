@@ -18,10 +18,12 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
 import com.kenny.openimgur.adapters.ConvoAdapter;
 import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ScrollHelper;
 import com.kenny.openimgur.util.ViewUtils;
 
@@ -145,7 +147,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
                     .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            deleteConvo(convo);
+                            deleteConversation(convo.getId());
                         }
                     }).show();
 
@@ -153,19 +155,6 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
         }
 
         return false;
-    }
-
-    private void deleteConvo(ImgurConvo convo) {
-       /* String url = String.format(Endpoints.DELETE_CONVO.getUrl(), convo.getId());
-        // We don't care about the response
-        new ApiClient(url, ApiClient.HttpRequest.DELETE).doWork(ImgurBusEvent.EventType.CONVO_DELETE, convo.getId(), null);
-        mAdapter.removeItem(convo.getId());
-
-        if (mAdapter.isEmpty()) {
-            mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
-        }*/
-
-        // TODO Delete
     }
 
     @Override
@@ -199,6 +188,24 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
         });
     }
 
+    private void deleteConversation(String id) {
+        mAdapter.removeItem(id);
+        if (mAdapter.isEmpty()) mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
+
+
+        ApiClient2.getService().deleteConversation(id, new Callback<BasicResponse>() {
+            @Override
+            public void success(BasicResponse basicResponse, Response response) {
+                // Don't care about response
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                LogUtil.e(TAG, "Error deleting conversation", error);
+            }
+        });
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -213,7 +220,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
             case ConvoThreadActivity.REQUEST_CODE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     ImgurConvo convo = data.getParcelableExtra(ConvoThreadActivity.KEY_BLOCKED_CONVO);
-                    if (convo != null && mAdapter != null) deleteConvo(convo);
+                    if (convo != null && mAdapter != null) deleteConversation(convo.getId());
                 }
                 break;
         }
