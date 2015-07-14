@@ -23,7 +23,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.UploadAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.FragmentListener;
@@ -210,7 +210,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
     }
 
     private void deleteItem(@NonNull UploadedPhoto photo) {
-        ImgurService apiService = ApiClient2.getService();
+        ImgurService apiService = ApiClient.getService();
         Callback<BasicResponse> cb = new Callback<BasicResponse>() {
             @Override
             public void success(BasicResponse basicResponse, Response response) {

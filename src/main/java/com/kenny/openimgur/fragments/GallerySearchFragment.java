@@ -11,7 +11,7 @@ import android.view.MenuItem;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.SearchAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurFilters;
@@ -70,7 +70,7 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
     protected void fetchGallery() {
         if (TextUtils.isEmpty(mQuery)) return;
 
-        ImgurService apiService = ApiClient2.getService();
+        ImgurService apiService = ApiClient.getService();
         mIsLoading = true;
 
         if (mSort == ImgurFilters.GallerySort.HIGHEST_SCORING) {

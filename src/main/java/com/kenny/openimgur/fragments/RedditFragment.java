@@ -18,7 +18,7 @@ import android.widget.FilterQueryProvider;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.SearchAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurFilters;
@@ -254,7 +254,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ImgurService apiService = ApiClient2.getService();
+        ImgurService apiService = ApiClient.getService();
 
         if (mSort == RedditSort.TOP) {
             apiService.getSubRedditForTopSorted(mQuery, mTopSort.getSort(), mCurrentPage, this);

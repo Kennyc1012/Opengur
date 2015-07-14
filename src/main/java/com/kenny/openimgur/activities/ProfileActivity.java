@@ -24,7 +24,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.UserResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurUser;
@@ -48,7 +48,7 @@ import retrofit.client.Response;
  * Created by kcampagna on 12/14/14.
  */
 public class ProfileActivity extends BaseActivity implements FragmentListener {
-    private static final String LOGIN_URL = "https://api.imgur.com/oauth2/authorize?client_id=" + ApiClient2.CLIENT_ID + "&response_type=token";
+    private static final String LOGIN_URL = "https://api.imgur.com/oauth2/authorize?client_id=" + ApiClient.CLIENT_ID + "&response_type=token";
 
     private static final String REDIRECT_URL = "https://com.kenny.openimgur";
 
@@ -279,7 +279,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     }
 
     private void fetchProfile(String username) {
-        ApiClient2.getService().getProfile(username, new Callback<UserResponse>() {
+        ApiClient.getService().getProfile(username, new Callback<UserResponse>() {
             @Override
             public void success(UserResponse userResponse, Response response) {
                 if (userResponse.data != null) {

@@ -14,7 +14,7 @@ import android.util.Log;
 import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 import com.kenny.openimgur.activities.MuzeiSettingsActivity;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurFilters;
@@ -163,14 +163,14 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
         try {
             if (MuzeiSettingsActivity.SOURCE_REDDIT.equals(source)) {
                 String query = pref.getString(MuzeiSettingsActivity.KEY_INPUT, FALLBACK_SUBREDDIT).replaceAll("\\s", "");
-                response = ApiClient2.getService().getSubReddit(query, ImgurFilters.RedditSort.TIME.getSort(), 0);
+                response = ApiClient.getService().getSubReddit(query, ImgurFilters.RedditSort.TIME.getSort(), 0);
             } else if (MuzeiSettingsActivity.SOURCE_USER_SUB.equals(source)) {
-                response = ApiClient2.getService().getGallery(ImgurFilters.GallerySection.USER.getSection(), ImgurFilters.GallerySort.VIRAL.getSort(), 0, false);
+                response = ApiClient.getService().getGallery(ImgurFilters.GallerySection.USER.getSection(), ImgurFilters.GallerySort.VIRAL.getSort(), 0, false);
             } else if (MuzeiSettingsActivity.SOURCE_TOPICS.equals(source)) {
                 int topicId = Integer.valueOf(pref.getString(MuzeiSettingsActivity.KEY_TOPIC, FALLBACK_TOPIC_ID));
-                response = ApiClient2.getService().getTopic(topicId, ImgurFilters.GallerySort.VIRAL.getSort(), 0);
+                response = ApiClient.getService().getTopic(topicId, ImgurFilters.GallerySort.VIRAL.getSort(), 0);
             } else {
-                response = ApiClient2.getService().getGallery(ImgurFilters.GallerySection.HOT.getSection(), ImgurFilters.GallerySort.TIME.getSort(), 0, false);
+                response = ApiClient.getService().getGallery(ImgurFilters.GallerySection.HOT.getSection(), ImgurFilters.GallerySort.TIME.getSort(), 0, false);
             }
         } catch (RetrofitError ex) {
             Log.e(TAG, "Error fetching images for muzei", ex);

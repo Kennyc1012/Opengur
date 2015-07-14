@@ -22,7 +22,7 @@ import android.widget.ListView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.ProfileCommentAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurComment;
@@ -233,7 +233,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     }
 
     private void fetchComments() {
-        ApiClient2.getService().getProfileComments(mSelectedUser.getUsername(), mSort.getSort(), mPage, new Callback<CommentResponse>() {
+        ApiClient.getService().getProfileComments(mSelectedUser.getUsername(), mSort.getSort(), mPage, new Callback<CommentResponse>() {
             @Override
             public void success(CommentResponse commentResponse, Response response) {
                 if (!isAdded()) return;

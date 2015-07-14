@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
 
@@ -37,7 +37,7 @@ public class ProfileSubmissionsFragment extends BaseGridFragment {
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ApiClient2.getService().getProfileSubmissions(mSelectedUser.getUsername(), mCurrentPage, this);
+        ApiClient.getService().getProfileSubmissions(mSelectedUser.getUsername(), mCurrentPage, this);
     }
 
     @Override

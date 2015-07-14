@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.PhotoResponse;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
@@ -258,7 +258,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     }
 
     private void fetchImageDetails() {
-        ApiClient2.getService().getImageDtails(mImageUrl, new Callback<PhotoResponse>() {
+        ApiClient.getService().getImageDtails(mImageUrl, new Callback<PhotoResponse>() {
             @Override
             public void success(PhotoResponse photoResponse, Response response) {
                 if (photoResponse.data != null) {

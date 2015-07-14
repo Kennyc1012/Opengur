@@ -8,7 +8,7 @@ import android.preference.PreferenceScreen;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.MuzeiSettingsActivity;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.util.LogUtil;
@@ -55,7 +55,7 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
             mTopicPreference.setEntryValues(topicIds);
         } else {
             LogUtil.v(TAG, "No topics found, fetching");
-            ApiClient2.getService().getDefaultTopics(new Callback<TopicResponse>() {
+            ApiClient.getService().getDefaultTopics(new Callback<TopicResponse>() {
                 @Override
                 public void success(TopicResponse topicResponse, Response response) {
                     if (!isAdded()) return;

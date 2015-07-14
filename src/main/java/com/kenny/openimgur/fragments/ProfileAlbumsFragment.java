@@ -16,7 +16,7 @@ import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.GalleryAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
@@ -59,7 +59,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ApiClient2.getService().getProfileAlbums(mSelectedUser.getUsername(), mCurrentPage, this);
+        ApiClient.getService().getProfileAlbums(mSelectedUser.getUsername(), mCurrentPage, this);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
     private void deleteAlbum(final ImgurBaseObject album) {
         mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
 
-        ApiClient2.getService().deleteAlbum(album.getDeleteHash(), new Callback<BasicResponse>() {
+        ApiClient.getService().deleteAlbum(album.getDeleteHash(), new Callback<BasicResponse>() {
             @Override
             public void success(BasicResponse basicResponse, Response response) {
                 if (!isAdded()) return;

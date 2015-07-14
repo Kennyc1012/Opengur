@@ -28,7 +28,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ProfileActivity;
 import com.kenny.openimgur.adapters.PhotoAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.BasicResponse;
@@ -479,7 +479,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     }
 
     private void fetchAlbumImages() {
-        ApiClient2.getService().getAlbumImages(mImgurObject.getId(), new Callback<AlbumResponse>() {
+        ApiClient.getService().getAlbumImages(mImgurObject.getId(), new Callback<AlbumResponse>() {
             @Override
             public void success(AlbumResponse albumResponse, Response response) {
                 if (!isAdded()) return;
@@ -506,7 +506,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void fetchTags() {
         // No need to request if the object already has tags, they will be set in the adapter
         if (mDisplayTags && (mImgurObject.getTags() == null || mImgurObject.getTags().isEmpty())) {
-            ApiClient2.getService().getTags(mImgurObject.getId(), new Callback<TagResponse>() {
+            ApiClient.getService().getTags(mImgurObject.getId(), new Callback<TagResponse>() {
                 @Override
                 public void success(TagResponse tagResponse, Response response) {
                     if (!isAdded()) return;
@@ -530,7 +530,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     }
 
     private void fetchGalleryDetails() {
-        ApiClient2.getService().getGalleryDetails(mImgurObject.getId(), new Callback<BasicObjectResponse>() {
+        ApiClient.getService().getGalleryDetails(mImgurObject.getId(), new Callback<BasicObjectResponse>() {
             @Override
             public void success(BasicObjectResponse basicObjectResponse, Response response) {
                 if (!isAdded()) return;
@@ -574,9 +574,9 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         };
 
         if (mImgurObject instanceof ImgurPhoto) {
-            ApiClient2.getService().favoriteImage(id, id, cb);
+            ApiClient.getService().favoriteImage(id, id, cb);
         } else {
-            ApiClient2.getService().favoriteAlbum(id, id, cb);
+            ApiClient.getService().favoriteAlbum(id, id, cb);
         }
     }
 }

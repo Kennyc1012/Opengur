@@ -17,7 +17,7 @@ import android.widget.ListView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
 import com.kenny.openimgur.adapters.ConvoAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.classes.FragmentListener;
@@ -167,7 +167,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
     }
 
     private void fetchConvos() {
-        ApiClient2.getService().getConversations(new Callback<ConvoResponse>() {
+        ApiClient.getService().getConversations(new Callback<ConvoResponse>() {
             @Override
             public void success(ConvoResponse convoResponse, Response response) {
                 if (convoResponse.data != null && !convoResponse.data.isEmpty()) {
@@ -193,7 +193,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
         if (mAdapter.isEmpty()) mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
 
 
-        ApiClient2.getService().deleteConversation(id, new Callback<BasicResponse>() {
+        ApiClient.getService().deleteConversation(id, new Callback<BasicResponse>() {
             @Override
             public void success(BasicResponse basicResponse, Response response) {
                 // Don't care about response

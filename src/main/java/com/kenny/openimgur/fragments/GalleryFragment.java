@@ -20,7 +20,7 @@ import android.widget.FilterQueryProvider;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.GallerySearchActivity;
 import com.kenny.openimgur.adapters.SearchAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySection;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
@@ -214,7 +214,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ImgurService apiService = ApiClient2.getService();
+        ImgurService apiService = ApiClient.getService();
 
         if (mSort == GallerySort.HIGHEST_SCORING) {
             apiService.getGalleryForTopSorted(mSection.getSection(), mTimeSort.getSort(), mCurrentPage, this);

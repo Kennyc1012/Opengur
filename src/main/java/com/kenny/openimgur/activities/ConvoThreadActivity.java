@@ -16,7 +16,7 @@ import android.widget.ListView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConverastionResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
@@ -167,7 +167,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         // Having an id of -1 means that they are starting the convo from the Info fragment where an id is not known
         if (mConvo.getId().equals("-1")) onEmpty();
         mIsLoading = true;
-        ApiClient2.getService().getMessages(mConvo.getId(), mCurrentPage, new Callback<ConverastionResponse>() {
+        ApiClient.getService().getMessages(mConvo.getId(), mCurrentPage, new Callback<ConverastionResponse>() {
             @Override
             public void success(ConverastionResponse converastionResponse, Response response) {
                 if (converastionResponse.data.hasMessages()) {
@@ -225,7 +225,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         mListView.setSelection(mAdapter.getCount() - 1);
         mMessageInput.setText(null);
 
-        ApiClient2.getService().sendMessage(mConvo.getWithAccount(), message.getBody(), new Callback<BasicResponse>() {
+        ApiClient.getService().sendMessage(mConvo.getWithAccount(), message.getBody(), new Callback<BasicResponse>() {
             @Override
             public void success(BasicResponse basicResponse, Response response) {
                 if (mAdapter != null) mAdapter.onMessageSendComplete(basicResponse.data, message.getId());
@@ -246,7 +246,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ApiClient2.getService().blockUser(mConvo.getWithAccount(), mConvo.getWithAccount(), new Callback<BasicResponse>() {
+                        ApiClient.getService().blockUser(mConvo.getWithAccount(), mConvo.getWithAccount(), new Callback<BasicResponse>() {
                             @Override
                             public void success(BasicResponse basicResponse, Response response) {
                                 if (basicResponse.data) {
@@ -274,7 +274,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ApiClient2.getService().reportUser(mConvo.getWithAccount(), mConvo.getWithAccount(), new Callback<BasicResponse>() {
+                        ApiClient.getService().reportUser(mConvo.getWithAccount(), mConvo.getWithAccount(), new Callback<BasicResponse>() {
                             @Override
                             public void success(BasicResponse basicResponse, Response response) {
                                 if (basicResponse.data) {

@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.TopicsAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurTopic;
@@ -329,7 +329,7 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
     public void fetchTopics() {
         mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
 
-        ApiClient2.getService().getDefaultTopics(new Callback<TopicResponse>() {
+        ApiClient.getService().getDefaultTopics(new Callback<TopicResponse>() {
             @Override
             public void success(TopicResponse topicResponse, Response response) {
                 if (!isAdded()) return;

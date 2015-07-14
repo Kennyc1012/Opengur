@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 
 /**
  * Created by kcampagna on 1/27/15.
@@ -59,6 +59,6 @@ public class RandomFragment extends BaseGridFragment {
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ApiClient2.getService().getRandomGallery(mCurrentPage, this);
+        ApiClient.getService().getRandomGallery(mCurrentPage, this);
     }
 }

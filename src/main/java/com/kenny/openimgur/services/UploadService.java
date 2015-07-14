@@ -12,7 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.PhotoResponse;
@@ -120,7 +120,7 @@ public class UploadService extends IntentService {
                     LogUtil.v(TAG, "Uploading photo " + (i + 1) + " of " + totalUploads);
 
                     if (u.isLink()) {
-                        response = ApiClient2.getService().uploadLink(u.getLocation(), u.getTitle(), u.getDescription(), "URL");
+                        response = ApiClient.getService().uploadLink(u.getLocation(), u.getTitle(), u.getDescription(), "URL");
                     } else {
                         File file = new File(u.getLocation());
 
@@ -139,7 +139,7 @@ public class UploadService extends IntentService {
                             TypedString uploadTitle = !TextUtils.isEmpty(u.getTitle()) ? new TypedString(u.getTitle()) : null;
                             TypedString uploadDesc = !TextUtils.isEmpty(u.getDescription()) ? new TypedString(u.getDescription()) : null;
                             TypedString uploadType = new TypedString("file");
-                            response = ApiClient2.getService().uploadPhoto(uploadFile, uploadTitle, uploadDesc, uploadType);
+                            response = ApiClient.getService().uploadPhoto(uploadFile, uploadTitle, uploadDesc, uploadType);
                         } else {
                             LogUtil.w(TAG, "Unable to find file at location " + u.getLocation());
                         }
@@ -354,7 +354,7 @@ public class UploadService extends IntentService {
                 if (i != uploadedPhotos.size() - 1) sb.append(",");
             }
 
-            BasicObjectResponse response = ApiClient2.getService().createAlbum(sb.toString(), coverId, title, desc);
+            BasicObjectResponse response = ApiClient.getService().createAlbum(sb.toString(), coverId, title, desc);
 
             if (response.data != null) {
                 // The response only contains the id and the delete hash, we need to construct the object from them
@@ -395,7 +395,7 @@ public class UploadService extends IntentService {
         mManager.notify(mNotificationId, mBuilder.build());
 
         try {
-            BasicResponse response = ApiClient2.getService().submitToGallery(upload.getId(), title, topic.getId(), "1");
+            BasicResponse response = ApiClient.getService().submitToGallery(upload.getId(), title, topic.getId(), "1");
             LogUtil.v(TAG, "Result of gallery submission " + response.data);
 
             if (response.data) {

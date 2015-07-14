@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurTopic;
@@ -129,7 +129,7 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
         if (mTopic == null) return;
         super.fetchGallery();
 
-        ImgurService apiService = ApiClient2.getService();
+        ImgurService apiService = ApiClient.getService();
 
         if (mSort == ImgurFilters.GallerySort.HIGHEST_SCORING) {
             apiService.getTopicForTopSorted(mTopic.getId(), mTimeSort.getSort(), mCurrentPage, this);

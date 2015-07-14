@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.MemeActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -70,7 +70,7 @@ public class MemeFragment extends BaseGridFragment {
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ApiClient2.getService().getDefaultMemes(this);
+        ApiClient.getService().getDefaultMemes(this);
     }
 
     @Override

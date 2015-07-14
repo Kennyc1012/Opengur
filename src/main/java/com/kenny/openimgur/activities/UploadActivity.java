@@ -24,7 +24,7 @@ import android.widget.CheckBox;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.UploadPhotoAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.PhotoUploadListener;
@@ -354,7 +354,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
         if (topics == null || topics.isEmpty()) {
             LogUtil.v(TAG, "No topics found, fetching");
-            ApiClient2.getService().getDefaultTopics(new Callback<TopicResponse>() {
+            ApiClient.getService().getDefaultTopics(new Callback<TopicResponse>() {
                 @Override
                 public void success(TopicResponse topicResponse, Response response) {
                     app.getSql().addTopics(topicResponse.data);

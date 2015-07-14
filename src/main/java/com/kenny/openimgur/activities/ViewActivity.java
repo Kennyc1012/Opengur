@@ -31,7 +31,7 @@ import com.cocosw.bottomsheet.BottomSheet;
 import com.cocosw.bottomsheet.BottomSheetListener;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
@@ -658,7 +658,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             mMultiView.setViewState(MultiStateView.ViewState.LOADING);
-            ApiClient2.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort(), new Callback<CommentResponse>() {
+            ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort(), new Callback<CommentResponse>() {
                 @Override
                 public void success(CommentResponse commentResponse, Response response) {
                     if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
@@ -709,7 +709,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private void fetchItemDetails(final String id, final boolean isAlbum) {
         if (isAlbum) {
-            ApiClient2.getService().getAlbumImages(id, new Callback<AlbumResponse>() {
+            ApiClient.getService().getAlbumImages(id, new Callback<AlbumResponse>() {
                 @Override
                 public void success(AlbumResponse albumResponse, Response response) {
                     ImgurAlbum album = new ImgurAlbum(mGalleryId, null, getIntent().getData().toString());
@@ -729,7 +729,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
             });
         } else {
-            ApiClient2.getService().getGalleryDetails(id, new Callback<BasicObjectResponse>() {
+            ApiClient.getService().getGalleryDetails(id, new Callback<BasicObjectResponse>() {
                 @Override
                 public void success(BasicObjectResponse basicObjectResponse, Response response) {
                     if (basicObjectResponse.data != null) {
@@ -753,7 +753,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void voteOnGallery(String id, final String vote) {
-        ApiClient2.getService().voteOnGallery(id, vote, vote, new Callback<BasicResponse>() {
+        ApiClient.getService().voteOnGallery(id, vote, vote, new Callback<BasicResponse>() {
             @Override
             public void success(BasicResponse basicResponse, Response response) {
                 if (basicResponse.data) {
@@ -779,7 +779,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void voteOnComment(String id, final String vote) {
-        ApiClient2.getService().voteOnComment(id, vote, vote, new Callback<BasicResponse>() {
+        ApiClient.getService().voteOnComment(id, vote, vote, new Callback<BasicResponse>() {
             @Override
             public void success(BasicResponse basicResponse, Response response) {
                 int stringId = basicResponse.data ? R.string.vote_cast : R.string.error_generic;
@@ -796,7 +796,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onPostComment(String comment, String galleryId, String parentId) {
         showDialogFragment(LoadingDialogFragment.createInstance(R.string.posting_comment, false), DIALOG_LOADING);
-        ImgurService apiService = ApiClient2.getService();
+        ImgurService apiService = ApiClient.getService();
         Callback<CommentPostResponse> cb = new Callback<CommentPostResponse>() {
             @Override
             public void success(CommentPostResponse commentPostResponse, Response response) {

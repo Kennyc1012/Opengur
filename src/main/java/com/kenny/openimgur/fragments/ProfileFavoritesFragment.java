@@ -11,7 +11,7 @@ import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurAlbum;
@@ -54,7 +54,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
     protected void fetchGallery() {
         super.fetchGallery();
         boolean isSelf = mSelectedUser.isSelf(app);
-        ImgurService apiService = ApiClient2.getService();
+        ImgurService apiService = ApiClient.getService();
 
         if (isSelf) {
             apiService.getProfileFavorites(mSelectedUser.getUsername(), this);

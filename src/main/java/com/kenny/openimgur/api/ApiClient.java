@@ -24,8 +24,8 @@ import retrofit.converter.GsonConverter;
  * Created by kcampagna on 7/10/15.
  */
 
-public class ApiClient2 {
-    private static final String TAG = ApiClient2.class.getSimpleName();
+public class ApiClient {
+    private static final String TAG = ApiClient.class.getSimpleName();
 
     private static final String API_URL = "https://api.imgur.com/3";
 

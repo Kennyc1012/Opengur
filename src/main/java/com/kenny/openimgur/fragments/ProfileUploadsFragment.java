@@ -15,7 +15,7 @@ import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.GalleryAdapter;
-import com.kenny.openimgur.api.ApiClient2;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -56,7 +56,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ApiClient2.getService().getProfileUploads(user.getUsername(), mCurrentPage, this);
+        ApiClient.getService().getProfileUploads(user.getUsername(), mCurrentPage, this);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
     private void deletePhoto(final ImgurBaseObject photo) {
         mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
 
-        ApiClient2.getService().deletePhoto(photo.getDeleteHash(), new Callback<BasicResponse>() {
+        ApiClient.getService().deletePhoto(photo.getDeleteHash(), new Callback<BasicResponse>() {
             @Override
             public void success(BasicResponse basicResponse, Response response) {
                 if (!isAdded()) return;
@@ -168,7 +168,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
                     } else {
                         mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
                     }
-                    
+
                     SnackBar.show(getActivity(), R.string.profile_delete_success_image);
                 } else {
                     SnackBar.show(getActivity(), R.string.error_generic);
