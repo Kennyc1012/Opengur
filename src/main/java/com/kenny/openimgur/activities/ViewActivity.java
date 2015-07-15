@@ -426,7 +426,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case R.id.commentBtn:
-                if (user != null && user.isAccessTokenValid()) {
+                if (user != null) {
                     DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), null);
                     showDialogFragment(fragment, "comment");
                 } else {

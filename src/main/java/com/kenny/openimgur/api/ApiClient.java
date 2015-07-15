@@ -32,9 +32,7 @@ import retrofit.converter.GsonConverter;
 public class ApiClient {
     private static final String TAG = ApiClient.class.getSimpleName();
 
-    private static final String API_URL = "https://api.imgur.com/3";
-
-    private static final String TOKEN_REFRESH_URL = "https://api.imgur.com/oauth2/token";
+    private static final String API_URL = "https://api.imgur.com";
 
     private static RestAdapter sRestAdapter;
 
@@ -44,19 +42,18 @@ public class ApiClient {
 
     public static final String CLIENT_SECRET = BuildConfig.API_CLIENT_SECRET;
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String AUTHORIZATION_HEADER = "Authorization";
 
     /**
      * Returns the service used for API requests
      *
      * @return
      */
-
     public static ImgurService getService() {
         if (sRestAdapter == null || sService == null) {
             sRestAdapter = new RestAdapter.Builder()
                     .setEndpoint(API_URL)
-                    .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
+                    .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.BASIC : RestAdapter.LogLevel.NONE)
                     .setRequestInterceptor(getRequestInterceptor())
                     .setClient(getClient())
                     .setConverter(getConverter())
@@ -75,11 +72,11 @@ public class ApiClient {
             public void intercept(RequestFacade request) {
                 ImgurUser user = OpengurApp.getInstance().getUser();
 
-                if (user != null && user.isAccessTokenValid()) {
-                    LogUtil.v(TAG, "Access Token present and valid");
+                if (user != null) {
+                    LogUtil.v(TAG, "Access Token present");
                     request.addHeader(AUTHORIZATION_HEADER, "Bearer " + user.getAccessToken());
                 } else {
-                    LogUtil.v(TAG, "No access token present or is expiring, using Client-ID");
+                    LogUtil.v(TAG, "No access token present, using Client-ID");
                     request.addHeader(AUTHORIZATION_HEADER, "Client-ID " + CLIENT_ID);
                 }
             }
@@ -89,7 +86,7 @@ public class ApiClient {
     private static OkClient getClient() {
         OkHttpClient client = new OkHttpClient();
         client.setConnectTimeout(15, TimeUnit.SECONDS);
-        // TODO More customization
+        client.interceptors().add(new OAuthInterceptor());
         return new OkClient(client);
     }
 

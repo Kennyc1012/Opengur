@@ -8,6 +8,7 @@ import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.api.responses.ConverastionResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
+import com.kenny.openimgur.api.responses.OAuthResponse;
 import com.kenny.openimgur.api.responses.PhotoResponse;
 import com.kenny.openimgur.api.responses.TagResponse;
 import com.kenny.openimgur.api.responses.TopicResponse;
@@ -33,152 +34,156 @@ public interface ImgurService {
 
     // Get Requests
 
-    @GET("/gallery/{section}/{sort}/{page}")
+    @GET("/3/gallery/{section}/{sort}/{page}")
     void getGallery(@Path("section") String section, @Path("sort") String sort, @Path("page") int page, @Query("showViral") boolean showViral, Callback<GalleryResponse> callback);
 
-    @GET("/gallery/{section}/{sort}/{page}")
+    @GET("/3/gallery/{section}/{sort}/{page}")
     GalleryResponse getGallery(@Path("section") String section, @Path("sort") String sort, @Path("page") int page, @Query("showViral") boolean showViral);
 
-    @GET("/{section}/top/{window}/{page}")
+    @GET("//3{section}/top/{window}/{page}")
     void getGalleryForTopSorted(@Path("section") String section, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
-    @GET("/gallery/{id}")
+    @GET("/3/gallery/{id}")
     void getGalleryDetails(@Path("id") String itemId, Callback<BasicObjectResponse> callback);
 
-    @GET("/image/{id}")
+    @GET("/3/image/{id}")
     void getImageDtails(@Path("id") String imageId, Callback<PhotoResponse> callback);
 
-    @GET("/gallery/{id}/images")
+    @GET("/3/gallery/{id}/images")
     void getAlbumImages(@Path("id") String albumId, Callback<AlbumResponse> callback);
 
-    @GET("/gallery/{id}/comments/{sort}")
+    @GET("/3/gallery/{id}/comments/{sort}")
     void getComments(@Path("id") String itemId, @Path("sort") String commentSort, Callback<CommentResponse> callback);
 
-    @GET("/account/{user}")
+    @GET("/3/account/{user}")
     void getProfile(@Path("user") String username, Callback<UserResponse> callback);
 
-    @GET("/account/{user}/favorites")
+    @GET("/3/account/{user}/favorites")
     void getProfileFavorites(@Path("user") String username, Callback<GalleryResponse> callback);
 
-    @GET("/account/{user}/gallery_favorites/{page}/newest")
+    @GET("/3/account/{user}/gallery_favorites/{page}/newest")
     void getProfileGalleryFavorites(@Path("user") String username, @Path("page") int page, Callback<GalleryResponse> callback);
 
-    @GET("/account/{user}/submissions/{page}")
+    @GET("/3/account/{user}/submissions/{page}")
     void getProfileSubmissions(@Path("user") String username, @Path("page") int page, Callback<GalleryResponse> callback);
 
-    @GET("/account/{user}/comments/{sort}/{page}")
+    @GET("/3/account/{user}/comments/{sort}/{page}")
     void getProfileComments(@Path("user") String username, @Path("sort") String sort, @Path("page") int page, Callback<CommentResponse> callback);
 
-    @GET("/account/{user}/albums/{page}")
+    @GET("/3/account/{user}/albums/{page}")
     void getProfileAlbums(@Path("user") String username, @Path("page") int page, Callback<GalleryResponse> callback);
 
-    @GET("/account/{user}/images/{page}")
+    @GET("/3/account/{user}/images/{page}")
     void getProfileUploads(@Path("user") String username, @Path("page") int page, Callback<GalleryResponse> callback);
 
-    @GET("/conversations")
+    @GET("/3/conversations")
     void getConversations(Callback<ConvoResponse> callback);
 
-    @GET("/gallery/r/{subreddit}/{sort}/{page}")
+    @GET("/3/gallery/r/{subreddit}/{sort}/{page}")
     void getSubReddit(@Path("subreddit") String query, @Path("sort") String sort, @Path("page") int page, Callback<GalleryResponse> callback);
 
-    @GET("/gallery/r/{subreddit}/{sort}/{page}")
+    @GET("/3/gallery/r/{subreddit}/{sort}/{page}")
     GalleryResponse getSubReddit(@Path("subreddit") String query, @Path("sort") String sort, @Path("page") int page);
 
-    @GET("/gallery/r/{subreddit}/top/{window}/{page}")
+    @GET("/3/gallery/r/{subreddit}/top/{window}/{page}")
     void getSubRedditForTopSorted(@Path("subreddit") String query, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
-    @GET("/gallery/random/{page}")
+    @GET("/3/gallery/random/{page}")
     void getRandomGallery(@Path("page") int page, Callback<GalleryResponse> callback);
 
-    @GET("/topics/defaults")
+    @GET("/3/topics/defaults")
     void getDefaultTopics(Callback<TopicResponse> callback);
 
-    @GET("/topics/{topic}/{sort}/{page}")
+    @GET("/3/topics/{topic}/{sort}/{page}")
     void getTopic(@Path("topic") int topicId, @Path("sort") String sort, @Path("page") int page, Callback<GalleryResponse> callback);
 
-    @GET("/topics/{topic}/{sort}/{page}")
+    @GET("/3/topics/{topic}/{sort}/{page}")
     GalleryResponse getTopic(@Path("topic") int topicId, @Path("sort") String sort, @Path("page") int page);
 
-    @GET("/topics/{topic}/top/{window}/{page}")
+    @GET("/3/topics/{topic}/top/{window}/{page}")
     void getTopicForTopSorted(@Path("topic") int topicId, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
-    @GET("/memegen/defaults")
+    @GET("/3/memegen/defaults")
     void getDefaultMemes(Callback<GalleryResponse> callback);
 
-    @GET("/gallery/search/{sort}/{page}")
+    @GET("/3/gallery/search/{sort}/{page}")
     void searchGallery(@Path("sort") String sort, @Path("page") int page, @Query("q") String query, Callback<GalleryResponse> callback);
 
-    @GET("/gallery/search/top/{window}/{page}")
+    @GET("/3/gallery/search/top/{window}/{page}")
     void searchGalleryForTopSorted(@Path("window") String window, @Path("page") int page, @Query("q") String query, Callback<GalleryResponse> callback);
 
-    @GET("/gallery/{id}/tags")
+    @GET("/3/gallery/{id}/tags")
     void getTags(@Path("id") String itemId, Callback<TagResponse> callback);
 
-    @GET("/conversations/{id}/{page}/0")
+    @GET("/3/conversations/{id}/{page}/0")
     void getMessages(@Path("id") String conversationId, @Path("page") int page, Callback<ConverastionResponse> callback);
 
 
     // Post Requests. Some of the POST requests have fields when they are not needed. This is because OKHTTP requires a body when posting
     @FormUrlEncoded
-    @POST("/image/{id}/favorite")
+    @POST("/3/image/{id}/favorite")
     void favoriteImage(@Path("id") String imageId, @Field("id") String id, Callback<BasicResponse> callback);
 
     @FormUrlEncoded
-    @POST("/album/{id}/favorite")
+    @POST("/3/album/{id}/favorite")
     void favoriteAlbum(@Path("id") String albumId, @Field("id") String id, Callback<BasicResponse> callback);
 
     @Multipart
-    @POST("/upload")
+    @POST("/3/upload")
     PhotoResponse uploadPhoto(@Part("image") TypedFile file, @Part("title") TypedString title, @Part("description") TypedString description, @Part("type") TypedString type);
 
     @FormUrlEncoded
-    @POST("/upload")
+    @POST("/3/upload")
     PhotoResponse uploadLink(@Field("image") String link, @Field("title") String title, @Field("description") String description, @Field("type") String type);
 
     @FormUrlEncoded
-    @POST("/gallery/{id}")
+    @POST("/3/gallery/{id}")
     BasicResponse submitToGallery(@Path("id") String id, @Field("title") String title, @Field("topic") int topicId, @Field("terms") String terms);
 
     @FormUrlEncoded
-    @POST("/album")
+    @POST("/3/album")
     BasicObjectResponse createAlbum(@Field("ids") String ids, @Field("cover") String coverId, @Field("title") String title, @Field("description") String description);
 
     @FormUrlEncoded
-    @POST("/gallery/{id}/vote/{vote}")
+    @POST("/3/gallery/{id}/vote/{vote}")
     void voteOnGallery(@Path("id") String itemId, @Path("vote") String vote, @Field("vote") String itemVote, Callback<BasicResponse> callback);
 
     @FormUrlEncoded
-    @POST("/comment/{id}/vote/{vote}")
+    @POST("/3/comment/{id}/vote/{vote}")
     void voteOnComment(@Path("id") String itemId, @Path("vote") String vote, @Field("vote") String itemVote, Callback<BasicResponse> callback);
 
     @FormUrlEncoded
-    @POST("/gallery/{galleryId}/comment")
+    @POST("/3/gallery/{galleryId}/comment")
     void postComment(@Path("galleryId") String galleryId, @Field("comment") String comment, Callback<CommentPostResponse> callback);
 
     @FormUrlEncoded
-    @POST("/gallery/{galleryId}/comment/{parentId}")
+    @POST("/3/gallery/{galleryId}/comment/{parentId}")
     void postCommentReply(@Path("galleryId") String galleryId, @Path("parentId") String parentId, @Field("comment") String comment, Callback<CommentPostResponse> callback);
 
     @FormUrlEncoded
-    @POST("/conversations/{recipient}")
+    @POST("/3/conversations/{recipient}")
     void sendMessage(@Path("recipient") String recipientId, @Field("body") String message, Callback<BasicResponse> callback);
 
     @FormUrlEncoded
-    @POST("/conversations/block/{username}")
+    @POST("/3/conversations/block/{username}")
     void blockUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> respoonse);
 
     @FormUrlEncoded
-    @POST("/conversations/report/{username}")
+    @POST("/3/conversations/report/{username}")
     void reportUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> respoonse);
+
+    @FormUrlEncoded
+    @POST("/oauth2/token")
+    OAuthResponse refreshToken(@Field("client_id") String clientId, @Field("client_secret") String clientSecret, @Field("refresh_token") String refreshToken, @Field("grant_type") String grantType);
 
 
     // Delete Requests
-    @DELETE("/album/{deleteHash}")
+    @DELETE("/3/album/{deleteHash}")
     void deleteAlbum(@Path("deleteHash") String deleteHash, Callback<BasicResponse> callback);
 
-    @DELETE("/image/{deleteHash}")
+    @DELETE("/3/image/{deleteHash}")
     void deletePhoto(@Path("deleteHash") String deleteHash, Callback<BasicResponse> callback);
 
-    @DELETE("/conversations/{id}")
+    @DELETE("/3/conversations/{id}")
     void deleteConversation(@Path("id") String conversationId, Callback<BasicResponse> callback);
 }
