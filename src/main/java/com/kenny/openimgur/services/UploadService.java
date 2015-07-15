@@ -53,6 +53,9 @@ public class UploadService extends IntentService {
 
     private static final String KEY_SUBMIT_TO_GALLERY = TAG + ".submit.to.gallery";
 
+    // No Topic
+    private static final int FALLBACK_TOPIC = 29;
+
     private NotificationManager mManager;
 
     private NotificationCompat.Builder mBuilder;
@@ -260,8 +263,8 @@ public class UploadService extends IntentService {
                 onSuccessfulUpload(photo);
             } else {
                 // Upload to gallery
-                LogUtil.v(TAG, "Uploading image to gallery with title " + title + " and topic " + topic.getName());
-                submitToGallery(title, topic, photo);
+                LogUtil.v(TAG, "Uploading image to gallery with title " + title);
+                submitToGallery(title, topic != null ? topic.getId() : FALLBACK_TOPIC, photo);
             }
         } else {
             LogUtil.v(TAG, "Creating album");
@@ -420,8 +423,8 @@ public class UploadService extends IntentService {
                     LogUtil.v(TAG, "Album creation successful");
                     onSuccessfulUpload(album);
                 } else {
-                    LogUtil.v(TAG, "Submitting album to gallery with title " + title + " and topic " + topic.getName());
-                    submitToGallery(title, topic, album);
+                    LogUtil.v(TAG, "Submitting album to gallery with title " + title);
+                    submitToGallery(title, topic != null ? topic.getId() : FALLBACK_TOPIC, album);
                 }
             } else {
                 LogUtil.v(TAG, "Unable to submit to gallery with status " + status);
@@ -439,11 +442,11 @@ public class UploadService extends IntentService {
     /**
      * Submits the photo/album to the Imgur Gallery
      *
-     * @param title  The title for the gallery
-     * @param topic  The topic for the gallery
-     * @param upload The item being submitted to the gallery
+     * @param title   The title for the gallery
+     * @param topicId The topic id for the gallery
+     * @param upload  The item being submitted to the gallery
      */
-    private void submitToGallery(@NonNull String title, @NonNull ImgurTopic topic, ImgurBaseObject upload) {
+    private void submitToGallery(@NonNull String title, int topicId, ImgurBaseObject upload) {
         mBuilder.setContentTitle(getString(R.string.upload_gallery_title))
                 .setContentText(getString(R.string.upload_gallery_message))
                 .setProgress(0, 0, true);
@@ -455,7 +458,7 @@ public class UploadService extends IntentService {
 
             RequestBody body = new FormEncodingBuilder()
                     .add("title", title)
-                    .add("topic", String.valueOf(topic.getId()))
+                    .add("topic", String.valueOf(topicId))
                     .add("terms", "1").build();
 
             JSONObject json = client.doWork(body);

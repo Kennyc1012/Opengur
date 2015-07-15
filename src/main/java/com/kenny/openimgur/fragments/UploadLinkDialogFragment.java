@@ -162,6 +162,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
                                 @Override
                                 public void onLoadingStarted(String imageUri, View view) {
+                                    if (!isAdded()) return;
                                     mLoadingContainer.setVisibility(View.VISIBLE);
                                     mLoadingIndicator.setVisibility(View.VISIBLE);
                                     mLinkValidation.setText(R.string.upload_checking_link);
@@ -169,6 +170,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
                                 @Override
                                 public void onLoadingFailed(String s, View view, FailReason failReason) {
+                                    if (!isAdded()) return;
                                     mAddButton.setEnabled(false);
                                     mLoadingIndicator.setVisibility(View.INVISIBLE);
                                     mLinkValidation.setText(R.string.upload_invalid_link);
@@ -176,6 +178,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
                                 @Override
                                 public void onLoadingComplete(String url, View view, Bitmap bitmap) {
+                                    if (!isAdded()) return;
                                     mAddButton.setEnabled(true);
                                     mLoadingIndicator.setVisibility(View.INVISIBLE);
                                     mLinkValidation.setText(R.string.upload_valid_link);
@@ -183,6 +186,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
                                 @Override
                                 public void onLoadingCancelled(String s, View view) {
+                                    if (!isAdded()) return;
                                     mAddButton.setEnabled(false);
                                     mLoadingIndicator.setVisibility(View.INVISIBLE);
                                     mLinkValidation.setText(R.string.upload_invalid_link);
