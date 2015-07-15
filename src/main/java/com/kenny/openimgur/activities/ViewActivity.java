@@ -647,7 +647,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    @OnClick(R.id.errorButton)
     public void fetchComments() {
         if (mLoadComments && mPagerAdapter != null) {
             ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
