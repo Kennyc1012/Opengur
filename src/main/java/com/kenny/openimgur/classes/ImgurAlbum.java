@@ -19,7 +19,6 @@ public class ImgurAlbum extends ImgurBaseObject {
     @SerializedName("cover")
     private String mCoverId;
 
-    // TODO Set this
     private String mCoverUrl;
 
     @SerializedName("cover_width")

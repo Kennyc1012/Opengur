@@ -22,6 +22,7 @@ import com.kenny.openimgur.api.responses.ConverastionResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurMessage;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
 import java.util.ArrayList;
@@ -206,7 +207,9 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO
+                LogUtil.e(TAG, "Error fetching message", error);
+                mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
             }
         });
     }
@@ -233,7 +236,8 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO Error
+                LogUtil.e(TAG, "Error sending message", error);
+                if (mAdapter != null) mAdapter.onMessageSendComplete(false, message.getId());
             }
         });
     }
@@ -259,7 +263,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
 
                             @Override
                             public void failure(RetrofitError error) {
-                                // TODO Error
+                                SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
                             }
                         });
                     }
@@ -286,7 +290,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
 
                             @Override
                             public void failure(RetrofitError error) {
-                                // TODO Error
+                                SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
                             }
                         });
                     }

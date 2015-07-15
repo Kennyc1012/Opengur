@@ -301,13 +301,15 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                     supportInvalidateOptionsMenu();
                 } else {
-                    // TODO Error
+                    mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO Error
+                mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
             }
         });
     }

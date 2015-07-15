@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
+import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;
@@ -78,16 +79,15 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
             ImgurBaseObject obj = getAdapter().getItem(adapterPosition);
             Intent intent;
 
-            // TODO
             if (obj instanceof ImgurAlbum || obj.getUpVotes() > Integer.MIN_VALUE) {
                 ArrayList<ImgurBaseObject> items = new ArrayList<>(1);
                 items.add(obj);
-                //intent = ViewActivity.createIntent(getActivity(), items, 0);
+                intent = ViewActivity.createIntent(getActivity(), items, 0);
             } else {
                 intent = FullScreenPhotoActivity.createIntent(getActivity(), obj.getLink());
             }
 
-            //startActivity(intent);
+            startActivity(intent);
         }
     }
 

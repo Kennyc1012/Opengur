@@ -14,11 +14,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
 import java.util.ArrayList;
@@ -61,7 +63,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
 
     @Override
     protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        // TODO
+        FullScreenPhotoActivity.createIntent(getActivity(), items.get(position).getLink());
     }
 
     @Override
@@ -178,8 +180,9 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
             @Override
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
+                LogUtil.e(TAG, "Unable to delete photo", error);
                 mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
-                // TODO Error
+                SnackBar.show(getActivity(), R.string.error_generic);
             }
         });
 

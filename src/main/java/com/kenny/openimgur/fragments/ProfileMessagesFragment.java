@@ -41,7 +41,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
     private static final String KEY_ITEMS = "items";
 
     @InjectView(R.id.multiView)
-    MultiStateView mMultiStatView;
+    MultiStateView mMultiStateView;
 
     @InjectView(R.id.commentList)
     ListView mListView;
@@ -92,7 +92,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
             }
 
             mListView.setAdapter(mAdapter);
-            mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
         }
 
         mListView.setHeaderDividersEnabled(false);
@@ -170,27 +170,32 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
         ApiClient.getService().getConversations(new Callback<ConvoResponse>() {
             @Override
             public void success(ConvoResponse convoResponse, Response response) {
+                if (!isAdded()) return;
+
                 if (convoResponse.data != null && !convoResponse.data.isEmpty()) {
                     mAdapter = new ConvoAdapter(getActivity(), convoResponse.data);
                     mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
                     mListView.setAdapter(mAdapter);
-                    mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
                 } else {
-                    mMultiStatView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_convos));
-                    mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
+                    mMultiStateView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_convos));
+                    mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO Error
+                if (!isAdded()) return;
+                LogUtil.e(TAG, "Unable to fetch convos", error);
+                mMultiStateView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
             }
         });
     }
 
     private void deleteConversation(String id) {
         mAdapter.removeItem(id);
-        if (mAdapter.isEmpty()) mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
+        if (mAdapter.isEmpty()) mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
 
 
         ApiClient.getService().deleteConversation(id, new Callback<BasicResponse>() {

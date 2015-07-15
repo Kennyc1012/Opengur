@@ -339,14 +339,17 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
                     mSpinner.setAdapter(new TopicsAdapter(getActivity(), topicResponse.data));
                     mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
                 } else {
-                    // TODO
+                    mMultiStateView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
-                // TODO
+                LogUtil.e(TAG, "Unable to fetch topics", error);
+                mMultiStateView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
             }
         });
     }

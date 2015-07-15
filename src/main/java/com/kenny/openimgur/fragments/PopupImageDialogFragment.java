@@ -261,6 +261,8 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
         ApiClient.getService().getImageDtails(mImageUrl, new Callback<PhotoResponse>() {
             @Override
             public void success(PhotoResponse photoResponse, Response response) {
+                if (!isAdded()) return;
+
                 if (photoResponse.data != null) {
                     ImgurPhoto photo = photoResponse.data;
 
@@ -284,7 +286,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO Error message
+                if (!isAdded()) return;
                 SnackBar.show(getActivity(), R.string.error_generic);
                 dismissAllowingStateLoss();
             }

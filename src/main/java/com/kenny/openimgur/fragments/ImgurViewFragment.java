@@ -491,14 +491,17 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                     fetchTags();
                 } else {
-                    // TODO
+                    mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
-                // TODO
+                LogUtil.e(TAG, "Unable to fetch album images", error);
+                mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
             }
         });
     }
@@ -546,7 +549,9 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             @Override
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
-                // TODO
+                LogUtil.e(TAG, "Unable to fetch gallery details", error);
+                mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
             }
         });
     }
@@ -561,15 +566,16 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (basicResponse.success) {
                     mImgurObject.setIsFavorite(!mImgurObject.isFavorited());
                     getActivity().invalidateOptionsMenu();
-
+                } else {
+                    SnackBar.show(getActivity(), R.string.error_generic);
                 }
-                // Ignore bad responses
             }
 
             @Override
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
-                // TODO
+                LogUtil.e(TAG, "Unable to favorite item", error);
+                SnackBar.show(getActivity(), R.string.error_generic);
             }
         };
 

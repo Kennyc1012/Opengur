@@ -274,7 +274,13 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
             @Override
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
-                // TODO
+                LogUtil.e(TAG, "Unable to fetch comments", error);
+
+                if (mAdapter == null || !mAdapter.isEmpty()) {
+                    mMultiStatView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                    mMultiStatView.setViewState(MultiStateView.ViewState.ERROR);
+                }
+
                 mIsLoading = false;
             }
         });

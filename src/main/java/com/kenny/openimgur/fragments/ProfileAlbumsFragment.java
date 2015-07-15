@@ -22,6 +22,7 @@ import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
 import retrofit.Callback;
@@ -197,8 +198,9 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
             @Override
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
+                LogUtil.e(TAG, "Unable to delete Album", error);
+                SnackBar.show(getActivity(), R.string.error_generic);
                 mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
-                // TODO Error
             }
         });
 

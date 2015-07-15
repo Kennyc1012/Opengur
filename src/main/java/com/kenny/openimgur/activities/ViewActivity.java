@@ -698,7 +698,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 @Override
                 public void failure(RetrofitError error) {
-                    //TODO
+                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                 }
             });
         } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.ViewState.ERROR) {
@@ -725,7 +726,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 @Override
                 public void failure(RetrofitError error) {
-                    // TODO
+                    LogUtil.e(TAG, "Unable to fetch album details", error);
+                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                 }
             });
         } else {
@@ -740,13 +743,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         invalidateOptionsMenu();
                         fetchComments();
                     } else {
-                        // TODO Error
+                        mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     }
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
-                    // TODO
+                    LogUtil.e(TAG, "Unable to fetch album details", error);
+                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                 }
             });
         }
@@ -767,13 +773,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     set.setDuration(1500L).setInterpolator(new OvershootInterpolator());
                     set.start();
                 } else {
-                    // TODO Error message
+                    SnackBar.show(ViewActivity.this, R.string.error_generic);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO
+                LogUtil.e(TAG, "Unable to vote on gallery", error);
+                SnackBar.show(ViewActivity.this, R.string.error_generic);
             }
         });
     }
@@ -788,7 +795,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO
+                LogUtil.e(TAG, "Unable to vote on comment", error);
+                SnackBar.show(ViewActivity.this, R.string.error_generic);
             }
         });
     }
@@ -812,8 +820,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void failure(RetrofitError error) {
+                LogUtil.e(TAG, "Unable to post comment", error);
                 dismissDialogFragment(DIALOG_LOADING);
-                // TODO
+                SnackBar.show(ViewActivity.this, R.string.comment_post_unsuccessful);
             }
         };
 
