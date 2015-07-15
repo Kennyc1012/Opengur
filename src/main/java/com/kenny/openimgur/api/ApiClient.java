@@ -1,10 +1,13 @@
 package com.kenny.openimgur.api;
 
 
+import android.support.annotation.StringRes;
+
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kenny.openimgur.BuildConfig;
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
@@ -12,10 +15,12 @@ import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
 import com.squareup.okhttp.OkHttpClient;
 
+import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
 
@@ -96,5 +101,53 @@ public class ApiClient {
                 .create();
 
         return new GsonConverter(gson);
+    }
+
+    /**
+     * Returns the string resource for the error thrown by Retrofit
+     *
+     * @param error The thrown error
+     * @return
+     */
+    @StringRes
+    public static int getErrorCode(RetrofitError error) {
+        switch (error.getKind()) {
+            case NETWORK:
+                return R.string.error_network;
+
+            case HTTP:
+                return getErrorCode(error.getResponse().getStatus());
+
+            case CONVERSION:
+            case UNEXPECTED:
+            default:
+                return R.string.error_generic;
+        }
+    }
+
+    /**
+     * Returns the string resource for the HTTP status thrown in an error
+     *
+     * @param httpStatus
+     * @return
+     */
+    @StringRes
+    public static int getErrorCode(int httpStatus) {
+        switch (httpStatus) {
+            case HttpURLConnection.HTTP_FORBIDDEN:
+                return R.string.error_403;
+
+            case HttpURLConnection.HTTP_UNAUTHORIZED:
+                return R.string.error_401;
+
+            case HttpURLConnection.HTTP_UNAVAILABLE:
+                return R.string.error_503;
+
+            case 429:
+                return R.string.error_429;
+
+            default:
+                return R.string.error_generic;
+        }
     }
 }

@@ -6,13 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.widget.RelativeLayout;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.fragments.GallerySearchFilterFragment;
 import com.kenny.openimgur.fragments.GallerySearchFragment;
-import com.kenny.openimgur.util.ViewUtils;
 
 import butterknife.InjectView;
 
@@ -80,7 +78,7 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
     }
 
     @Override
-    public void onError(int errorCode) {
+    public void onError() {
         // NOOP
     }
 

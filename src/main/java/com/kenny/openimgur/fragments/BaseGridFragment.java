@@ -13,6 +13,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.GalleryAdapter;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurBaseObject;
@@ -343,10 +344,9 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         if (!isAdded()) return;
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
-            if (mListener != null) {
-            }
-            // TODO Error
-
+            if (mListener != null) mListener.onError();
+            mMultiStateView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
         }
 
         mIsLoading = false;

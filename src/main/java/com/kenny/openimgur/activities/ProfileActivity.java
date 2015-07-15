@@ -361,7 +361,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     }
 
     @Override
-    public void onError(int errorCode) {
+    public void onError() {
         // NOOP
     }
 

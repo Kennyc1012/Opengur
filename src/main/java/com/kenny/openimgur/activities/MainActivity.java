@@ -342,7 +342,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     }
 
     @Override
-    public void onError(int errorCode) {
+    public void onError() {
         toggleFAB(false);
     }
 

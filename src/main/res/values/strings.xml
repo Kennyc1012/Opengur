@@ -79,8 +79,7 @@
     <string name="error_429">The rate limit for Opengur has been hit. There is nothing that can done about this. Check back
     later.</string>
     <string name="error_503">Imgur is currently over capacity. Boo…</string>
-    <string name="error_600">Unable to connect to Imgur. Check your connection and try again.</string>
-    <string name="error_800">Imgur is experiencing some issues, please try back again later</string>
+    <string name="error_network">Unable to connect to Imgur. Check your connection and try again.</string>
     <string name="download_error">An error occurred while downloading</string>
     <string name="error">Error</string>
     <string name="upload_camera_error">An error occurred while capturing your photo. Please try again</string>
