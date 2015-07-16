@@ -253,6 +253,8 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
     @Override
     protected void fetchGallery() {
+        if (TextUtils.isEmpty(mQuery)) return;
+
         super.fetchGallery();
         ImgurService apiService = ApiClient.getService();
 
@@ -266,6 +268,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     @Override
     public void success(GalleryResponse galleryResponse, Response response) {
         super.success(galleryResponse, response);
+
         if (mCurrentPage == 0 && !galleryResponse.data.isEmpty()) {
             app.getSql().addSubReddit(mQuery);
 
