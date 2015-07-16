@@ -63,7 +63,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
 
     @Override
     protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        FullScreenPhotoActivity.createIntent(getActivity(), items.get(position).getLink());
+        startActivity(FullScreenPhotoActivity.createIntent(getActivity(), items.get(position).getLink()));
     }
 
     @Override
