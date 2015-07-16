@@ -32,7 +32,7 @@ public class OAuthInterceptor implements Interceptor {
         Request request = chain.request();
         Response response = chain.proceed(request);
 
-        if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+        if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED || response.code() == HttpURLConnection.HTTP_FORBIDDEN) {
             OpengurApp app = OpengurApp.getInstance();
 
             if (app.getUser() != null) {
@@ -77,6 +77,7 @@ public class OAuthInterceptor implements Interceptor {
                 return response.access_token;
             }
 
+            app.onLogout();
             return null;
         } catch (RetrofitError error) {
             LogUtil.e(TAG, "Error while refreshing token, logging out user", error);
