@@ -16,8 +16,8 @@ import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.util.ImageUtil;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 
 /**
@@ -25,18 +25,20 @@ import butterknife.OnClick;
  */
 public class UploadEditDialogFragment extends DialogFragment {
     public static final String TAG = UploadEditDialogFragment.class.getSimpleName();
+
     private static final String KEY_UPLOAD = "upload";
 
     private PhotoUploadListener mListener;
+
     private Upload mUpload;
 
-    @InjectView(R.id.title)
+    @Bind(R.id.title)
     EditText mTitle;
 
-    @InjectView(R.id.desc)
+    @Bind(R.id.desc)
     EditText mDesc;
 
-    @InjectView(R.id.image)
+    @Bind(R.id.image)
     ImageView mImage;
 
     public static UploadEditDialogFragment createInstance(Upload upload) {
@@ -88,7 +90,7 @@ public class UploadEditDialogFragment extends DialogFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
         Bundle args = getArguments();
 
         if (args == null || !args.containsKey(KEY_UPLOAD)) {
@@ -107,7 +109,7 @@ public class UploadEditDialogFragment extends DialogFragment {
 
     @Override
     public void onDestroyView() {
-        ButterKnife.reset(this);
+        ButterKnife.unbind(this);
         super.onDestroyView();
     }
 

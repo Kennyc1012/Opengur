@@ -24,7 +24,7 @@ import com.kenny.snackbar.SnackBar;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
@@ -32,22 +32,22 @@ import butterknife.OnClick;
  * Created by Kenny-PC on 7/4/2015.
  */
 public class UploadInfoFragment extends BaseFragment {
-    @InjectView(R.id.title)
+    @Bind(R.id.title)
     EditText mTitle;
 
-    @InjectView(R.id.desc)
+    @Bind(R.id.desc)
     EditText mDesc;
 
-    @InjectView(R.id.titleInputLayout)
+    @Bind(R.id.titleInputLayout)
     TextInputLayout mTitleInputLayout;
 
-    @InjectView(R.id.topicSpinner)
+    @Bind(R.id.topicSpinner)
     Spinner mTopicSpinner;
 
-    @InjectView(R.id.gallerySwitch)
+    @Bind(R.id.gallerySwitch)
     CheckBox mGallerySwitch;
 
-    @InjectView(R.id.topicHeader)
+    @Bind(R.id.topicHeader)
     View mTopicHeader;
 
     private PhotoUploadListener mListener;

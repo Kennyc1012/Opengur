@@ -239,7 +239,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
     public abstract static class BaseViewHolder extends RecyclerView.ViewHolder {
         public BaseViewHolder(View view) {
             super(view);
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 }

@@ -47,7 +47,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
@@ -67,19 +67,19 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
 
     private static final String KEY_USER = "user";
 
-    @InjectView(R.id.slidingTabs)
+    @Bind(R.id.slidingTabs)
     TabLayout mSlidingTabs;
 
-    @InjectView(R.id.pager)
+    @Bind(R.id.pager)
     ViewPager mPager;
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
-    @InjectView(R.id.toolBar)
+    @Bind(R.id.toolBar)
     Toolbar mToolBar;
 
-    @InjectView(R.id.toolBarContainer)
+    @Bind(R.id.toolBarContainer)
     View mToolbarContainer;
 
     private ImgurUser mSelectedUser;

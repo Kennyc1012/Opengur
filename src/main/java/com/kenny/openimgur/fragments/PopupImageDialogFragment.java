@@ -38,8 +38,8 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
@@ -57,13 +57,13 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
 
     private static final String KEY_IS_VIDEO = "video";
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
-    @InjectView(R.id.image)
+    @Bind(R.id.image)
     ImageView mImage;
 
-    @InjectView(R.id.video)
+    @Bind(R.id.video)
     VideoView mVideo;
 
     private String mImageUrl;
@@ -102,7 +102,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             return;
         }
 
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
         mImageUrl = bundle.getString(KEY_URL, null);
         boolean isAnimated = bundle.getBoolean(KEY_ANIMATED, false);
         boolean isDirectLink = bundle.getBoolean(KEY_DIRECT_LINK, true);
@@ -162,7 +162,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     public void onDestroyView() {
         OpengurApp.getInstance(getActivity()).getImageLoader().cancelDisplayTask(mImage);
         mHandler.removeCallbacksAndMessages(null);
-        ButterKnife.reset(this);
+        ButterKnife.unbind(this);
         super.onDestroyView();
     }
 

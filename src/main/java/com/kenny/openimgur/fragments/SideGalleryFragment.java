@@ -18,16 +18,17 @@ import org.apache.commons.collections15.list.SetUniqueList;
 
 import java.util.ArrayList;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by kcampagna on 9/27/14.
  */
 public class SideGalleryFragment extends BaseFragment implements AdapterView.OnItemClickListener {
-    @InjectView(R.id.list)
+    @Bind(R.id.list)
     ListView mListView;
 
     private GalleryAdapter mAdapter;
+
     private SideGalleryListener mListener;
 
     @Nullable

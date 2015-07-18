@@ -68,7 +68,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
@@ -147,25 +147,25 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private static final String KEY_PANEL_EXPANDED = "panelExpanded";
 
-    @InjectView(R.id.pager)
+    @Bind(R.id.pager)
     ViewPager mViewPager;
 
-    @InjectView(R.id.sliding_layout)
+    @Bind(R.id.sliding_layout)
     SlidingUpPanelLayout mSlidingPane;
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
-    @InjectView(R.id.commentList)
+    @Bind(R.id.commentList)
     RecyclerView mCommentList;
 
-    @InjectView(R.id.panelUpBtn)
+    @Bind(R.id.panelUpBtn)
     ImageButton mPanelButton;
 
-    @InjectView(R.id.upVoteBtn)
+    @Bind(R.id.upVoteBtn)
     ImageButton mUpVoteBtn;
 
-    @InjectView(R.id.downVoteBtn)
+    @Bind(R.id.downVoteBtn)
     ImageButton mDownVoteBtn;
 
     private CommentAdapter mCommentAdapter;
@@ -697,7 +697,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 case IMAGE_URL_QUERY:
                     int index = url.indexOf("?");
-                    url = url.substring(0,index);
+                    url = url.substring(0, index);
                     // Intentional fallthrough
                 case IMAGE_URL:
                     getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true, false), "popup").commitAllowingStateLoss();

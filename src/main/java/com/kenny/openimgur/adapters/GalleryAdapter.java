@@ -24,7 +24,7 @@ import org.apache.commons.collections15.list.SetUniqueList;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by kcampagna on 7/27/14.
@@ -164,10 +164,10 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
     }
 
     static class GalleryHolder extends ImgurViewHolder {
-        @InjectView(R.id.image)
+        @Bind(R.id.image)
         ImageView image;
 
-        @InjectView(R.id.score)
+        @Bind(R.id.score)
         TextView score;
 
         public GalleryHolder(View view) {

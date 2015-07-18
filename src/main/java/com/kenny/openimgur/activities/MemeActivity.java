@@ -34,7 +34,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 /**
@@ -43,19 +43,19 @@ import butterknife.OnClick;
 public class MemeActivity extends BaseActivity {
     private static final String KEY_OBJECT = "imgur_object";
 
-    @InjectView(R.id.image)
+    @Bind(R.id.image)
     ImageView mImage;
 
-    @InjectView(R.id.topText)
+    @Bind(R.id.topText)
     TextView mTopText;
 
-    @InjectView(R.id.bottomText)
+    @Bind(R.id.bottomText)
     TextView mBottomText;
 
-    @InjectView(R.id.content)
+    @Bind(R.id.content)
     View mView;
 
-    @InjectView(R.id.progressBar)
+    @Bind(R.id.progressBar)
     ProgressBar mProgressBar;
 
     private ImgurBaseObject mObject;

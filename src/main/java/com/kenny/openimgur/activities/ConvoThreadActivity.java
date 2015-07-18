@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
@@ -50,13 +50,13 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
 
     private static final String KEY_CONVO = "convo";
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
-    @InjectView(R.id.convoList)
+    @Bind(R.id.convoList)
     ListView mListView;
 
-    @InjectView(R.id.messageInput)
+    @Bind(R.id.messageInput)
     EditText mMessageInput;
 
     private ApiClient mApiClient;

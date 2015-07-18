@@ -23,7 +23,7 @@ import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
 import com.kenny.openimgur.util.ViewUtils;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 /**
@@ -37,28 +37,28 @@ public class RedditFilterFragment extends BaseFragment implements SeekBar.OnSeek
 
     private FilterListener mListener;
 
-    @InjectView(R.id.dateSeekBar)
+    @Bind(R.id.dateSeekBar)
     SeekBar mSeekBar;
 
-    @InjectView(R.id.day)
+    @Bind(R.id.day)
     TextView mDay;
 
-    @InjectView(R.id.week)
+    @Bind(R.id.week)
     TextView mWeek;
 
-    @InjectView(R.id.month)
+    @Bind(R.id.month)
     TextView mMonth;
 
-    @InjectView(R.id.year)
+    @Bind(R.id.year)
     TextView mYear;
 
-    @InjectView(R.id.all)
+    @Bind(R.id.all)
     TextView mAll;
 
-    @InjectView(R.id.sortRG)
+    @Bind(R.id.sortRG)
     RadioGroup mSortRG;
 
-    @InjectView(R.id.dateRangeContainer)
+    @Bind(R.id.dateRangeContainer)
     View mDateRangeContainer;
 
     public static RedditFilterFragment createInstance(RedditSort sort, ImgurFilters.TimeSort topSort) {

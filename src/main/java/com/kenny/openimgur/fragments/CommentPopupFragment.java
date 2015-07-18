@@ -19,13 +19,12 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.Endpoints;
 import com.kenny.openimgur.api.ImgurBusEvent;
-import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.snackbar.SnackBar;
 import com.squareup.okhttp.FormEncodingBuilder;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 
@@ -37,10 +36,10 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
 
     private static final String KEY_PARENT_ID = "parent_id";
 
-    @InjectView(R.id.comment)
+    @Bind(R.id.comment)
     EditText mComment;
 
-    @InjectView(R.id.remainingCharacters)
+    @Bind(R.id.remainingCharacters)
     TextView mRemainingCharacters;
 
     private String mGalleryId;
@@ -86,7 +85,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
 
     @Override
     public void onDestroyView() {
-        ButterKnife.reset(this);
+        ButterKnife.unbind(this);
         super.onDestroyView();
     }
 
@@ -114,7 +113,7 @@ public class CommentPopupFragment extends DialogFragment implements View.OnClick
             return;
         }
 
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
         mGalleryId = args.getString(KEY_GALLERY_ID);
         mParentId = args.getString(KEY_PARENT_ID, null);
         mComment.addTextChangedListener(new TextWatcher() {

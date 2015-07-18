@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.util.ThrowableFailureEvent;
 
@@ -47,10 +47,10 @@ import de.greenrobot.event.util.ThrowableFailureEvent;
 public class ProfileMessagesFragment extends BaseFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AbsListView.OnScrollListener {
     private static final String KEY_ITEMS = "items";
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiStatView;
 
-    @InjectView(R.id.commentList)
+    @Bind(R.id.commentList)
     ListView mListView;
 
     private ConvoAdapter mAdapter;

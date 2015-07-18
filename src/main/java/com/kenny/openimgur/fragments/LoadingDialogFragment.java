@@ -19,8 +19,8 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.OpengurApp;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * Created by kcampagna on 8/24/14.
@@ -30,16 +30,16 @@ public class LoadingDialogFragment extends DialogFragment {
 
     private static final String KEY_CANCELABLE = "cancelable";
 
-    @InjectView(R.id.message)
+    @Bind(R.id.message)
     TextView mMessage;
 
-    @InjectView(R.id.circleOne)
+    @Bind(R.id.circleOne)
     View mCircleOne;
 
-    @InjectView(R.id.circleTwo)
+    @Bind(R.id.circleTwo)
     View mCircleTwo;
 
-    @InjectView(R.id.circleThree)
+    @Bind(R.id.circleThree)
     View mCircleThree;
 
     private AnimatorSet set;
@@ -61,7 +61,7 @@ public class LoadingDialogFragment extends DialogFragment {
 
     @Override
     public void onDestroyView() {
-        ButterKnife.reset(this);
+        ButterKnife.unbind(this);
 
         if (set != null) {
             set.cancel();
@@ -74,7 +74,7 @@ public class LoadingDialogFragment extends DialogFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         CardView cardView = (CardView) view;
         ImgurTheme theme = OpengurApp.getInstance(getActivity()).getImgurTheme();

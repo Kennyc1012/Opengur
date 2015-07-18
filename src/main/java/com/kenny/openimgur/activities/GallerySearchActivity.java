@@ -6,15 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.widget.RelativeLayout;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.fragments.GallerySearchFilterFragment;
 import com.kenny.openimgur.fragments.GallerySearchFragment;
-import com.kenny.openimgur.util.ViewUtils;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by kcampagna on 3/21/15.
@@ -24,7 +22,7 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
 
     private GallerySearchFragment mFragment;
 
-    @InjectView(R.id.toolBar)
+    @Bind(R.id.toolBar)
     Toolbar mToolBar;
 
     public static Intent createIntent(Context context, String query) {

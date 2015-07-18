@@ -17,7 +17,7 @@ import com.kenny.openimgur.classes.OpengurApp;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by kcampagna on 12/25/14.
@@ -94,13 +94,13 @@ public class MessagesAdapter extends ImgurBaseAdapter<ImgurMessage> {
     }
 
     static class MessagesViewHolder extends ImgurViewHolder {
-        @InjectView(R.id.messageContainer)
+        @Bind(R.id.messageContainer)
         LinearLayout container;
 
-        @InjectView(R.id.message)
+        @Bind(R.id.message)
         TextView message;
 
-        @InjectView(R.id.timeStamp)
+        @Bind(R.id.timeStamp)
         TextView timeStamp;
 
         public MessagesViewHolder(View view) {

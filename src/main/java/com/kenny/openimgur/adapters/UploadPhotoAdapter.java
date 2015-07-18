@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by Kenny-PC on 6/21/2015.
@@ -85,13 +85,13 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
     }
 
     static class UploadPhotoHolder extends BaseViewHolder {
-        @InjectView(R.id.title)
+        @Bind(R.id.title)
         TextView title;
 
-        @InjectView(R.id.desc)
+        @Bind(R.id.desc)
         TextView description;
 
-        @InjectView(R.id.image)
+        @Bind(R.id.image)
         ImageView image;
 
         public UploadPhotoHolder(View view) {

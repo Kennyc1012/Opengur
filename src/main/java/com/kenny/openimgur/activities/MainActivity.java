@@ -39,7 +39,7 @@ import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 /**
@@ -68,16 +68,16 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     public static final int PAGE_FEEDBACK = 9;
 
-    @InjectView(R.id.drawerLayout)
+    @Bind(R.id.drawerLayout)
     DrawerLayout mDrawer;
 
-    @InjectView(R.id.fab)
+    @Bind(R.id.fab)
     FloatingActionButton mUploadButton;
 
-    @InjectView(R.id.toolBar)
+    @Bind(R.id.toolBar)
     Toolbar mToolBar;
 
-    @InjectView(R.id.navigationView)
+    @Bind(R.id.navigationView)
     NavigationView mNavigationView;
 
     private int mCurrentPage = -1;

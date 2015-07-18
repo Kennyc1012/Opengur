@@ -49,7 +49,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 
@@ -67,10 +67,10 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
     private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
-    @InjectView(R.id.list)
+    @Bind(R.id.list)
     RecyclerView mRecyclerView;
 
     private UploadPhotoAdapter mAdapter;

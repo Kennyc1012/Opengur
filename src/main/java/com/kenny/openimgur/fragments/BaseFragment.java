@@ -41,7 +41,7 @@ abstract public class BaseFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         LogUtil.v(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
     }
 
     @Override
@@ -71,7 +71,7 @@ abstract public class BaseFragment extends Fragment {
     @Override
     public void onDestroyView() {
         LogUtil.v(TAG, "onDestroyView");
-        ButterKnife.reset(this);
+        ButterKnife.unbind(this);
         super.onDestroyView();
     }
 

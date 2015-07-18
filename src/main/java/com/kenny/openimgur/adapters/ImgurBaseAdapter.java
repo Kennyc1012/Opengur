@@ -166,7 +166,7 @@ public abstract class ImgurBaseAdapter<T> extends BaseAdapter {
 
     public abstract static class ImgurViewHolder {
         public ImgurViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
             view.setTag(this);
         }
     }
