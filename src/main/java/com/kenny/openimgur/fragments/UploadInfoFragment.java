@@ -100,10 +100,6 @@ public class UploadInfoFragment extends BaseFragment {
         });
 
         tb.setTitle(R.string.upload_info);
-
-        // There is an issue with the TextInputLayout where hints aren't being honored via XML
-        mTitle.setHint(R.string.upload_title);
-        mDesc.setHint(R.string.upload_desc);
     }
 
     @OnCheckedChanged(R.id.gallerySwitch)
