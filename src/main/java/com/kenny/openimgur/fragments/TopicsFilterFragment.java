@@ -29,7 +29,7 @@ import com.kenny.openimgur.util.ViewUtils;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -45,43 +45,43 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
 
     private static final String KEY_TIME_SORT = "topic_time_sort";
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiStateView;
 
-    @InjectView(R.id.day)
+    @Bind(R.id.day)
     TextView mDay;
 
-    @InjectView(R.id.week)
+    @Bind(R.id.week)
     TextView mWeek;
 
-    @InjectView(R.id.month)
+    @Bind(R.id.month)
     TextView mMonth;
 
-    @InjectView(R.id.year)
+    @Bind(R.id.year)
     TextView mYear;
 
-    @InjectView(R.id.all)
+    @Bind(R.id.all)
     TextView mAll;
 
-    @InjectView(R.id.time)
+    @Bind(R.id.time)
     TextView mTime;
 
-    @InjectView(R.id.optionalSort)
+    @Bind(R.id.optionalSort)
     TextView mHighestScoring;
 
-    @InjectView(R.id.viral)
+    @Bind(R.id.viral)
     TextView mViral;
 
-    @InjectView(R.id.topicSpinner)
+    @Bind(R.id.topicSpinner)
     Spinner mSpinner;
 
-    @InjectView(R.id.sortSeekBar)
+    @Bind(R.id.sortSeekBar)
     SeekBar mSortSeekBar;
 
-    @InjectView(R.id.dateSeekBar)
+    @Bind(R.id.dateSeekBar)
     SeekBar mDateSeekBar;
 
-    @InjectView(R.id.dateRangeContainer)
+    @Bind(R.id.dateRangeContainer)
     View mDateContainer;
 
     private FilterListener mListener;

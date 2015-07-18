@@ -14,7 +14,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by Kenny-PC on 1/14/2015.
@@ -56,10 +56,10 @@ public class UploadAdapter extends ImgurBaseAdapter<UploadedPhoto> {
     }
 
     static class UploadHolder extends ImgurBaseAdapter.ImgurViewHolder {
-        @InjectView(R.id.image)
+        @Bind(R.id.image)
         ImageView image;
 
-        @InjectView(R.id.albumIndicator)
+        @Bind(R.id.albumIndicator)
         ImageView albumIndicator;
 
         public UploadHolder(View view) {

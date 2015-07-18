@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.AbsListView;
@@ -28,9 +29,8 @@ import org.apache.commons.collections15.list.SetUniqueList;
 
 import java.util.ArrayList;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
-import butterknife.Optional;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -51,13 +51,13 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
     private static final String KEY_HAS_MORE = "hasMore";
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     protected MultiStateView mMultiStateView;
 
-    @InjectView(R.id.grid)
+    @Bind(R.id.grid)
     protected HeaderGridView mGrid;
 
-    @InjectView(R.id.refreshLayout)
+    @Bind(R.id.refreshLayout)
     protected SwipeRefreshLayout mRefreshLayout;
 
     protected FragmentListener mListener;
@@ -205,7 +205,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         fetchGallery();
     }
 
-    @Optional
+    @Nullable
     @OnClick(R.id.errorButton)
     public void onRetryClick() {
         mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);

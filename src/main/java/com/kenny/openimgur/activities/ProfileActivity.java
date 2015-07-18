@@ -39,7 +39,7 @@ import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LogUtil;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -62,19 +62,19 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
 
     private static final String KEY_USER = "user";
 
-    @InjectView(R.id.slidingTabs)
+    @Bind(R.id.slidingTabs)
     TabLayout mSlidingTabs;
 
-    @InjectView(R.id.pager)
+    @Bind(R.id.pager)
     ViewPager mPager;
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
-    @InjectView(R.id.toolBar)
+    @Bind(R.id.toolBar)
     Toolbar mToolBar;
 
-    @InjectView(R.id.toolBarContainer)
+    @Bind(R.id.toolBarContainer)
     View mToolbarContainer;
 
     private ImgurUser mSelectedUser;

@@ -29,7 +29,7 @@ import com.kenny.openimgur.util.ViewUtils;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -40,10 +40,10 @@ import retrofit.client.Response;
 public class ProfileMessagesFragment extends BaseFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AbsListView.OnScrollListener {
     private static final String KEY_ITEMS = "items";
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiStateView;
 
-    @InjectView(R.id.commentList)
+    @Bind(R.id.commentList)
     ListView mListView;
 
     private ConvoAdapter mAdapter;

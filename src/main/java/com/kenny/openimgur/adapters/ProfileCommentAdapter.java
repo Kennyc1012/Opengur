@@ -20,8 +20,8 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * Created by kcampagna on 12/22/14.
@@ -106,17 +106,17 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
     }
 
     static class CommentViewHolder {
-        @InjectView(R.id.author)
+        @Bind(R.id.author)
         TextView author;
 
-        @InjectView(R.id.comment)
+        @Bind(R.id.comment)
         TextView comment;
 
-        @InjectView(R.id.image)
+        @Bind(R.id.image)
         ImageView image;
 
         public CommentViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
             view.setTag(this);
         }
     }

@@ -26,8 +26,8 @@ import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 
 /**
@@ -40,19 +40,19 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
     private static final long TEXT_DELAY = DateUtils.SECOND_IN_MILLIS;
 
-    @InjectView(R.id.link)
+    @Bind(R.id.link)
     EditText mLink;
 
-    @InjectView(R.id.loadingContainer)
+    @Bind(R.id.loadingContainer)
     View mLoadingContainer;
 
-    @InjectView(R.id.linkValidation)
+    @Bind(R.id.linkValidation)
     TextView mLinkValidation;
 
-    @InjectView(R.id.add)
+    @Bind(R.id.add)
     Button mAddButton;
 
-    @InjectView(R.id.loadingIndicator)
+    @Bind(R.id.loadingIndicator)
     ProgressBar mLoadingIndicator;
 
     private PhotoUploadListener mListener;
@@ -104,7 +104,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
         mLink.addTextChangedListener(this);
         Bundle args = getArguments();
 
@@ -115,7 +115,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
     @Override
     public void onDestroyView() {
-        ButterKnife.reset(this);
+        ButterKnife.unbind(this);
         super.onDestroyView();
     }
 
@@ -162,6 +162,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
                                 @Override
                                 public void onLoadingStarted(String imageUri, View view) {
+                                    if (!isAdded()) return;
                                     mLoadingContainer.setVisibility(View.VISIBLE);
                                     mLoadingIndicator.setVisibility(View.VISIBLE);
                                     mLinkValidation.setText(R.string.upload_checking_link);
@@ -169,6 +170,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
                                 @Override
                                 public void onLoadingFailed(String s, View view, FailReason failReason) {
+                                    if (!isAdded()) return;
                                     mAddButton.setEnabled(false);
                                     mLoadingIndicator.setVisibility(View.INVISIBLE);
                                     mLinkValidation.setText(R.string.upload_invalid_link);
@@ -176,6 +178,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
                                 @Override
                                 public void onLoadingComplete(String url, View view, Bitmap bitmap) {
+                                    if (!isAdded()) return;
                                     mAddButton.setEnabled(true);
                                     mLoadingIndicator.setVisibility(View.INVISIBLE);
                                     mLinkValidation.setText(R.string.upload_valid_link);
@@ -183,6 +186,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
                                 @Override
                                 public void onLoadingCancelled(String s, View view) {
+                                    if (!isAdded()) return;
                                     mAddButton.setEnabled(false);
                                     mLoadingIndicator.setVisibility(View.INVISIBLE);
                                     mLinkValidation.setText(R.string.upload_invalid_link);

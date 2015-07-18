@@ -35,7 +35,7 @@ import com.kenny.openimgur.util.ViewUtils;
 
 import java.util.ArrayList;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -54,10 +54,10 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
 
     private static final String KEY_PAGE = "page";
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiStatView;
 
-    @InjectView(R.id.commentList)
+    @Bind(R.id.commentList)
     ListView mListView;
 
     private int mPage = 0;

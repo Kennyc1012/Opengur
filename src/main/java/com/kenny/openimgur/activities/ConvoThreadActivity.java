@@ -28,7 +28,7 @@ import com.kenny.snackbar.SnackBar;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -44,13 +44,13 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
 
     private static final String KEY_CONVO = "convo";
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
-    @InjectView(R.id.convoList)
+    @Bind(R.id.convoList)
     ListView mListView;
 
-    @InjectView(R.id.messageInput)
+    @Bind(R.id.messageInput)
     EditText mMessageInput;
 
     private ImgurConvo mConvo;

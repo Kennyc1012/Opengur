@@ -55,7 +55,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import pl.droidsonroids.gif.GifDrawable;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -71,10 +71,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     private static final String KEY_ITEMS = "items";
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
-    @InjectView(R.id.list)
+    @Bind(R.id.list)
     RecyclerView mListView;
 
     private ImgurBaseObject mImgurObject;

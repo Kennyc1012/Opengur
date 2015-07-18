@@ -19,7 +19,7 @@ import com.kenny.openimgur.ui.ViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by kcampagna on 6/2/15.
@@ -33,7 +33,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
     private static final String KEY_START_POSITION = "start_position";
 
-    @InjectView(R.id.pager)
+    @Bind(R.id.pager)
     ViewPager mPager;
 
     private FullScreenPagerAdapter mAdapter;

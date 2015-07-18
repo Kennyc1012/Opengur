@@ -60,7 +60,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -140,25 +140,25 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private static final String KEY_PANEL_EXPANDED = "panelExpanded";
 
-    @InjectView(R.id.pager)
+    @Bind(R.id.pager)
     ViewPager mViewPager;
 
-    @InjectView(R.id.sliding_layout)
+    @Bind(R.id.sliding_layout)
     SlidingUpPanelLayout mSlidingPane;
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
-    @InjectView(R.id.commentList)
+    @Bind(R.id.commentList)
     RecyclerView mCommentList;
 
-    @InjectView(R.id.panelUpBtn)
+    @Bind(R.id.panelUpBtn)
     ImageButton mPanelButton;
 
-    @InjectView(R.id.upVoteBtn)
+    @Bind(R.id.upVoteBtn)
     ImageButton mUpVoteBtn;
 
-    @InjectView(R.id.downVoteBtn)
+    @Bind(R.id.downVoteBtn)
     ImageButton mDownVoteBtn;
 
     private CommentAdapter mCommentAdapter;

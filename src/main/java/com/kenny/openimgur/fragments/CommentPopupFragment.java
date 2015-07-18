@@ -18,9 +18,10 @@ import android.widget.EditText;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.OpengurApp;
+import com.kenny.snackbar.SnackBar;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * Created by kcampagna on 8/22/14.
@@ -30,10 +31,10 @@ public class CommentPopupFragment extends DialogFragment implements DialogInterf
 
     private static final String KEY_PARENT_ID = "parent_id";
 
-    @InjectView(R.id.comment)
+    @Bind(R.id.comment)
     EditText mComment;
 
-    @InjectView(R.id.commentInputLayout)
+    @Bind(R.id.commentInputLayout)
     TextInputLayout mRemainingCharacters;
 
     private String mGalleryId;
@@ -70,7 +71,7 @@ public class CommentPopupFragment extends DialogFragment implements DialogInterf
 
     @Override
     public void onDestroyView() {
-        ButterKnife.reset(this);
+        ButterKnife.unbind(this);
         super.onDestroyView();
     }
 
@@ -94,6 +95,13 @@ public class CommentPopupFragment extends DialogFragment implements DialogInterf
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
+
+        if (args == null || !args.containsKey(KEY_GALLERY_ID)) {
+            dismiss();
+            SnackBar.show(getActivity(), R.string.error_generic);
+            return;
+        }
+
         mGalleryId = args.getString(KEY_GALLERY_ID);
         mParentId = args.getString(KEY_PARENT_ID, null);
     }
@@ -101,7 +109,7 @@ public class CommentPopupFragment extends DialogFragment implements DialogInterf
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.comment_dialog, null);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
 
         mComment.addTextChangedListener(new TextWatcher() {
             @Override

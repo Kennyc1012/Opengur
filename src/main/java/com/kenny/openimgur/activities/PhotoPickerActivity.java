@@ -25,22 +25,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by Kenny-PC on 6/20/2015.
  */
 public class PhotoPickerActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<List<String>>, View.OnClickListener {
     private static final int LOADER_ID = PhotoPickerActivity.class.hashCode();
+
     private static final String KEY_SAVED_PHOTOS = "saved_photos";
+
     private static final String KEY_SAVED_CHECKED_PHOTOS = "saved_checked_photos";
 
     public static final String KEY_PHOTOS = PhotoPickerActivity.class.getSimpleName() + ".photos";
 
-    @InjectView(R.id.grid)
+    @Bind(R.id.grid)
     RecyclerView mGrid;
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiStateView;
 
     private PhotoPickerAdapter mAdapter;

@@ -31,7 +31,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import pl.droidsonroids.gif.GifDrawable;
 
 public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
@@ -343,22 +343,22 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
     }
 
     static class PhotoViewHolder extends BaseViewHolder {
-        @InjectView(R.id.image)
+        @Bind(R.id.image)
         ImageView image;
 
-        @InjectView(R.id.play)
+        @Bind(R.id.play)
         FloatingActionButton play;
 
-        @InjectView(R.id.progressBar)
+        @Bind(R.id.progressBar)
         ProgressBar prog;
 
-        @InjectView(R.id.desc)
+        @Bind(R.id.desc)
         TextView desc;
 
-        @InjectView(R.id.title)
+        @Bind(R.id.title)
         TextView title;
 
-        @InjectView(R.id.videoView)
+        @Bind(R.id.videoView)
         VideoView video;
 
         public PhotoViewHolder(View view) {
@@ -367,22 +367,22 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
     }
 
     static class PhotoTitleHolder extends BaseViewHolder {
-        @InjectView(R.id.title)
+        @Bind(R.id.title)
         TextView title;
 
-        @InjectView(R.id.author)
+        @Bind(R.id.author)
         TextView author;
 
-        @InjectView(R.id.pointText)
+        @Bind(R.id.pointText)
         TextView points;
 
-        @InjectView(R.id.topic)
+        @Bind(R.id.topic)
         TextView topic;
 
-        @InjectView(R.id.tags)
+        @Bind(R.id.tags)
         TextView tags;
 
-        @InjectView(R.id.pointsBar)
+        @Bind(R.id.pointsBar)
         PointsBar pointsBar;
 
         public PhotoTitleHolder(View view) {

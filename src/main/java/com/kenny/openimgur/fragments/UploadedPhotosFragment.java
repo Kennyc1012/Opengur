@@ -36,7 +36,7 @@ import com.kenny.snackbar.SnackBar;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -45,10 +45,10 @@ import retrofit.client.Response;
  * Created by Kenny-PC on 1/14/2015.
  */
 public class UploadedPhotosFragment extends BaseFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AbsListView.OnScrollListener {
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     public MultiStateView mMultiStateView;
 
-    @InjectView(R.id.grid)
+    @Bind(R.id.grid)
     public HeaderGridView mGrid;
 
     private FragmentListener mListener;
