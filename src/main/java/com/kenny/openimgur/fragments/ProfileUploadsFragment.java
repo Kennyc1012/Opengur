@@ -158,7 +158,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements AdapterV
             public void success(BasicResponse basicResponse, Response response) {
                 if (!isAdded()) return;
 
-                if (basicResponse.data) {
+                if (basicResponse != null && basicResponse.data) {
                     GalleryAdapter adapter = getAdapter();
 
                     if (adapter != null) {

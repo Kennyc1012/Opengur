@@ -357,7 +357,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
             ApiClient.getService().getDefaultTopics(new Callback<TopicResponse>() {
                 @Override
                 public void success(TopicResponse topicResponse, Response response) {
-                    app.getSql().addTopics(topicResponse.data);
+                    if (topicResponse != null) app.getSql().addTopics(topicResponse.data);
                 }
 
                 @Override

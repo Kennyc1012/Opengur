@@ -334,7 +334,7 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
             public void success(TopicResponse topicResponse, Response response) {
                 if (!isAdded()) return;
 
-                if (!topicResponse.data.isEmpty()) {
+                if (topicResponse != null && !topicResponse.data.isEmpty()) {
                     app.getSql().addTopics(topicResponse.data);
                     mSpinner.setAdapter(new TopicsAdapter(getActivity(), topicResponse.data));
                     mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);

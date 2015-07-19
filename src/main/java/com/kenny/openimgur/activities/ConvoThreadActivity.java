@@ -171,6 +171,12 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         ApiClient.getService().getMessages(mConvo.getId(), mCurrentPage, new Callback<ConverastionResponse>() {
             @Override
             public void success(ConverastionResponse converastionResponse, Response response) {
+                if (converastionResponse == null) {
+                    mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    return;
+                }
+
                 if (converastionResponse.data.hasMessages()) {
                     boolean scrollToBottom = false;
 
@@ -231,7 +237,8 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         ApiClient.getService().sendMessage(mConvo.getWithAccount(), message.getBody(), new Callback<BasicResponse>() {
             @Override
             public void success(BasicResponse basicResponse, Response response) {
-                if (mAdapter != null) mAdapter.onMessageSendComplete(basicResponse.data, message.getId());
+                boolean success = basicResponse != null && basicResponse.data;
+                if (mAdapter != null) mAdapter.onMessageSendComplete(success, message.getId());
             }
 
             @Override
@@ -253,7 +260,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                         ApiClient.getService().blockUser(mConvo.getWithAccount(), mConvo.getWithAccount(), new Callback<BasicResponse>() {
                             @Override
                             public void success(BasicResponse basicResponse, Response response) {
-                                if (basicResponse.data) {
+                                if (basicResponse != null && basicResponse.data) {
                                     setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_BLOCKED_CONVO, mConvo));
                                     finish();
                                 } else {
@@ -281,7 +288,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                         ApiClient.getService().reportUser(mConvo.getWithAccount(), mConvo.getWithAccount(), new Callback<BasicResponse>() {
                             @Override
                             public void success(BasicResponse basicResponse, Response response) {
-                                if (basicResponse.data) {
+                                if (basicResponse != null && basicResponse.data) {
                                     SnackBar.show(ConvoThreadActivity.this, getString(R.string.convo_user_reported, mConvo.getWithAccount()));
                                 } else {
                                     SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);

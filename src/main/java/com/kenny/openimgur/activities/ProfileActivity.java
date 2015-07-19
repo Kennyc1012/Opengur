@@ -282,7 +282,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         ApiClient.getService().getProfile(username, new Callback<UserResponse>() {
             @Override
             public void success(UserResponse userResponse, Response response) {
-                if (userResponse.data != null) {
+                if (userResponse != null && userResponse.data != null) {
                     if (mSelectedUser != null) {
                         mSelectedUser.copy(userResponse.data);
                     } else {

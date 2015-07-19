@@ -311,6 +311,12 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     public void success(GalleryResponse galleryResponse, Response response) {
         if (!isAdded()) return;
 
+        if (galleryResponse == null) {
+            mMultiStateView.setErrorText(R.id.errorMessage, R.string.error_generic);
+            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+            return;
+        }
+
         if (!galleryResponse.data.isEmpty()) {
             if (getAdapter() == null) {
                 setUpGridTop();

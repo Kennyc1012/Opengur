@@ -172,7 +172,7 @@ public class ProfileMessagesFragment extends BaseFragment implements AdapterView
             public void success(ConvoResponse convoResponse, Response response) {
                 if (!isAdded()) return;
 
-                if (convoResponse.data != null && !convoResponse.data.isEmpty()) {
+                if (convoResponse != null && convoResponse.data != null && !convoResponse.data.isEmpty()) {
                     mAdapter = new ConvoAdapter(getActivity(), convoResponse.data);
                     mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
                     mListView.setAdapter(mAdapter);

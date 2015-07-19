@@ -484,7 +484,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             public void success(AlbumResponse albumResponse, Response response) {
                 if (!isAdded()) return;
 
-                if (!albumResponse.data.isEmpty()) {
+                if (albumResponse != null && !albumResponse.data.isEmpty()) {
                     ((ImgurAlbum) mImgurObject).addPhotosToAlbum(albumResponse.data);
                     mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
                     mListView.setAdapter(mPhotoAdapter);
@@ -538,7 +538,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             public void success(BasicObjectResponse basicObjectResponse, Response response) {
                 if (!isAdded()) return;
 
-                if (basicObjectResponse.data != null) {
+                if (basicObjectResponse != null && basicObjectResponse.data != null) {
                     setupFragmentWithObject(basicObjectResponse.data);
                 } else {
                     mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
@@ -563,7 +563,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             public void success(BasicResponse basicResponse, Response response) {
                 if (!isAdded()) return;
 
-                if (basicResponse.success) {
+                if (basicResponse != null && basicResponse.success) {
                     mImgurObject.setIsFavorite(!mImgurObject.isFavorited());
                     getActivity().invalidateOptionsMenu();
                 } else {

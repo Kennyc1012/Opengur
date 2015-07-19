@@ -238,7 +238,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
             public void success(CommentResponse commentResponse, Response response) {
                 if (!isAdded()) return;
 
-                if (!commentResponse.data.isEmpty()) {
+                if (commentResponse != null && !commentResponse.data.isEmpty()) {
                     if (mAdapter == null) {
                         mAdapter = new ProfileCommentAdapter(getActivity(), commentResponse.data);
                         mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));

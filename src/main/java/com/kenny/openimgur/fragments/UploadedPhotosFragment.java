@@ -214,8 +214,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
         Callback<BasicResponse> cb = new Callback<BasicResponse>() {
             @Override
             public void success(BasicResponse basicResponse, Response response) {
-                // We don't take any action on the responses, just log the responses
-                LogUtil.v(TAG, "Result of deletion " + basicResponse.data);
+                // We don't take any action on the responses
             }
 
             @Override

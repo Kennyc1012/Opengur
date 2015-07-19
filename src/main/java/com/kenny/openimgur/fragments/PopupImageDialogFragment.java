@@ -263,7 +263,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             public void success(PhotoResponse photoResponse, Response response) {
                 if (!isAdded()) return;
 
-                if (photoResponse.data != null) {
+                if (photoResponse != null && photoResponse.data != null) {
                     ImgurPhoto photo = photoResponse.data;
 
                     if (photo.isAnimated()) {

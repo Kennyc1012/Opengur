@@ -58,7 +58,7 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
             ApiClient.getService().getDefaultTopics(new Callback<TopicResponse>() {
                 @Override
                 public void success(TopicResponse topicResponse, Response response) {
-                    if (!isAdded()) return;
+                    if (!isAdded() || topicResponse == null) return;
 
                     mApp.getSql().addTopics(topicResponse.data);
 

@@ -664,6 +664,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         return;
                     }
 
+                    if (commentResponse == null) {
+                        mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                        return;
+                    }
+
                     if (!commentResponse.data.isEmpty()) {
                         ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
                         ImgurComment comment = commentResponse.data.get(0);
@@ -712,6 +718,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             ApiClient.getService().getAlbumImages(id, new Callback<AlbumResponse>() {
                 @Override
                 public void success(AlbumResponse albumResponse, Response response) {
+                    if (albumResponse == null) {
+                        mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                        return;
+                    }
+
                     ImgurAlbum album = new ImgurAlbum(mGalleryId, null, getIntent().getData().toString());
                     mGalleryId = null;
                     album.addPhotosToAlbum(albumResponse.data);
@@ -734,7 +746,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             ApiClient.getService().getGalleryDetails(id, new Callback<BasicObjectResponse>() {
                 @Override
                 public void success(BasicObjectResponse basicObjectResponse, Response response) {
-                    if (basicObjectResponse.data != null) {
+                    if (basicObjectResponse == null && basicObjectResponse.data != null) {
                         final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
                         objects.add(basicObjectResponse.data);
                         mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
@@ -761,7 +773,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         ApiClient.getService().voteOnGallery(id, vote, vote, new Callback<BasicResponse>() {
             @Override
             public void success(BasicResponse basicResponse, Response response) {
-                if (basicResponse.data) {
+                if (basicResponse != null && basicResponse.data) {
                     View animateView = ImgurBaseObject.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
                     AnimatorSet set = new AnimatorSet();
                     set.playTogether(
@@ -788,7 +800,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         ApiClient.getService().voteOnComment(id, vote, vote, new Callback<BasicResponse>() {
             @Override
             public void success(BasicResponse basicResponse, Response response) {
-                int stringId = basicResponse.data ? R.string.vote_cast : R.string.error_generic;
+                int stringId = basicResponse != null && basicResponse.data ? R.string.vote_cast : R.string.error_generic;
                 SnackBar.show(ViewActivity.this, stringId);
             }
 
@@ -807,7 +819,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         Callback<CommentPostResponse> cb = new Callback<CommentPostResponse>() {
             @Override
             public void success(CommentPostResponse commentPostResponse, Response response) {
-                if (!TextUtils.isEmpty(commentPostResponse.data)) {
+                if (commentPostResponse != null && !TextUtils.isEmpty(commentPostResponse.data)) {
                     SnackBar.show(ViewActivity.this, R.string.comment_post_successful);
                     fetchComments();
                 } else {
