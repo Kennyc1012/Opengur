@@ -359,7 +359,7 @@ public class UploadService extends IntentService {
 
             BasicObjectResponse response = ApiClient.getService().createAlbum(sb.toString(), coverId, title, desc);
 
-            if (response.data != null) {
+            if (response != null && response.data != null) {
                 // The response only contains the id and the delete hash, we need to construct the object from them
                 String link = "https://imgur.com/a/" + response.data.getId();
                 ImgurAlbum album = new ImgurAlbum(response.data.getId(), title, link, response.data.getDeleteHash());
@@ -399,9 +399,8 @@ public class UploadService extends IntentService {
 
         try {
             BasicResponse response = ApiClient.getService().submitToGallery(upload.getId(), title, topicId, "1");
-            LogUtil.v(TAG, "Result of gallery submission " + response.data);
 
-            if (response.data) {
+            if (response != null && response.data) {
                 onSuccessfulUpload(upload);
             } else {
                 onGallerySubmitFailed(upload);
