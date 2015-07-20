@@ -746,7 +746,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             ApiClient.getService().getGalleryDetails(id, new Callback<BasicObjectResponse>() {
                 @Override
                 public void success(BasicObjectResponse basicObjectResponse, Response response) {
-                    if (basicObjectResponse == null && basicObjectResponse.data != null) {
+                    if (basicObjectResponse != null && basicObjectResponse.data != null) {
                         final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
                         objects.add(basicObjectResponse.data);
                         mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
