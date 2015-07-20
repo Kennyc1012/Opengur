@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.text.format.DateUtils;
 
 import com.google.gson.annotations.SerializedName;
 import com.kenny.openimgur.R;
@@ -194,7 +195,7 @@ public class ImgurUser implements Parcelable {
     }
 
     public long getCreated() {
-        return mCreated;
+        return mCreated * DateUtils.SECOND_IN_MILLIS;
     }
 
     public String getUsername() {
