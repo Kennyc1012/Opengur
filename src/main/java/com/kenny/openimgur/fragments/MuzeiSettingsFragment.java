@@ -82,7 +82,7 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
                 @Override
                 public void failure(RetrofitError error) {
                     if (!isAdded()) return;
-                    LogUtil.e(TAG, "Failed to receive topics with status code " + error.getResponse().getStatus(), error);
+                    LogUtil.e(TAG, "Failed to receive topics", error);
                     // TODO Some error?
                 }
             });
