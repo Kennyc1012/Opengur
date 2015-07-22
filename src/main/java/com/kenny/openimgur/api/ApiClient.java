@@ -113,7 +113,11 @@ public class ApiClient {
                 return R.string.error_network;
 
             case HTTP:
-                return getErrorCode(error.getResponse().getStatus());
+                if (error.getResponse() != null) {
+                    return getErrorCode(error.getResponse().getStatus());
+                } else {
+                    return R.string.error_generic;
+                }
 
             case CONVERSION:
             case UNEXPECTED:
