@@ -254,14 +254,15 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     @Override
     protected void fetchGallery() {
         if (TextUtils.isEmpty(mQuery)) return;
-
         super.fetchGallery();
+
         ImgurService apiService = ApiClient.getService();
+        String query = mQuery.replaceAll("\\s", "");
 
         if (mSort == RedditSort.TOP) {
-            apiService.getSubRedditForTopSorted(mQuery, mTopSort.getSort(), mCurrentPage, this);
+            apiService.getSubRedditForTopSorted(query, mTopSort.getSort(), mCurrentPage, this);
         } else {
-            apiService.getSubReddit(mQuery, mSort.getSort(), mCurrentPage, this);
+            apiService.getSubReddit(query, mSort.getSort(), mCurrentPage, this);
         }
     }
 
