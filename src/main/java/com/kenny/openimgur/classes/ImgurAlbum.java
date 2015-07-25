@@ -5,31 +5,26 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.util.LogUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class for Imgur Albums
+ * Created by kcampagna on 7/11/15.
  */
 public class ImgurAlbum extends ImgurBaseObject {
-    private static final String KEY_COVER_ID = "cover";
+    public static final String ALBUM_COVER_URL = "https://i.imgur.com/%s.jpg";
 
-    private static final String KEY_COVER_WIDTH = "cover_width";
-
-    private static final String KEY_COVER_HEIGHT = "cover_height";
-
+    @SerializedName("cover")
     private String mCoverId;
 
     private String mCoverUrl;
 
+    @SerializedName("cover_width")
     private int mCoverWidth;
 
+    @SerializedName("cover_height")
     private int mCoverHeight;
 
     private List<ImgurPhoto> mAlbumPhotos;
@@ -38,35 +33,8 @@ public class ImgurAlbum extends ImgurBaseObject {
         super(id, title, link);
     }
 
-    public ImgurAlbum(JSONObject json) {
-        super(json);
-        parseJson(json);
-    }
-
-    /**
-     * Parses the JSON for common values
-     *
-     * @param json
-     */
-    private void parseJson(JSONObject json) {
-
-        try {
-            if (!json.isNull(KEY_COVER_ID)) {
-                mCoverId = json.getString(KEY_COVER_ID);
-                mCoverUrl = String.format(Endpoints.ALBUM_COVER.getUrl(), mCoverId + ImgurPhoto.THUMBNAIL_MEDIUM);
-            }
-
-            if (!json.isNull(KEY_COVER_HEIGHT)) {
-                mCoverHeight = json.getInt(KEY_COVER_HEIGHT);
-            }
-
-            if (!json.isNull(KEY_COVER_WIDTH)) {
-                mCoverWidth = json.getInt(KEY_COVER_WIDTH);
-            }
-
-        } catch (JSONException ex) {
-            LogUtil.e("ImgurAlbum", "Error Decoding JSON", ex);
-        }
+    public ImgurAlbum(String id, String title, String link, String deleteHash) {
+        super(id, title, link, deleteHash);
     }
 
     private ImgurAlbum(Parcel in) {
@@ -103,9 +71,9 @@ public class ImgurAlbum extends ImgurBaseObject {
      */
     public String getCoverUrl(@Nullable String size) {
         if (TextUtils.isEmpty(size)) {
-            return String.format(Endpoints.ALBUM_COVER.getUrl(), mCoverId);
+            return String.format(ALBUM_COVER_URL, mCoverId);
         } else {
-            return String.format(Endpoints.ALBUM_COVER.getUrl(), mCoverId + size);
+            return String.format(ALBUM_COVER_URL, mCoverId + size);
         }
     }
 

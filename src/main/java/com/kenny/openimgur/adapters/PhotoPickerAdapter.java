@@ -2,7 +2,6 @@ package com.kenny.openimgur.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by Kenny-PC on 6/20/2015.
@@ -106,16 +105,16 @@ public class PhotoPickerAdapter extends BaseRecyclerAdapter<String> {
         return null;
     }
 
-    public void setCheckedPhotos(List<String> checkedPhotos){
+    public void setCheckedPhotos(List<String> checkedPhotos) {
         mCheckPhotos.addAll(checkedPhotos);
         notifyDataSetChanged();
     }
 
     static class PhotoViewHolder extends BaseViewHolder {
-        @InjectView(R.id.image)
+        @Bind(R.id.image)
         ImageView image;
 
-        @InjectView(R.id.checkMark)
+        @Bind(R.id.checkMark)
         ImageView checkMark;
 
         public PhotoViewHolder(View view) {

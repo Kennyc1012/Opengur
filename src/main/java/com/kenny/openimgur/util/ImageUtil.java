@@ -35,6 +35,7 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.DiskCacheUtils;
 
@@ -262,7 +263,8 @@ public class ImageUtil {
     public static DisplayImageOptions.Builder getDisplayOptionsForGallery() {
         return getDefaultDisplayOptions()
                 .displayer(new FadeInBitmapDisplayer(250, true, false, false))
-                .bitmapConfig(Bitmap.Config.RGB_565);
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .imageScaleType(ImageScaleType.EXACTLY);
     }
 
     /**
@@ -287,7 +289,7 @@ public class ImageUtil {
     }
 
     public static DisplayImageOptions.Builder getDisplayOptionsForPhotoPicker() {
-        return getDefaultDisplayOptions()
+        return getDisplayOptionsForGallery()
                 .cacheOnDisk(false)
                 .considerExifParams(true);
     }

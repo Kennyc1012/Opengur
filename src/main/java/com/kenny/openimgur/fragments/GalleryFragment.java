@@ -5,7 +5,6 @@ import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
@@ -20,24 +19,15 @@ import android.widget.FilterQueryProvider;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.GallerySearchActivity;
-import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.adapters.SearchAdapter;
-import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.api.ImgurBusEvent;
-import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySection;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
 import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
-import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
-
-import org.apache.commons.collections15.list.SetUniqueList;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by kcampagna on 8/14/14.
@@ -65,7 +55,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
 
     protected SearchAdapter mSearchAdapter;
 
-    public static GalleryFragment createInstance() {
+    public static GalleryFragment newInstance() {
         return new GalleryFragment();
     }
 
@@ -79,11 +69,6 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_gallery, container, false);
-    }
-
-    @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        startActivity(ViewActivity.createIntent(getActivity(), items, position));
     }
 
     @Override
@@ -193,20 +178,6 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         super.onDestroyView();
     }
 
-    /**
-     * Returns the URL based on the selected sort and section
-     *
-     * @return
-     */
-    protected String getGalleryUrl() {
-        if (mSort == GallerySort.HIGHEST_SCORING) {
-            return String.format(Endpoints.GALLERY_TOP.getUrl(), mSection.getSection(), mSort.getSort(),
-                    mTimeSort.getSort(), mCurrentPage, mShowViral);
-        }
-
-        return String.format(Endpoints.GALLERY.getUrl(), mSection.getSection(), mSort.getSort(), mCurrentPage, mShowViral);
-    }
-
     @Override
     public void onFilterChange(GallerySection section, GallerySort sort, TimeSort timeSort, boolean showViral) {
         FragmentManager fm = getFragmentManager();
@@ -240,77 +211,16 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         fetchGallery();
     }
 
-    private ImgurHandler mHandler = new ImgurHandler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (!canDoFragmentTransaction()) {
-                LogUtil.w(TAG, "Fragment is being removed, or activity is finishing, not delivering message");
-                return;
-            }
-
-            mRefreshLayout.setRefreshing(false);
-
-            switch (msg.what) {
-                case MESSAGE_ACTION_COMPLETE:
-                    List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
-
-                    if (getAdapter() == null) {
-                        setUpGridTop();
-                        setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(gallery)));
-                    } else {
-                        getAdapter().addItems(gallery);
-                    }
-
-                    mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
-
-                    // Due to MultiStateView setting the views visibility to GONE, the list will not reset to the top
-                    // If they change the filter or refresh
-                    if (mCurrentPage == 0) {
-                        if (mListener != null) mListener.onLoadingComplete();
-
-                        if (GalleryFragment.this instanceof GallerySearchFragment) {
-                            ((GallerySearchFragment) GalleryFragment.this).onSuccessfulSearch();
-                        }
-
-                        mMultiStateView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mGrid != null) mGrid.setSelection(0);
-                            }
-                        });
-                    }
-                    break;
-
-                case MESSAGE_ACTION_FAILED:
-                    if (getAdapter() == null || getAdapter().isEmpty()) {
-                        if (mListener != null) {
-                            mListener.onError((Integer) msg.obj);
-                        }
-
-                        mMultiStateView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
-                        mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
-                    }
-                    break;
-
-                case MESSAGE_EMPTY_RESULT:
-                    // We only care about empty messages when searching
-                    if (GalleryFragment.this instanceof GallerySearchFragment) {
-                        ((GallerySearchFragment) GalleryFragment.this).onEmptyResults();
-                    }
-                    break;
-
-                default:
-                    super.handleMessage(msg);
-                    break;
-            }
-
-            mIsLoading = false;
-        }
-    };
-
     @Override
     protected void fetchGallery() {
-        makeRequest(getGalleryUrl());
+        super.fetchGallery();
+        ImgurService apiService = ApiClient.getService();
+
+        if (mSort == GallerySort.HIGHEST_SCORING) {
+            apiService.getGalleryForTopSorted(mSection.getSection(), mTimeSort.getSort(), mCurrentPage, this);
+        } else {
+            apiService.getGallery(mSection.getSection(), mSort.getSort(), mCurrentPage, mShowViral, this);
+        }
     }
 
     @Override
@@ -350,15 +260,5 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                 .putBoolean(KEY_SHOW_VIRAL, mShowViral)
                 .putString(KEY_TOP_SORT, mTimeSort.getSort())
                 .putString(KEY_SORT, mSort.getSort()).apply();
-    }
-
-    @Override
-    public ImgurBusEvent.EventType getEventType() {
-        return ImgurBusEvent.EventType.GALLERY;
-    }
-
-    @Override
-    protected ImgurHandler getHandler() {
-        return mHandler;
     }
 }

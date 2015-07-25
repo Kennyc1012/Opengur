@@ -37,7 +37,7 @@ import com.kenny.snackbar.SnackBar;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by kcampagna on 12/14/14.
@@ -45,25 +45,25 @@ import butterknife.InjectView;
 public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     private static final String KEY_USER = "user";
 
-    @InjectView(R.id.username)
+    @Bind(R.id.username)
     TextView mUserName;
 
-    @InjectView(R.id.notoriety)
+    @Bind(R.id.notoriety)
     TextView mNotoriety;
 
-    @InjectView(R.id.rep)
+    @Bind(R.id.rep)
     TextView mRep;
 
-    @InjectView(R.id.bio)
+    @Bind(R.id.bio)
     TextView mBio;
 
-    @InjectView(R.id.date)
+    @Bind(R.id.date)
     TextView mDate;
 
-    @InjectView(R.id.container)
+    @Bind(R.id.container)
     ScrollView mContainer;
 
-    @InjectView(R.id.infoContainer)
+    @Bind(R.id.infoContainer)
     LinearLayout mInfoContainer;
 
     private ImgurUser mSelectedUser;
@@ -126,7 +126,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
         switch (item.getItemId()) {
             case R.id.message:
                 if (app.getUser() != null) {
-                    ImgurConvo convo = ImgurConvo.createConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
+                    ImgurConvo convo = new ImgurConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
                     startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
                 } else {
                     SnackBar.show(getActivity(), R.string.user_not_logged_in);

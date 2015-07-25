@@ -39,7 +39,7 @@ import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 /**
@@ -68,16 +68,16 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     public static final int PAGE_FEEDBACK = 9;
 
-    @InjectView(R.id.drawerLayout)
+    @Bind(R.id.drawerLayout)
     DrawerLayout mDrawer;
 
-    @InjectView(R.id.fab)
+    @Bind(R.id.fab)
     FloatingActionButton mUploadButton;
 
-    @InjectView(R.id.toolBar)
+    @Bind(R.id.toolBar)
     Toolbar mToolBar;
 
-    @InjectView(R.id.navigationView)
+    @Bind(R.id.navigationView)
     NavigationView mNavigationView;
 
     private int mCurrentPage = -1;
@@ -235,19 +235,19 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         switch (menuItemId) {
             case R.id.nav_gallery:
                 if (mCurrentPage == PAGE_GALLERY) return;
-                fragment = GalleryFragment.createInstance();
+                fragment = GalleryFragment.newInstance();
                 mCurrentPage = PAGE_GALLERY;
                 break;
 
             case R.id.nav_reddit:
                 if (mCurrentPage == PAGE_SUBREDDIT) return;
-                fragment = RedditFragment.createInstance();
+                fragment = RedditFragment.newInstance();
                 mCurrentPage = PAGE_SUBREDDIT;
                 break;
 
             case R.id.nav_random:
                 if (mCurrentPage == PAGE_RANDOM) return;
-                fragment = RandomFragment.createInstance();
+                fragment = RandomFragment.newInstance();
                 mCurrentPage = PAGE_RANDOM;
                 break;
 
@@ -342,7 +342,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     }
 
     @Override
-    public void onError(int errorCode) {
+    public void onError() {
         toggleFAB(false);
     }
 

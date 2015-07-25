@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -23,26 +24,31 @@ import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.UploadAdapter;
 import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.Endpoints;
+import com.kenny.openimgur.api.ImgurService;
+import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by Kenny-PC on 1/14/2015.
  */
 public class UploadedPhotosFragment extends BaseFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AbsListView.OnScrollListener {
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     public MultiStateView mMultiStateView;
 
-    @InjectView(R.id.grid)
+    @Bind(R.id.grid)
     public HeaderGridView mGrid;
 
     private FragmentListener mListener;
@@ -165,13 +171,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                                             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    if (cb.isChecked()) {
-                                                        Endpoints ep = photo.isAlbum() ? Endpoints.ALBUM_DELETE : Endpoints.IMAGE_DELETE;
-                                                        String url = String.format(ep.getUrl(), photo.getDeleteHash());
-                                                        // We don't care about any conformation here
-                                                        new ApiClient(url, ApiClient.HttpRequest.DELETE).doWork(null, null, null);
-                                                    }
-
+                                                    if (cb.isChecked()) deleteItem(photo);
                                                     app.getSql().deleteUploadedPhoto(photo);
                                                     mAdapter.removeItem(photo);
 
@@ -207,5 +207,26 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
         }
 
         mPreviousItem = firstVisibleItem;
+    }
+
+    private void deleteItem(@NonNull UploadedPhoto photo) {
+        ImgurService apiService = ApiClient.getService();
+        Callback<BasicResponse> cb = new Callback<BasicResponse>() {
+            @Override
+            public void success(BasicResponse basicResponse, Response response) {
+                // We don't take any action on the responses
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                LogUtil.e(TAG, "Unable to delete item", error);
+            }
+        };
+
+        if (photo.isAlbum()) {
+            apiService.deleteAlbum(photo.getDeleteHash(), cb);
+        } else {
+            apiService.deletePhoto(photo.getDeleteHash(), cb);
+        }
     }
 }

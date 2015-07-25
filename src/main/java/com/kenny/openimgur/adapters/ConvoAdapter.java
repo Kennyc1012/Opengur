@@ -13,7 +13,7 @@ import com.kenny.openimgur.classes.ImgurConvo;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by kcampagna on 12/24/14.
@@ -67,13 +67,13 @@ public class ConvoAdapter extends ImgurBaseAdapter<ImgurConvo> {
     }
 
     static class ConvoViewHolder extends ImgurViewHolder {
-        @InjectView(R.id.author)
+        @Bind(R.id.author)
         TextView author;
 
-        @InjectView(R.id.comment)
+        @Bind(R.id.comment)
         TextView message;
 
-        @InjectView(R.id.image)
+        @Bind(R.id.image)
         ImageView image;
 
         public ConvoViewHolder(View view) {

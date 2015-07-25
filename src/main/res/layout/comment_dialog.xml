@@ -1,67 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <TextView
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/commentInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dialog_content_margin"
-        android:text="@string/comment"
-        android:textAppearance="@style/TextAppearance.Medium"
-        android:textSize="25sp" />
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="16dp">
 
-    <EditText
-        android:id="@+id/comment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dialog_content_margin"
-        android:layout_marginRight="@dimen/dialog_content_margin"
-        android:hint="@string/comment_hint"
-        android:inputType="textCapSentences|textMultiLine"
-        android:maxLength="140">
-
-        <requestFocus />
-    </EditText>
-
-    <TextView
-        android:id="@+id/remainingCharacters"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dialog_content_margin"
-        android:layout_marginTop="4dp"
-        android:text="140"
-        android:textAppearance="@style/TextAppearance.Regular"
-        android:textSize="18sp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dialog_button_margin"
-        android:layout_marginLeft="@dimen/dialog_button_margin"
-        android:layout_marginRight="@dimen/dialog_button_margin"
-        android:layout_marginTop="@dimen/dialog_content_margin"
-        android:gravity="end"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/cancel"
-            style="@style/Widget.AppCompat.ActionButton"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/comment"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/cancel"
-            android:textAllCaps="true" />
+            android:layout_marginLeft="@dimen/dialog_content_margin"
+            android:layout_marginRight="@dimen/dialog_content_margin"
+            android:hint="@string/comment_hint"
+            android:inputType="textCapSentences|textMultiLine"
+            android:maxLength="140">
 
-        <Button
-            android:id="@+id/post"
-            style="@style/Widget.AppCompat.ActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/post"
-            android:textAllCaps="true"
-            android:textColor="?colorAccent" />
+            <requestFocus />
+        </EditText>
 
-    </LinearLayout>
+    </android.support.design.widget.TextInputLayout>
 
-</LinearLayout>
+</FrameLayout>
+

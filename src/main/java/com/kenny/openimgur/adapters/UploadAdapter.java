@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.api.Endpoints;
+import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.ImageUtil;
@@ -14,7 +14,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by Kenny-PC on 1/14/2015.
@@ -44,7 +44,7 @@ public class UploadAdapter extends ImgurBaseAdapter<UploadedPhoto> {
         String url;
 
         if (photo.isAlbum()) {
-            url = String.format(Endpoints.ALBUM_COVER.getUrl(), photo.getCoverId() + ImgurPhoto.THUMBNAIL_GALLERY);
+            url = String.format(ImgurAlbum.ALBUM_COVER_URL, photo.getCoverId() + ImgurPhoto.THUMBNAIL_GALLERY);
             holder.albumIndicator.setVisibility(View.VISIBLE);
         } else {
             url = ImageUtil.getThumbnail(photo.getUrl(), ImgurPhoto.THUMBNAIL_GALLERY);
@@ -56,10 +56,10 @@ public class UploadAdapter extends ImgurBaseAdapter<UploadedPhoto> {
     }
 
     static class UploadHolder extends ImgurBaseAdapter.ImgurViewHolder {
-        @InjectView(R.id.image)
+        @Bind(R.id.image)
         ImageView image;
 
-        @InjectView(R.id.albumIndicator)
+        @Bind(R.id.albumIndicator)
         ImageView albumIndicator;
 
         public UploadHolder(View view) {

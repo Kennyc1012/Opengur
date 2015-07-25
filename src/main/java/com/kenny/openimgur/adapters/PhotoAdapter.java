@@ -20,6 +20,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.ImgurTag;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.VideoView;
@@ -28,10 +29,9 @@ import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import pl.droidsonroids.gif.GifDrawable;
 
 public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
@@ -146,7 +146,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
                 }
 
                 for (int i = 0; i < size; i++) {
-                    builder.append(mImgurObject.getTags().get(i));
+                    builder.append(mImgurObject.getTags().get(i).getName());
                     if (i != size - 1) builder.append(", ");
                 }
 
@@ -320,7 +320,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
         return false;
     }
 
-    public void setTags(ArrayList<String> tags) {
+    public void setTags(List<ImgurTag> tags) {
         mImgurObject.setTags(tags);
         notifyDataSetChanged();
     }
@@ -343,22 +343,22 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
     }
 
     static class PhotoViewHolder extends BaseViewHolder {
-        @InjectView(R.id.image)
+        @Bind(R.id.image)
         ImageView image;
 
-        @InjectView(R.id.play)
+        @Bind(R.id.play)
         FloatingActionButton play;
 
-        @InjectView(R.id.progressBar)
+        @Bind(R.id.progressBar)
         ProgressBar prog;
 
-        @InjectView(R.id.desc)
+        @Bind(R.id.desc)
         TextView desc;
 
-        @InjectView(R.id.title)
+        @Bind(R.id.title)
         TextView title;
 
-        @InjectView(R.id.videoView)
+        @Bind(R.id.videoView)
         VideoView video;
 
         public PhotoViewHolder(View view) {
@@ -367,22 +367,22 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
     }
 
     static class PhotoTitleHolder extends BaseViewHolder {
-        @InjectView(R.id.title)
+        @Bind(R.id.title)
         TextView title;
 
-        @InjectView(R.id.author)
+        @Bind(R.id.author)
         TextView author;
 
-        @InjectView(R.id.pointText)
+        @Bind(R.id.pointText)
         TextView points;
 
-        @InjectView(R.id.topic)
+        @Bind(R.id.topic)
         TextView topic;
 
-        @InjectView(R.id.tags)
+        @Bind(R.id.tags)
         TextView tags;
 
-        @InjectView(R.id.pointsBar)
+        @Bind(R.id.pointsBar)
         PointsBar pointsBar;
 
         public PhotoTitleHolder(View view) {

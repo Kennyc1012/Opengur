@@ -12,5 +12,5 @@ public interface FragmentListener {
 
     void onLoadingComplete();
 
-    void onError(int errorCode);
+    void onError();
 }

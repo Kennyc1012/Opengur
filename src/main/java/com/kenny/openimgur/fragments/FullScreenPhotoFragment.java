@@ -37,7 +37,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 import java.io.File;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import pl.droidsonroids.gif.GifDrawable;
 
 /**
@@ -50,16 +50,16 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
     private static final long GIF_DELAY = 350L;
 
-    @InjectView(R.id.image)
+    @Bind(R.id.image)
     SubsamplingScaleImageView mImageView;
 
-    @InjectView(R.id.multiView)
+    @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
-    @InjectView(R.id.video)
+    @Bind(R.id.video)
     VideoView mVideoView;
 
-    @InjectView(R.id.gifImage)
+    @Bind(R.id.gifImage)
     ImageView mGifImageView;
 
     private ImgurPhoto mPhoto;

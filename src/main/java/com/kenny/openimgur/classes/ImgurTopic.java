@@ -4,26 +4,20 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
 import com.kenny.openimgur.util.DBContracts;
-import com.kenny.openimgur.util.LogUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by kcampagna on 2/19/15.
  */
 public class ImgurTopic implements Parcelable {
-    private static final String KEY_NAME = "name";
-
-    private static final String KEY_ID = "id";
-
-    private static final String KEY_DESC = "description";
-
+    @SerializedName("id")
     private int mId;
 
+    @SerializedName("name")
     private String mName;
 
+    @SerializedName("description")
     private String mDesc;
 
     public ImgurTopic(Cursor cursor) {
@@ -32,38 +26,10 @@ public class ImgurTopic implements Parcelable {
         mDesc = cursor.getString(DBContracts.TopicsContract.COLUMN_INDEX_DESC);
     }
 
-    public ImgurTopic(JSONObject json) {
-        parseJson(json);
-    }
-
     private ImgurTopic(Parcel in) {
         mId = in.readInt();
         mName = in.readString();
         mDesc = in.readString();
-    }
-
-    /**
-     * Parses the JSON for common values
-     *
-     * @param json
-     */
-    private void parseJson(JSONObject json) {
-        try {
-            if (!json.isNull(KEY_NAME)) {
-                mName = json.getString(KEY_NAME);
-            }
-
-            if (!json.isNull(KEY_DESC)) {
-                mDesc = json.getString(KEY_DESC);
-            }
-
-            if (!json.isNull(KEY_ID)) {
-                mId = json.getInt(KEY_ID);
-            }
-
-        } catch (JSONException ex) {
-            LogUtil.e("ImgurTopic", "Error Decoding JSON", ex);
-        }
     }
 
     public String getName() {

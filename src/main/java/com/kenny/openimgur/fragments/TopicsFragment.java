@@ -4,7 +4,6 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,21 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.adapters.GalleryAdapter;
-import com.kenny.openimgur.api.Endpoints;
-import com.kenny.openimgur.api.ImgurBusEvent;
-import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.classes.ImgurFilters;
-import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
-
-import org.apache.commons.collections15.list.SetUniqueList;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by kcampagna on 2/19/15.
@@ -135,95 +125,34 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
     }
 
     @Override
-    public ImgurBusEvent.EventType getEventType() {
-        return ImgurBusEvent.EventType.TOPICS;
-    }
-
-    @Override
     protected void fetchGallery() {
         if (mTopic == null) return;
+        super.fetchGallery();
 
-        String url;
+        ImgurService apiService = ApiClient.getService();
 
         if (mSort == ImgurFilters.GallerySort.HIGHEST_SCORING) {
-            url = String.format(Endpoints.TOPICS_TOP.getUrl(), mTopic.getId(), mSort.getSort(), mTimeSort.getSort(), mCurrentPage);
+            apiService.getTopicForTopSorted(mTopic.getId(), mTimeSort.getSort(), mCurrentPage, this);
         } else {
-            url = String.format(Endpoints.TOPICS.getUrl(), mTopic.getId(), mSort.getSort(), mCurrentPage);
+            apiService.getTopic(mTopic.getId(), mSort.getSort(), mCurrentPage, this);
         }
-
-        makeRequest(url);
     }
 
     @Override
-    protected ImgurHandler getHandler() {
-        return mHandler;
-    }
+    protected void onEmptyResults() {
+        mIsLoading = false;
 
-    @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        startActivity(ViewActivity.createIntent(getActivity(), items, position));
-    }
-
-    private ImgurHandler mHandler = new ImgurHandler() {
-        @Override
-        public void handleMessage(Message msg) {
-            mRefreshLayout.setRefreshing(false);
-            switch (msg.what) {
-                case MESSAGE_ACTION_COMPLETE:
-                    List<ImgurBaseObject> gallery = (List<ImgurBaseObject>) msg.obj;
-
-                    if (getAdapter() == null) {
-                        setUpGridTop();
-                        setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(gallery)));
-                    } else {
-                        getAdapter().addItems(gallery);
-                    }
-
-                    mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
-
-                    // Due to MultiStateView setting the views visibility to GONE, the list will not reset to the top
-                    // If they change the filter or refresh
-                    if (mCurrentPage == 0) {
-                        if (mListener != null) mListener.onLoadingComplete();
-
-                        mMultiStateView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mGrid != null) mGrid.setSelection(0);
-                            }
-                        });
-                    }
-                    break;
-
-                case MESSAGE_ACTION_FAILED:
-                    if (getAdapter() == null || getAdapter().isEmpty()) {
-                        if (mListener != null) {
-                            mListener.onError((Integer) msg.obj);
-                        }
-
-                        mMultiStateView.setErrorText(R.id.errorMessage, (Integer) msg.obj);
-                        mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
-                    }
-                    break;
-
-                case MESSAGE_EMPTY_RESULT:
-                    if (getAdapter() == null || getAdapter().isEmpty()) {
+        if (getAdapter() == null || getAdapter().isEmpty()) {
                         /* No results came back from the api, topic must have been removed.
                          This needs to be confirmed that this can happen */
-                        String message = getString(R.string.topics_empty_result, mTopic.getName());
-                        app.getSql().deleteTopic(mTopic.getId());
-                        mMultiStateView.setErrorText(R.id.errorMessage, message);
-                        mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
-                    }
-
-                default:
-                    mIsLoading = false;
-                    break;
-            }
-
-            mIsLoading = false;
+            String message = getString(R.string.topics_empty_result, mTopic.getName());
+            app.getSql().deleteTopic(mTopic.getId());
+            mMultiStateView.setErrorText(R.id.errorMessage, message);
+            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
         }
-    };
+
+        if (mListener != null) mListener.onUpdateActionBar(true);
+    }
 
     @Override
     protected void onRestoreSavedInstance(Bundle savedInstanceState) {

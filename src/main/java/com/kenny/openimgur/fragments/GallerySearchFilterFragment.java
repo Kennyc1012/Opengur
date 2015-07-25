@@ -18,7 +18,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.util.ViewUtils;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 /**
@@ -29,37 +29,37 @@ public class GallerySearchFilterFragment extends BaseFragment implements SeekBar
 
     private static final String KEY_TIME_SORT = "timeSort";
 
-    @InjectView(R.id.time)
+    @Bind(R.id.time)
     TextView mTime;
 
-    @InjectView(R.id.optionalSort)
+    @Bind(R.id.optionalSort)
     TextView mOptionalSort;
 
-    @InjectView(R.id.viral)
+    @Bind(R.id.viral)
     TextView mViral;
 
-    @InjectView(R.id.day)
+    @Bind(R.id.day)
     TextView mDay;
 
-    @InjectView(R.id.week)
+    @Bind(R.id.week)
     TextView mWeek;
 
-    @InjectView(R.id.month)
+    @Bind(R.id.month)
     TextView mMonth;
 
-    @InjectView(R.id.year)
+    @Bind(R.id.year)
     TextView mYear;
 
-    @InjectView(R.id.all)
+    @Bind(R.id.all)
     TextView mAll;
 
-    @InjectView(R.id.sortSeekBar)
+    @Bind(R.id.sortSeekBar)
     SeekBar mSeekBar;
 
-    @InjectView(R.id.dateSeekBar)
+    @Bind(R.id.dateSeekBar)
     SeekBar mDateSeekBar;
 
-    @InjectView(R.id.dateRangeContainer)
+    @Bind(R.id.dateRangeContainer)
     View mDateRangerContainer;
 
     private FilterListener mListener;
@@ -316,11 +316,11 @@ public class GallerySearchFilterFragment extends BaseFragment implements SeekBar
                     timeSort = ImgurFilters.TimeSort.ALL;
                 }
 
-                if(position<=0){
+                if (position <= 0) {
                     sort = ImgurFilters.GallerySort.TIME;
-                }else if (position<=50){
+                } else if (position <= 50) {
                     sort = ImgurFilters.GallerySort.HIGHEST_SCORING;
-                }else{
+                } else {
                     sort = ImgurFilters.GallerySort.VIRAL;
                 }
 

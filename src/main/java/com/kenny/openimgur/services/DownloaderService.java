@@ -34,8 +34,6 @@ public class DownloaderService extends IntentService {
 
     private static final String TAG = DownloaderService.class.getSimpleName();
 
-    private static final String KEY_IMAGE = "image";
-
     private static final String KEY_IMAGE_URL = "image_url";
 
     public DownloaderService() {
@@ -45,10 +43,9 @@ public class DownloaderService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            ImgurPhoto photo = intent.getParcelableExtra(KEY_IMAGE);
             String url = intent.getStringExtra(KEY_IMAGE_URL);
 
-            if (photo == null && TextUtils.isEmpty(url)) {
+            if (TextUtils.isEmpty(url)) {
                 LogUtil.e(TAG, "Nothing was passed in to be downloaded");
                 return;
             }
@@ -57,21 +54,16 @@ public class DownloaderService extends IntentService {
             file.mkdirs();
             String photoFileName;
             boolean isUsingVideoLink = false;
-            String photoType = photo != null ? photo.getType() : LinkUtils.getImageType(url);
-            String photoId = photo != null ? photo.getId() : String.valueOf(System.currentTimeMillis() / DateUtils.SECOND_IN_MILLIS);
+            String photoType = LinkUtils.getImageType(url);
+            String photoId = String.valueOf(System.currentTimeMillis() / DateUtils.SECOND_IN_MILLIS);
 
             // JPEG Image
             if (ImgurPhoto.IMAGE_TYPE_JPEG.equals(photoType)) {
                 photoFileName = photoId + FileUtil.EXTENSION_JPEG;
             } else if (ImgurPhoto.IMAGE_TYPE_GIF.equals(photoType)) {
                 // Gif Image, urls don't need to be tested for an mp4 here
-                if (photo != null && photo.isLinkAThumbnail() && photo.hasMP4Link()) {
-                    photoFileName = photoId + FileUtil.EXTENSION_MP4;
-                    isUsingVideoLink = true;
-                } else {
-                    photoFileName = photoId + FileUtil.EXTENSION_GIF;
-                }
-            } else if (photo == null && LinkUtils.isVideoLink(url)) {
+                photoFileName = photoId + FileUtil.EXTENSION_GIF;
+            } else if (LinkUtils.isVideoLink(url)) {
                 // Check the photo link for videos
                 isUsingVideoLink = true;
                 photoFileName = photoId + FileUtil.EXTENSION_MP4;
@@ -98,19 +90,16 @@ public class DownloaderService extends IntentService {
 
             // Check if the video is already in our cache
             if (isUsingVideoLink) {
-                String videoUrl = photo != null ? photo.getMP4Link() : url;
-                File cachedFile = VideoCache.getInstance().getVideoFile(videoUrl);
+                File cachedFile = VideoCache.getInstance().getVideoFile(url);
 
                 if (FileUtil.isFileValid(cachedFile)) {
                     LogUtil.v(TAG, "Video file present in cache, copying");
                     saved = FileUtil.copyFile(cachedFile, photoFile);
                 } else {
-                    String urlToSave = photo != null ? photo.getLink() : url;
-                    saved = FileUtil.saveUrl(urlToSave, photoFile);
+                    saved = FileUtil.saveUrl(url, photoFile);
                 }
             } else {
-                String urlToSave = photo != null ? photo.getLink() : url;
-                saved = FileUtil.saveUrl(urlToSave, photoFile);
+                saved = FileUtil.saveUrl(url, photoFile);
             }
 
             if (saved) {
@@ -160,10 +149,6 @@ public class DownloaderService extends IntentService {
         } catch (Exception e) {
             LogUtil.e(TAG, "Exception while downloading image", e);
         }
-    }
-
-    public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {
-        return new Intent(context, DownloaderService.class).putExtra(DownloaderService.KEY_IMAGE, photo);
     }
 
     public static Intent createIntent(@NonNull Context context, @NonNull String url) {

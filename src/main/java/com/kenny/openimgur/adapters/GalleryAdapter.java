@@ -24,7 +24,7 @@ import org.apache.commons.collections15.list.SetUniqueList;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by kcampagna on 7/27/14.
@@ -38,6 +38,8 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
 
     private boolean mAllowNSFWThumb;
 
+    private boolean mShowPoints = true;
+
     private String mThumbnailQuality;
 
     public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects) {
@@ -47,6 +49,11 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
         SharedPreferences pref = OpengurApp.getInstance(context).getPreferences();
         mAllowNSFWThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
         mThumbnailQuality = pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY);
+    }
+
+    public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects, boolean showPoints) {
+        this(context, objects);
+        mShowPoints = showPoints;
     }
 
     @Override
@@ -145,7 +152,7 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
             displayImage(holder.image, url);
         }
 
-        if (obj.getUpVotes() != Integer.MIN_VALUE) {
+        if (mShowPoints) {
             holder.score.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.score.getContext().getString(R.string.points));
             holder.score.setVisibility(View.VISIBLE);
         } else {
@@ -164,10 +171,10 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
     }
 
     static class GalleryHolder extends ImgurViewHolder {
-        @InjectView(R.id.image)
+        @Bind(R.id.image)
         ImageView image;
 
-        @InjectView(R.id.score)
+        @Bind(R.id.score)
         TextView score;
 
         public GalleryHolder(View view) {

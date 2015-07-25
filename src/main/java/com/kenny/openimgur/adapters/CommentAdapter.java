@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by kcampagna on 6/10/15.
@@ -285,16 +285,16 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     }
 
     public static class CommentViewHolder extends BaseViewHolder {
-        @InjectView(R.id.author)
+        @Bind(R.id.author)
         TextView author;
 
-        @InjectView(R.id.comment)
+        @Bind(R.id.comment)
         TextView comment;
 
-        @InjectView(R.id.replies)
+        @Bind(R.id.replies)
         ImageButton replies;
 
-        @InjectView(R.id.indicator)
+        @Bind(R.id.indicator)
         View indicator;
 
         public CommentViewHolder(View view) {

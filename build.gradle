@@ -22,8 +22,8 @@ repositories {
     jcenter()
 }
 
-def VERSION_NAME = '3.2.0'
-def VERSION_CODE = 38
+def VERSION_NAME = '3.2.1'
+def VERSION_CODE = 41
 
 android {
     compileSdkVersion 22
@@ -73,7 +73,7 @@ android {
     }
 }
 
-def SUPPORT_VERSION = '22.2.0'
+def SUPPORT_VERSION = '22.2.1'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -87,13 +87,14 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
     compile 'com.kennyc:snackbar:2.5'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
-    compile 'com.jakewharton:butterknife:6.1.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.1.4'
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile 'com.google.code.gson:gson:2.3.1'
     compile(name: 'sliding_panel', ext: 'aar')
     compile(name: 'bottom-sheet-1.0', ext: 'aar')
-    compile project(':libraries:EventBus')
     compile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;
     }
