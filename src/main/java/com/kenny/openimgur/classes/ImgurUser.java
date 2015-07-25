@@ -170,7 +170,7 @@ public class ImgurUser implements Parcelable {
         mId = user.getId();
         mUsername = user.getUsername();
         mBio = user.getBio();
-        mCreated = user.getCreated();
+        mCreated = user.mCreated;
         mReputation = user.getReputation();
     }
 
