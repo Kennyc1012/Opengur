@@ -3,6 +3,7 @@ package com.kenny.openimgur.adapters;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.format.DateUtils;
+import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.CustomLinkMovement;
+import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurMessage;
 import com.kenny.openimgur.classes.OpengurApp;
 
@@ -27,10 +30,13 @@ public class MessagesAdapter extends ImgurBaseAdapter<ImgurMessage> {
 
     private int mUserId;
 
-    public MessagesAdapter(Context context, List<ImgurMessage> messages) {
+    private ImgurListener mListener;
+
+    public MessagesAdapter(Context context, List<ImgurMessage> messages, ImgurListener listener) {
         super(context, messages);
         mUserId = OpengurApp.getInstance(context).getUser().getId();
         mMargin = (int) (context.getResources().getDisplayMetrics().widthPixels * .25);
+        mListener = listener;
     }
 
     @Override
@@ -41,12 +47,14 @@ public class MessagesAdapter extends ImgurBaseAdapter<ImgurMessage> {
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.convo_message, parent, false);
             holder = new MessagesViewHolder(convertView);
+            holder.message.setMovementMethod(CustomLinkMovement.getInstance(mListener));
         } else {
             holder = (MessagesViewHolder) convertView.getTag();
         }
 
         holder.configView(message, mMargin, mUserId);
         holder.message.setText(message.getBody());
+        Linkify.addLinks(holder.message, Linkify.WEB_URLS);
 
         if (message.isSending()) {
             holder.timeStamp.setText(R.string.convo_message_sending);
@@ -91,6 +99,10 @@ public class MessagesAdapter extends ImgurBaseAdapter<ImgurMessage> {
                 break;
             }
         }
+    }
+
+    public void onDestroy() {
+        mListener = null;
     }
 
     static class MessagesViewHolder extends ImgurViewHolder {

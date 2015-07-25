@@ -4,24 +4,35 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConverastionResponse;
+import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurConvo;
+import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurMessage;
+import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.ui.VideoView;
+import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
@@ -37,7 +48,7 @@ import retrofit.client.Response;
 /**
  * Created by kcampagna on 12/25/14.
  */
-public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnScrollListener {
+public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnScrollListener, ImgurListener {
     public static final int REQUEST_CODE = 102;
 
     public static final String KEY_BLOCKED_CONVO = "blocked_convo";
@@ -119,7 +130,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         }
 
         if (mConvo.getMessages() != null && !mConvo.getMessages().isEmpty()) {
-            mAdapter = new MessagesAdapter(getApplicationContext(), mConvo.getMessages());
+            mAdapter = new MessagesAdapter(getApplicationContext(), mConvo.getMessages(), this);
             mListView.setAdapter(mAdapter);
             mListView.setSelection(mAdapter.getCount() - 1);
             mHasScrolledInitially = true;
@@ -146,6 +157,20 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
             mMultiView.setViewState(MultiStateView.ViewState.LOADING);
             fetchMessages();
         }
+
+        if (mAdapter != null) CustomLinkMovement.getInstance().addListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        CustomLinkMovement.getInstance().removeListener(this);
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mAdapter != null) mAdapter.onDestroy();
+        super.onDestroy();
     }
 
     @Override
@@ -181,7 +206,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                     boolean scrollToBottom = false;
 
                     if (mAdapter == null) {
-                        mAdapter = new MessagesAdapter(getApplicationContext(), converastionResponse.data.getMessages());
+                        mAdapter = new MessagesAdapter(getApplicationContext(), converastionResponse.data.getMessages(), ConvoThreadActivity.this);
                         mListView.setAdapter(mAdapter);
                         // Start at the bottom of the list when we receive the first set of messages
                         scrollToBottom = true;
@@ -201,7 +226,8 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                         mMultiView.post(new Runnable() {
                             @Override
                             public void run() {
-                                if (mListView != null) mListView.setSelection(mAdapter.getCount() - 1);
+                                if (mListView != null)
+                                    mListView.setSelection(mAdapter.getCount() - 1);
                                 mHasScrolledInitially = true;
                             }
                         });
@@ -224,7 +250,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         if (mAdapter == null) {
             List<ImgurMessage> messages = new ArrayList<>();
             messages.add(message);
-            mAdapter = new MessagesAdapter(getApplicationContext(), messages);
+            mAdapter = new MessagesAdapter(getApplicationContext(), messages, this);
             mListView.setAdapter(mAdapter);
         } else {
             mAdapter.addItem(message);
@@ -309,6 +335,71 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
             mMultiView.setEmptyText(R.id.emptyMessage, getString(R.string.convo_message_hint));
             mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
         }
+    }
+
+    @Override
+    public void onPhotoTap(View view) {
+        // NOOP
+    }
+
+    @Override
+    public void onPlayTap(ProgressBar prog, FloatingActionButton play, ImageView image, VideoView video, View root) {
+        // NOOP
+    }
+
+    @Override
+    public void onLinkTap(View view, @Nullable String url) {
+        if (!TextUtils.isEmpty(url) && canDoFragmentTransaction()) {
+            LinkUtils.LinkMatch match = LinkUtils.findImgurLinkMatch(url);
+
+            switch (match) {
+                case GALLERY:
+                case ALBUM:
+                    Intent intent = ViewActivity.createIntent(getApplicationContext(), url, match == LinkUtils.LinkMatch.ALBUM).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    break;
+
+                case IMAGE_URL_QUERY:
+                    int index = url.indexOf("?");
+                    url = url.substring(0, index);
+                    // Intentional fallthrough
+                case IMAGE_URL:
+                    getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true, false), "popup").commitAllowingStateLoss();
+                    break;
+
+                case DIRECT_LINK:
+                    boolean isAnimated = LinkUtils.isLinkAnimated(url);
+                    boolean isVideo = LinkUtils.isVideoLink(url);
+                    getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(url, isAnimated, true, isVideo), "popup").commitAllowingStateLoss();
+                    break;
+
+                case IMAGE:
+                    String[] split = url.split("\\/");
+                    getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(split[split.length - 1], false, false, false), "popup").commitAllowingStateLoss();
+                    break;
+
+                case NONE:
+                default:
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
+                    if (browserIntent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(browserIntent);
+                    } else {
+                        SnackBar.show(this, R.string.cant_launch_intent);
+                    }
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onViewRepliesTap(View view) {
+        // NOOP
+    }
+
+    @Override
+    public void onPhotoLongTapListener(View view) {
+        // NOOP
     }
 
     @Override
