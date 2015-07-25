@@ -155,6 +155,8 @@
     <string name="profile_no_comments">%s has not posted any comments to Imgur</string>
     <string name="profile_no_convos">You do not have any active conversations</string>
     <string name="profile_no_albums">%s has not created any albums</string>
+    <string name="profile_unfavorite_title">Remove Favorite</string>
+    <string name="profile_unfavorite_message">Are you sure you want to remove this from your favorites?</string>
 
     <!-- Preferences -->
     <string name="pref_cache_title">Cache</string>

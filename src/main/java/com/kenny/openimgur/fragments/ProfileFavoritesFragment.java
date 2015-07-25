@@ -1,9 +1,11 @@
 package com.kenny.openimgur.fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,22 +14,29 @@ import android.widget.AdapterView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ViewActivity;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
+import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.LogUtil;
+import com.kenny.snackbar.SnackBar;
 
 import java.util.ArrayList;
 
+import retrofit.Callback;
+import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 12/20/14.
  */
-public class ProfileFavoritesFragment extends BaseGridFragment {
+public class ProfileFavoritesFragment extends BaseGridFragment implements AdapterView.OnItemLongClickListener {
     private static final String KEY_USER = "user";
 
     private ImgurUser mSelectedUser;
@@ -47,8 +56,36 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
     }
 
     @Override
-    protected void saveFilterSettings() {
-        // NOOP
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (mSelectedUser.isSelf(app)) mGrid.setOnItemLongClickListener(this);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        int headerSize = mGrid.getNumColumns() * mGrid.getHeaderViewCount();
+        int adapterPosition = position - headerSize;
+
+        if (adapterPosition >= 0) {
+            final ImgurBaseObject obj = getAdapter().getItem(adapterPosition);
+
+            new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                    .setTitle(R.string.profile_unfavorite_title)
+                    .setMessage(R.string.profile_unfavorite_message)
+                    .setNegativeButton(R.string.cancel, null)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+                            removeFavorite(obj);
+                        }
+                    })
+                    .show();
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -62,11 +99,6 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
         } else {
             apiService.getProfileGalleryFavorites(mSelectedUser.getUsername(), mCurrentPage, this);
         }
-    }
-
-    @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        // NOOP see onItemClick
     }
 
     @Override
@@ -139,6 +171,39 @@ public class ProfileFavoritesFragment extends BaseGridFragment {
             String errorMessage = getString(R.string.profile_no_favorites, mSelectedUser.getUsername());
             mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
             mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+        }
+    }
+
+    private void removeFavorite(final ImgurBaseObject object) {
+        String id = object.getId();
+        Callback<BasicResponse> cb = new Callback<BasicResponse>() {
+            @Override
+            public void success(BasicResponse basicResponse, Response response) {
+                if (!isAdded()) return;
+
+                if (basicResponse != null && basicResponse.success) {
+                    GalleryAdapter adapter = getAdapter();
+                    if (adapter != null) adapter.removeItem(object);
+                    mMultiStateView.setViewState(adapter != null && adapter.isEmpty() ? MultiStateView.ViewState.EMPTY : MultiStateView.ViewState.CONTENT);
+                } else {
+                    SnackBar.show(getActivity(), R.string.error_generic);
+                    mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (!isAdded()) return;
+                LogUtil.e(TAG, "Unable to favorite item", error);
+                SnackBar.show(getActivity(), R.string.error_generic);
+                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+            }
+        };
+
+        if (object instanceof ImgurPhoto) {
+            ApiClient.getService().favoriteImage(id, id, cb);
+        } else {
+            ApiClient.getService().favoriteAlbum(id, id, cb);
         }
     }
 }
