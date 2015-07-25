@@ -6,7 +6,7 @@
 - Update butterknife to 7.0.1
 - Update support libraries to 22.2.1
 - Miscellaneous bug fixes 
-- 
+
 <b>3.2.0</b> July 10,2015
 - Album upload support
 - Albums tab added to Profile 
