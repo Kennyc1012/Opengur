@@ -20,35 +20,9 @@ public class GridItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         int position = parent.getLayoutManager().getPosition(view);
-        int mod = position % mNumColumns;
-
-        switch (mNumColumns) {
-            case 3:
-                if (mod == 1) {
-                    outRect.left = mSpace;
-                    outRect.right = mSpace;
-                }
-                break;
-
-            case 4:
-                if (mod == 1) {
-                    outRect.left = mSpace;
-                } else if (mod == 2) {
-                    outRect.left = mSpace;
-                    outRect.right = mSpace;
-                }
-                break;
-
-            case 5:
-                if (mod == 1 || mod == 2) {
-                    outRect.left = mSpace;
-                } else if (mod == 3) {
-                    outRect.left = mSpace;
-                    outRect.right = mSpace;
-                }
-                break;
-        }
-
+        int column = position % mNumColumns;
+        outRect.left = column * mSpace / mNumColumns;
+        outRect.right = mSpace - (column + 1) * mSpace / mNumColumns;
         outRect.top = mSpace;
     }
 }
