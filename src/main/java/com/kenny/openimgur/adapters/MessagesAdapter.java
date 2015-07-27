@@ -23,9 +23,10 @@ import java.util.List;
 import butterknife.Bind;
 
 /**
- * Created by kcampagna on 12/25/14.
+ * Created by kcampagna on 7/27/15.
  */
-public class MessagesAdapter extends ImgurBaseAdapter<ImgurMessage> {
+public class MessagesAdapter extends BaseRecyclerAdapter<ImgurMessage> {
+
     private int mMargin;
 
     private int mUserId;
@@ -40,31 +41,28 @@ public class MessagesAdapter extends ImgurBaseAdapter<ImgurMessage> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        MessagesViewHolder holder;
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        MessagesViewHolder holder = new MessagesViewHolder(mInflater.inflate(R.layout.convo_message, parent, false));
+        holder.message.setMovementMethod(CustomLinkMovement.getInstance(mListener));
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
+        MessagesViewHolder messagesViewHolder = (MessagesViewHolder) holder;
         ImgurMessage message = getItem(position);
 
-        if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.convo_message, parent, false);
-            holder = new MessagesViewHolder(convertView);
-            holder.message.setMovementMethod(CustomLinkMovement.getInstance(mListener));
-        } else {
-            holder = (MessagesViewHolder) convertView.getTag();
-        }
-
-        holder.configView(message, mMargin, mUserId);
-        holder.message.setText(message.getBody());
-        Linkify.addLinks(holder.message, Linkify.WEB_URLS);
+        messagesViewHolder.message.setText(message.getBody());
+        Linkify.addLinks(messagesViewHolder.message, Linkify.WEB_URLS);
+        messagesViewHolder.configView(message, mMargin, mUserId);
 
         if (message.isSending()) {
-            holder.timeStamp.setText(R.string.convo_message_sending);
+            messagesViewHolder.timeStamp.setText(R.string.convo_message_sending);
         } else if (message.getDate() > 0) {
-            holder.timeStamp.setText(getDateFormattedTime(message.getDate() * 1000, convertView.getContext()));
+            messagesViewHolder.timeStamp.setText(getDateFormattedTime(message.getDate() * DateUtils.SECOND_IN_MILLIS, messagesViewHolder.container.getContext()));
         } else {
-            holder.timeStamp.setText(R.string.convo_message_failed);
+            messagesViewHolder.timeStamp.setText(R.string.convo_message_failed);
         }
-
-        return convertView;
     }
 
     private CharSequence getDateFormattedTime(long commentDate, Context context) {
@@ -89,7 +87,7 @@ public class MessagesAdapter extends ImgurBaseAdapter<ImgurMessage> {
      */
     public void onMessageSendComplete(boolean successful, String id) {
         // The message will most likely be the last item in the list, or near the end
-        for (int i = getCount() - 1; i >= 0; i--) {
+        for (int i = getItemCount() - 1; i >= 0; i--) {
             ImgurMessage message = getItem(i);
 
             if (message.getId().equals(id)) {
@@ -101,11 +99,13 @@ public class MessagesAdapter extends ImgurBaseAdapter<ImgurMessage> {
         }
     }
 
+    @Override
     public void onDestroy() {
         mListener = null;
+        super.onDestroy();
     }
 
-    static class MessagesViewHolder extends ImgurViewHolder {
+    static class MessagesViewHolder extends BaseViewHolder {
         @Bind(R.id.messageContainer)
         LinearLayout container;
 
