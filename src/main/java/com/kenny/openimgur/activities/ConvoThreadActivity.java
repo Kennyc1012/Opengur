@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -145,7 +146,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         }
 
         if (mConvo.getMessages() != null && !mConvo.getMessages().isEmpty()) {
-            mAdapter = new MessagesAdapter(getApplicationContext(), mConvo.getMessages(), this);
+            mAdapter = new MessagesAdapter(getApplicationContext(), ColorGenerator.DEFAULT.getColor(mConvo.getWithAccount()), mConvo.getMessages(), this);
             mConvoList.setAdapter(mAdapter);
             mConvoList.scrollToPosition(mAdapter.getItemCount() - 1);
             mHasScrolledInitially = true;
@@ -207,7 +208,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                     boolean scrollToBottom = false;
 
                     if (mAdapter == null) {
-                        mAdapter = new MessagesAdapter(getApplicationContext(), converastionResponse.data.getMessages(), ConvoThreadActivity.this);
+                        mAdapter = new MessagesAdapter(getApplicationContext(), ColorGenerator.DEFAULT.getColor(mConvo.getWithAccount()), converastionResponse.data.getMessages(), ConvoThreadActivity.this);
                         mConvoList.setAdapter(mAdapter);
                         // Start at the bottom of the list when we receive the first set of messages
                         scrollToBottom = true;
@@ -252,7 +253,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         if (mAdapter == null) {
             List<ImgurMessage> messages = new ArrayList<>();
             messages.add(message);
-            mAdapter = new MessagesAdapter(getApplicationContext(), messages, this);
+            mAdapter = new MessagesAdapter(getApplicationContext(), ColorGenerator.DEFAULT.getColor(mConvo.getWithAccount()), messages, this);
             mConvoList.setAdapter(mAdapter);
         } else {
             mAdapter.addItem(message);

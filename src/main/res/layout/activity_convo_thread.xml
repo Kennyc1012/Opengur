@@ -1,15 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:layout_marginTop="?actionBarSize">
+
+    <com.kenny.openimgur.ui.MultiStateView
+        android:id="@+id/multiView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:emptyView="@layout/empty_comment_view"
+        app:errorView="@layout/profile_error"
+        app:loadingView="@layout/loading_view"
+        app:viewState="loading">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/convoList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+
+    </com.kenny.openimgur.ui.MultiStateView>
 
     <RelativeLayout
         android:id="@+id/messageInputContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:paddingLeft="16dp">
 
         <android.support.design.widget.FloatingActionButton
@@ -33,22 +51,4 @@
 
     </RelativeLayout>
 
-    <com.kenny.openimgur.ui.MultiStateView
-        android:id="@+id/multiView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/messageInputContainer"
-        app:emptyView="@layout/empty_comment_view"
-        app:errorView="@layout/profile_error"
-        app:loadingView="@layout/loading_view"
-        app:viewState="loading">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/convoList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical" />
-
-    </com.kenny.openimgur.ui.MultiStateView>
-
-</RelativeLayout>
+</LinearLayout>
