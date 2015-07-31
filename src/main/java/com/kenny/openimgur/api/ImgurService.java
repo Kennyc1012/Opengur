@@ -40,7 +40,7 @@ public interface ImgurService {
     @GET("/3/gallery/{section}/{sort}/{page}")
     GalleryResponse getGallery(@Path("section") String section, @Path("sort") String sort, @Path("page") int page, @Query("showViral") boolean showViral);
 
-    @GET("//3{section}/top/{window}/{page}")
+    @GET("/3/gallery/{section}/top/{window}/{page}")
     void getGalleryForTopSorted(@Path("section") String section, @Path("window") String window, @Path("page") int page, Callback<GalleryResponse> callback);
 
     @GET("/3/gallery/{id}")
