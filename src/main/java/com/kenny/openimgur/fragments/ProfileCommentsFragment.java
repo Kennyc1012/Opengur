@@ -1,37 +1,30 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.adapters.ProfileCommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.CommentResponse;
-import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurFilters.CommentSort;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.ScrollHelper;
-import com.kenny.openimgur.util.ViewUtils;
 
 import java.util.ArrayList;
 
@@ -43,7 +36,7 @@ import retrofit.client.Response;
 /**
  * Created by kcampagna on 12/22/14.
  */
-public class ProfileCommentsFragment extends BaseFragment implements AbsListView.OnScrollListener, AdapterView.OnItemClickListener {
+public class ProfileCommentsFragment extends BaseFragment implements View.OnClickListener {
     private static final String KEY_SORT = "sort";
 
     private static final String KEY_USER = "user";
@@ -58,7 +51,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     MultiStateView mMultiStatView;
 
     @Bind(R.id.commentList)
-    ListView mListView;
+    RecyclerView mCommentList;
 
     private int mPage = 0;
 
@@ -72,9 +65,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
 
     private CommentSort mSort;
 
-    private ScrollHelper mScrollHelper = new ScrollHelper();
-
-    private FragmentListener mListener;
+    private LinearLayoutManager mManager;
 
     public static Fragment createInstance(@NonNull ImgurUser user) {
         ProfileCommentsFragment fragment = new ProfileCommentsFragment();
@@ -88,18 +79,6 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof FragmentListener) mListener = (FragmentListener) activity;
-    }
-
-    @Override
-    public void onDetach() {
-        mListener = null;
-        super.onDetach();
     }
 
     @Nullable
@@ -143,11 +122,22 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mListView.setOnScrollListener(this);
-        mListView.setOnItemClickListener(this);
-        mListView.setHeaderDividersEnabled(false);
-        Drawable commentDivider = getResources().getDrawable(theme.isDarkTheme ? R.drawable.divider_dark : R.drawable.divider_light);
-        mListView.setDivider(commentDivider);
+        mCommentList.setLayoutManager(mManager = new LinearLayoutManager(getActivity()));
+
+        mCommentList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                int visibleItemCount = mManager.getChildCount();
+                int totalItemCount = mManager.getItemCount();
+                int firstVisibleItemPosition = mManager.findFirstVisibleItemPosition();
+
+                if (mHasMore && !mIsLoading && totalItemCount > 0 && firstVisibleItemPosition + visibleItemCount >= totalItemCount) {
+                    mPage++;
+                    fetchComments();
+                }
+            }
+        });
+
         handleArgs(getArguments(), savedInstanceState);
     }
 
@@ -159,15 +149,9 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ArrayList<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 mPage = savedInstanceState.getInt(KEY_PAGE, 0);
-                mAdapter = new ProfileCommentAdapter(getActivity(), comments);
-                mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    mListView.addFooterView(ViewUtils.getFooterViewForComments(getActivity()));
-                }
-
-                mListView.setAdapter(mAdapter);
-                mListView.setSelection(savedInstanceState.getInt(KEY_POSITION, 0));
+                mAdapter = new ProfileCommentAdapter(getActivity(), comments, this);
+                mCommentList.setAdapter(mAdapter);
+                mCommentList.scrollToPosition(savedInstanceState.getInt(KEY_POSITION, 0));
                 mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
             }
         } else {
@@ -185,42 +169,10 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     }
 
     @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-        // NOOP
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        // Hide the actionbar when scrolling down, show when scrolling up
-        switch (mScrollHelper.getScrollDirection(view, firstVisibleItem, totalItemCount)) {
-            case ScrollHelper.DIRECTION_DOWN:
-                if (mListener != null) mListener.onUpdateActionBar(false);
-                break;
-
-            case ScrollHelper.DIRECTION_UP:
-                if (mListener != null) mListener.onUpdateActionBar(true);
-                break;
-
-            case ScrollHelper.DIRECTION_NOT_CHANGED:
-            default:
-                break;
-        }
-
-        if (!mIsLoading && mHasMore && totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount) {
-            mPage++;
-            fetchComments();
-        }
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        position = position - mListView.getHeaderViewsCount();
-
-        if (position >= 0 && position < mAdapter.getCount()) {
-            ImgurComment comment = mAdapter.getItem(position);
-            String url = "https://imgur.com/gallery/" + comment.getImageId();
-            startActivity(ViewActivity.createIntent(getActivity(), url, false));
-        }
+    public void onClick(View v) {
+        ImgurComment comment = mAdapter.getItem(mCommentList.getChildAdapterPosition(v));
+        String url = "https://imgur.com/gallery/" + comment.getImageId();
+        startActivity(ViewActivity.createIntent(getActivity(), url, false));
     }
 
     @Override
@@ -233,6 +185,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
     }
 
     private void fetchComments() {
+        mIsLoading = true;
         ApiClient.getService().getProfileComments(mSelectedUser.getUsername(), mSort.getSort(), mPage, new Callback<CommentResponse>() {
             @Override
             public void success(CommentResponse commentResponse, Response response) {
@@ -240,9 +193,8 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
 
                 if (commentResponse != null && !commentResponse.data.isEmpty()) {
                     if (mAdapter == null) {
-                        mAdapter = new ProfileCommentAdapter(getActivity(), commentResponse.data);
-                        mListView.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getResources().getDimensionPixelSize(R.dimen.tab_bar_height)));
-                        mListView.setAdapter(mAdapter);
+                        mAdapter = new ProfileCommentAdapter(getActivity(), commentResponse.data, ProfileCommentsFragment.this);
+                        mCommentList.setAdapter(mAdapter);
                     } else {
                         mAdapter.addItems(commentResponse.data);
                     }
@@ -253,7 +205,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
                         mMultiStatView.post(new Runnable() {
                             @Override
                             public void run() {
-                                if (mListView != null) mListView.setSelection(0);
+                                if (mCommentList != null) mCommentList.scrollToPosition(0);
                             }
                         });
                     }
@@ -288,6 +240,7 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
 
     @Override
     public void onDestroyView() {
+        if(mAdapter!=null)mAdapter.onDestroy();
         app.getPreferences().edit().putString(KEY_SORT, mSort.getSort()).apply();
         super.onDestroyView();
     }
@@ -299,18 +252,9 @@ public class ProfileCommentsFragment extends BaseFragment implements AbsListView
         outState.putString(KEY_SORT, mSort.getSort());
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putInt(KEY_POSITION, mListView.getFirstVisiblePosition());
+            outState.putInt(KEY_POSITION, mManager.findFirstVisibleItemPosition());
             outState.putParcelableArrayList(KEY_ITEMS, mAdapter.retainItems());
             outState.putInt(KEY_PAGE, mPage);
-        }
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        if (isVisibleToUser && mListView != null && mListView.getFirstVisiblePosition() <= 1 && mListener != null) {
-            mListener.onUpdateActionBar(true);
         }
     }
 }

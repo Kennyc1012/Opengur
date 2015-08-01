@@ -9,8 +9,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
@@ -22,11 +20,7 @@ import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.ui.MultiStateView;
-import com.kenny.openimgur.util.ScrollHelper;
-import com.kenny.openimgur.util.ViewUtils;
-import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -78,14 +72,6 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
 
     private GalleryAdapter2 mAdapter;
 
-    private int mVisibleItemCount;
-
-    private int mTotalItemCount;
-
-    private int mPastVisiblesItems;
-
-    private int mScrollDistance = 0;
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -114,21 +100,12 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
                     mManager = (GridLayoutManager) recyclerView.getLayoutManager();
                 }
 
-                int currentScroll = mScrollDistance;
-                mScrollDistance += dy;
-
-                if (currentScroll > mScrollDistance) {
-                    if (mListener != null) mListener.onUpdateActionBar(true);
-                } else if (currentScroll < mScrollDistance) {
-                    if (mListener != null) mListener.onUpdateActionBar(false);
-                }
-
-                mVisibleItemCount = mManager.getChildCount();
-                mTotalItemCount = mManager.getItemCount();
-                mPastVisiblesItems = mManager.findFirstVisibleItemPosition();
+                int visibleItemCount = mManager.getChildCount();
+                int totalItemCount = mManager.getItemCount();
+                int firstVisibleItemPosition = mManager.findFirstVisibleItemPosition();
 
                 // Load more items when hey get to the end of the list
-                if (mHasMore && mTotalItemCount > 0 && mPastVisiblesItems + mVisibleItemCount >= mTotalItemCount && !mIsLoading) {
+                if (mHasMore && totalItemCount > 0 && firstVisibleItemPosition + visibleItemCount >= totalItemCount && !mIsLoading) {
                     mIsLoading = true;
                     mCurrentPage++;
                     fetchGallery();
