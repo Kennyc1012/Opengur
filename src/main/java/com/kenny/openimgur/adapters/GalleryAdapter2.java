@@ -67,7 +67,7 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
         mShowPoints = showPoints;
     }
 
-    public void setOnLClickPressListener(View.OnLongClickListener listener) {
+    public void setOnLongClickPressListener(View.OnLongClickListener listener) {
         mLongClickListener = listener;
         if (getItemCount() > 0) notifyDataSetChanged();
     }

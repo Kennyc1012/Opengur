@@ -94,7 +94,8 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
     @Override
     protected void setAdapter(GalleryAdapter2 adapter) {
         super.setAdapter(adapter);
-        if (mSelectedUser.isSelf(app)) adapter.setOnLClickPressListener(this);
+        if (mSelectedUser != null && mSelectedUser.isSelf(app))
+            adapter.setOnLongClickPressListener(this);
     }
 
     @Override
@@ -133,8 +134,13 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
             mSelectedUser = getArguments().getParcelable(KEY_USER);
         }
 
-        if (mSelectedUser == null)
+        if (mSelectedUser == null) {
             throw new IllegalArgumentException("Profile must be supplied to fragment");
+        }
+
+        if (getAdapter() != null && mSelectedUser.isSelf(app)) {
+            getAdapter().setOnLongClickPressListener(this);
+        }
     }
 
     @Override
