@@ -1,4 +1,13 @@
 #Open Imgur Changelog
+<b>3.2.2</b> August 1, 2015
+- Fix incorrect dates on self profile
+- Fix Highest Scoring filter
+- Fix comment posting
+- Update GridItemDecoration
+- Convert Convo adapter to RecyclerView
+- Update Gif drawable to 1.1.8
+- Profile bug fixes
+
 <b>3.2.1</b> July 25,2015
 - Entire API rewrite. Now using Retrofit
 - Link handling in Convos
