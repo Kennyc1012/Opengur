@@ -15,6 +15,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.OpengurApp;
@@ -34,8 +35,8 @@ public class CommentPopupFragment extends DialogFragment implements DialogInterf
     @Bind(R.id.comment)
     EditText mComment;
 
-    @Bind(R.id.commentInputLayout)
-    TextInputLayout mRemainingCharacters;
+    @Bind(R.id.remainingChars)
+    TextView mRemainingCharacters;
 
     private String mGalleryId;
 
@@ -119,7 +120,7 @@ public class CommentPopupFragment extends DialogFragment implements DialogInterf
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                mRemainingCharacters.setError(String.valueOf(140 - charSequence.length()));
+                mRemainingCharacters.setText(String.valueOf(140 - charSequence.length()));
             }
 
             @Override
@@ -144,8 +145,6 @@ public class CommentPopupFragment extends DialogFragment implements DialogInterf
 
                 if (!TextUtils.isEmpty(comment)) {
                     if (mListener != null) mListener.onPostComment(comment, mGalleryId, mParentId);
-                } else {
-                    mRemainingCharacters.setError(getString(R.string.comment_post_empty));
                 }
                 break;
         }
