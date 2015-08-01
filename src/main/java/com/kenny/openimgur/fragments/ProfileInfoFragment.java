@@ -176,7 +176,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
         // Force the action bar to show
         if (getActivity() instanceof ProfileActivity) {
-            ((ProfileActivity) getActivity()).onUpdateActionBar(true);
+           // ((ProfileActivity) getActivity()).onUpdateActionBar(true);
         }
     }
 

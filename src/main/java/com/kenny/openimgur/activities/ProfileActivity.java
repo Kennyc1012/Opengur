@@ -1,7 +1,5 @@
 package com.kenny.openimgur.activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -12,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -26,7 +25,6 @@ import android.webkit.WebViewClient;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.UserResponse;
-import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.fragments.ProfileAlbumsFragment;
 import com.kenny.openimgur.fragments.ProfileCommentsFragment;
@@ -47,7 +45,7 @@ import retrofit.client.Response;
 /**
  * Created by kcampagna on 12/14/14.
  */
-public class ProfileActivity extends BaseActivity implements FragmentListener {
+public class ProfileActivity extends BaseActivity {
     private static final String LOGIN_URL = "https://api.imgur.com/oauth2/authorize?client_id=" + ApiClient.CLIENT_ID + "&response_type=token";
 
     private static final String REDIRECT_URL = "https://com.kenny.openimgur";
@@ -74,14 +72,9 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
     @Bind(R.id.toolBar)
     Toolbar mToolBar;
 
-    @Bind(R.id.toolBarContainer)
-    View mToolbarContainer;
-
     private ImgurUser mSelectedUser;
 
     private ProfilePager mAdapter;
-
-    private boolean mIsAnimating = false;
 
     public static Intent createIntent(Context context, @Nullable String userName) {
         Intent intent = new Intent(context, ProfileActivity.class);
@@ -96,13 +89,25 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         setStatusBarColorResource(theme.darkColor);
         setupToolBar();
         handleData(savedInstanceState, getIntent());
+
+        // TODO remove when bug has been fixed in support library
+        if (ViewCompat.isLaidOut(mSlidingTabs)) {
+            mSlidingTabs.setupWithViewPager(mPager);
+        } else {
+            mSlidingTabs.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    mSlidingTabs.setupWithViewPager(mPager);
+                    mSlidingTabs.removeOnLayoutChangeListener(this);
+                }
+            });
+        }
     }
 
     /**
      * Sets up the tool bar to take the place of the action bar
      */
     private void setupToolBar() {
-        mToolBar.setBackgroundColor(getResources().getColor(app.getImgurTheme().primaryColor));
         setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -322,51 +327,6 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         if (mSelectedUser != null) {
             outState.putParcelable(KEY_USER, mSelectedUser);
         }
-    }
-
-    @Override
-    public void onUpdateActionBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-
-    @Override
-    public void onUpdateActionBar(boolean shouldShow) {
-        boolean isVisible = mToolbarContainer.getTranslationY() == 0;
-
-        if (isVisible != shouldShow && !mIsAnimating) {
-            //Actionbar visibility has changed
-            mIsAnimating = true;
-            mToolbarContainer.animate().translationY(shouldShow ? 0 : -mToolBar.getHeight()).setListener(mAnimAdapter);
-        }
-    }
-
-    private AnimatorListenerAdapter mAnimAdapter = new AnimatorListenerAdapter() {
-        @Override
-        public void onAnimationCancel(Animator animation) {
-            super.onAnimationCancel(animation);
-            mIsAnimating = false;
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            super.onAnimationEnd(animation);
-            mIsAnimating = false;
-        }
-    };
-
-    @Override
-    public void onLoadingStarted() {
-        // NOOP
-    }
-
-    @Override
-    public void onLoadingComplete() {
-        // NOOP
-    }
-
-    @Override
-    public void onError() {
-        // NOOP
     }
 
     @Override

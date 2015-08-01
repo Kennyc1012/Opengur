@@ -314,7 +314,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
                 mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
 
             if (mCurrentPage == 0) {
-                mListener.onLoadingComplete();
+                if (mListener != null) mListener.onLoadingComplete();
 
                 mGrid.post(new Runnable() {
                     @Override

@@ -325,10 +325,11 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
                 getAdapter().addItems(galleryResponse.data);
             }
 
-            if (mMultiStateView != null) mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+            if (mMultiStateView != null)
+                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
 
             if (mCurrentPage == 0) {
-                mListener.onLoadingComplete();
+                if (mListener != null) mListener.onLoadingComplete();
 
                 mGrid.post(new Runnable() {
                     @Override
