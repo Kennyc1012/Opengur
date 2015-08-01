@@ -27,7 +27,6 @@ import butterknife.Bind;
  * Created by Kenny-PC on 8/1/2015.
  */
 public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
-
     private int mDividerColor;
 
     private View.OnClickListener mClickListener;

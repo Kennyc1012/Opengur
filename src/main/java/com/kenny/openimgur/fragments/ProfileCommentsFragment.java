@@ -240,7 +240,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
 
     @Override
     public void onDestroyView() {
-        if(mAdapter!=null)mAdapter.onDestroy();
+        if (mAdapter != null) mAdapter.onDestroy();
         app.getPreferences().edit().putString(KEY_SORT, mSort.getSort()).apply();
         super.onDestroyView();
     }
