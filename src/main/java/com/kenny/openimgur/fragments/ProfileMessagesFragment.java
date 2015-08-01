@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
-import com.kenny.openimgur.adapters.ConvoAdapter2;
+import com.kenny.openimgur.adapters.ConvoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
@@ -42,7 +42,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
     @Bind(R.id.commentList)
     RecyclerView mMessageList;
 
-    private ConvoAdapter2 mAdapter;
+    private ConvoAdapter mAdapter;
     private ScrollHelper mScrollHelper = new ScrollHelper();
 
     @Override
@@ -96,7 +96,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_ITEMS)) {
             List<ImgurConvo> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
-            mAdapter = new ConvoAdapter2(getActivity(), items, this, this);
+            mAdapter = new ConvoAdapter(getActivity(), items, this, this);
             mMessageList.setAdapter(mAdapter);
             mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
         }
@@ -115,7 +115,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
                 if (!isAdded()) return;
 
                 if (convoResponse != null && convoResponse.data != null && !convoResponse.data.isEmpty()) {
-                    mAdapter = new ConvoAdapter2(getActivity(), convoResponse.data, ProfileMessagesFragment.this, ProfileMessagesFragment.this);
+                    mAdapter = new ConvoAdapter(getActivity(), convoResponse.data, ProfileMessagesFragment.this, ProfileMessagesFragment.this);
                     mMessageList.setAdapter(mAdapter);
                     mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
                 } else {
@@ -136,12 +136,11 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
 
     private void deleteConversation(String id) {
         mAdapter.removeItem(id);
-        
+
         if (mAdapter.isEmpty()) {
             mMultiStateView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_convos));
             mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
         }
-
 
         ApiClient.getService().deleteConversation(id, new Callback<BasicResponse>() {
             @Override

@@ -10,38 +10,50 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurConvo;
+import com.kenny.openimgur.classes.OpengurApp;
 
 import java.util.List;
 
 import butterknife.Bind;
 
 /**
- * Created by kcampagna on 12/24/14.
+ * Created by Kenny-PC on 8/1/2015.
  */
-public class ConvoAdapter extends ImgurBaseAdapter<ImgurConvo> {
+public class ConvoAdapter extends BaseRecyclerAdapter<ImgurConvo> {
     private int mCircleSize;
+    private int mDividerColor;
 
-    public ConvoAdapter(Context context, List<ImgurConvo> convos) {
+    private View.OnClickListener mClickListener;
+    private View.OnLongClickListener mLongClickListener;
+
+    public ConvoAdapter(Context context, List<ImgurConvo> convos, View.OnClickListener clickListener, View.OnLongClickListener longClickListener) {
         super(context, convos);
         mCircleSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
+        mClickListener = clickListener;
+        mLongClickListener = longClickListener;
+        boolean isDarkTheme = OpengurApp.getInstance(context).getImgurTheme().isDarkTheme;
+        mDividerColor = isDarkTheme ? context.getResources().getColor(R.color.primary_dark_material_light) : context.getResources().getColor(R.color.primary_dark_material_dark);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ConvoViewHolder holder;
-        ImgurConvo convo = getItem(position);
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = mInflater.inflate(R.layout.profile_comment_item, parent, false);
+        view.setOnLongClickListener(mLongClickListener);
+        view.setOnClickListener(mClickListener);
+        ConvoViewHolder holder = new ConvoViewHolder(view);
+        holder.divider.setBackgroundColor(mDividerColor);
+        return holder;
+    }
 
-        if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.profile_comment_item, parent, false);
-            holder = new ConvoViewHolder(convertView);
-        } else {
-            holder = (ConvoViewHolder) convertView.getTag();
-        }
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
+        ConvoViewHolder convoViewHolder = (ConvoViewHolder) holder;
+        ImgurConvo convo = getItem(position);
 
         String firstLetter = convo.getWithAccount().substring(0, 1);
         int color = ColorGenerator.DEFAULT.getColor(convo.getWithAccount());
 
-        holder.image.setImageDrawable(
+        convoViewHolder.image.setImageDrawable(
                 TextDrawable.builder()
                         .beginConfig()
                         .toUpperCase()
@@ -50,9 +62,8 @@ public class ConvoAdapter extends ImgurBaseAdapter<ImgurConvo> {
                         .endConfig()
                         .buildRound(firstLetter, color));
 
-        holder.author.setText(convo.getWithAccount());
-        holder.message.setText(convo.getLastMessage());
-        return convertView;
+        convoViewHolder.author.setText(convo.getWithAccount());
+        convoViewHolder.message.setText(convo.getLastMessage());
     }
 
     public void removeItem(String id) {
@@ -66,7 +77,7 @@ public class ConvoAdapter extends ImgurBaseAdapter<ImgurConvo> {
         }
     }
 
-    static class ConvoViewHolder extends ImgurViewHolder {
+    static class ConvoViewHolder extends BaseViewHolder {
         @Bind(R.id.author)
         TextView author;
 
@@ -75,6 +86,9 @@ public class ConvoAdapter extends ImgurBaseAdapter<ImgurConvo> {
 
         @Bind(R.id.image)
         ImageView image;
+
+        @Bind(R.id.divider)
+        View divider;
 
         public ConvoViewHolder(View view) {
             super(view);
