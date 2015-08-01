@@ -10,16 +10,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -48,7 +49,7 @@ import retrofit.client.Response;
 /**
  * Created by kcampagna on 12/25/14.
  */
-public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnScrollListener, ImgurListener {
+public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
     public static final int REQUEST_CODE = 102;
 
     public static final String KEY_BLOCKED_CONVO = "blocked_convo";
@@ -59,7 +60,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
     MultiStateView mMultiView;
 
     @Bind(R.id.convoList)
-    ListView mListView;
+    RecyclerView mConvoList;
 
     @Bind(R.id.messageInput)
     EditText mMessageInput;
@@ -76,6 +77,8 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
 
     private int mCurrentPage = 1;
 
+    private LinearLayoutManager mLayoutManager;
+
     public static Intent createIntent(Context context, @NonNull ImgurConvo convo) {
         return new Intent(context, ConvoThreadActivity.class).putExtra(KEY_CONVO, convo);
     }
@@ -84,8 +87,21 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_convo_thread);
-        mListView.setOnScrollListener(this);
+        mConvoList.setLayoutManager(mLayoutManager = new LinearLayoutManager(getApplicationContext()));
         handleData(savedInstanceState);
+
+        mConvoList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                int totalItemCount = mLayoutManager.getItemCount();
+                int firstVisiblePosition = mLayoutManager.findFirstVisibleItemPosition();
+
+                if (mHasMore && !mIsLoading && totalItemCount > 0 && firstVisiblePosition == 0 && mHasScrolledInitially) {
+                    mCurrentPage++;
+                    fetchMessages();
+                }
+            }
+        });
     }
 
     @Override
@@ -130,9 +146,9 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         }
 
         if (mConvo.getMessages() != null && !mConvo.getMessages().isEmpty()) {
-            mAdapter = new MessagesAdapter(getApplicationContext(), mConvo.getMessages(), this);
-            mListView.setAdapter(mAdapter);
-            mListView.setSelection(mAdapter.getCount() - 1);
+            mAdapter = new MessagesAdapter(getApplicationContext(), ColorGenerator.DEFAULT.getColor(mConvo.getWithAccount()), mConvo.getMessages(), this);
+            mConvoList.setAdapter(mAdapter);
+            mConvoList.scrollToPosition(mAdapter.getItemCount() - 1);
             mHasScrolledInitially = true;
         }
 
@@ -173,22 +189,6 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         super.onDestroy();
     }
 
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-        // NOOP
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        // We want to check for when they are at the TOP of the list this time as the messages come in reverse order
-        // from the api (newest to oldest)
-
-        if (mHasMore && !mIsLoading && totalItemCount > 0 && firstVisibleItem == 0 && mHasScrolledInitially) {
-            mCurrentPage++;
-            fetchMessages();
-        }
-    }
-
     private void fetchMessages() {
         // Having an id of -1 means that they are starting the convo from the Info fragment where an id is not known
         if (mConvo.getId().equals("-1")) onEmpty();
@@ -196,6 +196,8 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         ApiClient.getService().getMessages(mConvo.getId(), mCurrentPage, new Callback<ConverastionResponse>() {
             @Override
             public void success(ConverastionResponse converastionResponse, Response response) {
+                mIsLoading = false;
+
                 if (converastionResponse == null) {
                     mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
@@ -206,8 +208,8 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                     boolean scrollToBottom = false;
 
                     if (mAdapter == null) {
-                        mAdapter = new MessagesAdapter(getApplicationContext(), converastionResponse.data.getMessages(), ConvoThreadActivity.this);
-                        mListView.setAdapter(mAdapter);
+                        mAdapter = new MessagesAdapter(getApplicationContext(), ColorGenerator.DEFAULT.getColor(mConvo.getWithAccount()), converastionResponse.data.getMessages(), ConvoThreadActivity.this);
+                        mConvoList.setAdapter(mAdapter);
                         // Start at the bottom of the list when we receive the first set of messages
                         scrollToBottom = true;
                     } else {
@@ -226,8 +228,8 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                         mMultiView.post(new Runnable() {
                             @Override
                             public void run() {
-                                if (mListView != null)
-                                    mListView.setSelection(mAdapter.getCount() - 1);
+                                if (mConvoList != null)
+                                    mConvoList.scrollToPosition(mAdapter.getItemCount() - 1);
                                 mHasScrolledInitially = true;
                             }
                         });
@@ -242,6 +244,7 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
                 LogUtil.e(TAG, "Error fetching message", error);
                 mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
                 mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mIsLoading = false;
             }
         });
     }
@@ -250,14 +253,14 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
         if (mAdapter == null) {
             List<ImgurMessage> messages = new ArrayList<>();
             messages.add(message);
-            mAdapter = new MessagesAdapter(getApplicationContext(), messages, this);
-            mListView.setAdapter(mAdapter);
+            mAdapter = new MessagesAdapter(getApplicationContext(), ColorGenerator.DEFAULT.getColor(mConvo.getWithAccount()), messages, this);
+            mConvoList.setAdapter(mAdapter);
         } else {
             mAdapter.addItem(message);
         }
 
         mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
-        mListView.setSelection(mAdapter.getCount() - 1);
+        mConvoList.scrollToPosition(mAdapter.getItemCount() - 1);
         mMessageInput.setText(null);
 
         ApiClient.getService().sendMessage(mConvo.getWithAccount(), message.getBody(), new Callback<BasicResponse>() {
@@ -331,6 +334,8 @@ public class ConvoThreadActivity extends BaseActivity implements AbsListView.OnS
     }
 
     private void onEmpty() {
+        mHasMore = false;
+
         if (mAdapter == null || mAdapter.isEmpty()) {
             mMultiView.setEmptyText(R.id.emptyMessage, getString(R.string.convo_message_hint));
             mMultiView.setViewState(MultiStateView.ViewState.EMPTY);

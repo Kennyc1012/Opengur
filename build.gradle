@@ -22,8 +22,8 @@ repositories {
     jcenter()
 }
 
-def VERSION_NAME = '3.2.1'
-def VERSION_CODE = 41
+def VERSION_NAME = '3.2.2'
+def VERSION_CODE = 42
 
 android {
     compileSdkVersion 22
@@ -83,7 +83,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:' + SUPPORT_VERSION
     compile 'com.android.support:recyclerview-v7:' + SUPPORT_VERSION
     compile 'com.android.support:design:' + SUPPORT_VERSION
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.7'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.8'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
     compile 'com.kennyc:snackbar:2.5'
     compile 'com.squareup.okhttp:okhttp:2.4.0'

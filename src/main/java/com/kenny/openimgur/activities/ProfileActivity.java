@@ -282,6 +282,8 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
         ApiClient.getService().getProfile(username, new Callback<UserResponse>() {
             @Override
             public void success(UserResponse userResponse, Response response) {
+                if (isDestroyed() || isFinishing()) return;
+
                 if (userResponse != null && userResponse.data != null) {
                     if (mSelectedUser != null) {
                         mSelectedUser.copy(userResponse.data);
@@ -289,7 +291,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                         mSelectedUser = userResponse.data;
                     }
 
-                    if (mSelectedUser.isSelf(app)) {
+                    if (mSelectedUser.isSelf(app) && !TextUtils.isEmpty(mSelectedUser.getAccessToken())) {
                         app.getSql().updateUserInfo(mSelectedUser);
                     } else {
                         app.getSql().insertProfile(mSelectedUser);
@@ -329,9 +331,9 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
 
     @Override
     public void onUpdateActionBar(boolean shouldShow) {
-        boolean isVisibile = mToolbarContainer.getTranslationY() == 0;
+        boolean isVisible = mToolbarContainer.getTranslationY() == 0;
 
-        if (isVisibile != shouldShow && !mIsAnimating) {
+        if (isVisible != shouldShow && !mIsAnimating) {
             //Actionbar visibility has changed
             mIsAnimating = true;
             mToolbarContainer.animate().translationY(shouldShow ? 0 : -mToolBar.getHeight()).setListener(mAnimAdapter);

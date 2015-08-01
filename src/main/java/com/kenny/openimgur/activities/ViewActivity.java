@@ -819,7 +819,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         Callback<CommentPostResponse> cb = new Callback<CommentPostResponse>() {
             @Override
             public void success(CommentPostResponse commentPostResponse, Response response) {
-                if (commentPostResponse != null && !TextUtils.isEmpty(commentPostResponse.data)) {
+                if (commentPostResponse != null && commentPostResponse.data != null && !TextUtils.isEmpty(commentPostResponse.data.id)) {
                     SnackBar.show(ViewActivity.this, R.string.comment_post_successful);
                     fetchComments();
                 } else {
