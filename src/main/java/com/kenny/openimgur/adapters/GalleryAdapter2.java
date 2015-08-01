@@ -42,6 +42,8 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
 
     private View.OnClickListener mClickListener;
 
+    private View.OnLongClickListener mLongClickListener;
+
     private boolean mShowPoints = true;
 
     private String mThumbnailQuality;
@@ -65,9 +67,15 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
         mShowPoints = showPoints;
     }
 
+    public void setOnLClickPressListener(View.OnLongClickListener listener) {
+        mLongClickListener = listener;
+        if (getItemCount() > 0) notifyDataSetChanged();
+    }
+
     @Override
     public void onDestroy() {
         mClickListener = null;
+        mLongClickListener = null;
         clear();
         super.onDestroy();
     }
@@ -96,6 +104,7 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.gallery_item2, parent, false);
         view.setOnClickListener(mClickListener);
+        view.setOnLongClickListener(mLongClickListener);
         return new GalleryHolder(view);
     }
 
