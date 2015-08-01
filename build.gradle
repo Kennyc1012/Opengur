@@ -22,8 +22,8 @@ repositories {
     jcenter()
 }
 
-def VERSION_NAME = '3.2.1'
-def VERSION_CODE = 41
+def VERSION_NAME = '3.2.2'
+def VERSION_CODE = 42
 
 android {
     compileSdkVersion 22
