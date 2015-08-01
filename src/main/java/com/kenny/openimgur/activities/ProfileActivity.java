@@ -291,7 +291,7 @@ public class ProfileActivity extends BaseActivity implements FragmentListener {
                         mSelectedUser = userResponse.data;
                     }
 
-                    if (mSelectedUser.isSelf(app)) {
+                    if (mSelectedUser.isSelf(app) && !TextUtils.isEmpty(mSelectedUser.getAccessToken())) {
                         app.getSql().updateUserInfo(mSelectedUser);
                     } else {
                         app.getSql().insertProfile(mSelectedUser);
