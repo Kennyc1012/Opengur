@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -45,9 +46,6 @@ import butterknife.Bind;
 public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     private static final String KEY_USER = "user";
 
-    @Bind(R.id.username)
-    TextView mUserName;
-
     @Bind(R.id.notoriety)
     TextView mNotoriety;
 
@@ -59,12 +57,6 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
     @Bind(R.id.date)
     TextView mDate;
-
-    @Bind(R.id.container)
-    ScrollView mContainer;
-
-    @Bind(R.id.infoContainer)
-    LinearLayout mInfoContainer;
 
     private ImgurUser mSelectedUser;
 
@@ -97,14 +89,6 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
             throw new IllegalArgumentException("Bundle can not be null and must contain a user");
         }
 
-        int tabHeight = getResources().getDimensionPixelSize(R.dimen.tab_bar_height);
-        int translucentHeight = ViewUtils.getHeightForTranslucentStyle(getActivity());
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mInfoContainer.addView(ViewUtils.getFooterViewForComments(getActivity()));
-        }
-
-        mContainer.setPadding(0, tabHeight + translucentHeight, 0, 0);
         mSelectedUser = bundle.getParcelable(KEY_USER);
         setupInfo();
     }
@@ -153,12 +137,10 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
      * Sets up the view to display the user's info
      */
     private void setupInfo() {
-        mUserName.setBackgroundColor(getResources().getColor(theme.primaryColor));
         String date = new SimpleDateFormat("MMM yyyy").format(new Date(mSelectedUser.getCreated()));
         mNotoriety.setText(mSelectedUser.getNotoriety().getStringId());
         mNotoriety.setTextColor(getResources().getColor(mSelectedUser.getNotoriety().getNotorietyColor()));
         mRep.setText(getString(R.string.profile_rep, mSelectedUser.getReputation()));
-        mUserName.setText(mSelectedUser.getUsername());
         mDate.setText(getString(R.string.profile_date, date));
 
         if (!TextUtils.isEmpty(mSelectedUser.getBio())) {
@@ -167,16 +149,6 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
             Linkify.addLinks(mBio, Linkify.WEB_URLS);
         } else {
             mBio.setText(getString(R.string.profile_bio_empty, mSelectedUser.getUsername()));
-        }
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        // Force the action bar to show
-        if (getActivity() instanceof ProfileActivity) {
-           // ((ProfileActivity) getActivity()).onUpdateActionBar(true);
         }
     }
 
