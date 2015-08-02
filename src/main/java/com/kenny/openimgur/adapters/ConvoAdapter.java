@@ -10,7 +10,6 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurConvo;
-import com.kenny.openimgur.classes.OpengurApp;
 
 import java.util.List;
 
@@ -31,8 +30,7 @@ public class ConvoAdapter extends BaseRecyclerAdapter<ImgurConvo> {
         mCircleSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
         mClickListener = clickListener;
         mLongClickListener = longClickListener;
-        boolean isDarkTheme = OpengurApp.getInstance(context).getImgurTheme().isDarkTheme;
-        mDividerColor = isDarkTheme ? context.getResources().getColor(R.color.primary_dark_material_light) : context.getResources().getColor(R.color.primary_dark_material_dark);
+        mDividerColor = mIsDarkTheme ? context.getResources().getColor(R.color.primary_dark_material_light) : context.getResources().getColor(R.color.primary_dark_material_dark);
     }
 
     @Override

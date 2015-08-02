@@ -27,10 +27,13 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
 
     protected LayoutInflater mInflater;
 
+    protected boolean mIsDarkTheme = false;
+
     public BaseRecyclerAdapter(Context context, List<T> collection, boolean hasImageLoader) {
         if (hasImageLoader) mImageLoader = OpengurApp.getInstance(context).getImageLoader();
         mItems = collection;
         mInflater = LayoutInflater.from(context);
+        mIsDarkTheme = OpengurApp.getInstance(context).getImgurTheme().isDarkTheme;
     }
 
     /**

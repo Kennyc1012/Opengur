@@ -43,7 +43,6 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
     RecyclerView mMessageList;
 
     private ConvoAdapter mAdapter;
-    private ScrollHelper mScrollHelper = new ScrollHelper();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

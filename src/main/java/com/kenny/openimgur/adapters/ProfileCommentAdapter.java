@@ -15,7 +15,6 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
@@ -34,8 +33,7 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     public ProfileCommentAdapter(Context context, List<ImgurComment> comments, View.OnClickListener listener) {
         super(context, comments, true);
         mClickListener = listener;
-        boolean isDarkTheme = OpengurApp.getInstance(context).getImgurTheme().isDarkTheme;
-        mDividerColor = isDarkTheme ? context.getResources().getColor(R.color.primary_dark_material_light) : context.getResources().getColor(R.color.primary_dark_material_dark);
+        mDividerColor = mIsDarkTheme ? context.getResources().getColor(R.color.primary_dark_material_light) : context.getResources().getColor(R.color.primary_dark_material_dark);
     }
 
     @Override

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -136,7 +135,7 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
             displayImage(galleryHolder.image, url);
         }
 
-        if (obj.getUpVotes() != Integer.MIN_VALUE) {
+        if (mShowPoints) {
             galleryHolder.score.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + galleryHolder.score.getContext().getString(R.string.points));
             galleryHolder.score.setVisibility(View.VISIBLE);
         } else {

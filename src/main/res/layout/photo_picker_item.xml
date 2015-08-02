@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/gallery_column_height"
+    android:foreground="@drawable/pressed_drawable"
     tools:layout_width="150dp">
 
     <ImageView
