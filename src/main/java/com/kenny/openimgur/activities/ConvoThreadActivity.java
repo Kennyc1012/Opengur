@@ -219,6 +219,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                         converastionResponse.data.getMessages().addAll(retainedMessages);
                         mAdapter.clear();
                         mAdapter.addItems(converastionResponse.data.getMessages());
+                        if (mLayoutManager.findFirstVisibleItemPosition() != 0) scrollToBottom = true;
                     }
 
 
