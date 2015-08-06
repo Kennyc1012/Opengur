@@ -270,7 +270,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     public void success(GalleryResponse galleryResponse, Response response) {
         super.success(galleryResponse, response);
 
-        if (mCurrentPage == 0 && !galleryResponse.data.isEmpty()) {
+        if (mCurrentPage == 0 && galleryResponse != null && !galleryResponse.data.isEmpty()) {
             app.getSql().addSubReddit(mQuery);
 
             if (mCursorAdapter == null) {

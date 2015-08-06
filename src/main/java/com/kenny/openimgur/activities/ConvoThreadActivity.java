@@ -50,8 +50,6 @@ import retrofit.client.Response;
  * Created by kcampagna on 12/25/14.
  */
 public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
-    public static final int REQUEST_CODE = 102;
-
     public static final String KEY_BLOCKED_CONVO = "blocked_convo";
 
     private static final String KEY_CONVO = "convo";
@@ -219,6 +217,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                         converastionResponse.data.getMessages().addAll(retainedMessages);
                         mAdapter.clear();
                         mAdapter.addItems(converastionResponse.data.getMessages());
+                        if (mLayoutManager.findFirstVisibleItemPosition() != 0) scrollToBottom = true;
                     }
 
 

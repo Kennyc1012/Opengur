@@ -114,7 +114,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dismiss();
+                dismissAllowingStateLoss();
                 startActivity(FullScreenPhotoActivity.createIntent(getActivity(), mImageUrl));
             }
         });
@@ -122,7 +122,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
         mVideo.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                dismiss();
+                dismissAllowingStateLoss();
                 mVideo.stopPlayback();
                 startActivity(FullScreenPhotoActivity.createIntent(getActivity(), mImageUrl));
                 return true;
@@ -170,7 +170,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
                 if (isAdded()) {
-                    dismiss();
+                    dismissAllowingStateLoss();
                     Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -182,7 +182,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
                     if (isAnimated) {
                         if (!ImageUtil.loadAndDisplayGif((ImageView) view, s, OpengurApp.getInstance(getActivity()).getImageLoader())) {
                             Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
-                            dismiss();
+                            dismissAllowingStateLoss();
                         }
                     }
                 }
@@ -191,7 +191,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             @Override
             public void onLoadingCancelled(String s, View view) {
                 if (isAdded()) {
-                    dismiss();
+                    dismissAllowingStateLoss();
                     Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -246,7 +246,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     public void onVideoDownloadFailed(Exception ex, String url) {
         if (isAdded() && isResumed() && getActivity() != null) {
             SnackBar.show(getActivity(), R.string.loading_image_error);
-            dismiss();
+            dismissAllowingStateLoss();
         }
     }
 
@@ -258,7 +258,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     }
 
     private void fetchImageDetails() {
-        ApiClient.getService().getImageDtails(mImageUrl, new Callback<PhotoResponse>() {
+        ApiClient.getService().getImageDetails(mImageUrl, new Callback<PhotoResponse>() {
             @Override
             public void success(PhotoResponse photoResponse, Response response) {
                 if (!isAdded()) return;

@@ -21,7 +21,6 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTag;
-import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
@@ -35,8 +34,6 @@ import butterknife.Bind;
 import pl.droidsonroids.gif.GifDrawable;
 
 public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
-    private static final int NUM_VIEW = 2;
-
     private static final int VIEW_HEADER = 1;
 
     private static final int VIEW_PHOTO = 2;
@@ -49,13 +46,10 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
 
     private ImgurBaseObject mImgurObject;
 
-    private boolean mIsDarkTheme;
-
     public PhotoAdapter(Context context, List<ImgurPhoto> photos, ImgurBaseObject object, ImgurListener listener) {
         super(context, photos, true);
         mListener = listener;
         mImgurObject = object;
-        mIsDarkTheme = OpengurApp.getInstance(context).getImgurTheme().isDarkTheme;
     }
 
     /**

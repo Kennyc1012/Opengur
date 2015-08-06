@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/gallery_column_height"
     android:foreground="@drawable/pressed_drawable"
-    tools:layout_width="150dp">
+    tools:layout_width="200dp">
 
     <ImageView
         android:id="@+id/image"
@@ -13,13 +13,18 @@
         android:scaleType="centerCrop"
         tools:src="@drawable/ic_launcher" />
 
-    <ImageView
-        android:id="@+id/checkMark"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        tools:src="@drawable/ic_check_circle_white_36dp" />
+    <TextView
+        android:id="@+id/score"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:background="#80000000"
+        android:gravity="center_vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:textAppearance="@style/TextAppearance.Regular"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        tools:text="160 Points" />
 
 </FrameLayout>

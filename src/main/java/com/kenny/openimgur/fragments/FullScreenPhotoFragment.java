@@ -161,7 +161,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
                 mStartedToLoad = false;
-                if (getActivity() == null | !isAdded() || isRemoving()) return;
+                if (!isAdded() || isRemoving()) return;
 
                 if (mReplacedPNG) {
                     LogUtil.w(TAG, "Replacing png with jpeg failed, reverting back to png");
@@ -177,7 +177,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
             public void onLoadingComplete(String url, View view, Bitmap bitmap) {
                 mStartedToLoad = false;
                 bitmap.recycle();
-                if (getActivity() == null | !isAdded() || isRemoving()) return;
+                if (!isAdded() || isRemoving()) return;
 
                 if (url.endsWith(".gif")) {
                     displayGif(url);
@@ -211,13 +211,13 @@ public class FullScreenPhotoFragment extends BaseFragment {
                                 @Override
                                 public void onImageLoadError(Exception e) {
                                     LogUtil.e(TAG, "Error loading image", e);
-                                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                                    if (mMultiView != null) mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                                 }
 
                                 @Override
                                 public void onTileLoadError(Exception e) {
                                     LogUtil.e(TAG, "Error creating tile", e);
-                                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                                    if (mMultiView != null) mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                                 }
                             });
 

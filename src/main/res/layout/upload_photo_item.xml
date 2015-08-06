@@ -35,7 +35,6 @@
             android:id="@+id/desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/title"
             android:ellipsize="end"
             android:singleLine="true"
             android:textSize="@dimen/abc_text_size_small_material"

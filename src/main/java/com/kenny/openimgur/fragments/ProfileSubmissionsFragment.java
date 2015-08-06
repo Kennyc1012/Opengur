@@ -15,7 +15,7 @@ import com.kenny.openimgur.ui.MultiStateView;
 /**
  * Created by kcampagna on 12/23/14.
  */
-public class ProfileSubmissionsFragment extends BaseGridFragment {
+public class ProfileSubmissionsFragment extends BaseGridFragment2 {
     private static final String KEY_USER = "user";
 
     private ImgurUser mSelectedUser;
@@ -31,7 +31,7 @@ public class ProfileSubmissionsFragment extends BaseGridFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery, container, false);
+        return inflater.inflate(R.layout.fragment_gallery2, container, false);
     }
 
     @Override
@@ -55,21 +55,8 @@ public class ProfileSubmissionsFragment extends BaseGridFragment {
             mSelectedUser = getArguments().getParcelable(KEY_USER);
         }
 
-        if (mSelectedUser == null)
+        if (mSelectedUser == null) {
             throw new IllegalArgumentException("Profile must be supplied to fragment");
-    }
-
-    @Override
-    protected int getAdditionalHeaderSpace() {
-        return getResources().getDimensionPixelSize(R.dimen.tab_bar_height);
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        if (isVisibleToUser && mGrid != null && mGrid.getFirstVisiblePosition() <= 1 && mListener != null) {
-            mListener.onUpdateActionBar(true);
         }
     }
 

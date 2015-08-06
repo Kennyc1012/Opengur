@@ -12,10 +12,9 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.GalleryAdapter;
+import com.kenny.openimgur.adapters.GalleryAdapter2;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
@@ -32,7 +31,7 @@ import retrofit.client.Response;
 /**
  * Created by Kenny-PC on 7/4/2015.
  */
-public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterView.OnItemLongClickListener {
+public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnLongClickListener {
     private static final String KEY_USER = "user";
 
     private ImgurUser mSelectedUser;
@@ -48,13 +47,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mGrid.setOnItemLongClickListener(this);
+        return inflater.inflate(R.layout.fragment_gallery2, container, false);
     }
 
     @Override
@@ -64,57 +57,56 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        int headerSize = mGrid.getNumColumns() * mGrid.getHeaderViewCount();
-        int adapterPosition = position - headerSize;
+    protected void setAdapter(GalleryAdapter2 adapter) {
+        super.setAdapter(adapter);
+        adapter.setOnLongClickPressListener(this);
+    }
 
-        if (adapterPosition >= 0) {
-            final ImgurBaseObject album = getAdapter().getItem(adapterPosition);
-            String[] options = getResources().getStringArray(mSelectedUser.isSelf(app) ? R.array.uploaded_photos_options : R.array.uploaded_albums_options_not_self);
+    @Override
+    public boolean onLongClick(View v) {
+        final ImgurBaseObject album = getAdapter().getItem(mGrid.getChildAdapterPosition(v));
+        String[] options = getResources().getStringArray(mSelectedUser.isSelf(app) ? R.array.uploaded_photos_options : R.array.uploaded_albums_options_not_self);
 
-            new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
-                    .setItems(options, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // 0. Share 1. Copy Link 2. Delete
+        new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                .setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // 0. Share 1. Copy Link 2. Delete
 
-                            switch (which) {
-                                case 0:
-                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                    shareIntent.setType("text/plain");
-                                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
-                                    shareIntent.putExtra(Intent.EXTRA_TEXT, album.getLink());
+                        switch (which) {
+                            case 0:
+                                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                shareIntent.setType("text/plain");
+                                shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, album.getLink());
 
-                                    if (shareIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                                        startActivity(Intent.createChooser(shareIntent, getString(R.string.send_feedback)));
-                                    } else {
-                                        SnackBar.show(getActivity(), R.string.cant_launch_intent);
-                                    }
-                                    break;
+                                if (shareIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                                    startActivity(Intent.createChooser(shareIntent, getString(R.string.send_feedback)));
+                                } else {
+                                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                                }
+                                break;
 
-                                case 1:
-                                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", album.getLink()));
-                                    break;
+                            case 1:
+                                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                                clipboard.setPrimaryClip(ClipData.newPlainText("link", album.getLink()));
+                                break;
 
-                                case 2:
-                                    new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
-                                            .setMessage(R.string.profile_delete_album)
-                                            .setNegativeButton(R.string.cancel, null)
-                                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    deleteAlbum(album);
-                                                }
-                                            }).show();
-                                    break;
-                            }
+                            case 2:
+                                new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                                        .setMessage(R.string.profile_delete_album)
+                                        .setNegativeButton(R.string.cancel, null)
+                                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                deleteAlbum(album);
+                                            }
+                                        }).show();
+                                break;
                         }
-                    }).show();
-            return true;
-        }
-
-        return false;
+                    }
+                }).show();
+        return true;
     }
 
     @Override
@@ -134,20 +126,6 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
 
         if (mSelectedUser == null)
             throw new IllegalArgumentException("Profile must be supplied to fragment");
-    }
-
-    @Override
-    protected int getAdditionalHeaderSpace() {
-        return getResources().getDimensionPixelSize(R.dimen.tab_bar_height);
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        if (isVisibleToUser && mGrid != null && mGrid.getFirstVisiblePosition() <= 1 && mListener != null) {
-            mListener.onUpdateActionBar(true);
-        }
     }
 
     @Override
@@ -177,7 +155,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements AdapterVi
                 if (!isAdded()) return;
 
                 if (basicResponse != null && basicResponse.data) {
-                    GalleryAdapter adapter = getAdapter();
+                    GalleryAdapter2 adapter = getAdapter();
 
                     if (adapter != null) {
                         adapter.removeItem(album);

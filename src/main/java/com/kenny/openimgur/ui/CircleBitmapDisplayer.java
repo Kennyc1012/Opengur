@@ -108,11 +108,6 @@ public class CircleBitmapDisplayer implements BitmapDisplayer {
             return mBitmapHeight;
         }
 
-        public void setAntiAlias(boolean aa) {
-            mPaint.setAntiAlias(aa);
-            invalidateSelf();
-        }
-
         @Override
         public void setFilterBitmap(boolean filter) {
             mPaint.setFilterBitmap(filter);
@@ -124,11 +119,5 @@ public class CircleBitmapDisplayer implements BitmapDisplayer {
             mPaint.setDither(dither);
             invalidateSelf();
         }
-
-        public Bitmap getBitmap() {
-            return mBitmap;
-        }
-
-        // TODO allow set and use target density, mutate, constant state, changing configurations, etc.
     }
 }

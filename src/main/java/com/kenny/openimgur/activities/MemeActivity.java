@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.TypedValue;
@@ -43,6 +44,8 @@ import butterknife.OnClick;
 public class MemeActivity extends BaseActivity {
     private static final String KEY_OBJECT = "imgur_object";
 
+    private static final String KEY_FILE_PATH = "file_path";
+
     @Bind(R.id.image)
     ImageView mImage;
 
@@ -64,19 +67,28 @@ public class MemeActivity extends BaseActivity {
         return new Intent(context, MemeActivity.class).putExtra(KEY_OBJECT, object);
     }
 
+    public static Intent createIntent(Context context, @NonNull File file) {
+        return new Intent(context, MemeActivity.class).putExtra(KEY_FILE_PATH, file.getAbsolutePath());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meme_create);
         Intent intent = getIntent();
 
-        if (intent == null || !intent.hasExtra(KEY_OBJECT)) {
+        if (intent == null) {
             LogUtil.w(TAG, "No object was found in the intent");
-            // Toast error message
             finish();
         }
 
-        mObject = intent.getParcelableExtra(KEY_OBJECT);
+        if (intent.hasExtra(KEY_OBJECT)) {
+            mObject = intent.getParcelableExtra(KEY_OBJECT);
+        } else {
+            String path = intent.getStringExtra(KEY_FILE_PATH);
+            mObject = new ImgurBaseObject("-1", null, "file:///" + path);
+        }
+
         getSupportActionBar().setTitle(mObject.getTitle());
         loadImage();
         mView.setDrawingCacheEnabled(true);

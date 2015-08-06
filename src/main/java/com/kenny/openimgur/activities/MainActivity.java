@@ -37,6 +37,7 @@ import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.fragments.TopicsFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
 
 import butterknife.Bind;
@@ -219,7 +220,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             @Override
             public void onClick(View v) {
                 mDrawer.closeDrawers();
-                startActivityForResult(ProfileActivity.createIntent(getApplicationContext(), null), ProfileActivity.REQUEST_CODE);
+                startActivityForResult(ProfileActivity.createIntent(getApplicationContext(), null), RequestCodes.PROFILE);
             }
         });
     }
@@ -260,7 +261,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             case R.id.nav_settings:
                 mSavedTheme = ImgurTheme.copy(theme);
                 mIsDarkTheme = app.getPreferences().getBoolean(SettingsActivity.KEY_DARK_THEME, mSavedTheme.isDarkTheme);
-                startActivityForResult(SettingsActivity.createIntent(getApplicationContext()), SettingsActivity.REQUEST_CODE);
+                startActivityForResult(SettingsActivity.createIntent(getApplicationContext()), RequestCodes.SETTINGS);
                 break;
 
             case R.id.nav_feedback:
@@ -427,7 +428,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             // Set the theme if coming from the settings activity
-            case SettingsActivity.REQUEST_CODE:
+            case RequestCodes.SETTINGS:
                 ImgurTheme theme = OpengurApp.getInstance(getApplicationContext()).getImgurTheme();
                 mNagOnExit = app.getPreferences().getBoolean(SettingsActivity.KEY_CONFIRM_EXIT, true);
 
@@ -441,7 +442,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                 }
                 break;
 
-            case ProfileActivity.REQUEST_CODE:
+            case RequestCodes.PROFILE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     if (data.getBooleanExtra(ProfileActivity.KEY_LOGGED_IN, false)) {
                         app = OpengurApp.getInstance(getApplicationContext());

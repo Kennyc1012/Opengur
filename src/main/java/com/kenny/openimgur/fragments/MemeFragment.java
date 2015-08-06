@@ -1,5 +1,7 @@
 package com.kenny.openimgur.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -16,10 +18,14 @@ import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.snackbar.SnackBar;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +56,7 @@ public class MemeFragment extends BaseGridFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.topics, menu);
+        inflater.inflate(R.menu.meme_fragment, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -61,6 +67,17 @@ public class MemeFragment extends BaseGridFragment {
                 if (getAdapter() != null) getAdapter().clear();
                 mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
                 fetchGallery();
+                break;
+
+            case R.id.importPhoto:
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivityForResult(intent, RequestCodes.SELECT_PHOTO);
+                } else {
+                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                }
                 break;
         }
 
@@ -100,7 +117,7 @@ public class MemeFragment extends BaseGridFragment {
         super.success(galleryResponse, response);
         mHasMore = false;
 
-        if (!galleryResponse.data.isEmpty()) {
+        if (galleryResponse != null && !galleryResponse.data.isEmpty()) {
             app.getSql().deleteMemes();
             app.getSql().addMemes(galleryResponse.data);
         }
@@ -109,5 +126,20 @@ public class MemeFragment extends BaseGridFragment {
     @Override
     protected boolean showPoints() {
         return false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RequestCodes.SELECT_PHOTO && resultCode == Activity.RESULT_OK) {
+            File file = FileUtil.createFile(data.getData(), getActivity().getContentResolver());
+
+            if (FileUtil.isFileValid(file)) {
+                startActivity(MemeActivity.createIntent(getActivity(), file));
+            } else {
+                SnackBar.show(getActivity(), R.string.upload_decode_failure);
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -61,7 +61,7 @@ public class MessagesAdapter extends BaseRecyclerAdapter<ImgurMessage> {
             holder.timeStamp.setTextColor(Color.BLACK);
         } else {
             holder.container.setBackgroundColor(mUserColor);
-            lp.setMargins(0, 0, mUserColor, 0);
+            lp.setMargins(0, 0, mMargin, 0);
             lp.gravity = Gravity.LEFT;
             holder.container.setGravity(Gravity.LEFT);
             holder.container.setLayoutParams(lp);

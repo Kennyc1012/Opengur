@@ -36,6 +36,7 @@ import com.kenny.openimgur.services.UploadService;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
 import com.kenny.snackbar.SnackBarItem;
 import com.kenny.snackbar.SnackBarListener;
@@ -58,10 +59,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     private static final String KEY_PASSED_FILE = "passed_file";
 
     private static final String KEY_SAVED_ITEMS = "saved_items";
-
-    private static final int REQUEST_CODE_CAMERA = 123;
-
-    private static final int REQUEST_CODE_GALLERY = 321;
 
     private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
 
@@ -202,7 +199,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTempFile));
                     if (intent.resolveActivity(getPackageManager()) != null) {
-                        startActivityForResult(intent, REQUEST_CODE_CAMERA);
+                        startActivityForResult(intent, RequestCodes.TAKE_PHOTO);
                     } else {
                         SnackBar.show(this, R.string.cant_launch_intent);
                     }
@@ -210,7 +207,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                 break;
 
             case R.id.galleryBtn:
-                startActivityForResult(PhotoPickerActivity.createInstance(getApplicationContext()), REQUEST_CODE_GALLERY);
+                startActivityForResult(PhotoPickerActivity.createInstance(getApplicationContext()), RequestCodes.SELECT_PHOTO);
                 break;
 
             case R.id.linkBtn:
@@ -224,7 +221,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_CODE_GALLERY:
+            case RequestCodes.SELECT_PHOTO:
                 if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(PhotoPickerActivity.KEY_PHOTOS)) {
                     List<String> photos = data.getStringArrayListExtra(PhotoPickerActivity.KEY_PHOTOS);
                     List<Upload> uploads = new ArrayList<>(photos.size());
@@ -245,7 +242,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                 }
                 break;
 
-            case REQUEST_CODE_CAMERA:
+            case RequestCodes.TAKE_PHOTO:
                 if (resultCode == Activity.RESULT_OK && FileUtil.isFileValid(mTempFile)) {
                     FileUtil.scanFile(Uri.fromFile(mTempFile), getApplicationContext());
                     String fileLocation = mTempFile.getAbsolutePath();

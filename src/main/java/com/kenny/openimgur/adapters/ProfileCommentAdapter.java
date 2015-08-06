@@ -21,15 +21,25 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import java.util.List;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 /**
- * Created by kcampagna on 12/22/14.
+ * Created by Kenny-PC on 8/1/2015.
  */
-public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
+public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
+    private int mDividerColor;
 
-    public ProfileCommentAdapter(Context context, List<ImgurComment> comments) {
+    private View.OnClickListener mClickListener;
+
+    public ProfileCommentAdapter(Context context, List<ImgurComment> comments, View.OnClickListener listener) {
         super(context, comments, true);
+        mClickListener = listener;
+        mDividerColor = mIsDarkTheme ? context.getResources().getColor(R.color.primary_dark_material_light) : context.getResources().getColor(R.color.primary_dark_material_dark);
+    }
+
+    @Override
+    public void onDestroy() {
+        mClickListener = null;
+        super.onDestroy();
     }
 
     @Override
@@ -38,20 +48,22 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        CommentViewHolder holder;
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = mInflater.inflate(R.layout.profile_comment_item, parent, false);
+        view.setOnClickListener(mClickListener);
+        CommentViewHolder holder = new CommentViewHolder(view);
+        holder.divider.setBackgroundColor(mDividerColor);
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
+        CommentViewHolder commentViewHolder = (CommentViewHolder) holder;
         ImgurComment comment = getItem(position);
         String photoUrl;
 
-        if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.profile_comment_item, parent, false);
-            holder = new CommentViewHolder(convertView);
-        } else {
-            holder = (CommentViewHolder) convertView.getTag();
-        }
-
-        holder.author.setText(constructSpan(comment, convertView.getContext()));
-        holder.comment.setText(comment.getComment());
+        commentViewHolder.author.setText(constructSpan(comment, commentViewHolder.author.getContext()));
+        commentViewHolder.comment.setText(comment.getComment());
 
         if (comment.isAlbumComment() && !TextUtils.isEmpty(comment.getAlbumCoverId())) {
             photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, comment.getAlbumCoverId() + ImgurPhoto.THUMBNAIL_SMALL);
@@ -59,8 +71,7 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
             photoUrl = "https://imgur.com/" + comment.getImageId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
         }
 
-        displayImage(holder.image, photoUrl);
-        return convertView;
+        displayImage(commentViewHolder.image, photoUrl);
     }
 
     /**
@@ -105,7 +116,7 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
                                 | DateUtils.FORMAT_ABBREV_ALL);
     }
 
-    static class CommentViewHolder {
+    static class CommentViewHolder extends BaseViewHolder {
         @Bind(R.id.author)
         TextView author;
 
@@ -115,9 +126,11 @@ public class ProfileCommentAdapter extends ImgurBaseAdapter<ImgurComment> {
         @Bind(R.id.image)
         ImageView image;
 
+        @Bind(R.id.divider)
+        View divider;
+
         public CommentViewHolder(View view) {
-            ButterKnife.bind(this, view);
-            view.setTag(this);
+            super(view);
         }
     }
 }

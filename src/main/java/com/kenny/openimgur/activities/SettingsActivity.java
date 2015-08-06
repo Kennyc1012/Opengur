@@ -12,8 +12,6 @@ import com.kenny.openimgur.R;
 public class SettingsActivity extends BaseActivity {
     private static final String KEY_IS_EXPERIMENTAL = "isExperimental";
 
-    public static final int REQUEST_CODE = 200;
-
     public static final String NSFW_KEY = "allowNSFW";
 
     public static final String THEME_KEY = "app_theme";

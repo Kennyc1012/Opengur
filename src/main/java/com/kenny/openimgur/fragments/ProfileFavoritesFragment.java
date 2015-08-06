@@ -9,12 +9,11 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.adapters.GalleryAdapter;
+import com.kenny.openimgur.adapters.GalleryAdapter2;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.BasicResponse;
@@ -36,7 +35,7 @@ import retrofit.client.Response;
 /**
  * Created by kcampagna on 12/20/14.
  */
-public class ProfileFavoritesFragment extends BaseGridFragment implements AdapterView.OnItemLongClickListener {
+public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.OnLongClickListener {
     private static final String KEY_USER = "user";
 
     private ImgurUser mSelectedUser;
@@ -52,40 +51,31 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements Adapte
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery, container, false);
+        return inflater.inflate(R.layout.fragment_gallery2, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (mSelectedUser.isSelf(app)) mGrid.setOnItemLongClickListener(this);
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        int headerSize = mGrid.getNumColumns() * mGrid.getHeaderViewCount();
-        int adapterPosition = position - headerSize;
+    public boolean onLongClick(View v) {
+        final ImgurBaseObject obj = getAdapter().getItem(mGrid.getChildAdapterPosition(v));
+        new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                .setTitle(R.string.profile_unfavorite_title)
+                .setMessage(R.string.profile_unfavorite_message)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+                        removeFavorite(obj);
+                    }
+                })
+                .show();
 
-        if (adapterPosition >= 0) {
-            final ImgurBaseObject obj = getAdapter().getItem(adapterPosition);
-
-            new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
-                    .setTitle(R.string.profile_unfavorite_title)
-                    .setMessage(R.string.profile_unfavorite_message)
-                    .setNegativeButton(R.string.cancel, null)
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
-                            removeFavorite(obj);
-                        }
-                    })
-                    .show();
-
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     @Override
@@ -102,25 +92,31 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements Adapte
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        int headerSize = mGrid.getNumColumns() * mGrid.getHeaderViewCount();
-        int adapterPosition = position - headerSize;
-        // Don't respond to the header being clicked
+    protected void setAdapter(GalleryAdapter2 adapter) {
+        super.setAdapter(adapter);
+        if (mSelectedUser != null && mSelectedUser.isSelf(app))
+            adapter.setOnLongClickPressListener(this);
+    }
 
-        if (adapterPosition >= 0) {
-            ImgurBaseObject obj = getAdapter().getItem(adapterPosition);
-            Intent intent;
+    @Override
+    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
+        super.onItemSelected(position, items);
+    }
 
-            if (obj instanceof ImgurAlbum || obj.getUpVotes() > Integer.MIN_VALUE) {
-                ArrayList<ImgurBaseObject> items = new ArrayList<>(1);
-                items.add(obj);
-                intent = ViewActivity.createIntent(getActivity(), items, 0);
-            } else {
-                intent = FullScreenPhotoActivity.createIntent(getActivity(), obj.getLink());
-            }
+    @Override
+    public void onClick(View v) {
+        ImgurBaseObject obj = getAdapter().getItem(mGrid.getChildAdapterPosition(v));
+        Intent intent;
 
-            startActivity(intent);
+        if (obj instanceof ImgurAlbum || obj.getUpVotes() > Integer.MIN_VALUE) {
+            ArrayList<ImgurBaseObject> items = new ArrayList<>(1);
+            items.add(obj);
+            intent = ViewActivity.createIntent(getActivity(), items, 0);
+        } else {
+            intent = FullScreenPhotoActivity.createIntent(getActivity(), obj.getLink());
         }
+
+        startActivity(intent);
     }
 
     @Override
@@ -138,21 +134,12 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements Adapte
             mSelectedUser = getArguments().getParcelable(KEY_USER);
         }
 
-        if (mSelectedUser == null)
+        if (mSelectedUser == null) {
             throw new IllegalArgumentException("Profile must be supplied to fragment");
-    }
+        }
 
-    @Override
-    protected int getAdditionalHeaderSpace() {
-        return getResources().getDimensionPixelSize(R.dimen.tab_bar_height);
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-
-        if (isVisibleToUser && mGrid != null && mGrid.getFirstVisiblePosition() <= 1 && mListener != null) {
-            mListener.onUpdateActionBar(true);
+        if (getAdapter() != null && mSelectedUser.isSelf(app)) {
+            getAdapter().setOnLongClickPressListener(this);
         }
     }
 
@@ -182,7 +169,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements Adapte
                 if (!isAdded()) return;
 
                 if (basicResponse != null && basicResponse.success) {
-                    GalleryAdapter adapter = getAdapter();
+                    GalleryAdapter2 adapter = getAdapter();
                     if (adapter != null) adapter.removeItem(object);
                     mMultiStateView.setViewState(adapter != null && adapter.isEmpty() ? MultiStateView.ViewState.EMPTY : MultiStateView.ViewState.CONTENT);
                 } else {
