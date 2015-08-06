@@ -117,7 +117,7 @@ public class MemeFragment extends BaseGridFragment {
         super.success(galleryResponse, response);
         mHasMore = false;
 
-        if (!galleryResponse.data.isEmpty()) {
+        if (galleryResponse != null && !galleryResponse.data.isEmpty()) {
             app.getSql().deleteMemes();
             app.getSql().addMemes(galleryResponse.data);
         }

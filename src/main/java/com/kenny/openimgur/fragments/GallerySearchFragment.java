@@ -140,7 +140,7 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
     public void success(GalleryResponse galleryResponse, Response response) {
         super.success(galleryResponse, response);
 
-        if (mCurrentPage == 0 && !galleryResponse.data.isEmpty()) {
+        if (mCurrentPage == 0 && galleryResponse != null && !galleryResponse.data.isEmpty()) {
             app.getSql().addPreviousGallerySearch(mQuery);
 
             if (mSearchAdapter == null) {
