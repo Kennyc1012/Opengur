@@ -258,7 +258,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     }
 
     private void fetchImageDetails() {
-        ApiClient.getService().getImageDtails(mImageUrl, new Callback<PhotoResponse>() {
+        ApiClient.getService().getImageDetails(mImageUrl, new Callback<PhotoResponse>() {
             @Override
             public void success(PhotoResponse photoResponse, Response response) {
                 if (!isAdded()) return;

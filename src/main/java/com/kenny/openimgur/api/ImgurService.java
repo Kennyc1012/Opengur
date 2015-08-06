@@ -47,7 +47,7 @@ public interface ImgurService {
     void getGalleryDetails(@Path("id") String itemId, Callback<BasicObjectResponse> callback);
 
     @GET("/3/image/{id}")
-    void getImageDtails(@Path("id") String imageId, Callback<PhotoResponse> callback);
+    void getImageDetails(@Path("id") String imageId, Callback<PhotoResponse> callback);
 
     @GET("/3/gallery/{id}/images")
     void getAlbumImages(@Path("id") String albumId, Callback<AlbumResponse> callback);
