@@ -50,8 +50,6 @@ public class ProfileActivity extends BaseActivity {
 
     private static final String REDIRECT_URL = "https://com.kenny.openimgur";
 
-    public static final int REQUEST_CODE = 101;
-
     public static final String KEY_LOGGED_IN = "logged_in";
 
     public static final String KEY_LOGGED_OUT = "logged_out";

@@ -20,6 +20,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -73,7 +74,7 @@ public class MemeFragment extends BaseGridFragment {
                 intent.setType("image/*");
 
                 if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivityForResult(intent, 111);
+                    startActivityForResult(intent, RequestCodes.SELECT_PHOTO);
                 } else {
                     SnackBar.show(getActivity(), R.string.cant_launch_intent);
                 }
@@ -129,7 +130,7 @@ public class MemeFragment extends BaseGridFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 111 && resultCode == Activity.RESULT_OK) {
+        if (requestCode == RequestCodes.SELECT_PHOTO && resultCode == Activity.RESULT_OK) {
             File file = FileUtil.createFile(data.getData(), getActivity().getContentResolver());
 
             if (FileUtil.isFileValid(file)) {

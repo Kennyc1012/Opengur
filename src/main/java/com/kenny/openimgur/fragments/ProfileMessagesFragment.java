@@ -21,7 +21,7 @@ import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.ScrollHelper;
+import com.kenny.openimgur.util.RequestCodes;
 
 import java.util.List;
 
@@ -68,7 +68,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
     @Override
     public void onClick(View v) {
         ImgurConvo convo = mAdapter.getItem(mMessageList.getChildAdapterPosition(v));
-        startActivityForResult(ConvoThreadActivity.createIntent(getActivity(), convo), ConvoThreadActivity.REQUEST_CODE);
+        startActivityForResult(ConvoThreadActivity.createIntent(getActivity(), convo), RequestCodes.CONVO);
     }
 
     @Override
@@ -165,7 +165,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case ConvoThreadActivity.REQUEST_CODE:
+            case RequestCodes.CONVO:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     ImgurConvo convo = data.getParcelableExtra(ConvoThreadActivity.KEY_BLOCKED_CONVO);
                     if (convo != null && mAdapter != null) deleteConversation(convo.getId());
