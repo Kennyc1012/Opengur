@@ -217,6 +217,7 @@
     <string name="meme_saving">Saving Meme, one moment&#8230;</string>
     <string name="meme_failed">Unable to save Meme, please try again.</string>
     <string name="meme_success">Meme saved successfully</string>
+    <string name="meme_import">Import from Photos</string>
 
     <!-- Gallery Search -->
     <string name="gallery_search_hint">Search Imgur</string>
