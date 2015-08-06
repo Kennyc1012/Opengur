@@ -512,7 +512,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             ApiClient.getService().getTags(mImgurObject.getId(), new Callback<TagResponse>() {
                 @Override
                 public void success(TagResponse tagResponse, Response response) {
-                    if (!isAdded()) return;
+                    if (!isAdded() || tagResponse == null) return;
 
                     if (tagResponse.data != null && !tagResponse.data.tags.isEmpty()) {
                         mImgurObject.setTags(tagResponse.data.tags);
