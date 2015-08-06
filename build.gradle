@@ -23,7 +23,7 @@ repositories {
 }
 
 def VERSION_NAME = '3.3.0'
-def VERSION_CODE = 43
+def VERSION_CODE = 44
 
 android {
     compileSdkVersion 22
