@@ -1,4 +1,10 @@
 #Open Imgur Changelog
+<b>3.3.0</b> August 6, 2015
+- Convert ProfileActivity to use design lib scrolling components
+- Add ability to use own photos for memes
+- Fix chat margins
+- Several bug/crash fixes 
+
 <b>3.2.2</b> August 1, 2015
 - Fix incorrect dates on self profile
 - Fix Highest Scoring filter
