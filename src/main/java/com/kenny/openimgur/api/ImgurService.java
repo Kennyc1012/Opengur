@@ -8,6 +8,7 @@ import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.api.responses.ConverastionResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
+import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.api.responses.OAuthResponse;
 import com.kenny.openimgur.api.responses.PhotoResponse;
 import com.kenny.openimgur.api.responses.TagResponse;
@@ -117,6 +118,12 @@ public interface ImgurService {
     @GET("/3/conversations/{id}/{page}/0")
     void getMessages(@Path("id") String conversationId, @Path("page") int page, Callback<ConverastionResponse> callback);
 
+    @GET("/3/notification?new=true")
+    void getNotifications(Callback<NotificationResponse> response);
+
+    @GET("/3/notification?new=true")
+    NotificationResponse getNotifications();
+
 
     // Post Requests. Some of the POST requests have fields when they are not needed. This is because OKHTTP requires a body when posting
     @FormUrlEncoded
@@ -179,6 +186,9 @@ public interface ImgurService {
     @POST("/3/gallery/{id}/report")
     void reportPost(@Path("id") String galleryId, @Field("reason") int reason, Callback<BasicResponse> response);
 
+    @FormUrlEncoded
+    @POST("/3/notification/")
+    void markNotificationsRead(@Field("ids") String ids, Callback<BasicResponse> response);
 
     // Delete Requests
     @DELETE("/3/album/{deleteHash}")
