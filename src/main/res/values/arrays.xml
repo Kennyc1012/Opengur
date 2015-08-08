@@ -96,6 +96,14 @@
         <item>Subreddit</item>
     </string-array>
 
+    <string-array name="report_reasons">
+        <item>Doesn\'t belong on Imgur</item>
+        <item>Spam</item>
+        <item>Abusive</item>
+        <item>Mature content not marked as mature</item>
+        <item>Pornography</item>
+    </string-array>
+
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys" translatable="false">
         <item>256</item>

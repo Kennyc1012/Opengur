@@ -314,4 +314,10 @@
     <string name="muzei_description">Imgur images for Muzei</string>
     <string name="muzei_topic">Topic</string>
 
+    <!-- Reporting -->
+    <string name="report">Report</string>
+    <string name="report_reason">Report Reason</string>
+    <string name="report_post_success">Post reported</string>
+    <string name="report_post_failure">Unable to report post</string>
+
 </resources>

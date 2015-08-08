@@ -5,8 +5,8 @@
 
     <item
         android:id="@+id/share"
-        android:title="@string/share"
         android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/share"
         app:showAsAction="ifRoom" />
 
     <item
@@ -29,13 +29,18 @@
 
     <item
         android:id="@+id/refresh"
+        android:icon="@drawable/ic_action_navigation_refresh"
         android:title="@string/refresh"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_navigation_refresh" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/copy_album_link"
         android:title="@string/copy_album_link"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/report"
+        android:title="@string/report"
         app:showAsAction="never" />
 
 </menu>

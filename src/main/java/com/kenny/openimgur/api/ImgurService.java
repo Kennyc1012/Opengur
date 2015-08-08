@@ -33,7 +33,6 @@ import retrofit.mime.TypedString;
 public interface ImgurService {
 
     // Get Requests
-
     @GET("/3/gallery/{section}/{sort}/{page}")
     void getGallery(@Path("section") String section, @Path("sort") String sort, @Path("page") int page, @Query("showViral") boolean showViral, Callback<GalleryResponse> callback);
 
@@ -166,15 +165,19 @@ public interface ImgurService {
 
     @FormUrlEncoded
     @POST("/3/conversations/block/{username}")
-    void blockUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> respoonse);
+    void blockUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> response);
 
     @FormUrlEncoded
     @POST("/3/conversations/report/{username}")
-    void reportUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> respoonse);
+    void reportUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> response);
 
     @FormUrlEncoded
     @POST("/oauth2/token")
     OAuthResponse refreshToken(@Field("client_id") String clientId, @Field("client_secret") String clientSecret, @Field("refresh_token") String refreshToken, @Field("grant_type") String grantType);
+
+    @FormUrlEncoded
+    @POST("/3/gallery/{id}/report")
+    void reportPost(@Path("id") String galleryId, @Field("reason") int reason, Callback<BasicResponse> response);
 
 
     // Delete Requests
