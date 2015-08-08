@@ -212,15 +212,21 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
             name.setText(user.getUsername());
             rep.setText(user.getNotoriety().getStringId());
-            // TODO Badge count
             badge.setVisibility(View.VISIBLE);
             badgeContainer.setVisibility(View.VISIBLE);
-            badge.setText("8");
+            int notificationCount = app.getSql().getNotifications().size();
+            String badgeText = null;
+
+            if (notificationCount > 0) {
+                badgeText = notificationCount > 9 ? "9+" : String.valueOf(notificationCount);
+            }
+
+            badge.setText(badgeText);
 
             badgeContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO Notifications Activity
+                    // TODO Notification Activity
                 }
             });
         } else {

@@ -16,6 +16,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.DBContracts.GallerySearchContract;
 import com.kenny.openimgur.util.DBContracts.MemeContract;
@@ -557,12 +558,12 @@ public class SqlHelper extends SQLiteOpenHelper {
                 values.put(NotificationContract.COLUMN_AUTHOR, m.content.getFrom());
                 values.put(NotificationContract.COLUMN_CONTENT, m.content.getLastMessage());
                 values.put(NotificationContract.COLUMN_DATE, m.content.getDate());
-                values.put(NotificationContract.COLUMN_TYPE, NotificationContract.TYPE_MESSAGE);
+                values.put(NotificationContract.COLUMN_TYPE, ImgurNotification.TYPE_MESSAGE);
                 db.insertWithOnConflict(NotificationContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
             }
         }
 
-        if(!response.data.replies.isEmpty()){
+        if (!response.data.replies.isEmpty()) {
             LogUtil.v(TAG, "Inserting " + response.data.replies.size() + " reply notifications");
 
             for (NotificationResponse.Replies r : response.data.replies) {
@@ -571,11 +572,26 @@ public class SqlHelper extends SQLiteOpenHelper {
                 values.put(NotificationContract.COLUMN_AUTHOR, r.content.getAuthor());
                 values.put(NotificationContract.COLUMN_CONTENT, r.content.getComment());
                 values.put(NotificationContract.COLUMN_DATE, r.content.getDate());
-                values.put(NotificationContract.COLUMN_TYPE, NotificationContract.TYPE_REPLY);
+                values.put(NotificationContract.COLUMN_TYPE, ImgurNotification.TYPE_REPLY);
                 values.put(NotificationContract.COLUMN_GALLERY_ID, r.content.getImageId());
                 db.insertWithOnConflict(NotificationContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
             }
         }
+    }
+
+    @NonNull
+    public List<ImgurNotification> getNotifications() {
+        List<ImgurNotification> notifications = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(NotificationContract.GET_MESSAGES_SQL, null);
+
+        while (cursor.moveToNext()) {
+            notifications.add(new ImgurNotification(cursor));
+        }
+
+        // TODO Replies
+        cursor.close();
+        return notifications;
     }
 
     @Override

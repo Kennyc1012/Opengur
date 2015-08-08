@@ -238,9 +238,6 @@ public class DBContracts {
     }
 
     public static class NotificationContract implements BaseColumns {
-        public static final int TYPE_MESSAGE = 1;
-        public static final int TYPE_REPLY = 2;
-
         public static final String TABLE_NAME = "notifications";
 
         public static final String COLUMN_AUTHOR = "author";
@@ -272,6 +269,8 @@ public class DBContracts {
                 COLUMN_DATE + " INTEGER, " +
                 COLUMN_TYPE + " INTEGER, " +
                 COLUMN_GALLERY_ID + " TEXT);";
+
+        public static final String GET_MESSAGES_SQL = "SELECT * FROM " + TABLE_NAME + " GROUP BY " + COLUMN_AUTHOR;
 
     }
 }
