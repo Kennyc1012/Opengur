@@ -9,6 +9,7 @@
     <dimen name="view_activity_margin">16dp</dimen>
     <dimen name="loading_circle_size">40dp</dimen>
     <dimen name="refresh_pull_amount">32dp</dimen>
+    <dimen name="badge_margin_top">0dp</dimen>
 
     <!-- Meme text sizes -->
     <dimen name="meme_text_small">26sp</dimen>

@@ -195,6 +195,8 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         ImageView avatar = (ImageView) header.findViewById(R.id.profileImg);
         TextView name = (TextView) header.findViewById(R.id.profileName);
         TextView rep = (TextView) header.findViewById(R.id.reputation);
+        TextView badge = (TextView) header.findViewById(R.id.badgeCount);
+        View badgeContainer = header.findViewById(R.id.badgeContainer);
 
         if (user != null) {
             int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
@@ -210,10 +212,23 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
             name.setText(user.getUsername());
             rep.setText(user.getNotoriety().getStringId());
+            // TODO Badge count
+            badge.setVisibility(View.VISIBLE);
+            badgeContainer.setVisibility(View.VISIBLE);
+            badge.setText("8");
+
+            badgeContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO Notifications Activity
+                }
+            });
         } else {
             avatar.setImageResource(R.drawable.ic_account_circle);
             name.setText(R.string.profile);
             rep.setText(R.string.login_msg);
+            badge.setVisibility(View.GONE);
+            badgeContainer.setVisibility(View.GONE);
         }
 
         header.setOnClickListener(new View.OnClickListener() {
