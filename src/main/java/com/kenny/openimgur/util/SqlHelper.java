@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -19,6 +20,7 @@ import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.DBContracts.GallerySearchContract;
 import com.kenny.openimgur.util.DBContracts.MemeContract;
 import com.kenny.openimgur.util.DBContracts.MuzeiContract;
+import com.kenny.openimgur.util.DBContracts.NotificationContract;
 import com.kenny.openimgur.util.DBContracts.ProfileContract;
 import com.kenny.openimgur.util.DBContracts.SubRedditContract;
 import com.kenny.openimgur.util.DBContracts.TopicsContract;
@@ -34,7 +36,7 @@ import java.util.List;
 public class SqlHelper extends SQLiteOpenHelper {
     private static final String TAG = "SqlHelper";
 
-    private static final int DB_VERSION = 9;
+    private static final int DB_VERSION = 10;
 
     private static final String DB_NAME = "open_imgur.db";
 
@@ -56,6 +58,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(MemeContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(GallerySearchContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(MuzeiContract.CREATE_TABLE_SQL);
+        sqLiteDatabase.execSQL(NotificationContract.CREATE_TABLE_SQL);
     }
 
     @Override
@@ -66,7 +69,9 @@ public class SqlHelper extends SQLiteOpenHelper {
          V5 Added Meme Table
          V6 Added GallerySearch Table
          v7 Added Muzei Table
-         v8 Alter Uploads table for albums*/
+         V8 Skipped number
+         v9 Alter Uploads table for albums
+         v10 Added Notifications table*/
 
         // Checking for is_album and cover_id column
         Cursor cursor = db.rawQuery("SELECT * FROM " + UploadContract.TABLE_NAME + " LIMIT 0,1", null);
@@ -535,6 +540,42 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(MuzeiContract.COLUMN_LINK, link);
         values.put(MuzeiContract.COLUMN_LAST_SEEN, System.currentTimeMillis());
         getWritableDatabase().insertWithOnConflict(MuzeiContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public void insertNotifications(NotificationResponse response) {
+        if (response == null || response.data == null) return;
+
+        ContentValues values = new ContentValues();
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (!response.data.messages.isEmpty()) {
+            LogUtil.v(TAG, "Inserting " + response.data.messages.size() + " message notifications");
+
+            for (NotificationResponse.Messages m : response.data.messages) {
+                values.clear();
+                values.put(NotificationContract._ID, m.id);
+                values.put(NotificationContract.COLUMN_AUTHOR, m.content.getFrom());
+                values.put(NotificationContract.COLUMN_CONTENT, m.content.getLastMessage());
+                values.put(NotificationContract.COLUMN_DATE, m.content.getDate());
+                values.put(NotificationContract.COLUMN_TYPE, NotificationContract.TYPE_MESSAGE);
+                db.insertWithOnConflict(NotificationContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+            }
+        }
+
+        if(!response.data.replies.isEmpty()){
+            LogUtil.v(TAG, "Inserting " + response.data.replies.size() + " reply notifications");
+
+            for (NotificationResponse.Replies r : response.data.replies) {
+                values.clear();
+                values.put(NotificationContract._ID, r.id);
+                values.put(NotificationContract.COLUMN_AUTHOR, r.content.getAuthor());
+                values.put(NotificationContract.COLUMN_CONTENT, r.content.getComment());
+                values.put(NotificationContract.COLUMN_DATE, r.content.getDate());
+                values.put(NotificationContract.COLUMN_TYPE, NotificationContract.TYPE_REPLY);
+                values.put(NotificationContract.COLUMN_GALLERY_ID, r.content.getImageId());
+                db.insertWithOnConflict(NotificationContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+            }
+        }
     }
 
     @Override

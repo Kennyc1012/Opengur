@@ -16,22 +16,20 @@ public class NotificationResponse extends BaseResponse {
 
     public static class Data {
         @NonNull
-        List<Replies> replies = new ArrayList<>();
+        public List<Replies> replies = new ArrayList<>();
 
         @NonNull
-        List<Messages> messages = new ArrayList<>();
+        public List<Messages> messages = new ArrayList<>();
     }
 
     public static class Replies {
-        public String id;
-        public String account_id;
+        public int id;
         public boolean viewed;
         public ImgurComment content;
     }
 
     public static class Messages {
-        public String id;
-        public String account_id;
+        public int id;
         public boolean viewed;
         public ImgurMessage content;
     }

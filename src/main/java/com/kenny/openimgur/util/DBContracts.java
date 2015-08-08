@@ -236,4 +236,42 @@ public class DBContracts {
         public static final String GET_LAST_SEEN_SQL = "SELECT " + COLUMN_LAST_SEEN + " FROM " + TABLE_NAME +
                 " WHERE " + COLUMN_LINK + " ='%s' LIMIT 0,1";
     }
+
+    public static class NotificationContract implements BaseColumns {
+        public static final int TYPE_MESSAGE = 1;
+        public static final int TYPE_REPLY = 2;
+
+        public static final String TABLE_NAME = "notifications";
+
+        public static final String COLUMN_AUTHOR = "author";
+
+        public static final String COLUMN_CONTENT = "content";
+
+        public static final String COLUMN_DATE = "date";
+
+        public static final String COLUMN_TYPE = "type";
+
+        public static final String COLUMN_GALLERY_ID = "gallery_id";
+
+        public static final int COLUMN_INDEX_ID = 0;
+
+        public static final int COLUMN_INDEX_AUTHOR = 1;
+
+        public static final int COLUMN_INDEX_CONTENT = 2;
+
+        public static final int COLUMN_INDEX_DATE = 3;
+
+        public static final int COLUMN_INDEX_TYPE = 4;
+
+        public static final int COLUMN_INDEX_GALLERY_ID = 5;
+
+        public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
+                " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
+                COLUMN_AUTHOR + " TEXT NOT NULL, " +
+                COLUMN_CONTENT + " TEXT, " +
+                COLUMN_DATE + " INTEGER, " +
+                COLUMN_TYPE + " INTEGER, " +
+                COLUMN_GALLERY_ID + " TEXT);";
+
+    }
 }
