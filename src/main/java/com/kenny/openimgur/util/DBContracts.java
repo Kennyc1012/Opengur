@@ -2,6 +2,8 @@ package com.kenny.openimgur.util;
 
 import android.provider.BaseColumns;
 
+import com.kenny.openimgur.classes.ImgurNotification;
+
 /**
  * Created by kcampagna on 7/25/14.
  */
@@ -270,7 +272,10 @@ public class DBContracts {
                 COLUMN_TYPE + " INTEGER, " +
                 COLUMN_GALLERY_ID + " TEXT);";
 
-        public static final String GET_MESSAGES_SQL = "SELECT * FROM " + TABLE_NAME + " GROUP BY " + COLUMN_AUTHOR;
+        public static final String GET_MESSAGES_SQL = "SELECT * FROM " + TABLE_NAME +
+                " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_MESSAGE + "' GROUP BY " + COLUMN_AUTHOR;
 
+        public static final String GET_REPLIES_SQL = "SELECT * FROM " + TABLE_NAME +
+                " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_REPLY +"'";
     }
 }

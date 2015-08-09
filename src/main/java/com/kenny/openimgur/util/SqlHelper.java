@@ -589,7 +589,12 @@ public class SqlHelper extends SQLiteOpenHelper {
             notifications.add(new ImgurNotification(cursor));
         }
 
-        // TODO Replies
+        cursor = db.rawQuery(NotificationContract.GET_REPLIES_SQL, null);
+
+        while (cursor.moveToNext()) {
+            notifications.add(new ImgurNotification(cursor));
+        }
+
         cursor.close();
         return notifications;
     }
