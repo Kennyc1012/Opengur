@@ -7,6 +7,10 @@ import android.text.format.DateUtils;
 
 import com.kenny.openimgur.util.DBContracts;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * Created by Kenny-PC on 8/8/2015.
  */
@@ -19,6 +23,7 @@ public class ImgurNotification implements Parcelable {
     private String mContent;
     private String mAuthor;
     private String mGalleryId;
+    private String mAlbumCover;
     private long mDate;
 
     private ImgurNotification(Parcel in) {
@@ -27,6 +32,7 @@ public class ImgurNotification implements Parcelable {
         mContent = in.readString();
         mAuthor = in.readString();
         mGalleryId = in.readString();
+        mAlbumCover = in.readString();
         mDate = in.readLong();
     }
 
@@ -36,6 +42,7 @@ public class ImgurNotification implements Parcelable {
             mContent = cursor.getString(DBContracts.NotificationContract.COLUMN_INDEX_CONTENT);
             mAuthor = cursor.getString(DBContracts.NotificationContract.COLUMN_INDEX_AUTHOR);
             mGalleryId = cursor.getString(DBContracts.NotificationContract.COLUMN_INDEX_GALLERY_ID);
+            mAlbumCover = cursor.getString(DBContracts.NotificationContract.COLUMN_INDEX_ALBUM_COVER);
             mDate = cursor.getLong(DBContracts.NotificationContract.COLUMN_INDEX_DATE);
             mType = cursor.getInt(DBContracts.NotificationContract.COLUMN_INDEX_TYPE);
         }
@@ -48,6 +55,10 @@ public class ImgurNotification implements Parcelable {
 
     public String getGalleryId() {
         return mGalleryId;
+    }
+
+    public String getAlbumCover() {
+        return mAlbumCover;
     }
 
     public String getAuthor() {
@@ -78,6 +89,7 @@ public class ImgurNotification implements Parcelable {
         dest.writeString(mContent);
         dest.writeString(mAuthor);
         dest.writeString(mGalleryId);
+        dest.writeString(mAlbumCover);
         dest.writeLong(mDate);
     }
 
@@ -90,4 +102,20 @@ public class ImgurNotification implements Parcelable {
             return new ImgurNotification[size];
         }
     };
+
+    /**
+     * Sorts a list of notifications by newest first
+     *
+     * @param notifications
+     */
+    public static void sort(List<ImgurNotification> notifications) {
+        if (notifications == null || notifications.isEmpty()) return;
+
+        Collections.sort(notifications, new Comparator<ImgurNotification>() {
+            @Override
+            public int compare(ImgurNotification lhs, ImgurNotification rhs) {
+                return (int) (rhs.getDate() - lhs.getDate());
+            }
+        });
+    }
 }

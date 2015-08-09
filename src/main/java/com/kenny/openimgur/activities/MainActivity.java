@@ -226,7 +226,8 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             badgeContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO Notification Activity
+                    mDrawer.closeDrawers();
+                    startActivity(NotifcationActivity.createIntent(getApplicationContext()));
                 }
             });
         } else {

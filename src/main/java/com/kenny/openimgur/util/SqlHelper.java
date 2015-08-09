@@ -13,10 +13,10 @@ import android.text.TextUtils;
 import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.DBContracts.GallerySearchContract;
 import com.kenny.openimgur.util.DBContracts.MemeContract;
@@ -574,6 +574,7 @@ public class SqlHelper extends SQLiteOpenHelper {
                 values.put(NotificationContract.COLUMN_DATE, r.content.getDate());
                 values.put(NotificationContract.COLUMN_TYPE, ImgurNotification.TYPE_REPLY);
                 values.put(NotificationContract.COLUMN_GALLERY_ID, r.content.getImageId());
+                values.put(NotificationContract.COLUMN_ALBUM_COVER, r.content.getAlbumCoverId());
                 db.insertWithOnConflict(NotificationContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
             }
         }
@@ -583,19 +584,21 @@ public class SqlHelper extends SQLiteOpenHelper {
     public List<ImgurNotification> getNotifications() {
         List<ImgurNotification> notifications = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(NotificationContract.GET_MESSAGES_SQL, null);
+        Cursor messagesCursor = db.rawQuery(NotificationContract.GET_MESSAGES_SQL, null);
 
-        while (cursor.moveToNext()) {
-            notifications.add(new ImgurNotification(cursor));
+        while (messagesCursor.moveToNext()) {
+            notifications.add(new ImgurNotification(messagesCursor));
         }
 
-        cursor = db.rawQuery(NotificationContract.GET_REPLIES_SQL, null);
+        messagesCursor.close();
+        Cursor repliesCursor = db.rawQuery(NotificationContract.GET_REPLIES_SQL, null);
 
-        while (cursor.moveToNext()) {
-            notifications.add(new ImgurNotification(cursor));
+        while (repliesCursor.moveToNext()) {
+            notifications.add(new ImgurNotification(repliesCursor));
         }
 
-        cursor.close();
+        repliesCursor.close();
+        ImgurNotification.sort(notifications);
         return notifications;
     }
 

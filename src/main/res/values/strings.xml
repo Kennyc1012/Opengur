@@ -70,6 +70,7 @@
     <string name="done">Done</string>
     <string name="add">Add</string>
     <string name="undo">Undo</string>
+    <string name="notifications">Notifications</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>

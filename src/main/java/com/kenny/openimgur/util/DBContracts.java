@@ -252,6 +252,8 @@ public class DBContracts {
 
         public static final String COLUMN_GALLERY_ID = "gallery_id";
 
+        public static final String COLUMN_ALBUM_COVER = "album_cover";
+
         public static final int COLUMN_INDEX_ID = 0;
 
         public static final int COLUMN_INDEX_AUTHOR = 1;
@@ -264,18 +266,21 @@ public class DBContracts {
 
         public static final int COLUMN_INDEX_GALLERY_ID = 5;
 
+        public static final int COLUMN_INDEX_ALBUM_COVER = 6;
+
         public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
                 " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
                 COLUMN_AUTHOR + " TEXT NOT NULL, " +
                 COLUMN_CONTENT + " TEXT, " +
                 COLUMN_DATE + " INTEGER, " +
                 COLUMN_TYPE + " INTEGER, " +
-                COLUMN_GALLERY_ID + " TEXT);";
+                COLUMN_GALLERY_ID + " TEXT, " +
+                COLUMN_ALBUM_COVER + " TEXT);";
 
         public static final String GET_MESSAGES_SQL = "SELECT * FROM " + TABLE_NAME +
                 " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_MESSAGE + "' GROUP BY " + COLUMN_AUTHOR;
 
         public static final String GET_REPLIES_SQL = "SELECT * FROM " + TABLE_NAME +
-                " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_REPLY +"'";
+                " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_REPLY + "'";
     }
 }
