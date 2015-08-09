@@ -250,7 +250,7 @@ public class DBContracts {
 
         public static final String COLUMN_TYPE = "type";
 
-        public static final String COLUMN_GALLERY_ID = "gallery_id";
+        public static final String COLUMN_CONTENT_ID = "content_id";
 
         public static final String COLUMN_ALBUM_COVER = "album_cover";
 
@@ -264,7 +264,7 @@ public class DBContracts {
 
         public static final int COLUMN_INDEX_TYPE = 4;
 
-        public static final int COLUMN_INDEX_GALLERY_ID = 5;
+        public static final int COLUMN_INDEX_CONTENT_ID = 5;
 
         public static final int COLUMN_INDEX_ALBUM_COVER = 6;
 
@@ -274,7 +274,7 @@ public class DBContracts {
                 COLUMN_CONTENT + " TEXT, " +
                 COLUMN_DATE + " INTEGER, " +
                 COLUMN_TYPE + " INTEGER, " +
-                COLUMN_GALLERY_ID + " TEXT, " +
+                COLUMN_CONTENT_ID + " TEXT, " +
                 COLUMN_ALBUM_COVER + " TEXT);";
 
         public static final String GET_MESSAGES_SQL = "SELECT * FROM " + TABLE_NAME +

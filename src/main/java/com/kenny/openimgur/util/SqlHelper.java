@@ -559,6 +559,7 @@ public class SqlHelper extends SQLiteOpenHelper {
                 values.put(NotificationContract.COLUMN_CONTENT, m.content.getLastMessage());
                 values.put(NotificationContract.COLUMN_DATE, m.content.getDate());
                 values.put(NotificationContract.COLUMN_TYPE, ImgurNotification.TYPE_MESSAGE);
+                values.put(NotificationContract.COLUMN_CONTENT_ID, m.content.getId());
                 db.insertWithOnConflict(NotificationContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
             }
         }
@@ -573,7 +574,7 @@ public class SqlHelper extends SQLiteOpenHelper {
                 values.put(NotificationContract.COLUMN_CONTENT, r.content.getComment());
                 values.put(NotificationContract.COLUMN_DATE, r.content.getDate());
                 values.put(NotificationContract.COLUMN_TYPE, ImgurNotification.TYPE_REPLY);
-                values.put(NotificationContract.COLUMN_GALLERY_ID, r.content.getImageId());
+                values.put(NotificationContract.COLUMN_CONTENT_ID, r.content.getImageId());
                 values.put(NotificationContract.COLUMN_ALBUM_COVER, r.content.getAlbumCoverId());
                 db.insertWithOnConflict(NotificationContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
             }

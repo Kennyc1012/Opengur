@@ -95,7 +95,7 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
         holder.content.setText(notification.getContent());
 
         if (TextUtils.isEmpty(notification.getAlbumCover())) {
-            photoUrl = "https://imgur.com/" + notification.getGalleryId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
+            photoUrl = "https://imgur.com/" + notification.getContentId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
         } else {
             photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, notification.getAlbumCover() + ImgurPhoto.THUMBNAIL_SMALL);
         }

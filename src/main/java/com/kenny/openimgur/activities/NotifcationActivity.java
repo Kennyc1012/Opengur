@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NotificationAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.NotificationResponse;
+import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
@@ -89,7 +91,16 @@ public class NotifcationActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        // TODO
+        ImgurNotification notification = mAdapter.getItem(mList.getChildAdapterPosition(v));
+
+        if (notification.getType() == ImgurNotification.TYPE_MESSAGE) {
+            ImgurConvo convo = new ImgurConvo(notification.getContentId(), notification.getAuthor(), 0);
+            startActivity(ConvoThreadActivity.createIntent(getApplicationContext(), convo));
+        } else {
+            String url = "https://imgur.com/gallery/" + notification.getContentId();
+            Intent intent = ViewActivity.createIntent(getApplicationContext(), url, !TextUtils.isEmpty(notification.getAlbumCover()));
+            startActivity(intent);
+        }
     }
 
     private void fetchNotifications() {

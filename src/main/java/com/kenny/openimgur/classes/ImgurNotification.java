@@ -22,7 +22,7 @@ public class ImgurNotification implements Parcelable {
     private int mType;
     private String mContent;
     private String mAuthor;
-    private String mGalleryId;
+    private String mContentId;
     private String mAlbumCover;
     private long mDate;
 
@@ -31,7 +31,7 @@ public class ImgurNotification implements Parcelable {
         mType = in.readInt();
         mContent = in.readString();
         mAuthor = in.readString();
-        mGalleryId = in.readString();
+        mContentId = in.readString();
         mAlbumCover = in.readString();
         mDate = in.readLong();
     }
@@ -41,7 +41,7 @@ public class ImgurNotification implements Parcelable {
             mId = cursor.getInt(DBContracts.NotificationContract.COLUMN_INDEX_ID);
             mContent = cursor.getString(DBContracts.NotificationContract.COLUMN_INDEX_CONTENT);
             mAuthor = cursor.getString(DBContracts.NotificationContract.COLUMN_INDEX_AUTHOR);
-            mGalleryId = cursor.getString(DBContracts.NotificationContract.COLUMN_INDEX_GALLERY_ID);
+            mContentId = cursor.getString(DBContracts.NotificationContract.COLUMN_INDEX_CONTENT_ID);
             mAlbumCover = cursor.getString(DBContracts.NotificationContract.COLUMN_INDEX_ALBUM_COVER);
             mDate = cursor.getLong(DBContracts.NotificationContract.COLUMN_INDEX_DATE);
             mType = cursor.getInt(DBContracts.NotificationContract.COLUMN_INDEX_TYPE);
@@ -53,8 +53,8 @@ public class ImgurNotification implements Parcelable {
         return mDate * DateUtils.SECOND_IN_MILLIS;
     }
 
-    public String getGalleryId() {
-        return mGalleryId;
+    public String getContentId() {
+        return mContentId;
     }
 
     public String getAlbumCover() {
@@ -88,7 +88,7 @@ public class ImgurNotification implements Parcelable {
         dest.writeInt(mType);
         dest.writeString(mContent);
         dest.writeString(mAuthor);
-        dest.writeString(mGalleryId);
+        dest.writeString(mContentId);
         dest.writeString(mAlbumCover);
         dest.writeLong(mDate);
     }

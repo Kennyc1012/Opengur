@@ -38,7 +38,11 @@ public class ImgurConvo extends ImgurBaseObject {
     }
 
     public ImgurConvo(String with, int withAccountId) {
-        super("-1", null, null);
+        this("-1", with, withAccountId);
+    }
+
+    public ImgurConvo(String id, String with, int withAccountId) {
+        super(id, null, null);
         mWithAccount = with;
         mWithAccountId = withAccountId;
     }
@@ -67,8 +71,8 @@ public class ImgurConvo extends ImgurBaseObject {
         return mMessages;
     }
 
-    public boolean hasMessages(){
-        return mMessages!=null && !mMessages.isEmpty();
+    public boolean hasMessages() {
+        return mMessages != null && !mMessages.isEmpty();
     }
 
     public void writeToParcel(Parcel out, int flags) {
