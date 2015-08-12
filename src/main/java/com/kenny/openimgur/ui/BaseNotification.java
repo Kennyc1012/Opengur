@@ -16,11 +16,14 @@ import com.kenny.openimgur.classes.OpengurApp;
 public abstract class BaseNotification {
     protected final String TAG = getClass().getSimpleName();
 
+    private NotificationManager mManger;
+
     protected OpengurApp app;
 
     protected NotificationCompat.Builder builder;
 
     public BaseNotification(Context context) {
+        mManger = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         app = OpengurApp.getInstance(context);
         builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(getSmallIcon())
@@ -63,8 +66,8 @@ public abstract class BaseNotification {
      *
      * @param manager
      */
-    public void notify(@NonNull NotificationManager manager) {
-        if (builder != null) manager.notify(getNotificationId(), builder.build());
+    public void postNotification() {
+        if (mManger != null && builder != null) mManger.notify(getNotificationId(), builder.build());
     }
 
     /**

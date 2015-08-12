@@ -1,7 +1,6 @@
 package com.kenny.openimgur.services;
 
 import android.app.IntentService;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -77,10 +76,7 @@ public class DownloaderService extends IntentService {
 
             File photoFile = new File(file.getAbsolutePath(), photoFileName);
             LogUtil.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
-            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             DownloadNotification notification = new DownloadNotification(getApplicationContext(), photoId.hashCode());
-            notification.notify(manager);
-
             boolean saved;
 
             // Check if the video is already in our cache
@@ -118,10 +114,10 @@ public class DownloaderService extends IntentService {
                 Bitmap bm = isUsingVideoLink ? ImageUtil.toGrayScale(ThumbnailUtils.createVideoThumbnail(photoFile.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND)) :
                         ImageUtil.toGrayScale(ImageUtil.decodeSampledBitmapFromResource(photoFile, 256, 256));
 
-                notification.onDownloadComplete(bm, viewP, shareP, manager);
+                notification.onDownloadComplete(bm, viewP, shareP);
             } else {
                 LogUtil.w(TAG, "Image download failed");
-                notification.onError(manager);
+                notification.onError();
             }
 
         } catch (Exception e) {
@@ -136,6 +132,7 @@ public class DownloaderService extends IntentService {
             super(context);
             mPhotoHash = photoHash;
             builder.setProgress(0, 0, true);
+            postNotification();
         }
 
         @NonNull
@@ -149,7 +146,7 @@ public class DownloaderService extends IntentService {
             return mPhotoHash;
         }
 
-        public void onDownloadComplete(Bitmap bitmap, PendingIntent viewIntent, PendingIntent shareIntent, NotificationManager manager) {
+        public void onDownloadComplete(Bitmap bitmap, PendingIntent viewIntent, PendingIntent shareIntent) {
             if (bitmap != null) {
                 NotificationCompat.BigPictureStyle bigPicStyle = new NotificationCompat.BigPictureStyle();
                 bigPicStyle.setBigContentTitle(app.getString(R.string.download_complete));
@@ -165,14 +162,15 @@ public class DownloaderService extends IntentService {
                     .setContentTitle(app.getString(R.string.download_complete))
                     .setContentText(app.getString(R.string.tap_to_view));
 
-            notify(manager);
+            postNotification();
         }
 
-        public void onError(NotificationManager manager) {
+        public void onError() {
             builder.setProgress(0, 0, false)
                     .setContentTitle(app.getString(R.string.error))
                     .setContentText(app.getString(R.string.download_error));
-            notify(manager);
+
+            postNotification();
         }
     }
 }
