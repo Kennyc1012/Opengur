@@ -64,6 +64,14 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String KEY_NOTIFICATION_FREQUENCY = "notificationFrequency";
 
+    public static final String NOTIFICATION_TIME_15 = "15";
+
+    public static final String NOTIFICATION_TIME_30 = "30";
+
+    public static final String NOTIFICATION_TIME_60 = "60";
+
+    public static final String NOTIFICATION_TIME_120 = "120";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

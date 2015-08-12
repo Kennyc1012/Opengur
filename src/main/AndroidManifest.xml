@@ -236,6 +236,7 @@
 
         <service android:name=".services.DownloaderService" />
         <service android:name=".services.UploadService" />
+        <service android:name=".services.NotificationService" />
 
         <service
             android:name=".services.ImgurMuzeiService"
@@ -255,6 +256,7 @@
         </service>
 
         <receiver android:name=".services.NotificationReceiver" />
+        <receiver android:name=".services.AlarmReceiver" />
 
         <receiver android:name="com.kenny.openimgur.services.BootReceiver">
             <intent-filter>
