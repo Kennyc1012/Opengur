@@ -17,8 +17,8 @@ import android.text.format.DateUtils;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.VideoCache;
+import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LinkUtils;
@@ -35,6 +35,10 @@ public class DownloaderService extends IntentService {
     private static final String TAG = DownloaderService.class.getSimpleName();
 
     private static final String KEY_IMAGE_URL = "image_url";
+
+    public static Intent createIntent(@NonNull Context context, @NonNull String url) {
+        return new Intent(context, DownloaderService.class).putExtra(DownloaderService.KEY_IMAGE_URL, url);
+    }
 
     public DownloaderService() {
         super(TAG);
@@ -73,18 +77,9 @@ public class DownloaderService extends IntentService {
 
             File photoFile = new File(file.getAbsolutePath(), photoFileName);
             LogUtil.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
-            int notificationId = photoId.hashCode();
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                    .setContentTitle(getString(R.string.image_downloading))
-                    .setContentText(getString(R.string.downloading_msg))
-                    .setAutoCancel(true)
-                    .setProgress(0, 0, true)
-                    .setSmallIcon(R.drawable.ic_notif)
-                    .setColor(getResources().getColor(OpengurApp.getInstance(getApplicationContext()).getImgurTheme().primaryColor));
-
-            manager.notify(notificationId, builder.build());
+            DownloadNotification notification = new DownloadNotification(getApplicationContext(), photoId.hashCode());
+            notification.notify(manager);
 
             boolean saved;
 
@@ -123,27 +118,10 @@ public class DownloaderService extends IntentService {
                 Bitmap bm = isUsingVideoLink ? ImageUtil.toGrayScale(ThumbnailUtils.createVideoThumbnail(photoFile.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND)) :
                         ImageUtil.toGrayScale(ImageUtil.decodeSampledBitmapFromResource(photoFile, 256, 256));
 
-                if (bm != null) {
-                    NotificationCompat.BigPictureStyle bigPicStyle = new NotificationCompat.BigPictureStyle();
-                    bigPicStyle.setBigContentTitle(getString(R.string.download_complete));
-                    bigPicStyle.setSummaryText(getString(R.string.tap_to_view));
-                    bigPicStyle.bigPicture(bm);
-                    builder.setStyle(bigPicStyle);
-                }
-
-                builder.setProgress(0, 0, false)
-                        .setContentIntent(viewP)
-                        .addAction(R.drawable.ic_share_white_24dp, getString(R.string.share), shareP)
-                        .setContentTitle(getString(R.string.download_complete))
-                        .setContentText(getString(R.string.tap_to_view))
-                        .setLargeIcon(bm)
-                        .setAutoCancel(true);
-
-                manager.notify(notificationId, builder.build());
+                notification.onDownloadComplete(bm, viewP, shareP, manager);
             } else {
                 LogUtil.w(TAG, "Image download failed");
-                builder.setProgress(0, 0, false).setContentTitle(getString(R.string.error)).setContentText(getString(R.string.download_error));
-                manager.notify(notificationId, builder.build());
+                notification.onError(manager);
             }
 
         } catch (Exception e) {
@@ -151,7 +129,50 @@ public class DownloaderService extends IntentService {
         }
     }
 
-    public static Intent createIntent(@NonNull Context context, @NonNull String url) {
-        return new Intent(context, DownloaderService.class).putExtra(DownloaderService.KEY_IMAGE_URL, url);
+    private static class DownloadNotification extends BaseNotification {
+        private int mPhotoHash;
+
+        public DownloadNotification(Context context, int photoHash) {
+            super(context);
+            mPhotoHash = photoHash;
+            builder.setProgress(0, 0, true);
+        }
+
+        @NonNull
+        @Override
+        protected String getTitle() {
+            return app.getString(R.string.image_downloading);
+        }
+
+        @Override
+        protected int getNotificationId() {
+            return mPhotoHash;
+        }
+
+        public void onDownloadComplete(Bitmap bitmap, PendingIntent viewIntent, PendingIntent shareIntent, NotificationManager manager) {
+            if (bitmap != null) {
+                NotificationCompat.BigPictureStyle bigPicStyle = new NotificationCompat.BigPictureStyle();
+                bigPicStyle.setBigContentTitle(app.getString(R.string.download_complete));
+                bigPicStyle.setSummaryText(app.getString(R.string.tap_to_view));
+                bigPicStyle.bigPicture(bitmap);
+                builder.setStyle(bigPicStyle)
+                        .setLargeIcon(bitmap);
+            }
+
+            builder.setProgress(0, 0, false)
+                    .setContentIntent(viewIntent)
+                    .addAction(R.drawable.ic_share_white_24dp, app.getString(R.string.share), shareIntent)
+                    .setContentTitle(app.getString(R.string.download_complete))
+                    .setContentText(app.getString(R.string.tap_to_view));
+
+            notify(manager);
+        }
+
+        public void onError(NotificationManager manager) {
+            builder.setProgress(0, 0, false)
+                    .setContentTitle(app.getString(R.string.error))
+                    .setContentText(app.getString(R.string.download_error));
+            notify(manager);
+        }
     }
 }
