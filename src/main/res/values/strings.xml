@@ -194,6 +194,8 @@
     <string name="pref_tags_on">Display Tags</string>
     <string name="pref_tags_off">Don\'t Display Tags</string>
     <string name="pref_thumbnail_quality">Thumbnail Quality</string>
+    <string name="pref_notification_title">Check For Notifications</string>
+    <string name="pref_notification_frequency">Notification Refresh Delay</string>
 
     <!-- Experimental Settings -->
     <string name="pref_experimental_settings">Experimental Settings</string>

@@ -60,6 +60,10 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String KEY_THUMBNAIL_QUALITY = "thumbnailQuality";
 
+    public static final String KEY_NOTIFICATIONS = "notifications";
+
+    public static final String KEY_NOTIFICATION_FREQUENCY = "notificationFrequency";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
