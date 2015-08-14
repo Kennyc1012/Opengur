@@ -79,6 +79,17 @@
             android:entryValues="@array/pref_notification_keys"
             android:defaultValue="30" />
 
+        <RingtonePreference
+            android:key="notificationRingtone"
+            android:title="@string/pref_notification_ringtone" />
+
+        <CheckBoxPreference
+            android:key="notificationVibrate"
+            android:title="@string/pref_notification_vibrate"
+            android:summaryOn="@string/pref_notification_vibrate_on"
+            android:summaryOff="@string/pref_notification_vibrate_off"
+            android:defaultValue="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_cache_title">

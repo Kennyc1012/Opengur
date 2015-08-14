@@ -3,10 +3,14 @@ package com.kenny.openimgur.services;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurComment;
@@ -84,23 +88,38 @@ public class NotificationService extends IntentService {
     private static class Notification extends BaseNotification {
         private String mTitle;
 
+        private Uri mNotification;
+
+        private boolean mVibrate = false;
+
         public Notification(Context context, String title, String message) {
-            super(context);
+            super(context, false);
+            SharedPreferences pref = app.getPreferences();
+            mVibrate = pref.getBoolean(SettingsActivity.KEY_NOTIFICATION_VIBRATE, true);
             mTitle = title;
-            builder.setContentText(message);
+            String ringTone = pref.getString(SettingsActivity.KEY_NOTIFICATION_RINGTONE, null);
+
+            if (!TextUtils.isEmpty(ringTone)) {
+                try {
+                    mNotification = Uri.parse(ringTone);
+                } catch (Exception e) {
+                    LogUtil.e(TAG, "Unable to parse ringtone", e);
+                    mNotification = null;
+                }
+            }
+
             build(context);
+            builder.setContentText(message);
         }
 
         @Override
         protected Uri getNotificationSound() {
-            // TODO
-            return super.getNotificationSound();
+            return mNotification;
         }
 
         @Override
-        protected int getVibration() {
-            // TODO
-            return super.getVibration();
+        protected long getVibration() {
+            return mVibrate ? DateUtils.SECOND_IN_MILLIS : 0;
         }
 
         @NonNull

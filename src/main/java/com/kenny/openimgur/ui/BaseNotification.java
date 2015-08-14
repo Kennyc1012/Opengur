@@ -24,9 +24,13 @@ public abstract class BaseNotification {
     protected NotificationCompat.Builder builder;
 
     public BaseNotification(Context context) {
+        this(context, true);
+    }
+
+    public BaseNotification(Context context, boolean autoBuild) {
         mManger = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         app = OpengurApp.getInstance(context);
-        build(context);
+        if (autoBuild) build(context);
     }
 
     /**
@@ -63,7 +67,7 @@ public abstract class BaseNotification {
      *
      * @return
      */
-    protected int getVibration() {
+    protected long getVibration() {
         return 0;
     }
 

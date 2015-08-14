@@ -196,6 +196,10 @@
     <string name="pref_thumbnail_quality">Thumbnail Quality</string>
     <string name="pref_notification_title">Check For Notifications</string>
     <string name="pref_notification_frequency">Notification Refresh Delay</string>
+    <string name="pref_notification_ringtone">Notification Ringtone</string>
+    <string name="pref_notification_vibrate">Vibrate</string>
+    <string name="pref_notification_vibrate_on">Vibrate when notifications are received</string>
+    <string name="pref_notification_vibrate_off">Don\'t vibrate when notifications are received</string>
 
     <!-- Experimental Settings -->
     <string name="pref_experimental_settings">Experimental Settings</string>

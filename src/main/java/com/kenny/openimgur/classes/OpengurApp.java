@@ -54,7 +54,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
         if (mUser != null) AlarmReceiver.createNotificationAlarm(this);
-        mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, ImgurTheme.GREY.themeName));
+        mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.KEY_THEME, ImgurTheme.GREY.themeName));
         mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, true);
 
         // Start crashlytics if enabled
@@ -205,7 +205,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
 
         switch (key) {
             case SettingsActivity.KEY_THREAD_SIZE:
-            case SettingsActivity.CACHE_SIZE_KEY:
+            case SettingsActivity.KEY_CACHE_SIZE:
                 ImageUtil.initImageLoader(getApplicationContext());
                 break;
         }
