@@ -323,4 +323,14 @@
     <string name="report_post_success">Post reported</string>
     <string name="report_post_failure">Unable to report post</string>
 
+    <!-- Notifications -->
+    <string name="notifications_multiple_types">%d New Notifications</string>
+    <string name="notifications_multiple_types_body">You have %d new notifications</string>
+    <string name="notification_new_message">%s sent you a message</string>
+    <string name="notification_multiple_messages">%d new messages</string>
+    <string name="notification_multiple_messages_body">You have %d new messages</string>
+    <string name="notification_new_reply">%s replied to your comment</string>
+    <string name="notification_multiple_replies">$d new replies</string>
+    <string name="notification_multiple_replies_body">You have %d new replies</string>
+
 </resources>

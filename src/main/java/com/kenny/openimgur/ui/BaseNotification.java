@@ -3,6 +3,7 @@ package com.kenny.openimgur.ui;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -25,11 +26,7 @@ public abstract class BaseNotification {
     public BaseNotification(Context context) {
         mManger = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         app = OpengurApp.getInstance(context);
-        builder = new NotificationCompat.Builder(context)
-                .setSmallIcon(getSmallIcon())
-                .setContentTitle(getTitle())
-                .setAutoCancel(canAutoCancel())
-                .setColor(getNotificationColor());
+        build(context);
     }
 
     /**
@@ -62,12 +59,45 @@ public abstract class BaseNotification {
     }
 
     /**
-     * Posts the notification
+     * Returns the vibration length of the notification. Return anything 0 or negative to not vibrate
      *
-     * @param manager
+     * @return
+     */
+    protected int getVibration() {
+        return 0;
+    }
+
+    /**
+     * Returns the {@link Uri} for the notification sound. Return null to not play a sound
+     *
+     * @return
+     */
+    protected Uri getNotificationSound() {
+        return null;
+    }
+
+    /**
+     * Posts the notification
      */
     public void postNotification() {
         if (mManger != null && builder != null) mManger.notify(getNotificationId(), builder.build());
+    }
+
+    protected void build(Context context) {
+        if (builder == null) builder = new NotificationCompat.Builder(context);
+
+        builder.setSmallIcon(getSmallIcon())
+                .setContentTitle(getTitle())
+                .setAutoCancel(canAutoCancel())
+                .setColor(getNotificationColor());
+
+        if (getNotificationSound() != null) {
+            builder.setSound(getNotificationSound());
+        }
+
+        if (getVibration() > 0) {
+            builder.setVibrate(new long[]{0, getVibration()});
+        }
     }
 
     /**

@@ -26,12 +26,18 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     public static void createNotificationAlarm(Context context) {
         SharedPreferences pref = OpengurApp.getInstance(context).getPreferences();
-        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent pIntent = PendingIntent.getBroadcast(context, RequestCodes.NOTIFICATION_ALARM, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        long nextAlarm = getNextAlarmTime(pref);
-        am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextAlarm, pIntent);
-        LogUtil.v(TAG, "Next notification alarm set for " + nextAlarm / DateUtils.MINUTE_IN_MILLIS + " minutes");
+        boolean enabled = pref.getBoolean(SettingsActivity.KEY_NOTIFICATIONS, true);
+
+        if (enabled) {
+            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(context, AlarmReceiver.class);
+            PendingIntent pIntent = PendingIntent.getBroadcast(context, RequestCodes.NOTIFICATION_ALARM, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            long nextAlarm = getNextAlarmTime(pref);
+            am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextAlarm, pIntent);
+            LogUtil.v(TAG, "Next notification alarm set for " + nextAlarm / DateUtils.MINUTE_IN_MILLIS + " minutes");
+        } else {
+            LogUtil.v(TAG, "Notifications not enabled, not scheduling alarm");
+        }
     }
 
     @Override

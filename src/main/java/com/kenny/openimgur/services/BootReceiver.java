@@ -20,7 +20,7 @@ public class BootReceiver extends BroadcastReceiver {
         // We only care if we have a valid user
         if (app.getUser() != null) {
             LogUtil.v(TAG, "User present, creating notification alarm");
-            // TODO
+            AlarmReceiver.createNotificationAlarm(context);
         } else {
             LogUtil.v(TAG, "No user present, not creating notification alarm");
         }
