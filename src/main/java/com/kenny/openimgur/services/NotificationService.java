@@ -19,6 +19,9 @@ import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.util.LogUtil;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by kcampagna on 8/12/15.
  */
@@ -36,6 +39,12 @@ public class NotificationService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         OpengurApp app = OpengurApp.getInstance(getApplicationContext());
+        boolean enabled = app.getPreferences().getBoolean(SettingsActivity.KEY_NOTIFICATIONS, true);
+
+        if (!enabled) {
+            LogUtil.v(TAG, "Notifications have been disabled, not fetching");
+            return;
+        }
 
         // Make sure we have a valid user
         if (app.getUser() != null) {
@@ -60,8 +69,20 @@ public class NotificationService extends IntentService {
     }
 
     private void createNotification(@NonNull NotificationResponse.Data data) {
-        int messageNotifications = data.messages.size();
-        int replyNotifications = data.replies.size();
+        // Remove potential duplicates
+        Set<ImgurMessage> messages = new HashSet<>();
+        Set<ImgurComment> replies = new HashSet<>();
+
+        for(NotificationResponse.Messages m : data.messages){
+            messages.add(m.content);
+        }
+
+        for (NotificationResponse.Replies r : data.replies){
+           // replies.add(r.content);
+        }
+
+        int messageNotifications = messages.size();
+        int replyNotifications = replies.size();
         String title;
         String message;
 
@@ -71,17 +92,18 @@ public class NotificationService extends IntentService {
             message = getString(R.string.notifications_multiple_types_body, totalNotifications);
         } else if (messageNotifications > 0) {
             boolean hasOnlyOne = messageNotifications == 1;
-            ImgurMessage imgurMessage = data.messages.get(0).content;
+            ImgurMessage imgurMessage = messages.iterator().next();
             title = hasOnlyOne ? getString(R.string.notification_new_message, imgurMessage.getFrom()) : getString(R.string.notification_multiple_messages, messageNotifications);
             message = hasOnlyOne ? imgurMessage.getLastMessage() : getString(R.string.notification_multiple_messages_body, messageNotifications);
         } else {
             boolean hasOnlyOne = replyNotifications == 1;
-            ImgurComment comment = data.replies.get(0).content;
+            ImgurComment comment = replies.iterator().next();
             title = hasOnlyOne ? getString(R.string.notification_new_reply, comment.getAuthor()) : getString(R.string.notification_multiple_replies, replyNotifications);
             message = hasOnlyOne ? comment.getComment() : getString(R.string.notification_multiple_replies_body, replyNotifications);
         }
 
         Notification notification = new Notification(getApplicationContext(), title, message);
+        notification.postNotification();
         // TODO Pending Intents
     }
 
