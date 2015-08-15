@@ -1,6 +1,7 @@
 package com.kenny.openimgur.services;
 
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,10 +11,14 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.activities.ConvoThreadActivity;
+import com.kenny.openimgur.activities.NotificationActivity;
 import com.kenny.openimgur.activities.SettingsActivity;
+import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurComment;
+import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurMessage;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.BaseNotification;
@@ -73,16 +78,17 @@ public class NotificationService extends IntentService {
         Set<ImgurMessage> messages = new HashSet<>();
         Set<ImgurComment> replies = new HashSet<>();
 
-        for(NotificationResponse.Messages m : data.messages){
-            messages.add(m.content);
+        for (NotificationResponse.Messages m : data.messages) {
+           // messages.add(m.content);
         }
 
-        for (NotificationResponse.Replies r : data.replies){
-           // replies.add(r.content);
+        for (NotificationResponse.Replies r : data.replies) {
+            replies.add(r.content);
         }
 
         int messageNotifications = messages.size();
         int replyNotifications = replies.size();
+        PendingIntent pendingIntent;
         String title;
         String message;
 
@@ -90,21 +96,27 @@ public class NotificationService extends IntentService {
             int totalNotifications = messageNotifications + replyNotifications;
             title = getString(R.string.notifications_multiple_types, totalNotifications);
             message = getString(R.string.notifications_multiple_types_body, totalNotifications);
+            Intent intent = NotificationActivity.createIntent(getApplicationContext());
+            pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
         } else if (messageNotifications > 0) {
             boolean hasOnlyOne = messageNotifications == 1;
             ImgurMessage imgurMessage = messages.iterator().next();
+            ImgurConvo convo = new ImgurConvo(imgurMessage.getId(), imgurMessage.getFrom(), -1);
             title = hasOnlyOne ? getString(R.string.notification_new_message, imgurMessage.getFrom()) : getString(R.string.notification_multiple_messages, messageNotifications);
             message = hasOnlyOne ? imgurMessage.getLastMessage() : getString(R.string.notification_multiple_messages_body, messageNotifications);
+            Intent intent = ConvoThreadActivity.createIntent(getApplicationContext(), convo);
+            pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
         } else {
             boolean hasOnlyOne = replyNotifications == 1;
             ImgurComment comment = replies.iterator().next();
             title = hasOnlyOne ? getString(R.string.notification_new_reply, comment.getAuthor()) : getString(R.string.notification_multiple_replies, replyNotifications);
             message = hasOnlyOne ? comment.getComment() : getString(R.string.notification_multiple_replies_body, replyNotifications);
+            Intent intent = ViewActivity.createIntent(getApplicationContext(),"https://imgur.com/gallery/"+comment.getImageId(),false);
+            pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
         }
 
-        Notification notification = new Notification(getApplicationContext(), title, message);
+        Notification notification = new Notification(getApplicationContext(), title, message,pendingIntent);
         notification.postNotification();
-        // TODO Pending Intents
     }
 
     private static class Notification extends BaseNotification {
@@ -114,7 +126,7 @@ public class NotificationService extends IntentService {
 
         private boolean mVibrate = false;
 
-        public Notification(Context context, String title, String message) {
+        public Notification(Context context, String title, String message,PendingIntent intent) {
             super(context, false);
             SharedPreferences pref = app.getPreferences();
             mVibrate = pref.getBoolean(SettingsActivity.KEY_NOTIFICATION_VIBRATE, true);
@@ -132,6 +144,7 @@ public class NotificationService extends IntentService {
 
             build(context);
             builder.setContentText(message);
+            builder.setContentIntent(intent);
         }
 
         @Override

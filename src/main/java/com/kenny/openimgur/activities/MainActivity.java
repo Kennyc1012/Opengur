@@ -227,7 +227,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                 @Override
                 public void onClick(View v) {
                     mDrawer.closeDrawers();
-                    startActivity(NotifcationActivity.createIntent(getApplicationContext()));
+                    startActivity(NotificationActivity.createIntent(getApplicationContext()));
                 }
             });
         } else {

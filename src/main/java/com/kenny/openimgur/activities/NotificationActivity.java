@@ -27,7 +27,7 @@ import retrofit.client.Response;
 /**
  * Created by Kenny-PC on 8/9/2015.
  */
-public class NotifcationActivity extends BaseActivity implements View.OnClickListener {
+public class NotificationActivity extends BaseActivity implements View.OnClickListener {
     private static final String KEY_ITEMS = "items";
     private static final String KEY_POSIION = "position";
 
@@ -40,7 +40,7 @@ public class NotifcationActivity extends BaseActivity implements View.OnClickLis
     private NotificationAdapter mAdapter;
 
     public static Intent createIntent(Context context) {
-        return new Intent(context, NotifcationActivity.class);
+        return new Intent(context, NotificationActivity.class);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class NotifcationActivity extends BaseActivity implements View.OnClickLis
                 if (notificationResponse != null && notificationResponse.data != null) {
                     app.getSql().insertNotifications(notificationResponse);
                     List<ImgurNotification> notifications = app.getSql().getNotifications();
-                    mAdapter = new NotificationAdapter(NotifcationActivity.this, notifications, NotifcationActivity.this);
+                    mAdapter = new NotificationAdapter(NotificationActivity.this, notifications, NotificationActivity.this);
                     mList.setAdapter(mAdapter);
                     mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
                 } else {
