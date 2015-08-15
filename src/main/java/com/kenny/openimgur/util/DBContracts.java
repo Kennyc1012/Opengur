@@ -282,5 +282,11 @@ public class DBContracts {
 
         public static final String GET_REPLIES_SQL = "SELECT * FROM " + TABLE_NAME +
                 " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_REPLY + "'";
+
+        public static final String GET_MESSAGE_NOTIFICATION_ID = "SELECT " + _ID + " FROM " + TABLE_NAME
+                + " WHERE " + COLUMN_CONTENT_ID + " =%s";
+
+        public static final String GET_REPLY_NOTIFICATION_ID = "SELECT " + _ID + " FROM " + TABLE_NAME
+                + " WHERE " + COLUMN_CONTENT_ID + " =%s AND " + COLUMN_CONTENT + " =%s LIMIT 0,1";
     }
 }

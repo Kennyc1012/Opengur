@@ -78,7 +78,7 @@ public class NotificationService extends IntentService {
         Set<ImgurComment> replies = new HashSet<>();
 
         for (NotificationResponse.Messages m : data.messages) {
-          //  messages.add(m.content);
+            messages.add(m.content);
         }
 
         for (NotificationResponse.Replies r : data.replies) {

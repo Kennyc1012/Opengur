@@ -610,6 +610,44 @@ public class SqlHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Returns the comma separated notification ids
+     *
+     * @param content
+     * @return
+     */
+    @Nullable
+    public String getNotificationIds(ImgurBaseObject content) {
+        if (content == null) return null;
+        String query;
+
+        if (content instanceof ImgurConvo) {
+            query = String.format(NotificationContract.GET_MESSAGE_NOTIFICATION_ID, content.getId());
+        } else if (content instanceof ImgurComment) {
+            ImgurComment comment = (ImgurComment) content;
+            query = String.format(NotificationContract.GET_REPLY_NOTIFICATION_ID, comment.getImageId(), comment.getComment());
+        } else {
+            LogUtil.w(TAG, "Invalid type of content for retrieving  notification id :" + content.getClass().getSimpleName());
+            return null;
+        }
+
+        if (!TextUtils.isEmpty(query)) {
+            Cursor cursor = getReadableDatabase().rawQuery(query, null);
+            String[] ids = new String[cursor.getCount()];
+            int i = 0;
+
+            while (cursor.moveToNext()) {
+                ids[i] = cursor.getString(0);
+                i++;
+            }
+
+            cursor.close();
+            return TextUtils.join(",", ids);
+        }
+
+        return null;
+    }
+
+    /**
      * Returns all the notifications in the database, minus the duplicate messages
      *
      * @return

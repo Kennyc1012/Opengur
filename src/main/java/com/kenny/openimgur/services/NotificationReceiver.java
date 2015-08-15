@@ -15,11 +15,18 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
 import com.kenny.openimgur.activities.NotificationActivity;
 import com.kenny.openimgur.activities.ViewActivity;
+import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by Kenny-PC on 3/22/2015.
@@ -88,10 +95,28 @@ public class NotificationReceiver extends BroadcastReceiver {
                     dest = NotificationActivity.createIntent(context);
                 }
 
-                OpengurApp.getInstance(context).getSql().deleteNotification(content);
+                if (content != null) {
+                    SqlHelper sql = OpengurApp.getInstance(context).getSql();
+                    String ids = sql.getNotificationIds(content);
+                    sql.deleteNotification(content);
+
+                    if (!TextUtils.isEmpty(ids)) {
+                        ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {
+                            @Override
+                            public void success(BasicResponse basicResponse, Response response) {
+                                // Don't care about response
+                            }
+
+                            @Override
+                            public void failure(RetrofitError error) {
+                                LogUtil.e(TAG, "Failure marking notifications read, error", error);
+                            }
+                        });
+                    }
+                }
+
                 dest.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(dest);
-                // TODO Make API call to mark notification read
                 break;
 
             default:
