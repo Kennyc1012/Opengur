@@ -25,7 +25,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
-import com.kenny.openimgur.api.responses.ConverastionResponse;
+import com.kenny.openimgur.api.responses.ConversationResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurListener;
@@ -189,24 +189,28 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
 
     private void fetchMessages() {
         // Having an id of -1 means that they are starting the convo from the Info fragment where an id is not known
-        if (mConvo.getId().equals("-1")) onEmpty();
+        if (mConvo.getId().equals("-1")) {
+            onEmpty();
+            return;
+        }
+
         mIsLoading = true;
-        ApiClient.getService().getMessages(mConvo.getId(), mCurrentPage, new Callback<ConverastionResponse>() {
+        ApiClient.getService().getMessages(mConvo.getId(), mCurrentPage, new Callback<ConversationResponse>() {
             @Override
-            public void success(ConverastionResponse converastionResponse, Response response) {
+            public void success(ConversationResponse conversationResponse, Response response) {
                 mIsLoading = false;
 
-                if (converastionResponse == null) {
+                if (conversationResponse == null) {
                     mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                     return;
                 }
 
-                if (converastionResponse.data.hasMessages()) {
+                if (conversationResponse.data.hasMessages()) {
                     boolean scrollToBottom = false;
 
                     if (mAdapter == null) {
-                        mAdapter = new MessagesAdapter(getApplicationContext(), ColorGenerator.DEFAULT.getColor(mConvo.getWithAccount()), converastionResponse.data.getMessages(), ConvoThreadActivity.this);
+                        mAdapter = new MessagesAdapter(getApplicationContext(), ColorGenerator.DEFAULT.getColor(mConvo.getWithAccount()), conversationResponse.data.getMessages(), ConvoThreadActivity.this);
                         mConvoList.setAdapter(mAdapter);
                         // Start at the bottom of the list when we receive the first set of messages
                         scrollToBottom = true;
@@ -214,10 +218,11 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                         // The list needs to be reorder so that the newly fetch messages will
                         // be at the top of the list as they will be older
                         List<ImgurMessage> retainedMessages = mAdapter.retainItems();
-                        converastionResponse.data.getMessages().addAll(retainedMessages);
+                        conversationResponse.data.getMessages().addAll(retainedMessages);
                         mAdapter.clear();
-                        mAdapter.addItems(converastionResponse.data.getMessages());
-                        if (mLayoutManager.findFirstVisibleItemPosition() != 0) scrollToBottom = true;
+                        mAdapter.addItems(conversationResponse.data.getMessages());
+                        if (mLayoutManager.findFirstVisibleItemPosition() != 0)
+                            scrollToBottom = true;
                     }
 
 

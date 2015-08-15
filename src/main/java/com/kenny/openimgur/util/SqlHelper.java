@@ -13,6 +13,8 @@ import android.text.TextUtils;
 import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.classes.ImgurComment;
+import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
@@ -199,6 +201,7 @@ public class SqlHelper extends SQLiteOpenHelper {
     public void onUserLogout() {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(UserContract.TABLE_NAME, null, null);
+        db.delete(NotificationContract.TABLE_NAME, null, null);
     }
 
     /**
@@ -543,6 +546,11 @@ public class SqlHelper extends SQLiteOpenHelper {
         getWritableDatabase().insertWithOnConflict(MuzeiContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
+    /**
+     * Inserts notifications into the database
+     *
+     * @param response
+     */
     public void insertNotifications(NotificationResponse response) {
         if (response == null || response.data == null) return;
 
@@ -581,6 +589,31 @@ public class SqlHelper extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Deletes a notification from the database based on its content id
+     *
+     * @param content The content to be deleted. Either a message, or comment
+     */
+    public void deleteNotification(ImgurBaseObject content) {
+        if (content == null) return;
+
+        if (content instanceof ImgurConvo) {
+            getWritableDatabase().delete(NotificationContract.TABLE_NAME, NotificationContract.COLUMN_CONTENT_ID + "=?", new String[]{content.getId()});
+        } else if (content instanceof ImgurComment) {
+            ImgurComment comment = (ImgurComment) content;
+            String where = NotificationContract.COLUMN_CONTENT + "=? AND " + NotificationContract.COLUMN_CONTENT_ID + "=?";
+            String[] args = new String[]{comment.getComment(), comment.getImageId()};
+            getWritableDatabase().delete(NotificationContract.TABLE_NAME, where, args);
+        } else {
+            LogUtil.w(TAG, "Invalid type of content for deleting notification :" + content.getClass().getSimpleName());
+        }
+    }
+
+    /**
+     * Returns all the notifications in the database, minus the duplicate messages
+     *
+     * @return
+     */
     @NonNull
     public List<ImgurNotification> getNotifications() {
         List<ImgurNotification> notifications = new ArrayList<>();

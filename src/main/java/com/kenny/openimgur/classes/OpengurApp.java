@@ -208,6 +208,12 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
             case SettingsActivity.KEY_CACHE_SIZE:
                 ImageUtil.initImageLoader(getApplicationContext());
                 break;
+
+            case SettingsActivity.KEY_NOTIFICATIONS:
+                if (mUser != null && sharedPreferences.getBoolean(key, false)) {
+                    AlarmReceiver.createNotificationAlarm(getApplicationContext());
+                }
+                break;
         }
     }
 }

@@ -5,7 +5,7 @@ import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.CommentPostResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
-import com.kenny.openimgur.api.responses.ConverastionResponse;
+import com.kenny.openimgur.api.responses.ConversationResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.api.responses.NotificationResponse;
@@ -116,7 +116,7 @@ public interface ImgurService {
     void getTags(@Path("id") String itemId, Callback<TagResponse> callback);
 
     @GET("/3/conversations/{id}/{page}/0")
-    void getMessages(@Path("id") String conversationId, @Path("page") int page, Callback<ConverastionResponse> callback);
+    void getMessages(@Path("id") String conversationId, @Path("page") int page, Callback<ConversationResponse> callback);
 
     @GET("/3/notification?new=true")
     void getNotifications(Callback<NotificationResponse> response);
