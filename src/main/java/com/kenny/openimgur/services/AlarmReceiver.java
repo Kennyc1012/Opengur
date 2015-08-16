@@ -13,6 +13,8 @@ import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 
+import java.util.Calendar;
+
 /**
  * Created by kcampagna on 8/12/15.
  */
@@ -32,9 +34,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             Intent intent = new Intent(context, AlarmReceiver.class);
             PendingIntent pIntent = PendingIntent.getBroadcast(context, RequestCodes.NOTIFICATION_ALARM, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            long nextAlarm = getNextAlarmTime(pref);
-            am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextAlarm, pIntent);
-            LogUtil.v(TAG, "Next notification alarm set for " + nextAlarm / DateUtils.MINUTE_IN_MILLIS + " minutes");
+            am.set(AlarmManager.RTC_WAKEUP, getNextAlarmTime(pref), pIntent);
         } else {
             LogUtil.v(TAG, "Notifications not enabled, not scheduling alarm");
         }
@@ -60,7 +60,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     private static long getNextAlarmTime(SharedPreferences pref) {
         String val = pref.getString(SettingsActivity.KEY_NOTIFICATION_FREQUENCY, SettingsActivity.NOTIFICATION_TIME_30);
-        long updateTime = DateUtils.SECOND_IN_MILLIS;
+        long updateTime = DateUtils.MINUTE_IN_MILLIS;
 
         switch (val) {
             case SettingsActivity.NOTIFICATION_TIME_15:
@@ -81,6 +81,12 @@ public class AlarmReceiver extends BroadcastReceiver {
                 break;
         }
 
-        return updateTime;
+        if (LogUtil.SHOULD_WRITE_LOGS) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(System.currentTimeMillis() + updateTime);
+            LogUtil.v(TAG, "Next alarm set for " + cal.getTime().toString());
+        }
+
+        return System.currentTimeMillis() + updateTime;
     }
 }
