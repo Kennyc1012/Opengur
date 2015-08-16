@@ -17,6 +17,7 @@
     <attr name="errorDrawable" format="reference" />
     <attr name="emptyDrawableUploads" format="reference" />
     <attr name="emptyDrawableMessages" format="reference" />
+    <attr name="emptyDrawableNotifications" format="reference" />
     <attr name="repliesDrawable" format="reference" />
     <attr name="cardBG" format="color" />
     <attr name="toolBarPopupTheme" format="reference" />

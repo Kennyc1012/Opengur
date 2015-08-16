@@ -23,6 +23,7 @@
         <item name="cardBG">@color/cardview_light_background</item>
         <item name="emptyDrawableUploads">@drawable/empty_uploads_light</item>
         <item name="emptyDrawableMessages">@drawable/no_comments_light</item>
+        <item name="emptyDrawableNotifications">@drawable/no_notifications_light</item>
         <item name="errorDrawable">@drawable/error_light</item>
         <item name="repliesDrawable">@drawable/ic_add_black_18dp</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
@@ -114,6 +115,7 @@
         <item name="cardBG">@color/card_bg_dark</item>
         <item name="emptyDrawableUploads">@drawable/empty_uploads_dark</item>
         <item name="emptyDrawableMessages">@drawable/no_comments_dark</item>
+        <item name="emptyDrawableNotifications">@drawable/no_notifications_dark</item>
         <item name="errorDrawable">@drawable/error_dark</item>
         <item name="repliesDrawable">@drawable/ic_add_white_18dp</item>
         <item name="snack_bar_background_color">@color/background_floating_material_light</item>

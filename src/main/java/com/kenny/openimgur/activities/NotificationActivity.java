@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.kenny.openimgur.R;
@@ -17,10 +19,12 @@ import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.snackbar.SnackBar;
 
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -62,6 +66,24 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.topics, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                fetchNotifications();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -107,8 +129,15 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
         if (mAdapter != null) mAdapter.onDestroy();
     }
 
+    @OnClick(R.id.errorButton)
     @Override
     public void onClick(View v) {
+        if (v.getId() == R.id.errorButton) {
+            mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+            fetchNotifications();
+            return;
+        }
+
         ImgurNotification notification = mAdapter.getItem(mList.getChildAdapterPosition(v));
 
         if (notification.getType() == ImgurNotification.TYPE_MESSAGE) {
@@ -128,17 +157,35 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                 if (notificationResponse != null && notificationResponse.data != null) {
                     app.getSql().insertNotifications(notificationResponse);
                     List<ImgurNotification> notifications = app.getSql().getNotifications();
-                    mAdapter = new NotificationAdapter(NotificationActivity.this, notifications, NotificationActivity.this);
-                    mList.setAdapter(mAdapter);
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+
+                    if (notifications.isEmpty() && (mAdapter == null || mAdapter.isEmpty())) {
+                        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+                    } else {
+                        // Don't remove any notifications that may have been cleared when first viewed
+                        if (mAdapter != null) {
+                            mAdapter.addItems(notifications);
+                        } else {
+                            mAdapter = new NotificationAdapter(NotificationActivity.this, notifications, NotificationActivity.this);
+                            mList.setAdapter(mAdapter);
+                        }
+
+                        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    }
                 } else {
-                    // TODO Error
+                    mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                // TODO Error
+                if (mAdapter == null || mAdapter.isEmpty()) {
+                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                } else {
+                    SnackBar.show(NotificationActivity.this, ApiClient.getErrorCode(error));
+                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                }
             }
         });
     }
