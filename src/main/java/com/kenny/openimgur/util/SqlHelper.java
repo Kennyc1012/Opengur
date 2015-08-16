@@ -648,6 +648,26 @@ public class SqlHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Returns the comma separated notification ids for all notifications in the database
+     *
+     * @return
+     */
+    @Nullable
+    public String getNotificationIds() {
+        Cursor cursor = getReadableDatabase().rawQuery("SELECT " + NotificationContract._ID + " FROM " + NotificationContract.TABLE_NAME, null);
+        String[] ids = new String[cursor.getCount()];
+        int i = 0;
+
+        while (cursor.moveToNext()) {
+            ids[i] = cursor.getString(0);
+            i++;
+        }
+
+        cursor.close();
+        return TextUtils.join(",", ids);
+    }
+
+    /**
      * Returns all the notifications in the database, minus the duplicate messages
      *
      * @return

@@ -11,6 +11,7 @@ import android.view.View;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NotificationAdapter;
 import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurNotification;
@@ -75,6 +76,22 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                 mAdapter = new NotificationAdapter(this, notifications, this);
                 mList.setAdapter(mAdapter);
                 mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                String ids = app.getSql().getNotificationIds();
+
+                // Mark all the notifications read when loaded
+                if (!TextUtils.isEmpty(ids)) {
+                    ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {
+                        @Override
+                        public void success(BasicResponse basicResponse, Response response) {
+                            // Don't care about response
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            LogUtil.e(TAG, "Failure marking notifications read, error", error);
+                        }
+                    });
+                }
             } else {
                 LogUtil.v(TAG, "No notifications found in database, making request");
                 mMultiView.setViewState(MultiStateView.ViewState.LOADING);
