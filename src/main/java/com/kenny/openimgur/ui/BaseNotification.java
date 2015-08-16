@@ -30,7 +30,12 @@ public abstract class BaseNotification {
     public BaseNotification(Context context, boolean autoBuild) {
         mManger = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         app = OpengurApp.getInstance(context);
-        if (autoBuild) build(context);
+
+        if (autoBuild) {
+            build(context);
+        } else {
+            builder = new NotificationCompat.Builder(context);
+        }
     }
 
     /**
@@ -84,7 +89,8 @@ public abstract class BaseNotification {
      * Posts the notification
      */
     public void postNotification() {
-        if (mManger != null && builder != null) mManger.notify(getNotificationId(), builder.build());
+        if (mManger != null && builder != null)
+            mManger.notify(getNotificationId(), builder.build());
     }
 
     protected void build(Context context) {

@@ -330,11 +330,20 @@
     <!-- Notifications -->
     <string name="notifications_multiple_types">%d New Notifications</string>
     <string name="notifications_multiple_types_body">You have %d new notifications</string>
+
+    <plurals name="notification_messages">
+        <item quantity="one">%d new message</item>
+        <item quantity="other">%d new messages</item>
+    </plurals>
+
+    <plurals name="notification_replies">
+        <item quantity="one">%d new reply</item>
+        <item quantity="other">%d new replies</item>
+    </plurals>
+
+    <string name="notification_remaining">+%d more</string>
     <string name="notification_new_message">New message from %s</string>
-    <string name="notification_multiple_messages">%d new messages</string>
-    <string name="notification_multiple_messages_body">You have %d new messages</string>
     <string name="notification_new_reply">New reply from %s</string>
-    <string name="notification_multiple_replies">$d new replies</string>
-    <string name="notification_multiple_replies_body">You have %d new replies</string>
+    <string name="notification_preview"><![CDATA[<b>%1$s:</b> %2$s ]]></string>
 
 </resources>

@@ -5,8 +5,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.text.Html;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
@@ -24,6 +27,7 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -57,7 +61,8 @@ public class NotificationService extends IntentService {
 
                 if (response != null && response.data != null) {
                     app.getSql().insertNotifications(response);
-                    createNotification(response.data);
+                    Notification notification = new Notification(getApplicationContext(), response.data);
+                    notification.postNotification();
                 } else {
                     LogUtil.v(TAG, "No notifications found");
                 }
@@ -72,62 +77,20 @@ public class NotificationService extends IntentService {
         }
     }
 
-    private void createNotification(@NonNull NotificationResponse.Data data) {
-        // Remove potential duplicates
-        Set<ImgurMessage> messages = new HashSet<>();
-        Set<ImgurComment> replies = new HashSet<>();
-
-        for (NotificationResponse.Messages m : data.messages) {
-            messages.add(m.content);
-        }
-
-        for (NotificationResponse.Replies r : data.replies) {
-            replies.add(r.content);
-        }
-
-        int messageNotifications = messages.size();
-        int replyNotifications = replies.size();
-        PendingIntent pendingIntent;
-        ImgurBaseObject obj = null;
-        String title;
-        String message;
-
-        if (messageNotifications > 0 && replyNotifications > 0) {
-            int totalNotifications = messageNotifications + replyNotifications;
-            title = getString(R.string.notifications_multiple_types, totalNotifications);
-            message = getString(R.string.notifications_multiple_types_body, totalNotifications);
-        } else if (messageNotifications > 0) {
-            boolean hasOnlyOne = messageNotifications == 1;
-            ImgurMessage imgurMessage = messages.iterator().next();
-            obj = new ImgurConvo(imgurMessage.getId(), imgurMessage.getFrom(), -1);
-            title = hasOnlyOne ? getString(R.string.notification_new_message, imgurMessage.getFrom()) : getString(R.string.notification_multiple_messages, messageNotifications);
-            message = hasOnlyOne ? imgurMessage.getLastMessage() : getString(R.string.notification_multiple_messages_body, messageNotifications);
-        } else {
-            boolean hasOnlyOne = replyNotifications == 1;
-            ImgurComment comment = replies.iterator().next();
-            obj = comment;
-            title = hasOnlyOne ? getString(R.string.notification_new_reply, comment.getAuthor()) : getString(R.string.notification_multiple_replies, replyNotifications);
-            message = hasOnlyOne ? comment.getComment() : getString(R.string.notification_multiple_replies_body, replyNotifications);
-        }
-
-        Intent intent = NotificationReceiver.createNotificationIntent(getApplicationContext(), obj);
-        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), RequestCodes.NOTIFICATIONS, intent, PendingIntent.FLAG_ONE_SHOT);
-        Notification notification = new Notification(getApplicationContext(), title, message, pendingIntent);
-        notification.postNotification();
-    }
-
     private static class Notification extends BaseNotification {
+        private static final int MIN_TEXT_LENGTH = 40;
+        private static final int MAX_INBOX_LINES = 3;
+
         private String mTitle;
 
         private Uri mNotification;
 
         private boolean mVibrate = false;
 
-        public Notification(Context context, String title, String message, PendingIntent intent) {
+        public Notification(Context context, NotificationResponse.Data data) {
             super(context, false);
             SharedPreferences pref = app.getPreferences();
             mVibrate = pref.getBoolean(SettingsActivity.KEY_NOTIFICATION_VIBRATE, true);
-            mTitle = title;
             String ringTone = pref.getString(SettingsActivity.KEY_NOTIFICATION_RINGTONE, null);
 
             if (!TextUtils.isEmpty(ringTone)) {
@@ -139,9 +102,116 @@ public class NotificationService extends IntentService {
                 }
             }
 
+            buildNotification(data);
             build(context);
-            builder.setContentText(message);
-            builder.setContentIntent(intent);
+        }
+
+        private void buildNotification(NotificationResponse.Data data) {
+            // Remove potential duplicates
+            Set<ImgurMessage> messages = new HashSet<>();
+            Set<ImgurComment> replies = new HashSet<>();
+
+            for (NotificationResponse.Messages m : data.messages) {
+                 messages.add(m.content);
+            }
+
+            for (NotificationResponse.Replies r : data.replies) {
+                replies.add(r.content);
+            }
+
+            Resources res = app.getResources();
+            int messageNotifications = messages.size();
+            int replyNotifications = replies.size();
+            PendingIntent pendingIntent;
+            ImgurBaseObject obj = null;
+
+            if (messageNotifications > 0 && replyNotifications > 0) {
+                int totalNotifications = messageNotifications + replyNotifications;
+                mTitle = res.getString(R.string.notifications_multiple_types, totalNotifications);
+                builder.setContentText(res.getString(R.string.notifications_multiple_types_body, totalNotifications));
+                builder.setStyle(new NotificationCompat.InboxStyle()
+                        .addLine(res.getQuantityString(R.plurals.notification_messages, messageNotifications, messageNotifications))
+                        .addLine(res.getQuantityString(R.plurals.notification_replies, replyNotifications, replyNotifications))
+                        .setBigContentTitle(mTitle));
+            } else if (messageNotifications > 0) {
+                boolean hasOnlyOne = messageNotifications == 1;
+                mTitle = res.getQuantityString(R.plurals.notification_messages, messageNotifications, messageNotifications);
+
+                if (hasOnlyOne) {
+                    ImgurMessage newMessage = messages.iterator().next();
+                    obj = new ImgurConvo(newMessage.getId(), newMessage.getFrom(), -1);
+                    int messageLength = newMessage.getLastMessage().length() - MIN_TEXT_LENGTH;
+
+                    // Big text style won't display if less than 40 characters
+                    if (messageLength > 0) {
+                        builder.setContentText(res.getString(R.string.notification_new_message, newMessage.getFrom()));
+                        builder.setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(newMessage.getLastMessage())
+                                .setBigContentTitle(newMessage.getFrom()));
+                    } else {
+                        String formatted = res.getString(R.string.notification_preview, newMessage.getFrom(), newMessage.getLastMessage());
+                        builder.setContentText(Html.fromHtml(formatted));
+                    }
+                } else {
+                    NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
+                    Iterator<ImgurMessage> m = messages.iterator();
+                    int remaining = MAX_INBOX_LINES - messageNotifications;
+                    int i = 0;
+
+                    while (m.hasNext() && i < MAX_INBOX_LINES) {
+                        ImgurMessage mess = m.next();
+                        style.addLine(Html.fromHtml(res.getString(R.string.notification_preview, mess.getFrom(), mess.getLastMessage())));
+                        i++;
+                    }
+
+                    if (remaining < 0) {
+                        style.setSummaryText(res.getString(R.string.notification_remaining, Math.abs(remaining)));
+                    }
+
+                    builder.setStyle(style);
+                }
+            } else {
+                boolean hasOnlyOne = replyNotifications == 1;
+                mTitle = res.getQuantityString(R.plurals.notification_replies, replyNotifications, replyNotifications);
+
+                if (hasOnlyOne) {
+                    ImgurComment comment = replies.iterator().next();
+                    obj = comment;
+                    int messageLength = comment.getComment().length() - MIN_TEXT_LENGTH;
+
+                    // Big text style won't display if less than 40 characters
+                    if (messageLength > 0) {
+                        builder.setContentText(res.getString(R.string.notification_new_message, comment.getAuthor()));
+                        builder.setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(comment.getComment())
+                                .setBigContentTitle(comment.getAuthor()));
+                    } else {
+                        String formatted = res.getString(R.string.notification_preview, comment.getAuthor(), comment.getComment());
+                        builder.setContentText(Html.fromHtml(formatted));
+                    }
+                } else {
+                    NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
+                    Iterator<ImgurComment> r = replies.iterator();
+                    int remaining = MAX_INBOX_LINES - replyNotifications;
+                    int i = 0;
+
+                    while (r.hasNext() && i < MAX_INBOX_LINES) {
+                        ImgurComment comment = r.next();
+                        style.addLine(Html.fromHtml(res.getString(R.string.notification_preview, comment.getAuthor(), comment.getComment())));
+                        i++;
+                    }
+
+                    if (remaining < 0) {
+                        style.setSummaryText(res.getString(R.string.notification_remaining, Math.abs(remaining)));
+                    }
+
+                    builder.setStyle(style);
+                }
+            }
+
+            Intent intent = NotificationReceiver.createNotificationIntent(app, obj);
+            pendingIntent = PendingIntent.getBroadcast(app, RequestCodes.NOTIFICATIONS, intent, PendingIntent.FLAG_ONE_SHOT);
+            builder.setContentIntent(pendingIntent);
         }
 
         @Override
