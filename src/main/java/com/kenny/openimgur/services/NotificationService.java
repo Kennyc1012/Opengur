@@ -210,7 +210,7 @@ public class NotificationService extends IntentService {
             }
 
             Intent intent = NotificationReceiver.createNotificationIntent(app, obj);
-            pendingIntent = PendingIntent.getBroadcast(app, RequestCodes.NOTIFICATIONS, intent, PendingIntent.FLAG_ONE_SHOT);
+            pendingIntent = PendingIntent.getBroadcast(app, getNotificationId(), intent, PendingIntent.FLAG_ONE_SHOT);
             builder.setContentIntent(pendingIntent);
         }
 
