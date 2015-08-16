@@ -610,6 +610,13 @@ public class SqlHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Deletes all notifications
+     */
+    public void deleteNotifications() {
+        getWritableDatabase().delete(NotificationContract.TABLE_NAME, null, null);
+    }
+
+    /**
      * Returns the comma separated notification ids
      *
      * @param content
