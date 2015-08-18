@@ -187,7 +187,7 @@ abstract public class BaseActivity extends AppCompatActivity {
         Fragment fragment = getFragmentManager().findFragmentByTag(title);
 
         if (fragment != null && fragment instanceof DialogFragment) {
-            ((DialogFragment) fragment).dismiss();
+            ((DialogFragment) fragment).dismissAllowingStateLoss();
         }
     }
 

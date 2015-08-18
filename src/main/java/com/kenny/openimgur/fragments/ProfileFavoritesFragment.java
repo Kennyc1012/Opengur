@@ -105,18 +105,22 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
 
     @Override
     public void onClick(View v) {
-        ImgurBaseObject obj = getAdapter().getItem(mGrid.getChildAdapterPosition(v));
-        Intent intent;
+        int position = mGrid.getChildAdapterPosition(v);
 
-        if (obj instanceof ImgurAlbum || obj.getUpVotes() > Integer.MIN_VALUE) {
-            ArrayList<ImgurBaseObject> items = new ArrayList<>(1);
-            items.add(obj);
-            intent = ViewActivity.createIntent(getActivity(), items, 0);
-        } else {
-            intent = FullScreenPhotoActivity.createIntent(getActivity(), obj.getLink());
+        if (position >= 0) {
+            ImgurBaseObject obj = getAdapter().getItem(position);
+            Intent intent;
+
+            if (obj instanceof ImgurAlbum || obj.getUpVotes() > Integer.MIN_VALUE) {
+                ArrayList<ImgurBaseObject> items = new ArrayList<>(1);
+                items.add(obj);
+                intent = ViewActivity.createIntent(getActivity(), items, 0);
+            } else {
+                intent = FullScreenPhotoActivity.createIntent(getActivity(), obj.getLink());
+            }
+
+            startActivity(intent);
         }
-
-        startActivity(intent);
     }
 
     @Override
