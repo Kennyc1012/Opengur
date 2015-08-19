@@ -111,6 +111,7 @@ public class ViewUtils {
     /**
      * Pass in a runnable to run before the view starts drawing. Good for running code after
      * drawing has complete
+     *
      * @param view
      * @param runnable
      */

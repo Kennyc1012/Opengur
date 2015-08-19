@@ -320,4 +320,6 @@
     <string name="report_post_success">Post reported</string>
     <string name="report_post_failure">Unable to report post</string>
 
+    <string name="hide_comment_bar">Hide bottom bar</string>
+
 </resources>

@@ -20,6 +20,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
@@ -53,6 +54,7 @@ import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
@@ -140,6 +142,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private static final String KEY_LOAD_COMMENTS = "autoLoadComments";
 
     private static final String KEY_PANEL_EXPANDED = "panelExpanded";
+
+    private static final String PREF_HIDE_PANEL = "hide_panel";
 
     @Bind(R.id.pager)
     ViewPager mViewPager;
@@ -303,6 +307,38 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         super.onBackPressed();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.view_activity, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mSlidingPane != null) {
+            boolean hidePanel = app.getPreferences().getBoolean(PREF_HIDE_PANEL, false);
+            if (hidePanel) mSlidingPane.setPanelHeight(0);
+            menu.findItem(R.id.hideBar).setChecked(hidePanel);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.hideBar:
+                boolean isChecked = item.isChecked();
+                item.setChecked(!isChecked);
+                app.getPreferences().edit().putBoolean(PREF_HIDE_PANEL, !isChecked).commit();
+                int height = isChecked ? ViewUtils.getActionBarHeight(this) : 0;
+                mSlidingPane.setPanelHeight(height);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
