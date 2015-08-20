@@ -102,9 +102,9 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                 mAdapter = new UploadAdapter(getActivity(), photos);
                 mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
                 mGrid.setAdapter(mAdapter);
-                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             } else {
-                mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                 if (mListener != null) mListener.onUpdateActionBar(true);
             }
         }
@@ -176,7 +176,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                                                     mAdapter.removeItem(photo);
 
                                                     if (mAdapter.isEmpty()) {
-                                                        mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+                                                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                                                         if (mListener != null)
                                                             mListener.onUpdateActionBar(true);
                                                     }

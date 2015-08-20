@@ -69,7 +69,7 @@ public class PhotoPickerActivity extends BaseActivity implements LoaderManager.L
             }
 
             mGrid.setAdapter(mAdapter);
-            mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         }
     }
 
@@ -154,10 +154,10 @@ public class PhotoPickerActivity extends BaseActivity implements LoaderManager.L
         if (data != null && !data.isEmpty()) {
             mAdapter = new PhotoPickerAdapter(this, mGrid, data, this);
             mGrid.setAdapter(mAdapter);
-            mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         } else {
             mMultiStateView.setEmptyText(R.id.emptyMessage, getString(R.string.device_no_photos));
-            mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
     }
 
@@ -165,7 +165,7 @@ public class PhotoPickerActivity extends BaseActivity implements LoaderManager.L
     public void onLoaderReset(Loader<List<String>> loader) {
         if (mAdapter == null || mAdapter.isEmpty()) {
             if (mMultiStateView != null)
-                mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
         }
     }
 

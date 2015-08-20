@@ -86,6 +86,7 @@ dependencies {
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.9'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
     compile 'com.kennyc:snackbar:2.5'
+    compile 'com.kennyc:multistateview:1.1'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'

@@ -101,7 +101,7 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
                                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+                                                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                                                 deletePhoto(photo);
                                             }
                                         }).show();
@@ -121,7 +121,7 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
         if (getAdapter() == null || getAdapter().isEmpty()) {
             String errorMessage = getString(R.string.profile_no_uploads);
             mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
-            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
     }
 
@@ -131,7 +131,7 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
     }
 
     private void deletePhoto(final ImgurBaseObject photo) {
-        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
         ApiClient.getService().deletePhoto(photo.getDeleteHash(), new Callback<BasicResponse>() {
             @Override
@@ -148,7 +148,7 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
                     if (adapter == null || adapter.isEmpty()) {
                         onEmptyResults();
                     } else {
-                        mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     }
 
                     SnackBar.show(getActivity(), R.string.profile_delete_success_image);
@@ -161,7 +161,7 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to delete photo", error);
-                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 SnackBar.show(getActivity(), R.string.error_generic);
             }
         });

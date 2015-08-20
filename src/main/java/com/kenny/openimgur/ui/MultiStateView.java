@@ -1,158 +1,28 @@
 package com.kenny.openimgur.ui;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
-
-import com.kenny.openimgur.R;
 
 /**
  * View that handles different states. Idea from https://github.com/jenzz/Android-MultiStateListView
  * Created by kcampagna on 7/6/14.
  */
-public class MultiStateView extends FrameLayout {
-    private static final int UNKNOWN_VIEW = -1;
-
-    private static final int CONTENT_VIEW = 0;
-
-    private static final int ERROR_VIEW = 1;
-
-    private static final int EMPTY_VIEW = 2;
-
-    private static final int LOADING_VIEW = 3;
-
-    public enum ViewState {
-        CONTENT,
-        LOADING,
-        EMPTY,
-        ERROR
-    }
-
-    private LayoutInflater mInflater;
-
-    private View mContentView;
-
-    private View mLoadingView;
-
-    private View mErrorView;
-
-    private View mEmptyView;
-
-    private ViewState mViewState;
+public class MultiStateView extends com.kennyc.view.MultiStateView {
 
     public MultiStateView(Context context) {
-        this(context, null);
+        super(context);
     }
 
     public MultiStateView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
     }
 
     public MultiStateView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(attrs);
-    }
-
-    private void init(AttributeSet attrs) {
-        mInflater = LayoutInflater.from(getContext());
-        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MultiStateView);
-
-        int loadingViewResId = a.getResourceId(R.styleable.MultiStateView_loadingView, -1);
-        if (loadingViewResId > -1) {
-            mLoadingView = mInflater.inflate(loadingViewResId, this, false);
-            addView(mLoadingView, mLoadingView.getLayoutParams());
-        }
-
-        int emptyViewResId = a.getResourceId(R.styleable.MultiStateView_emptyView, -1);
-        if (emptyViewResId > -1) {
-            mEmptyView = mInflater.inflate(emptyViewResId, this, false);
-            addView(mEmptyView, mEmptyView.getLayoutParams());
-        }
-
-        int errorViewResId = a.getResourceId(R.styleable.MultiStateView_errorView, -1);
-        if (errorViewResId > -1) {
-            mErrorView = mInflater.inflate(errorViewResId, this, false);
-            addView(mErrorView, mErrorView.getLayoutParams());
-        }
-
-        int viewState = a.getInt(R.styleable.MultiStateView_viewState, UNKNOWN_VIEW);
-        if (viewState != UNKNOWN_VIEW) {
-            switch (viewState) {
-                case CONTENT_VIEW:
-                    mViewState = ViewState.CONTENT;
-                    break;
-
-                case ERROR_VIEW:
-                    mViewState = ViewState.EMPTY;
-                    break;
-
-                case EMPTY_VIEW:
-                    mViewState = ViewState.EMPTY;
-                    break;
-
-                case LOADING_VIEW:
-                    mViewState = ViewState.LOADING;
-                    break;
-            }
-        }
-
-        a.recycle();
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (mContentView == null) throw new IllegalArgumentException("Content view is not defined");
-        setView();
-    }
-
-    @Override
-    public void addView(View child) {
-        if (isValidContentView(child)) mContentView = child;
-        super.addView(child);
-    }
-
-    @Override
-    public void addView(View child, int index) {
-        if (isValidContentView(child)) mContentView = child;
-        super.addView(child, index);
-    }
-
-    @Override
-    public void addView(View child, int index, ViewGroup.LayoutParams params) {
-        if (isValidContentView(child)) mContentView = child;
-        super.addView(child, index, params);
-    }
-
-    @Override
-    public void addView(View child, ViewGroup.LayoutParams params) {
-        if (isValidContentView(child)) mContentView = child;
-        super.addView(child, params);
-    }
-
-    @Override
-    public void addView(View child, int width, int height) {
-        if (isValidContentView(child)) mContentView = child;
-        super.addView(child, width, height);
-    }
-
-    @Override
-    protected boolean addViewInLayout(View child, int index, ViewGroup.LayoutParams params) {
-        if (isValidContentView(child)) mContentView = child;
-        return super.addViewInLayout(child, index, params);
-    }
-
-    @Override
-    protected boolean addViewInLayout(View child, int index, ViewGroup.LayoutParams params, boolean preventRequestLayout) {
-        if (isValidContentView(child)) mContentView = child;
-        return super.addViewInLayout(child, index, params, preventRequestLayout);
     }
 
     /**
@@ -162,11 +32,13 @@ public class MultiStateView extends FrameLayout {
      * @param errorMessage String resource of the error message
      */
     public void setErrorText(@IdRes int textViewId, @StringRes int errorMessage) {
-        if (mErrorView == null) {
+        View errorView = getView(MultiStateView.VIEW_STATE_ERROR);
+
+        if (errorView == null) {
             throw new NullPointerException("Error view is null");
         }
 
-        TextView errorTextView = (TextView) mErrorView.findViewById(textViewId);
+        TextView errorTextView = (TextView) errorView.findViewById(textViewId);
         if (errorTextView != null) errorTextView.setText(errorMessage);
     }
 
@@ -177,11 +49,13 @@ public class MultiStateView extends FrameLayout {
      * @param errorMessage String  of the error message
      */
     public void setErrorText(@IdRes int textViewId, String errorMessage) {
-        if (mErrorView == null) {
+        View errorView = getView(MultiStateView.VIEW_STATE_ERROR);
+
+        if (errorView == null) {
             throw new NullPointerException("Error view is null");
         }
 
-        TextView errorTextView = (TextView) mErrorView.findViewById(textViewId);
+        TextView errorTextView = (TextView) errorView.findViewById(textViewId);
         if (errorTextView != null) errorTextView.setText(errorMessage);
     }
 
@@ -192,11 +66,13 @@ public class MultiStateView extends FrameLayout {
      * @param emptyMessage The empty message
      */
     public void setEmptyText(@IdRes int textViewId, String emptyMessage) {
-        if (mEmptyView == null) {
+        View emptyView = getView(VIEW_STATE_EMPTY);
+
+        if (emptyView == null) {
             throw new NullPointerException("Empty view is null");
         }
 
-        TextView emptyTextView = (TextView) mEmptyView.findViewById(textViewId);
+        TextView emptyTextView = (TextView) emptyView.findViewById(textViewId);
         if (emptyTextView != null) emptyTextView.setText(emptyMessage);
     }
 
@@ -207,162 +83,13 @@ public class MultiStateView extends FrameLayout {
      * @param emptyMessage The empty message
      */
     public void setEmptyText(@IdRes int textViewId, @StringRes int emptyMessage) {
-        if (mEmptyView == null) {
+        View emptyView = getView(VIEW_STATE_EMPTY);
+
+        if (emptyView == null) {
             throw new NullPointerException("Empty view is null");
         }
 
-        TextView emptyTextView = (TextView) mEmptyView.findViewById(textViewId);
+        TextView emptyTextView = (TextView) emptyView.findViewById(textViewId);
         if (emptyTextView != null) emptyTextView.setText(emptyMessage);
-    }
-
-    /**
-     * Returns the view associated with the view state
-     *
-     * @param state
-     * @return
-     */
-    public View getView(ViewState state) {
-        switch (state) {
-            case LOADING:
-                return mLoadingView;
-
-            case CONTENT:
-                return mContentView;
-
-            case EMPTY:
-                return mEmptyView;
-
-            case ERROR:
-                return mErrorView;
-
-            default:
-                return null;
-        }
-    }
-
-    /**
-     * Gets the current view state
-     *
-     * @return
-     */
-    public ViewState getViewState() {
-        return mViewState;
-    }
-
-    /**
-     * Sets the current view state
-     *
-     * @param state
-     */
-    public void setViewState(ViewState state) {
-        if (state != mViewState) {
-            mViewState = state;
-            setView();
-        }
-    }
-
-    /**
-     * Shows the view based on the View State
-     */
-    private void setView() {
-        switch (mViewState) {
-            case CONTENT:
-                if (mContentView == null) {
-                    throw new NullPointerException("Content View is null");
-                }
-
-                mContentView.setVisibility(View.VISIBLE);
-
-                if (mLoadingView != null) {
-                    mLoadingView.setVisibility(View.GONE);
-                }
-
-                if (mErrorView != null) {
-                    mErrorView.setVisibility(View.GONE);
-                }
-
-                if (mEmptyView != null) {
-                    mEmptyView.setVisibility(View.GONE);
-                }
-
-                break;
-
-            case LOADING:
-                if (mLoadingView == null) {
-                    throw new NullPointerException("Loading View is null");
-                }
-
-                mLoadingView.setVisibility(View.VISIBLE);
-
-                if (mContentView != null) {
-                    mContentView.setVisibility(View.GONE);
-                }
-
-                if (mErrorView != null) {
-                    mErrorView.setVisibility(View.GONE);
-                }
-
-                if (mEmptyView != null) {
-                    mEmptyView.setVisibility(View.GONE);
-                }
-
-                break;
-
-            case EMPTY:
-                if (mEmptyView == null) {
-                    throw new NullPointerException("Empty View is null");
-                }
-
-                mEmptyView.setVisibility(View.VISIBLE);
-
-                if (mLoadingView != null) {
-                    mLoadingView.setVisibility(View.GONE);
-                }
-
-                if (mErrorView != null) {
-                    mErrorView.setVisibility(View.GONE);
-                }
-
-                if (mContentView != null) {
-                    mContentView.setVisibility(View.GONE);
-                }
-
-                break;
-
-            case ERROR:
-                if (mErrorView == null) {
-                    throw new NullPointerException("Error View is null");
-                }
-
-                mErrorView.setVisibility(View.VISIBLE);
-
-                if (mLoadingView != null) {
-                    mLoadingView.setVisibility(View.GONE);
-                }
-
-                if (mContentView != null) {
-                    mContentView.setVisibility(View.GONE);
-                }
-
-                if (mEmptyView != null) {
-                    mEmptyView.setVisibility(View.GONE);
-                }
-
-                break;
-        }
-    }
-
-    /**
-     * Checks if the given view is valid for the Content View
-     *
-     * @param view
-     * @return
-     */
-    private boolean isValidContentView(View view) {
-        if (mContentView != null && mContentView != view) {
-            return false;
-        }
-
-        return view != mLoadingView && view != mErrorView && view != mEmptyView;
     }
 }

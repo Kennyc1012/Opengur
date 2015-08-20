@@ -97,7 +97,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
             List<ImgurConvo> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
             mAdapter = new ConvoAdapter(getActivity(), items, this, this);
             mMessageList.setAdapter(mAdapter);
-            mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         }
     }
 
@@ -116,10 +116,10 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
                 if (convoResponse != null && convoResponse.data != null && !convoResponse.data.isEmpty()) {
                     mAdapter = new ConvoAdapter(getActivity(), convoResponse.data, ProfileMessagesFragment.this, ProfileMessagesFragment.this);
                     mMessageList.setAdapter(mAdapter);
-                    mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 } else {
                     mMultiStateView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_convos));
-                    mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+                    mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                 }
             }
 
@@ -128,7 +128,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch convos", error);
                 mMultiStateView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
     }
@@ -138,7 +138,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
 
         if (mAdapter.isEmpty()) {
             mMultiStateView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_convos));
-            mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
 
         ApiClient.getService().deleteConversation(id, new Callback<BasicResponse>() {
