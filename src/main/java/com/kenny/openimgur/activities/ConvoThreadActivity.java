@@ -112,7 +112,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
                 if (mAdapter != null) mAdapter.clear();
                 mHasMore = true;
@@ -168,7 +168,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
     protected void onResume() {
         super.onResume();
         if (mAdapter == null || mAdapter.isEmpty()) {
-            mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             fetchMessages();
         }
 
@@ -202,7 +202,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
 
                 if (conversationResponse == null) {
                     mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     return;
                 }
 
@@ -226,7 +226,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                     }
 
 
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
 
                     if (scrollToBottom) {
                         mMultiView.post(new Runnable() {
@@ -247,7 +247,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
             public void failure(RetrofitError error) {
                 LogUtil.e(TAG, "Error fetching message", error);
                 mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 mIsLoading = false;
             }
         });
@@ -263,7 +263,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
             mAdapter.addItem(message);
         }
 
-        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         mConvoList.scrollToPosition(mAdapter.getItemCount() - 1);
         mMessageInput.setText(null);
 
@@ -342,7 +342,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
 
         if (mAdapter == null || mAdapter.isEmpty()) {
             mMultiView.setEmptyText(R.id.emptyMessage, getString(R.string.convo_message_hint));
-            mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
     }
 

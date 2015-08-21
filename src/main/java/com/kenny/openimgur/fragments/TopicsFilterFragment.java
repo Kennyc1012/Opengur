@@ -199,7 +199,7 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
                 switch (menuItem.getItemId()) {
                     case R.id.refresh:
                         fetchTopics();
-                        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                         return true;
                 }
 
@@ -227,7 +227,7 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
 
             mSpinner.setAdapter(new TopicsAdapter(getActivity(), topics));
             mSpinner.setSelection(spinnerPosition);
-            mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         } else {
             LogUtil.v(TAG, "No topics found, requesting from API");
             fetchTopics();
@@ -327,7 +327,7 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
 
     @OnClick(R.id.errorButton)
     public void fetchTopics() {
-        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
         ApiClient.getService().getDefaultTopics(new Callback<TopicResponse>() {
             @Override
@@ -337,10 +337,10 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
                 if (topicResponse != null && !topicResponse.data.isEmpty()) {
                     app.getSql().addTopics(topicResponse.data);
                     mSpinner.setAdapter(new TopicsAdapter(getActivity(), topicResponse.data));
-                    mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 } else {
                     mMultiStateView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                    mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
 
@@ -349,7 +349,7 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch topics", error);
                 mMultiStateView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
     }

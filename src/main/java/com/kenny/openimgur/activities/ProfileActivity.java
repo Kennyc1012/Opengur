@@ -133,7 +133,7 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void configUser(String username) {
-        mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+        mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
         // Load the new user data if we haven't viewed the user within 24 hours
         if (mSelectedUser == null || System.currentTimeMillis() - mSelectedUser.getLastSeen() >= DateUtils.DAY_IN_MILLIS) {
             LogUtil.v(TAG, "Selected user is null or data is too old, fetching new data");
@@ -145,7 +145,7 @@ public class ProfileActivity extends BaseActivity {
             mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);
             mPager.setAdapter(mAdapter);
             mSlidingTabs.setupWithViewPager(mPager);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             getSupportActionBar().setTitle(mSelectedUser.getUsername());
             supportInvalidateOptionsMenu();
         }
@@ -194,8 +194,8 @@ public class ProfileActivity extends BaseActivity {
      */
     private void configWebView() {
         getSupportActionBar().hide();
-        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
-        WebView webView = (WebView) mMultiView.getView(MultiStateView.ViewState.EMPTY).findViewById(R.id.loginWebView);
+        mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+        WebView webView = (WebView) mMultiView.getView(MultiStateView.VIEW_STATE_EMPTY).findViewById(R.id.loginWebView);
         webView.loadUrl(LOGIN_URL);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
@@ -210,7 +210,7 @@ public class ProfileActivity extends BaseActivity {
                     }
 
                     // We will extract the info from the callback url
-                    mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                     String[] outerSplit = url.split("\\#")[1].split("\\&");
                     String username = null;
                     String accessToken = null;
@@ -270,7 +270,7 @@ public class ProfileActivity extends BaseActivity {
                         setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_LOGGED_IN, true));
                     } else {
                         mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     }
                 } else {
                     view.loadUrl(url);
@@ -303,18 +303,18 @@ public class ProfileActivity extends BaseActivity {
                     mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);
                     mPager.setAdapter(mAdapter);
                     mSlidingTabs.setupWithViewPager(mPager);
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     supportInvalidateOptionsMenu();
                 } else {
                     mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
                 mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
     }

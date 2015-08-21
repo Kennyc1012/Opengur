@@ -197,7 +197,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         setContentView(R.layout.activity_view);
         mCommentList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
-        ((Button) mMultiView.getView(MultiStateView.ViewState.ERROR).findViewById(R.id.errorButton)).setText(R.string.load_comments);
+        ((Button) mMultiView.getView(MultiStateView.VIEW_STATE_ERROR).findViewById(R.id.errorButton)).setText(R.string.load_comments);
 
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -348,10 +348,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             if (mLoadComments) {
-                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             } else {
                 mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
-                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
 
             if (savedInstanceState.getBoolean(KEY_PANEL_EXPANDED, false))
@@ -657,7 +657,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 return;
             }
 
-            mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort(), new Callback<CommentResponse>() {
                 @Override
                 public void success(CommentResponse commentResponse, Response response) {
@@ -667,7 +667,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                     if (commentResponse == null) {
                         mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                         return;
                     }
 
@@ -688,7 +688,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                             mCommentAdapter.setOP(imgurBaseObject.getAccount());
                             mCommentAdapter.clearExpansionInfo();
-                            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
 
                             mMultiView.post(new Runnable() {
                                 @Override
@@ -698,19 +698,19 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             });
                         }
                     } else {
-                        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                     }
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
                     mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             });
-        } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.ViewState.ERROR) {
+        } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.VIEW_STATE_ERROR) {
             mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
-            mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
     }
 
@@ -721,7 +721,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 public void success(AlbumResponse albumResponse, Response response) {
                     if (albumResponse == null) {
                         mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                         return;
                     }
 
@@ -740,7 +740,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 public void failure(RetrofitError error) {
                     LogUtil.e(TAG, "Unable to fetch album details", error);
                     mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             });
         } else {
@@ -756,7 +756,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         fetchComments();
                     } else {
                         mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     }
                 }
 
@@ -764,7 +764,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 public void failure(RetrofitError error) {
                     LogUtil.e(TAG, "Unable to fetch album details", error);
                     mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             });
         }

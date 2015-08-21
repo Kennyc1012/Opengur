@@ -65,7 +65,7 @@ public class MemeFragment extends BaseGridFragment {
         switch (item.getItemId()) {
             case R.id.refresh:
                 if (getAdapter() != null) getAdapter().clear();
-                mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                 fetchGallery();
                 break;
 
@@ -106,7 +106,7 @@ public class MemeFragment extends BaseGridFragment {
                 LogUtil.v(TAG, "Memes found in database");
                 setUpGridTop();
                 setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(memes), showPoints()));
-                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 mHasMore = false;
             }
         }

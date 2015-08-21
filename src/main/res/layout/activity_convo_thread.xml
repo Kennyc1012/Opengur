@@ -11,10 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        app:emptyView="@layout/empty_comment_view"
-        app:errorView="@layout/profile_error"
-        app:loadingView="@layout/loading_view"
-        app:viewState="loading">
+        app:msv_emptyView="@layout/empty_comment_view"
+        app:msv_errorView="@layout/profile_error"
+        app:msv_loadingView="@layout/loading_view"
+        app:msv_viewState="loading">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/convoList"

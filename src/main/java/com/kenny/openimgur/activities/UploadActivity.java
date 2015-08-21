@@ -95,7 +95,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
             List<Upload> uploads = savedInstanceState.getParcelableArrayList(KEY_SAVED_ITEMS);
             mAdapter = new UploadPhotoAdapter(this, uploads, this);
             mRecyclerView.setAdapter(mAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         } else {
             checkIntent(getIntent());
         }
@@ -137,24 +137,24 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
             if (photoUris != null && !photoUris.isEmpty()) {
                 LogUtil.v(TAG, "Received " + photoUris.size() + " images via Share intent");
                 new DecodeImagesTask(this).execute(photoUris);
-                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             }
         }
 
         if (uploads != null && !uploads.isEmpty()) {
             mAdapter = new UploadPhotoAdapter(this, uploads, this);
             mRecyclerView.setAdapter(mAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         }
     }
 
     private void onUrisDecoded(@Nullable List<Upload> uploads) {
         if (uploads == null || uploads.isEmpty()) {
-            mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         } else {
             mAdapter = new UploadPhotoAdapter(this, uploads, this);
             mRecyclerView.setAdapter(mAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         }
     }
 
@@ -237,7 +237,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                         mAdapter.addItems(uploads);
                     }
 
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     supportInvalidateOptionsMenu();
                 }
                 break;
@@ -255,7 +255,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                         mAdapter.addItem(upload);
                     }
 
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     mTempFile = null;
                     supportInvalidateOptionsMenu();
                 } else {
@@ -283,7 +283,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
             mAdapter.addItem(upload);
         }
 
-        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         supportInvalidateOptionsMenu();
     }
 
@@ -426,7 +426,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
             int adapterPosition = viewHolder.getAdapterPosition();
             Upload upload = mAdapter.removeItem(adapterPosition);
-            if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+            if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
 
             SnackBar.cancelSnackBars(UploadActivity.this);
             new SnackBarItem.Builder(UploadActivity.this)
@@ -445,7 +445,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                                 Object[] objects = (Object[]) object;
                                 int position = (int) objects[0];
                                 Upload upload = (Upload) objects[1];
-                                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                                mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                                 mAdapter.addItem(upload, position);
                                 supportInvalidateOptionsMenu();
                             }

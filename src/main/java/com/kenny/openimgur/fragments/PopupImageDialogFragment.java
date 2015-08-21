@@ -178,7 +178,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             @Override
             public void onLoadingComplete(String s, View view, Bitmap bitmap) {
                 if (isAdded()) {
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     if (isAnimated) {
                         if (!ImageUtil.loadAndDisplayGif((ImageView) view, s, OpengurApp.getInstance(getActivity()).getImageLoader())) {
                             Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
@@ -220,7 +220,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
      */
     public void displayVideo(File file) {
         // The visibility needs to be set before the video is loaded or it won't play
-        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         mVideo.setVisibility(View.VISIBLE);
         // Needs to be set so the video is not dimmed
         mVideo.setZOrderOnTop(true);

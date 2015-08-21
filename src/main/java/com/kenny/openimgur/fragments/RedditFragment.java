@@ -74,7 +74,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
             mIsLoading = false;
-            mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
             if (mListener != null) mListener.onLoadingComplete();
         }
     }
@@ -136,7 +136,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
             mCurrentPage = 0;
             mHasMore = true;
             mSearchView.setQuery(mQuery, false);
-            mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
             if (mListener != null) {
                 mListener.onLoadingStarted();
@@ -195,7 +195,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
         // Don't bother making an Api call if the there is no present query
         if (getAdapter() != null && !getAdapter().isEmpty() && !TextUtils.isEmpty(mQuery)) {
             getAdapter().clear();
-            mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             mCurrentPage = 0;
             mIsLoading = true;
             mHasMore = true;

@@ -124,7 +124,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         switch (item.getItemId()) {
             case R.id.refresh:
                 if (mPhotoAdapter != null) mPhotoAdapter.clear();
-                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                 fetchGalleryDetails();
                 return true;
 
@@ -220,7 +220,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             List<ImgurPhoto> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
             mPhotoAdapter = new PhotoAdapter(getActivity(), photos, mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             fetchTags();
         } else {
             mDisplayTags = args.getBoolean(KEY_DISPLAY_TAGS, true);
@@ -241,14 +241,14 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             photo.add(((ImgurPhoto) mImgurObject));
             mPhotoAdapter = new PhotoAdapter(getActivity(), photo, mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             fetchTags();
         } else if (((ImgurAlbum) mImgurObject).getAlbumPhotos() == null || ((ImgurAlbum) mImgurObject).getAlbumPhotos().isEmpty()) {
             fetchAlbumImages();
         } else {
             mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             fetchTags();
         }
     }
@@ -506,11 +506,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     ((ImgurAlbum) mImgurObject).addPhotosToAlbum(albumResponse.data);
                     mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
                     mListView.setAdapter(mPhotoAdapter);
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     fetchTags();
                 } else {
                     mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
 
@@ -519,7 +519,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch album images", error);
                 mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
     }
@@ -560,7 +560,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     setupFragmentWithObject(basicObjectResponse.data);
                 } else {
                     mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
 
@@ -569,7 +569,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch gallery details", error);
                 mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
     }

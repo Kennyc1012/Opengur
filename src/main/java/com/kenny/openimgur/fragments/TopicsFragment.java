@@ -106,7 +106,7 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
         mIsLoading = true;
         mHasMore = true;
         if (getAdapter() != null) getAdapter().clear();
-        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
         if (mListener != null) {
             mListener.onLoadingStarted();
@@ -148,7 +148,7 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
             String message = getString(R.string.topics_empty_result, mTopic.getName());
             app.getSql().deleteTopic(mTopic.getId());
             mMultiStateView.setErrorText(R.id.errorMessage, message);
-            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
 
         if (mListener != null) mListener.onUpdateActionBar(true);
@@ -177,7 +177,7 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
                 public void run() {
                     if (isAdded() && mMultiStateView != null) {
                         mMultiStateView.setErrorText(R.id.errorMessage, R.string.topics_empty_message);
-                        mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     }
                 }
             });
