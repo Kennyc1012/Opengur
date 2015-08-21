@@ -315,7 +315,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             if (!TextUtils.isEmpty(mGalleryId)) {
                 boolean isAlbumLink = getIntent().getBooleanExtra(KEY_VIEW_FOR_ALBUM, false);
                 fetchItemDetails(mGalleryId, isAlbumLink);
-                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             } else {
                 mViewPager.setAdapter(mPagerAdapter);
 
