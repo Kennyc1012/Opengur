@@ -19,8 +19,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.cocosw.bottomsheet.BottomSheet;
-import com.cocosw.bottomsheet.BottomSheetListener;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -29,6 +27,8 @@ import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
+import com.kennyc.bottomsheet.BottomSheet;
+import com.kennyc.bottomsheet.BottomSheetListener;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -198,19 +198,18 @@ public class MemeActivity extends BaseActivity {
         if (FileUtil.isFileValid(file)) {
             final Uri fileUri = Uri.fromFile(file);
             FileUtil.scanFile(fileUri, getApplicationContext());
-            new BottomSheet.Builder(this, R.style.BottomSheet_StyleDialog)
-                    .title(R.string.meme_success)
-                    .sheet(R.menu.meme_saved)
-                    .listener(new BottomSheetListener() {
+            new BottomSheet.Builder(this, R.menu.meme_saved)
+                    .setStyle(app.getImgurTheme().getBottomSheetTheme())
+                    .setTitle(R.string.meme_success)
+                    .setListener(new BottomSheetListener() {
                         @Override
-                        public void onSheetDismissed(@Nullable Object o) {
-                            finish();
+                        public void onSheetShown() {
+                            // NOOP
                         }
 
                         @Override
-                        public void onItemClicked(int id, @Nullable Object o) {
-                            switch (id) {
-
+                        public void onSheetItemSelected(MenuItem menuItem) {
+                            switch (menuItem.getItemId()) {
                                 case R.id.share:
                                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
                                     shareIntent.setType(ImgurPhoto.IMAGE_TYPE_JPEG);
@@ -226,10 +225,11 @@ public class MemeActivity extends BaseActivity {
                         }
 
                         @Override
-                        public void onSheetShown(@Nullable Object o) {
-
+                        public void onSheetDismissed() {
+                            finish();
                         }
-                    }).show();
+                    })
+                    .show();
         } else {
             SnackBar.show(this, R.string.meme_failed);
         }
