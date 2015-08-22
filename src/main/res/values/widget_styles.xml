@@ -6,15 +6,6 @@
         <item name="color">@android:color/white</item>
     </style>
 
-    <style name="BottomSheet.StyleDialog" parent="BottomSheet.Dialog">
-        <item name="android:backgroundDimAmount">0.5</item>
-        <item name="android:windowAnimationStyle">@style/BottomSheet.Animation</item>
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">@android:color/white</item>
-        <item name="android:textColorHint">@android:color/white</item>
-        <item name="bs_dialogBackground">?colorPrimaryDark</item>
-    </style>
-
     <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
         <item name="layout">@layout/search_view</item>
     </style>
@@ -106,6 +97,10 @@
     <style name="Theme.AppCompat.Dialog.Accent_Yellow">
         <item name="colorAccent">@color/theme_black_accent</item>
         <item name="buttonBarNegativeButtonStyle">@style/Alert_Dialog_Negative_Dark</item>
+    </style>
+
+    <style name="BottomSheet.Light">
+        <item name="bottom_sheet_item_icon_color">@color/black_85</item>
     </style>
 
 </resources>

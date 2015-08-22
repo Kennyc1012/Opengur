@@ -20,6 +20,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
@@ -27,8 +28,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.cocosw.bottomsheet.BottomSheet;
-import com.cocosw.bottomsheet.BottomSheetListener;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -55,6 +54,8 @@ import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
+import com.kennyc.bottomsheet.BottomSheet;
+import com.kennyc.bottomsheet.BottomSheetListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ import retrofit.client.Response;
  * Created by kcampagna on 7/12/14.
  */
 public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener,
-        SideGalleryFragment.SideGalleryListener, BottomSheetListener, CommentPopupFragment.CommentListener {
+        SideGalleryFragment.SideGalleryListener, CommentPopupFragment.CommentListener {
     private enum CommentSort {
         BEST("best"),
         NEW("new"),
@@ -581,70 +582,63 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             boolean shouldClose = mCommentAdapter.setSelectedIndex(position);
 
             if (!shouldClose) {
-                new BottomSheet.Builder(this, R.style.BottomSheet_StyleDialog)
-                        .title(R.string.options)
+                final ImgurComment comment = mCommentAdapter.getItem(position);
+                new BottomSheet.Builder(this, R.menu.comment_menu)
+                        .setStyle(app.getImgurTheme().getBottomSheetTheme())
                         .grid()
-                        .sheet(R.menu.comment_menu)
-                        .listener(this)
-                        .object(mCommentAdapter.getItem(position))
+                        .setTitle(R.string.options)
+                        .setListener(new BottomSheetListener() {
+                            @Override
+                            public void onSheetShown() {
+                                LogUtil.v(TAG, "ImgurComment Selected " + comment);
+                            }
+
+                            @Override
+                            public void onSheetItemSelected(MenuItem menuItem) {
+                                int id = menuItem.getItemId();
+
+                                switch (id) {
+                                    case R.id.upVote:
+                                    case R.id.downVote:
+                                        if (user != null) {
+                                            String vote = id == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
+                                            comment.setVote(vote);
+                                            mCommentAdapter.notifyDataSetChanged();
+                                            voteOnComment(comment.getId(), vote);
+                                        } else {
+                                            SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                                        }
+                                        break;
+
+                                    case R.id.profile:
+                                        startActivity(ProfileActivity.createIntent(ViewActivity.this, comment.getAuthor()));
+                                        break;
+
+                                    case R.id.reply:
+                                        if (user != null) {
+                                            DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), comment.getId());
+                                            showDialogFragment(fragment, "comment");
+                                        } else {
+                                            SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                                        }
+                                        break;
+
+                                    case R.id.copy:
+                                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                        ClipData clip = ClipData.newPlainText(getString(R.string.comment), comment.getComment());
+                                        clipboard.setPrimaryClip(clip);
+                                        SnackBar.show(ViewActivity.this, R.string.comment_copied);
+                                        break;
+                                }
+                            }
+
+                            @Override
+                            public void onSheetDismissed() {
+                                mCommentAdapter.setSelectedIndex(-1);
+                            }
+                        })
                         .show();
             }
-        }
-    }
-
-    @Override
-    public void onSheetDismissed(Object object) {
-        mCommentAdapter.setSelectedIndex(-1);
-    }
-
-    @Override
-    public void onItemClicked(int id, Object object) {
-        if (!(object instanceof ImgurComment)) {
-            LogUtil.w(TAG, "onItemClicked did not yield an ImgurComment");
-            return;
-        }
-
-        ImgurComment comment = (ImgurComment) object;
-
-        switch (id) {
-            case R.id.upVote:
-            case R.id.downVote:
-                if (user != null) {
-                    String vote = id == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
-                    comment.setVote(vote);
-                    mCommentAdapter.notifyDataSetChanged();
-                    voteOnComment(comment.getId(), vote);
-                } else {
-                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
-                }
-                break;
-
-            case R.id.profile:
-                startActivity(ProfileActivity.createIntent(ViewActivity.this, comment.getAuthor()));
-                break;
-
-            case R.id.reply:
-                if (user != null) {
-                    DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), comment.getId());
-                    showDialogFragment(fragment, "comment");
-                } else {
-                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
-                }
-                break;
-
-            case R.id.copy:
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText(getString(R.string.comment), comment.getComment());
-                clipboard.setPrimaryClip(clip);
-                SnackBar.show(ViewActivity.this, R.string.comment_copied);
-                break;
-        }
-    }
-
-    @Override
-    public void onSheetShown(Object object) {
-        if (object instanceof ImgurComment) {
-            LogUtil.v(TAG, "ImgurComment Selected " + object);
         }
     }
 
