@@ -102,7 +102,6 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
 
                 // Mark all the notifications read when loaded
                 if (!TextUtils.isEmpty(ids)) {
-                    app.getSql().deleteNotifications();
                     ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {
                         @Override
                         public void success(BasicResponse basicResponse, Response response) {
@@ -125,8 +124,9 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (mAdapter != null) mAdapter.onDestroy();
+        app.getSql().deleteNotifications();
+        super.onDestroy();
     }
 
     @OnClick(R.id.errorButton)
