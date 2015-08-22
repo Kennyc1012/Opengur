@@ -98,22 +98,6 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                 mAdapter = new NotificationAdapter(this, notifications, this);
                 mList.setAdapter(mAdapter);
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-                String ids = app.getSql().getNotificationIds();
-
-                // Mark all the notifications read when loaded
-                if (!TextUtils.isEmpty(ids)) {
-                    ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {
-                        @Override
-                        public void success(BasicResponse basicResponse, Response response) {
-                            // Don't care about response
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            LogUtil.e(TAG, "Failure marking notifications read, error", error);
-                        }
-                    });
-                }
             } else {
                 LogUtil.v(TAG, "No notifications found in database, making request");
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
@@ -125,7 +109,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
     @Override
     protected void onDestroy() {
         if (mAdapter != null) mAdapter.onDestroy();
-        app.getSql().deleteNotifications();
+        markNotificationsRead();
         super.onDestroy();
     }
 
@@ -204,5 +188,25 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
     @Override
     protected int getStyleRes() {
         return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
+    }
+
+    private void markNotificationsRead(){
+        String ids = app.getSql().getNotificationIds();
+        app.getSql().deleteNotifications();
+
+        // Mark all the notifications read when loaded
+        if (!TextUtils.isEmpty(ids)) {
+            ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {
+                @Override
+                public void success(BasicResponse basicResponse, Response response) {
+                    // Don't care about response
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    LogUtil.e(TAG, "Failure marking notifications read, error", error);
+                }
+            });
+        }
     }
 }

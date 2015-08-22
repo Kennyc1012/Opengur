@@ -33,6 +33,7 @@ import com.kenny.openimgur.fragments.ProfileInfoFragment;
 import com.kenny.openimgur.fragments.ProfileMessagesFragment;
 import com.kenny.openimgur.fragments.ProfileSubmissionsFragment;
 import com.kenny.openimgur.fragments.ProfileUploadsFragment;
+import com.kenny.openimgur.services.AlarmReceiver;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LogUtil;
@@ -268,6 +269,7 @@ public class ProfileActivity extends BaseActivity {
                         getSupportActionBar().show();
                         getSupportActionBar().setTitle(user.getUsername());
                         setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_LOGGED_IN, true));
+                        AlarmReceiver.createNotificationAlarm(getApplicationContext());
                     } else {
                         mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
