@@ -24,7 +24,6 @@ import com.kenny.openimgur.classes.ImgurMessage;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.RequestCodes;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -59,7 +58,7 @@ public class NotificationService extends IntentService {
             try {
                 NotificationResponse response = ApiClient.getService().getNotifications();
 
-                if (response != null && response.data != null) {
+                if (response != null && response.data != null && (!response.data.replies.isEmpty() || !response.data.messages.isEmpty())) {
                     app.getSql().insertNotifications(response);
                     Notification notification = new Notification(getApplicationContext(), response.data);
                     notification.postNotification();
@@ -112,7 +111,7 @@ public class NotificationService extends IntentService {
             Set<ImgurComment> replies = new HashSet<>();
 
             for (NotificationResponse.Messages m : data.messages) {
-                 messages.add(m.content);
+                messages.add(m.content);
             }
 
             for (NotificationResponse.Replies r : data.replies) {
