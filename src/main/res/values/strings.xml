@@ -324,5 +324,6 @@
     <string name="permission_denied">Permission denied</string>
     <string name="permission_granted">Permission granted</string>
     <string name="permission_rationale_upload">Media access is needed to save and retrieve your photos for uploading</string>
+    <string name="permission_rationale_download">Media access is needed to save photos</string>
 
 </resources>
