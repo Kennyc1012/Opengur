@@ -98,6 +98,11 @@ public enum ImgurTheme {
         }
     }
 
+    @StyleRes
+    public int getBottomSheetTheme() {
+        return isDarkTheme ? R.style.BottomSheet_Dark : R.style.BottomSheet_Light;
+    }
+
     /**
      * Returns the {@link ColorStateList} for the NavigationView
      *
