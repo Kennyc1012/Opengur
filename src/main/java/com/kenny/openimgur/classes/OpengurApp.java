@@ -3,6 +3,7 @@ package com.kenny.openimgur.classes;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.os.UserManager;
@@ -207,5 +208,27 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
                 ImageUtil.initImageLoader(getApplicationContext());
                 break;
         }
+    }
+
+    /**
+     * Check that all given permissions have been granted by verifying that each entry in the
+     * given array is of the value {@link PackageManager#PERMISSION_GRANTED}.
+     *
+     * @param grantResults The results of a permission grant
+     * @see {@link android.app.Activity#onRequestPermissionsResult(int, String[], int[])}
+     */
+    public static boolean verifyPermissions(int[] grantResults) {
+        // At least one result must be checked.
+        if (grantResults == null || grantResults.length < 1) {
+            return false;
+        }
+
+        // Verify that each required permission has been granted, otherwise return false.
+        for (int result : grantResults) {
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
     }
 }

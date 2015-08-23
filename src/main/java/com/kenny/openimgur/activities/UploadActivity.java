@@ -1,17 +1,20 @@
 package com.kenny.openimgur.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,12 +24,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.UploadPhotoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.fragments.UploadEditDialogFragment;
@@ -62,11 +67,16 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
     private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
 
+    private static final String[] PERMISSIONS = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
     @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
     @Bind(R.id.list)
     RecyclerView mRecyclerView;
+
+    @Bind(R.id.uploadContainer)
+    View mUploadContainer;
 
     private UploadPhotoAdapter mAdapter;
 
@@ -89,7 +99,10 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         new ItemTouchHelper(mSimpleItemTouchCallback).attachToRecyclerView(mRecyclerView);
         getSupportActionBar().setTitle(R.string.upload);
         checkForTopics();
-        checkForNag();
+
+        if (!checkForNag()) {
+            if (!checkPermissions()) return;
+        }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SAVED_ITEMS)) {
             List<Upload> uploads = savedInstanceState.getParcelableArrayList(KEY_SAVED_ITEMS);
@@ -110,7 +123,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
             LogUtil.v(TAG, "Received file from intent");
             uploads = new ArrayList<>(1);
             uploads.add(new Upload(intent.getStringExtra(KEY_PASSED_FILE)));
-
         } else if (Intent.ACTION_SEND.equals(intent.getAction())) {
             String type = intent.getType();
             LogUtil.v(TAG, "Received an image via Share intent, type " + type);
@@ -219,55 +231,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case RequestCodes.SELECT_PHOTO:
-                if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(PhotoPickerActivity.KEY_PHOTOS)) {
-                    List<String> photos = data.getStringArrayListExtra(PhotoPickerActivity.KEY_PHOTOS);
-                    List<Upload> uploads = new ArrayList<>(photos.size());
-
-                    for (String s : photos) {
-                        uploads.add(new Upload(s));
-                    }
-
-                    if (mAdapter == null) {
-                        mAdapter = new UploadPhotoAdapter(this, uploads, this);
-                        mRecyclerView.setAdapter(mAdapter);
-                    } else {
-                        mAdapter.addItems(uploads);
-                    }
-
-                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-                    supportInvalidateOptionsMenu();
-                }
-                break;
-
-            case RequestCodes.TAKE_PHOTO:
-                if (resultCode == Activity.RESULT_OK && FileUtil.isFileValid(mTempFile)) {
-                    FileUtil.scanFile(Uri.fromFile(mTempFile), getApplicationContext());
-                    String fileLocation = mTempFile.getAbsolutePath();
-                    Upload upload = new Upload(fileLocation);
-
-                    if (mAdapter == null) {
-                        mAdapter = new UploadPhotoAdapter(this, upload, this);
-                        mRecyclerView.setAdapter(mAdapter);
-                    } else {
-                        mAdapter.addItem(upload);
-                    }
-
-                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-                    mTempFile = null;
-                    supportInvalidateOptionsMenu();
-                } else {
-                    SnackBar.show(this, R.string.upload_camera_error);
-                }
-                break;
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     protected int getStyleRes() {
         return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
     }
@@ -371,7 +334,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     /**
      * Checks if the user is not logged in and if we should nag about it
      */
-    private void checkForNag() {
+    private boolean checkForNag() {
         boolean nag = app.getPreferences().getBoolean(PREF_NOTIFY_NO_USER, true);
 
         if (nag && user == null) {
@@ -394,10 +357,130 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                             }
                         }
                     })
-                    .setPositiveButton(R.string.yes, null)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            checkPermissions();
+                        }
+                    })
                     .setView(nagView)
                     .show();
+
+            return true;
         }
+
+        return false;
+    }
+
+    /**
+     * Checks if the needed permissions are available
+     *
+     * @return If the permissions are available. If false is returned, the necessary prompts will be shown
+     */
+    private boolean checkPermissions() {
+        int readPermission = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int writePermission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (readPermission == PackageManager.PERMISSION_GRANTED || writePermission == PackageManager.PERMISSION_GRANTED) {
+            LogUtil.v(TAG, "Permissions available");
+            return true;
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            mUploadContainer.setVisibility(View.GONE);
+
+            new SnackBarItem.Builder(this)
+                    .setMessageResource(R.string.permission_rationale_upload)
+                    .setActionMessageResource(R.string.okay)
+                    .setAutoDismiss(false)
+                    .setSnackBarListener(new SnackBarListener() {
+                        @Override
+                        public void onSnackBarStarted(Object o) {
+                            LogUtil.v(TAG, "Permissions have been denied before, showing rationale");
+                        }
+
+                        @Override
+                        public void onSnackBarFinished(Object o, boolean actionClicked) {
+                            if (actionClicked) {
+                                ActivityCompat.requestPermissions(UploadActivity.this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
+                            } else {
+                                Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+                                finish();
+                            }
+                        }
+                    }).show();
+        } else {
+            LogUtil.v(TAG, "Prompting for permissions");
+            ActivityCompat.requestPermissions(this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
+        }
+
+        return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case RequestCodes.SELECT_PHOTO:
+                if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(PhotoPickerActivity.KEY_PHOTOS)) {
+                    List<String> photos = data.getStringArrayListExtra(PhotoPickerActivity.KEY_PHOTOS);
+                    List<Upload> uploads = new ArrayList<>(photos.size());
+
+                    for (String s : photos) {
+                        uploads.add(new Upload(s));
+                    }
+
+                    if (mAdapter == null) {
+                        mAdapter = new UploadPhotoAdapter(this, uploads, this);
+                        mRecyclerView.setAdapter(mAdapter);
+                    } else {
+                        mAdapter.addItems(uploads);
+                    }
+
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                    supportInvalidateOptionsMenu();
+                }
+                break;
+
+            case RequestCodes.TAKE_PHOTO:
+                if (resultCode == Activity.RESULT_OK && FileUtil.isFileValid(mTempFile)) {
+                    FileUtil.scanFile(Uri.fromFile(mTempFile), getApplicationContext());
+                    String fileLocation = mTempFile.getAbsolutePath();
+                    Upload upload = new Upload(fileLocation);
+
+                    if (mAdapter == null) {
+                        mAdapter = new UploadPhotoAdapter(this, upload, this);
+                        mRecyclerView.setAdapter(mAdapter);
+                    } else {
+                        mAdapter.addItem(upload);
+                    }
+
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                    mTempFile = null;
+                    supportInvalidateOptionsMenu();
+                } else {
+                    SnackBar.show(this, R.string.upload_camera_error);
+                }
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case RequestCodes.REQUEST_PERMISSIONS:
+                if (OpengurApp.verifyPermissions(grantResults)) {
+                    SnackBar.show(this, R.string.permission_granted);
+                    mUploadContainer.setVisibility(View.VISIBLE);
+                    checkIntent(getIntent());
+                } else {
+                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                break;
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
