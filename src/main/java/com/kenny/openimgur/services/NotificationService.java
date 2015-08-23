@@ -24,6 +24,7 @@ import com.kenny.openimgur.classes.ImgurMessage;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.RequestCodes;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -77,6 +78,7 @@ public class NotificationService extends IntentService {
     }
 
     private static class Notification extends BaseNotification {
+        private static final int NOTIFICATION_ID = RequestCodes.NOTIFICATIONS;
         private static final int MIN_TEXT_LENGTH = 40;
         private static final int MAX_INBOX_LINES = 3;
 
@@ -231,7 +233,13 @@ public class NotificationService extends IntentService {
 
         @Override
         protected int getNotificationId() {
-            return (int) System.currentTimeMillis();
+            return NOTIFICATION_ID;
+        }
+
+        @Override
+        public void postNotification(android.app.Notification notification) {
+            notification.flags |= android.app.Notification.FLAG_ONLY_ALERT_ONCE;
+            super.postNotification(notification);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.kenny.openimgur.ui;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Resources;
@@ -89,8 +90,16 @@ public abstract class BaseNotification {
      * Posts the notification
      */
     public void postNotification() {
-        if (mManger != null && builder != null)
-            mManger.notify(getNotificationId(), builder.build());
+        if (mManger != null && builder != null) postNotification(builder.build());
+    }
+
+    /**
+     * Posts the notifications
+     *
+     * @param notification
+     */
+    public void postNotification(Notification notification) {
+        mManger.notify(getNotificationId(), notification);
     }
 
     protected void build(Context context) {
