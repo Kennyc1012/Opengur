@@ -98,7 +98,7 @@ public abstract class BaseNotification {
      *
      * @param notification
      */
-    public void postNotification(Notification notification) {
+    protected void postNotification(Notification notification) {
         mManger.notify(getNotificationId(), notification);
     }
 

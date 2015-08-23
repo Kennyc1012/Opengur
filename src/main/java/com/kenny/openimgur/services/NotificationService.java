@@ -237,7 +237,7 @@ public class NotificationService extends IntentService {
         }
 
         @Override
-        public void postNotification(android.app.Notification notification) {
+        protected void postNotification(android.app.Notification notification) {
             notification.flags |= android.app.Notification.FLAG_ONLY_ALERT_ONCE;
             super.postNotification(notification);
         }
