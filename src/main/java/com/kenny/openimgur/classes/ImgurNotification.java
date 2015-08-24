@@ -16,15 +16,24 @@ import java.util.List;
  */
 public class ImgurNotification implements Parcelable {
     public static final int TYPE_MESSAGE = 1;
+
     public static final int TYPE_REPLY = 2;
 
     private int mId;
+
     private int mType;
+
     private String mContent;
+
     private String mAuthor;
+
     private String mContentId;
+
     private String mAlbumCover;
+
     private long mDate;
+
+    private boolean mViewed;
 
     private ImgurNotification(Parcel in) {
         mId = in.readInt();
@@ -34,6 +43,7 @@ public class ImgurNotification implements Parcelable {
         mContentId = in.readString();
         mAlbumCover = in.readString();
         mDate = in.readLong();
+        mViewed = in.readInt() == 1;
     }
 
     public ImgurNotification(Cursor cursor) {
@@ -45,6 +55,7 @@ public class ImgurNotification implements Parcelable {
             mAlbumCover = cursor.getString(DBContracts.NotificationContract.COLUMN_INDEX_ALBUM_COVER);
             mDate = cursor.getLong(DBContracts.NotificationContract.COLUMN_INDEX_DATE);
             mType = cursor.getInt(DBContracts.NotificationContract.COLUMN_INDEX_TYPE);
+            mViewed = cursor.getInt(DBContracts.NotificationContract.COLUMN_INDEX_VIEWED) == 1;
         }
     }
 
@@ -77,6 +88,10 @@ public class ImgurNotification implements Parcelable {
         return mId;
     }
 
+    public boolean hasViewed() {
+        return mViewed;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -91,6 +106,7 @@ public class ImgurNotification implements Parcelable {
         dest.writeString(mContentId);
         dest.writeString(mAlbumCover);
         dest.writeLong(mDate);
+        dest.writeInt(mViewed ? 1 : 0);
     }
 
     public static final Parcelable.Creator<ImgurNotification> CREATOR = new Parcelable.Creator<ImgurNotification>() {

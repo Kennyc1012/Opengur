@@ -59,7 +59,7 @@ public class NotificationService extends IntentService {
             try {
                 NotificationResponse response = ApiClient.getService().getNotifications();
 
-                if (response != null && response.data != null && (!response.data.replies.isEmpty() || !response.data.messages.isEmpty())) {
+                if (response != null && response.hasNotifications()) {
                     app.getSql().insertNotifications(response);
                     Notification notification = new Notification(getApplicationContext(), response.data);
                     notification.postNotification();
@@ -79,7 +79,9 @@ public class NotificationService extends IntentService {
 
     private static class Notification extends BaseNotification {
         private static final int NOTIFICATION_ID = RequestCodes.NOTIFICATIONS;
+
         private static final int MIN_TEXT_LENGTH = 40;
+
         private static final int MAX_INBOX_LINES = 3;
 
         private String mTitle;

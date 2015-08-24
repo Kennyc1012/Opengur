@@ -103,4 +103,44 @@
         <item name="bottom_sheet_item_icon_color">@color/black_85</item>
     </style>
 
+    <style name="ActionMode.Blue" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/theme_blue_primary</item>
+    </style>
+
+    <style name="ActionMode.Orange" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/theme_orange_primary</item>
+    </style>
+
+    <style name="ActionMode.Cyan" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/theme_cyan_primary</item>
+    </style>
+
+    <style name="ActionMode.Green" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/theme_green_primary</item>
+    </style>
+
+    <style name="ActionMode.Teal" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/theme_teal_primary</item>
+    </style>
+
+    <style name="ActionMode.Red" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/theme_red_primary</item>
+    </style>
+
+    <style name="ActionMode.Pink" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/theme_pink_primary</item>
+    </style>
+
+    <style name="ActionMode.Purple" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/theme_purple_primary</item>
+    </style>
+
+    <style name="ActionMode.Grey" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/theme_grey_primary</item>
+    </style>
+
+    <style name="ActionMode.Black" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/theme_black_primary</item>
+    </style>
+
 </resources>

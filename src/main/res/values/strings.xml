@@ -71,6 +71,7 @@
     <string name="add">Add</string>
     <string name="undo">Undo</string>
     <string name="notifications">Notifications</string>
+    <string name="delete">Delete</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -343,5 +344,6 @@
     <string name="notification_new_reply">New reply from %s</string>
     <string name="notification_preview"><![CDATA[<b>%1$s:</b> %2$s ]]></string>
     <string name="notification_empty">You have no notifications</string>
+    <string name="notification_selected">%d selected</string>
 
 </resources>

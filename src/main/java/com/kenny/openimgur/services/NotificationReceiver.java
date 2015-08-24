@@ -33,11 +33,17 @@ import retrofit.client.Response;
  */
 public class NotificationReceiver extends BroadcastReceiver {
     private static final String TAG = "NotificationReceiver";
+
     private static final String KEY_ACTION = "action";
+
     private static final String KEY_UPLOADED_URL = "uploaded_url";
+
     private static final String KEY_NOTIF_ID = "notification_id";
+
     private static final String KEY_NOTIFICATION_CONTENT = "notification_content";
+
     private static final int ACTION_UPLOAD_COPY = 1;
+
     private static final int ACTION_NOTIFICATION_CLICKED = 2;
 
     /**
@@ -98,7 +104,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 if (content != null) {
                     SqlHelper sql = OpengurApp.getInstance(context).getSql();
                     String ids = sql.getNotificationIds(content);
-                    sql.deleteNotification(content);
+                    sql.markNotificationRead(content);
 
                     if (!TextUtils.isEmpty(ids)) {
                         ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {

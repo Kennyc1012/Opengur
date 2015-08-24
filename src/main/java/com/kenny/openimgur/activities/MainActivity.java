@@ -219,7 +219,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             mName.setText(user.getUsername());
             mRep.setText(user.getNotoriety().getStringId());
             mBadgeContainer.setVisibility(View.VISIBLE);
-            int notificationCount = app.getSql().getNotifications().size();
+            int notificationCount = app.getSql().getNotifications(true).size();
             updateNotificationBadge(notificationCount);
         } else {
             mAvatar.setImageResource(R.drawable.ic_account_circle);

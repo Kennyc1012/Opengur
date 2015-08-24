@@ -14,6 +14,10 @@ import java.util.List;
 public class NotificationResponse extends BaseResponse {
     public Data data;
 
+    public boolean hasNotifications() {
+        return data != null && (!data.messages.isEmpty() || !data.replies.isEmpty());
+    }
+
     public static class Data {
         @NonNull
         public List<Replies> replies = new ArrayList<>();
@@ -24,13 +28,17 @@ public class NotificationResponse extends BaseResponse {
 
     public static class Replies {
         public int id;
+
         public boolean viewed;
+
         public ImgurComment content;
     }
 
     public static class Messages {
         public int id;
+
         public boolean viewed;
+
         public ImgurMessage content;
     }
 }

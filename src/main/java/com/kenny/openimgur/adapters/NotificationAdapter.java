@@ -1,6 +1,7 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -17,7 +18,12 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
+import org.apache.commons.collections15.list.SetUniqueList;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.Bind;
 
@@ -28,20 +34,29 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
 
     private View.OnClickListener mClickListener;
 
+    private View.OnLongClickListener mLongClickListener;
+
     private int mDividerColor;
 
     private int mCircleSize;
 
-    public NotificationAdapter(Context context, List<ImgurNotification> notifications, View.OnClickListener clickListener) {
-        super(context, notifications, true);
+    private int mSelectedColor;
+
+    private final Set<ImgurNotification> mSelected = new HashSet<>();
+
+    public NotificationAdapter(Context context, List<ImgurNotification> notifications, View.OnClickListener clickListener, View.OnLongClickListener longClickListener) {
+        super(context, SetUniqueList.decorate(notifications), true);
         mCircleSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
         mClickListener = clickListener;
+        mLongClickListener = longClickListener;
         mDividerColor = mIsDarkTheme ? context.getResources().getColor(R.color.primary_dark_material_light) : context.getResources().getColor(R.color.primary_dark_material_dark);
+        mSelectedColor = context.getResources().getColor(R.color.comment_bg_selected);
     }
 
     @Override
     public void onDestroy() {
         mClickListener = null;
+        mLongClickListener = null;
         super.onDestroy();
     }
 
@@ -54,6 +69,7 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.profile_comment_item, parent, false);
         view.setOnClickListener(mClickListener);
+        view.setOnLongClickListener(mLongClickListener);
         NotificationHolder holder = new NotificationHolder(view);
         holder.divider.setBackgroundColor(mDividerColor);
         return holder;
@@ -86,6 +102,8 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
 
         holder.author.setText(notification.getAuthor() + " " + getDateFormattedTime(notification.getDate(), holder.author.getContext()));
         holder.content.setText(notification.getContent());
+        boolean selected = mSelected.contains(notification);
+        holder.itemView.setBackgroundColor(selected ? mSelectedColor : Color.TRANSPARENT);
     }
 
     private void renderReply(ImgurNotification notification, NotificationHolder holder) {
@@ -101,6 +119,47 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
         }
 
         displayImage(holder.image, photoUrl);
+        boolean selected = mSelected.contains(notification);
+        holder.itemView.setBackgroundColor(selected ? mSelectedColor : Color.TRANSPARENT);
+    }
+
+    /**
+     * Sets the notification to be selected or un selected
+     *
+     * @param notification
+     * @return If the item was selected. False will infer that it was deselected
+     */
+    public boolean setSelected(ImgurNotification notification) {
+        boolean selected;
+
+        if (mSelected.contains(notification)) {
+            mSelected.remove(notification);
+            selected = false;
+        } else {
+            mSelected.add(notification);
+            selected = true;
+        }
+
+        notifyDataSetChanged();
+        return selected;
+    }
+
+    public boolean hasSelectedItems() {
+        return !mSelected.isEmpty();
+    }
+
+    public int getSelectedCount() {
+        return mSelected.size();
+    }
+
+    public void deleteNotifications() {
+        for (ImgurNotification n : mSelected) {
+            removeItem(n);
+        }
+    }
+
+    public List<ImgurNotification> getSelectedNotifications() {
+        return new ArrayList<>(mSelected);
     }
 
     private CharSequence getDateFormattedTime(long commentDate, Context context) {
