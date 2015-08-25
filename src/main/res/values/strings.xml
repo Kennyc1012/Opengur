@@ -346,4 +346,6 @@
     <string name="notification_empty">You have no notifications</string>
     <string name="notification_selected">%d selected</string>
 
+    <string name="hide_comment_bar">Hide bottom bar</string>
+
 </resources>
