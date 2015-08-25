@@ -2,6 +2,8 @@ package com.kenny.openimgur.util;
 
 import android.provider.BaseColumns;
 
+import com.kenny.openimgur.classes.ImgurNotification;
+
 /**
  * Created by kcampagna on 7/25/14.
  */
@@ -235,5 +237,65 @@ public class DBContracts {
 
         public static final String GET_LAST_SEEN_SQL = "SELECT " + COLUMN_LAST_SEEN + " FROM " + TABLE_NAME +
                 " WHERE " + COLUMN_LINK + " ='%s' LIMIT 0,1";
+    }
+
+    public static class NotificationContract implements BaseColumns {
+        public static final String TABLE_NAME = "notifications";
+
+        public static final String COLUMN_AUTHOR = "author";
+
+        public static final String COLUMN_CONTENT = "content";
+
+        public static final String COLUMN_DATE = "date";
+
+        public static final String COLUMN_TYPE = "type";
+
+        public static final String COLUMN_CONTENT_ID = "content_id";
+
+        public static final String COLUMN_ALBUM_COVER = "album_cover";
+
+        public static final String COLUMN_VIEWED = "viewed";
+
+        public static final int COLUMN_INDEX_ID = 0;
+
+        public static final int COLUMN_INDEX_AUTHOR = 1;
+
+        public static final int COLUMN_INDEX_CONTENT = 2;
+
+        public static final int COLUMN_INDEX_DATE = 3;
+
+        public static final int COLUMN_INDEX_TYPE = 4;
+
+        public static final int COLUMN_INDEX_CONTENT_ID = 5;
+
+        public static final int COLUMN_INDEX_ALBUM_COVER = 6;
+
+        public static final int COLUMN_INDEX_VIEWED = 7;
+
+        public static final String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME +
+                " (" + _ID + " INTEGER PRIMARY KEY ASC AUTOINCREMENT, " +
+                COLUMN_AUTHOR + " TEXT NOT NULL, " +
+                COLUMN_CONTENT + " TEXT, " +
+                COLUMN_DATE + " INTEGER, " +
+                COLUMN_TYPE + " INTEGER, " +
+                COLUMN_CONTENT_ID + " TEXT, " +
+                COLUMN_ALBUM_COVER + " TEXT, " +
+                COLUMN_VIEWED + " TEXT);";
+
+        public static final String GET_MESSAGES_SQL = "SELECT * FROM " + TABLE_NAME +
+                " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_MESSAGE + "' GROUP BY " + COLUMN_AUTHOR;
+
+        public static final String GET_UNREAD_MESSAGES_SQL = "SELECT * FROM " + TABLE_NAME +
+                " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_MESSAGE +
+                "' AND " + COLUMN_VIEWED + "='0' GROUP BY " + COLUMN_AUTHOR;
+
+        public static final String GET_REPLIES_SQL = "SELECT * FROM " + TABLE_NAME +
+                " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_REPLY + "'";
+
+        public static final String GET_MESSAGE_NOTIFICATION_ID = "SELECT " + _ID + " FROM " + TABLE_NAME
+                + " WHERE " + COLUMN_CONTENT_ID + " ='%s'";
+
+        public static final String GET_REPLY_NOTIFICATION_ID = "SELECT " + _ID + " FROM " + TABLE_NAME
+                + " WHERE " + COLUMN_CONTENT_ID + "='%s' AND " + COLUMN_CONTENT + "='%s' LIMIT 0,1";
     }
 }

@@ -70,6 +70,8 @@
     <string name="done">Done</string>
     <string name="add">Add</string>
     <string name="undo">Undo</string>
+    <string name="notifications">Notifications</string>
+    <string name="delete">Delete</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -193,6 +195,12 @@
     <string name="pref_tags_on">Display Tags</string>
     <string name="pref_tags_off">Don\'t Display Tags</string>
     <string name="pref_thumbnail_quality">Thumbnail Quality</string>
+    <string name="pref_notification_title">Check For Notifications</string>
+    <string name="pref_notification_frequency">Notification Refresh Delay</string>
+    <string name="pref_notification_ringtone">Notification Ringtone</string>
+    <string name="pref_notification_vibrate">Vibrate</string>
+    <string name="pref_notification_vibrate_on">Vibrate when notifications are received</string>
+    <string name="pref_notification_vibrate_off">Don\'t vibrate when notifications are received</string>
 
     <!-- Experimental Settings -->
     <string name="pref_experimental_settings">Experimental Settings</string>
@@ -325,5 +333,25 @@
     <string name="permission_granted">Permission granted</string>
     <string name="permission_rationale_upload">Media access is needed to save and retrieve your photos for uploading</string>
     <string name="permission_rationale_download">Media access is needed to save photos</string>
+
+    <!-- Notifications -->
+    <string name="notifications_multiple_types">%d New Notifications</string>
+    <string name="notifications_multiple_types_body">You have %d new notifications</string>
+    <plurals name="notification_messages">
+        <item quantity="one">%d new message</item>
+        <item quantity="other">%d new messages</item>
+    </plurals>
+    <plurals name="notification_replies">
+        <item quantity="one">%d new reply</item>
+        <item quantity="other">%d new replies</item>
+    </plurals>
+    <string name="notification_remaining">+%d more</string>
+    <string name="notification_new_message">New message from %s</string>
+    <string name="notification_new_reply">New reply from %s</string>
+    <string name="notification_preview"><![CDATA[<b>%1$s:</b> %2$s ]]></string>
+    <string name="notification_empty">You have no notifications</string>
+    <string name="notification_selected">%d selected</string>
+
+    <string name="hide_comment_bar">Hide bottom bar</string>
 
 </resources>

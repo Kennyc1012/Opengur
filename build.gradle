@@ -22,8 +22,8 @@ repositories {
     jcenter()
 }
 
-def VERSION_NAME = '3.3.0'
-def VERSION_CODE = 44
+def VERSION_NAME = '3.4.0'
+def VERSION_CODE = 49
 
 android {
     compileSdkVersion 23
@@ -44,7 +44,7 @@ android {
         }
 
         beta {
-            versionName VERSION_NAME + "-beta"
+            versionName VERSION_NAME + "-beta4"
         }
     }
 

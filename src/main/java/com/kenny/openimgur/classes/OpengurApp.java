@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import com.crashlytics.android.Crashlytics;
 import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.activities.SettingsActivity;
+import com.kenny.openimgur.services.AlarmReceiver;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -53,7 +54,8 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         mPref.registerOnSharedPreferenceChangeListener(this);
         mSql = new SqlHelper(getApplicationContext());
         mUser = mSql.getUser();
-        mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.THEME_KEY, ImgurTheme.GREY.themeName));
+        if (mUser != null) AlarmReceiver.createNotificationAlarm(this);
+        mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.KEY_THEME, ImgurTheme.GREY.themeName));
         mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, true);
 
         // Start crashlytics if enabled
@@ -204,8 +206,14 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
 
         switch (key) {
             case SettingsActivity.KEY_THREAD_SIZE:
-            case SettingsActivity.CACHE_SIZE_KEY:
+            case SettingsActivity.KEY_CACHE_SIZE:
                 ImageUtil.initImageLoader(getApplicationContext());
+                break;
+
+            case SettingsActivity.KEY_NOTIFICATIONS:
+                if (mUser != null && sharedPreferences.getBoolean(key, false)) {
+                    AlarmReceiver.createNotificationAlarm(getApplicationContext());
+                }
                 break;
         }
     }

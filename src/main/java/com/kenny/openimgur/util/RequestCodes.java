@@ -15,4 +15,8 @@ public final class RequestCodes {
     public static final int SELECT_PHOTO = 301;
 
     public static final int CONVO = 400;
+
+    public static final int NOTIFICATION_ALARM = 500;
+
+    public static final int NOTIFICATIONS = 600;
 }

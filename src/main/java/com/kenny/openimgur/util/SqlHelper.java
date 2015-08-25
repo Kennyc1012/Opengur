@@ -10,8 +10,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.classes.ImgurComment;
+import com.kenny.openimgur.classes.ImgurConvo;
+import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.ImgurUser;
@@ -19,6 +23,7 @@ import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.DBContracts.GallerySearchContract;
 import com.kenny.openimgur.util.DBContracts.MemeContract;
 import com.kenny.openimgur.util.DBContracts.MuzeiContract;
+import com.kenny.openimgur.util.DBContracts.NotificationContract;
 import com.kenny.openimgur.util.DBContracts.ProfileContract;
 import com.kenny.openimgur.util.DBContracts.SubRedditContract;
 import com.kenny.openimgur.util.DBContracts.TopicsContract;
@@ -34,7 +39,7 @@ import java.util.List;
 public class SqlHelper extends SQLiteOpenHelper {
     private static final String TAG = "SqlHelper";
 
-    private static final int DB_VERSION = 9;
+    private static final int DB_VERSION = 11;
 
     private static final String DB_NAME = "open_imgur.db";
 
@@ -56,6 +61,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(MemeContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(GallerySearchContract.CREATE_TABLE_SQL);
         sqLiteDatabase.execSQL(MuzeiContract.CREATE_TABLE_SQL);
+        sqLiteDatabase.execSQL(NotificationContract.CREATE_TABLE_SQL);
     }
 
     @Override
@@ -66,7 +72,10 @@ public class SqlHelper extends SQLiteOpenHelper {
          V5 Added Meme Table
          V6 Added GallerySearch Table
          v7 Added Muzei Table
-         v8 Alter Uploads table for albums*/
+         V8 Skipped number
+         v9 Alter Uploads table for albums
+         v10 Added Notifications table, only 3.4.0 Beta users will be upgrading from this version
+         v11 Added viewed field in Notifications*/
 
         // Checking for is_album and cover_id column
         Cursor cursor = db.rawQuery("SELECT * FROM " + UploadContract.TABLE_NAME + " LIMIT 0,1", null);
@@ -84,6 +93,8 @@ public class SqlHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + UploadContract.TABLE_NAME);
         }
 
+        // Only people who uses the 3.4.0 beta will be effected by this change, just drop the table so its remade
+        if (oldV == 10) db.execSQL("DROP TABLE IF EXISTS " + NotificationContract.TABLE_NAME);
         cursor.close();
         onCreate(db);
     }
@@ -193,6 +204,7 @@ public class SqlHelper extends SQLiteOpenHelper {
     public void onUserLogout() {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(UserContract.TABLE_NAME, null, null);
+        db.delete(NotificationContract.TABLE_NAME, null, null);
     }
 
     /**
@@ -535,6 +547,199 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(MuzeiContract.COLUMN_LINK, link);
         values.put(MuzeiContract.COLUMN_LAST_SEEN, System.currentTimeMillis());
         getWritableDatabase().insertWithOnConflict(MuzeiContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    /**
+     * Inserts notifications into the database
+     *
+     * @param response
+     */
+    public void insertNotifications(NotificationResponse response) {
+        if (response == null || response.data == null) return;
+
+        ContentValues values = new ContentValues();
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (!response.data.messages.isEmpty()) {
+            LogUtil.v(TAG, "Inserting " + response.data.messages.size() + " message notifications");
+
+            for (NotificationResponse.Messages m : response.data.messages) {
+                values.clear();
+                values.put(NotificationContract._ID, m.id);
+                values.put(NotificationContract.COLUMN_AUTHOR, m.content.getFrom());
+                values.put(NotificationContract.COLUMN_CONTENT, m.content.getLastMessage());
+                values.put(NotificationContract.COLUMN_DATE, m.content.getDate());
+                values.put(NotificationContract.COLUMN_TYPE, ImgurNotification.TYPE_MESSAGE);
+                values.put(NotificationContract.COLUMN_CONTENT_ID, m.content.getId());
+                values.put(NotificationContract.COLUMN_VIEWED, 0);
+                db.insertWithOnConflict(NotificationContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+            }
+        }
+
+        if (!response.data.replies.isEmpty()) {
+            LogUtil.v(TAG, "Inserting " + response.data.replies.size() + " reply notifications");
+
+            for (NotificationResponse.Replies r : response.data.replies) {
+                values.clear();
+                values.put(NotificationContract._ID, r.id);
+                values.put(NotificationContract.COLUMN_AUTHOR, r.content.getAuthor());
+                values.put(NotificationContract.COLUMN_CONTENT, r.content.getComment());
+                values.put(NotificationContract.COLUMN_DATE, r.content.getDate());
+                values.put(NotificationContract.COLUMN_TYPE, ImgurNotification.TYPE_REPLY);
+                values.put(NotificationContract.COLUMN_CONTENT_ID, r.content.getImageId());
+                values.put(NotificationContract.COLUMN_ALBUM_COVER, r.content.getAlbumCoverId());
+                values.put(NotificationContract.COLUMN_VIEWED, 0);
+                db.insertWithOnConflict(NotificationContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+            }
+        }
+    }
+
+    /**
+     * Marks a notification that it has been read
+     *
+     * @param content The content to be deleted. Either a message, or comment
+     */
+    public void markNotificationRead(ImgurBaseObject content) {
+        if (content == null) return;
+
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues(1);
+        values.put(NotificationContract.COLUMN_VIEWED, 1);
+        String where = null;
+        String[] args = null;
+
+        if (content instanceof ImgurConvo) {
+            where = NotificationContract.COLUMN_CONTENT_ID + "=?";
+            args = new String[]{content.getId()};
+        } else if (content instanceof ImgurComment) {
+            ImgurComment comment = (ImgurComment) content;
+            where = NotificationContract.COLUMN_CONTENT + "=? AND " + NotificationContract.COLUMN_CONTENT_ID + "=?";
+            args = new String[]{comment.getComment(), comment.getImageId()};
+        } else {
+            LogUtil.w(TAG, "Invalid type of content for deleting notification :" + content.getClass().getSimpleName());
+        }
+
+        if (!TextUtils.isEmpty(where) && args != null) {
+            db.update(NotificationContract.TABLE_NAME, values, where, args);
+        }
+    }
+
+    /**
+     * Marks all notifications that they have been read
+     */
+    public void markNotificationsRead() {
+        ContentValues values = new ContentValues(1);
+        values.put(NotificationContract.COLUMN_VIEWED, 1);
+        getWritableDatabase().update(NotificationContract.TABLE_NAME, values, null, null);
+    }
+
+    /**
+     * Returns the comma separated notification ids
+     *
+     * @param content
+     * @return
+     */
+    @Nullable
+    public String getNotificationIds(ImgurBaseObject content) {
+        if (content == null) return null;
+        String query;
+
+        if (content instanceof ImgurConvo) {
+            query = String.format(NotificationContract.GET_MESSAGE_NOTIFICATION_ID, content.getId());
+        } else if (content instanceof ImgurComment) {
+            ImgurComment comment = (ImgurComment) content;
+            query = String.format(NotificationContract.GET_REPLY_NOTIFICATION_ID, comment.getImageId(), comment.getComment());
+        } else {
+            LogUtil.w(TAG, "Invalid type of content for retrieving  notification id :" + content.getClass().getSimpleName());
+            return null;
+        }
+
+        if (!TextUtils.isEmpty(query)) {
+            Cursor cursor = getReadableDatabase().rawQuery(query, null);
+            String[] ids = new String[cursor.getCount()];
+            int i = 0;
+
+            while (cursor.moveToNext()) {
+                ids[i] = cursor.getString(0);
+                i++;
+            }
+
+            cursor.close();
+            return TextUtils.join(",", ids);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the comma separated notification ids for all notifications in the database
+     *
+     * @return
+     */
+    @Nullable
+    public String getNotificationIds() {
+        List<ImgurNotification> notifications = getNotifications(true);
+
+        if (!notifications.isEmpty()) {
+            String[] ids = new String[notifications.size()];
+            int i = 0;
+
+            for (ImgurNotification n : notifications) {
+                ids[i] = String.valueOf(n.getId());
+            }
+
+            return TextUtils.join(",", ids);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns all the notifications in the database, minus the duplicate messages
+     *
+     * @param unreadOnly If the returned notifications should be unread only
+     * @return
+     */
+    @NonNull
+    public List<ImgurNotification> getNotifications(boolean unreadOnly) {
+        List<ImgurNotification> notifications = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        String query = unreadOnly ? NotificationContract.GET_UNREAD_MESSAGES_SQL : NotificationContract.GET_MESSAGES_SQL;
+        Cursor messagesCursor = db.rawQuery(query, null);
+
+        while (messagesCursor.moveToNext()) {
+            notifications.add(new ImgurNotification(messagesCursor));
+        }
+
+        messagesCursor.close();
+        Cursor repliesCursor = db.rawQuery(NotificationContract.GET_REPLIES_SQL, null);
+
+        while (repliesCursor.moveToNext()) {
+            notifications.add(new ImgurNotification(repliesCursor));
+        }
+
+        repliesCursor.close();
+        ImgurNotification.sort(notifications);
+        return notifications;
+    }
+
+    /**
+     * Deletes the given notifications from the database
+     *
+     * @param notifications
+     */
+    public void deleteNotifications(List<ImgurNotification> notifications) {
+        if (notifications == null || notifications.isEmpty()) return;
+
+        String ids[] = new String[notifications.size()];
+        int i = 0;
+
+        for (ImgurNotification n : notifications) {
+            ids[i] = String.valueOf(n.getId());
+            i++;
+        }
+
+        getWritableDatabase().delete(NotificationContract.TABLE_NAME, NotificationContract._ID + "=?", ids);
     }
 
     @Override
