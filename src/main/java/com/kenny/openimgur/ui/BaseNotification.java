@@ -12,8 +12,8 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 
+import com.amulyakhare.textdrawable.MaterialColor;
 import com.amulyakhare.textdrawable.TextDrawable;
-import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.OpengurApp;
 
@@ -137,37 +137,26 @@ public abstract class BaseNotification {
      * @return
      */
     protected Bitmap createLargeIcon(@DrawableRes int drawableResource, String from) {
-        Bitmap bitmap;
         int iconSize = resources.getDimensionPixelSize(R.dimen.notification_icon);
+        int color;
 
-        TextDrawable.IShapeBuilder builder = TextDrawable.builder()
-                .beginConfig()
+        TextDrawable.Builder builder = new TextDrawable.Builder()
                 .toUpperCase()
-                .width(iconSize)
-                .height(iconSize)
-                .endConfig();
+                .setWidth(iconSize)
+                .setHeight(iconSize);
 
         if (drawableResource < 0) {
-            int color = ColorGenerator.MATERIAL.getColor(from);
+            color = MaterialColor.getColor(from);
             String firstLetter = from.substring(0, 1);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                bitmap = builder.buildRound(firstLetter, color).toBitmap();
-            } else {
-                bitmap = builder.buildRect(firstLetter, color).toBitmap();
-            }
+            builder.setText(firstLetter);
         } else {
-            int color = resources.getColor(app.getImgurTheme().darkColor);
+            color = resources.getColor(app.getImgurTheme().darkColor);
             Bitmap icon = BitmapFactory.decodeResource(resources, drawableResource);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                bitmap = builder.buildRound(icon, color).toBitmap();
-            } else {
-                bitmap = builder.buildRect(icon, color).toBitmap();
-            }
+            builder.setIcon(icon);
         }
 
-        return bitmap;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) builder.setShape(TextDrawable.DRAWABLE_SHAPE_OVAL);
+        return builder.setColor(color).build().toBitmap();
     }
 
     /**

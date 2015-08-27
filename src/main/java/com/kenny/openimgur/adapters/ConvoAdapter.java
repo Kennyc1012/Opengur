@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.MaterialColor;
 import com.amulyakhare.textdrawable.TextDrawable;
-import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurConvo;
 
@@ -20,9 +20,11 @@ import butterknife.Bind;
  */
 public class ConvoAdapter extends BaseRecyclerAdapter<ImgurConvo> {
     private int mCircleSize;
+
     private int mDividerColor;
 
     private View.OnClickListener mClickListener;
+
     private View.OnLongClickListener mLongClickListener;
 
     public ConvoAdapter(Context context, List<ImgurConvo> convos, View.OnClickListener clickListener, View.OnLongClickListener longClickListener) {
@@ -49,16 +51,17 @@ public class ConvoAdapter extends BaseRecyclerAdapter<ImgurConvo> {
         ImgurConvo convo = getItem(position);
 
         String firstLetter = convo.getWithAccount().substring(0, 1);
-        int color = ColorGenerator.DEFAULT.getColor(convo.getWithAccount());
+        int color = MaterialColor.getColor(convo.getWithAccount());
 
         convoViewHolder.image.setImageDrawable(
-                TextDrawable.builder()
-                        .beginConfig()
+                new TextDrawable.Builder()
                         .toUpperCase()
-                        .width(mCircleSize)
-                        .height(mCircleSize)
-                        .endConfig()
-                        .buildRound(firstLetter, color));
+                        .setWidth(mCircleSize)
+                        .setHeight(mCircleSize)
+                        .setText(firstLetter)
+                        .setColor(color)
+                        .setShape(TextDrawable.DRAWABLE_SHAPE_OVAL)
+                        .build());
 
         convoViewHolder.author.setText(convo.getWithAccount());
         convoViewHolder.message.setText(convo.getLastMessage());
