@@ -5,8 +5,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
@@ -17,14 +19,19 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.NotificationResponse;
+import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurMessage;
+import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.BaseNotification;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -56,6 +63,10 @@ public class NotificationService extends IntentService {
 
         // Make sure we have a valid user
         if (app.getUser() != null) {
+            PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+            wakeLock.acquire();
+
             try {
                 NotificationResponse response = ApiClient.getService().getNotifications();
 
@@ -68,6 +79,8 @@ public class NotificationService extends IntentService {
                 }
             } catch (Exception ex) {
                 LogUtil.e(TAG, "Error fetching notifications", ex);
+            } finally {
+                if (wakeLock.isHeld()) wakeLock.release();
             }
 
             // Create the next alarm when everything is finished
@@ -122,40 +135,46 @@ public class NotificationService extends IntentService {
                 replies.add(r.content);
             }
 
-            Resources res = app.getResources();
             int messageNotifications = messages.size();
             int replyNotifications = replies.size();
             PendingIntent pendingIntent;
             ImgurBaseObject obj = null;
 
             if (messageNotifications > 0 && replyNotifications > 0) {
+                // We have both messages and replies, create a generic notification
                 int totalNotifications = messageNotifications + replyNotifications;
-                mTitle = res.getString(R.string.notifications_multiple_types, totalNotifications);
-                builder.setContentText(res.getString(R.string.notifications_multiple_types_body, totalNotifications));
+                mTitle = resources.getString(R.string.notifications_multiple_types, totalNotifications);
+                builder.setContentText(resources.getString(R.string.notifications_multiple_types_body, totalNotifications));
+
                 builder.setStyle(new NotificationCompat.InboxStyle()
-                        .addLine(res.getQuantityString(R.plurals.notification_messages, messageNotifications, messageNotifications))
-                        .addLine(res.getQuantityString(R.plurals.notification_replies, replyNotifications, replyNotifications))
+                        .addLine(resources.getQuantityString(R.plurals.notification_messages, messageNotifications, messageNotifications))
+                        .addLine(resources.getQuantityString(R.plurals.notification_replies, replyNotifications, replyNotifications))
                         .setBigContentTitle(mTitle));
             } else if (messageNotifications > 0) {
                 boolean hasOnlyOne = messageNotifications == 1;
-                mTitle = res.getQuantityString(R.plurals.notification_messages, messageNotifications, messageNotifications);
+                mTitle = resources.getQuantityString(R.plurals.notification_messages, messageNotifications, messageNotifications);
 
                 if (hasOnlyOne) {
+                    // Only have one message, show the message and its contents
                     ImgurMessage newMessage = messages.iterator().next();
                     obj = new ImgurConvo(newMessage.getId(), newMessage.getFrom(), -1);
                     int messageLength = newMessage.getLastMessage().length() - MIN_TEXT_LENGTH;
 
                     // Big text style won't display if less than 40 characters
                     if (messageLength > 0) {
-                        builder.setContentText(res.getString(R.string.notification_new_message, newMessage.getFrom()));
+                        builder.setContentText(resources.getString(R.string.notification_new_message, newMessage.getFrom()));
                         builder.setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(newMessage.getLastMessage())
                                 .setBigContentTitle(newMessage.getFrom()));
                     } else {
-                        String formatted = res.getString(R.string.notification_preview, newMessage.getFrom(), newMessage.getLastMessage());
+                        String formatted = resources.getString(R.string.notification_preview, newMessage.getFrom(), newMessage.getLastMessage());
                         builder.setContentText(Html.fromHtml(formatted));
                     }
+
+                    // The Large icon will be the users names first letter
+                    builder.setLargeIcon(createLargeIcon(-1, newMessage.getFrom()));
                 } else {
+                    // Multiple messages, show the first 3
                     NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
                     Iterator<ImgurMessage> m = messages.iterator();
                     int remaining = MAX_INBOX_LINES - messageNotifications;
@@ -163,36 +182,61 @@ public class NotificationService extends IntentService {
 
                     while (m.hasNext() && i < MAX_INBOX_LINES) {
                         ImgurMessage mess = m.next();
-                        style.addLine(Html.fromHtml(res.getString(R.string.notification_preview, mess.getFrom(), mess.getLastMessage())));
+                        style.addLine(Html.fromHtml(resources.getString(R.string.notification_preview, mess.getFrom(), mess.getLastMessage())));
                         i++;
                     }
 
                     if (remaining < 0) {
-                        style.setSummaryText(res.getString(R.string.notification_remaining, Math.abs(remaining)));
+                        style.setSummaryText(resources.getString(R.string.notification_remaining, Math.abs(remaining)));
                     }
 
                     builder.setStyle(style);
+                    // The large icon will be the message icon
+                    builder.setLargeIcon(createLargeIcon(R.drawable.ic_message_24dp, null));
                 }
             } else {
                 boolean hasOnlyOne = replyNotifications == 1;
-                mTitle = res.getQuantityString(R.plurals.notification_replies, replyNotifications, replyNotifications);
+                mTitle = resources.getQuantityString(R.plurals.notification_replies, replyNotifications, replyNotifications);
 
                 if (hasOnlyOne) {
+                    // Only have one reply, show its contents
                     ImgurComment comment = replies.iterator().next();
                     obj = comment;
                     int messageLength = comment.getComment().length() - MIN_TEXT_LENGTH;
 
                     // Big text style won't display if less than 40 characters
                     if (messageLength > 0) {
-                        builder.setContentText(res.getString(R.string.notification_new_message, comment.getAuthor()));
+                        builder.setContentText(resources.getString(R.string.notification_new_message, comment.getAuthor()));
                         builder.setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(comment.getComment())
                                 .setBigContentTitle(comment.getAuthor()));
                     } else {
-                        String formatted = res.getString(R.string.notification_preview, comment.getAuthor(), comment.getComment());
+                        String formatted = resources.getString(R.string.notification_preview, comment.getAuthor(), comment.getComment());
                         builder.setContentText(Html.fromHtml(formatted));
                     }
+
+                    String photoUrl;
+
+                    if (TextUtils.isEmpty(comment.getAlbumCoverId())) {
+                        photoUrl = "https://i.imgur.com/" + comment.getImageId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
+                    } else {
+                        photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, comment.getAlbumCoverId() + ImgurPhoto.THUMBNAIL_SMALL);
+                    }
+
+                    // The Large icon will be the gallery thumbnail
+                    int iconSize = resources.getDimensionPixelSize(R.dimen.notification_icon);
+                    DisplayImageOptions opts = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
+                            ImageUtil.getDisplayOptionsForComments().build() : ImageUtil.getDisplayOptionsForGallery().build();
+
+                    try {
+                        Bitmap b = app.getImageLoader().loadImageSync(photoUrl, new ImageSize(iconSize, iconSize), opts);
+                        if (b != null) builder.setLargeIcon(b);
+                    } catch (Exception ex) {
+                        LogUtil.e(TAG, "Unable to load gallery thumbnail", ex);
+                        builder.setLargeIcon(createLargeIcon(-1, comment.getAuthor()));
+                    }
                 } else {
+                    // Multiple replies, show the first three
                     NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
                     Iterator<ImgurComment> r = replies.iterator();
                     int remaining = MAX_INBOX_LINES - replyNotifications;
@@ -200,15 +244,17 @@ public class NotificationService extends IntentService {
 
                     while (r.hasNext() && i < MAX_INBOX_LINES) {
                         ImgurComment comment = r.next();
-                        style.addLine(Html.fromHtml(res.getString(R.string.notification_preview, comment.getAuthor(), comment.getComment())));
+                        style.addLine(Html.fromHtml(resources.getString(R.string.notification_preview, comment.getAuthor(), comment.getComment())));
                         i++;
                     }
 
                     if (remaining < 0) {
-                        style.setSummaryText(res.getString(R.string.notification_remaining, Math.abs(remaining)));
+                        style.setSummaryText(resources.getString(R.string.notification_remaining, Math.abs(remaining)));
                     }
 
+                    // The Large icon will be the reply icon
                     builder.setStyle(style);
+                    builder.setLargeIcon(createLargeIcon(R.drawable.ic_reply_all_24dp, null));
                 }
             }
 
