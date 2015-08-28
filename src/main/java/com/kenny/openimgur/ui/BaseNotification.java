@@ -141,13 +141,12 @@ public abstract class BaseNotification {
         int color;
 
         TextDrawable.Builder builder = new TextDrawable.Builder()
-                .toUpperCase()
                 .setWidth(iconSize)
                 .setHeight(iconSize);
 
         if (drawableResource < 0) {
             color = MaterialColor.getColor(from);
-            String firstLetter = from.substring(0, 1);
+            String firstLetter = from.substring(0, 1).toUpperCase();
             builder.setText(firstLetter);
         } else {
             color = resources.getColor(app.getImgurTheme().darkColor);

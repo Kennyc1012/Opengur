@@ -81,12 +81,14 @@ public class AlarmReceiver extends BroadcastReceiver {
                 break;
         }
 
+        long nextUpdate = System.currentTimeMillis() + updateTime;
+
         if (LogUtil.SHOULD_WRITE_LOGS) {
             Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(System.currentTimeMillis() + updateTime);
+            cal.setTimeInMillis(nextUpdate);
             LogUtil.v(TAG, "Next alarm set for " + cal.getTime().toString());
         }
 
-        return System.currentTimeMillis() + updateTime;
+        return nextUpdate;
     }
 }

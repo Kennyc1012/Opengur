@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -30,7 +29,6 @@ import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.util.HashSet;
@@ -223,13 +221,11 @@ public class NotificationService extends IntentService {
                         photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, comment.getAlbumCoverId() + ImgurPhoto.THUMBNAIL_SMALL);
                     }
 
-                    // The Large icon will be the gallery thumbnail
-                    int iconSize = resources.getDimensionPixelSize(R.dimen.notification_icon);
-                    DisplayImageOptions opts = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
-                            ImageUtil.getDisplayOptionsForComments().build() : ImageUtil.getDisplayOptionsForGallery().build();
-
                     try {
-                        Bitmap b = app.getImageLoader().loadImageSync(photoUrl, new ImageSize(iconSize, iconSize), opts);
+                        // The Large icon will be the gallery thumbnail
+                        int iconSize = resources.getDimensionPixelSize(R.dimen.notification_icon);
+                        // TODO Get this to be circular for API 21+, can't seem to get it to work
+                        Bitmap b = app.getImageLoader().loadImageSync(photoUrl, new ImageSize(iconSize, iconSize), ImageUtil.getDisplayOptionsForGallery().build());
                         if (b != null) builder.setLargeIcon(b);
                     } catch (Exception ex) {
                         LogUtil.e(TAG, "Unable to load gallery thumbnail", ex);

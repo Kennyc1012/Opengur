@@ -109,6 +109,20 @@ public class ImgurNotification implements Parcelable {
         dest.writeInt(mViewed ? 1 : 0);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof ImgurNotification)) return false;
+        return ((ImgurNotification) o).getId() == getId();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mId;
+        result = 31 * result + mType;
+        return result;
+    }
+
     public static final Parcelable.Creator<ImgurNotification> CREATOR = new Parcelable.Creator<ImgurNotification>() {
         public ImgurNotification createFromParcel(Parcel in) {
             return new ImgurNotification(in);

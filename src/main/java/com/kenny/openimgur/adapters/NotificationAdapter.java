@@ -18,8 +18,6 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
-import org.apache.commons.collections15.list.SetUniqueList;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +43,7 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
     private final Set<ImgurNotification> mSelected = new HashSet<>();
 
     public NotificationAdapter(Context context, List<ImgurNotification> notifications, View.OnClickListener clickListener, View.OnLongClickListener longClickListener) {
-        super(context, SetUniqueList.decorate(notifications), true);
+        super(context, notifications, true);
         mCircleSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
         mClickListener = clickListener;
         mLongClickListener = longClickListener;
@@ -125,12 +123,18 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
     }
 
     /**
-     * Sets the notification to be selected or un selected
+     * Sets the notification to be selected or un selected. Passing null will clear all selections
      *
      * @param notification
      * @return If the item was selected. False will infer that it was deselected
      */
     public boolean setSelected(ImgurNotification notification) {
+        if (notification == null) {
+            mSelected.clear();
+            notifyDataSetChanged();
+            return true;
+        }
+
         boolean selected;
 
         if (mSelected.contains(notification)) {

@@ -193,6 +193,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
+        mAdapter.setSelected(null);
         mMode = null;
     }
 
@@ -207,8 +208,9 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                     if (notifications.isEmpty() && (mAdapter == null || mAdapter.isEmpty())) {
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                     } else {
-                        // Don't remove any notifications that may have been cleared when first viewed
+
                         if (mAdapter != null) {
+                            mAdapter.clear();
                             mAdapter.addItems(notifications);
                         } else {
                             mAdapter = new NotificationAdapter(NotificationActivity.this, notifications, NotificationActivity.this, NotificationActivity.this);
