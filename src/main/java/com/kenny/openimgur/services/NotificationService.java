@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -26,7 +27,7 @@ import com.kenny.openimgur.classes.ImgurMessage;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.BaseNotification;
-import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.ui.CircleBitmapDisplayer;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -216,17 +217,24 @@ public class NotificationService extends IntentService {
                     String photoUrl;
 
                     if (TextUtils.isEmpty(comment.getAlbumCoverId())) {
-                        photoUrl = "https://i.imgur.com/" + comment.getImageId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
+                        photoUrl = "https://i.imgur.com/" + comment.getImageId() + ImgurPhoto.THUMBNAIL_MEDIUM + ".jpeg";
                     } else {
-                        photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, comment.getAlbumCoverId() + ImgurPhoto.THUMBNAIL_SMALL);
+                        photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, comment.getAlbumCoverId() + ImgurPhoto.THUMBNAIL_MEDIUM);
                     }
 
                     try {
                         // The Large icon will be the gallery thumbnail
-                        int iconSize = resources.getDimensionPixelSize(R.dimen.notification_icon);
-                        // TODO Get this to be circular for API 21+, can't seem to get it to work
-                        Bitmap b = app.getImageLoader().loadImageSync(photoUrl, new ImageSize(iconSize, iconSize), ImageUtil.getDisplayOptionsForGallery().build());
-                        if (b != null) builder.setLargeIcon(b);
+                        Bitmap b = app.getImageLoader().loadImageSync(photoUrl);
+
+                        if (b != null) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                builder.setLargeIcon(CircleBitmapDisplayer.getRoundedBitmap(b));
+                            } else {
+                                builder.setLargeIcon(b);
+                            }
+                        } else {
+                            builder.setLargeIcon(createLargeIcon(-1, comment.getAuthor()));
+                        }
                     } catch (Exception ex) {
                         LogUtil.e(TAG, "Unable to load gallery thumbnail", ex);
                         builder.setLargeIcon(createLargeIcon(-1, comment.getAuthor()));
