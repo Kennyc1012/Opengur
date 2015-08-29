@@ -131,7 +131,7 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
         mCurrentPage = 0;
         mIsLoading = true;
         mHasMore = true;
-        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
         if (mListener != null) mListener.onLoadingStarted();
         fetchGallery();
     }
@@ -160,7 +160,7 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
             mMultiStateView.setErrorText(R.id.errorMessage, getString(R.string.reddit_empty, mQuery));
-            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             if (mListener != null) mListener.onUpdateActionBar(true);
         }
     }

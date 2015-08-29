@@ -3,9 +3,9 @@
     android:id="@+id/multiView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:errorView="@layout/error_view"
-    app:loadingView="@layout/loading_view"
-    app:viewState="loading">
+    app:msv_errorView="@layout/error_view"
+    app:msv_loadingView="@layout/loading_view"
+    app:msv_viewState="loading">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"

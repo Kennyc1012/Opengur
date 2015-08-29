@@ -81,6 +81,21 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     @Bind(R.id.navigationView)
     NavigationView mNavigationView;
 
+    @Bind(R.id.profileImg)
+    ImageView mAvatar;
+
+    @Bind(R.id.profileName)
+    TextView mName;
+
+    @Bind(R.id.reputation)
+    TextView mRep;
+
+    @Bind(R.id.badgeCount)
+    TextView mBadge;
+
+    @Bind(R.id.badgeContainer)
+    View mBadgeContainer;
+
     private int mCurrentPage = -1;
 
     private ImgurTheme mSavedTheme;
@@ -189,40 +204,42 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     }
 
     private void updateUserHeader(@Nullable ImgurUser user) {
-        View header = mNavigationView.findViewById(R.id.header);
-        if (header == null) return;
-
-        ImageView avatar = (ImageView) header.findViewById(R.id.profileImg);
-        TextView name = (TextView) header.findViewById(R.id.profileName);
-        TextView rep = (TextView) header.findViewById(R.id.reputation);
-
         if (user != null) {
             int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
             String firstLetter = user.getUsername().substring(0, 1);
 
-            avatar.setImageDrawable(TextDrawable.builder()
-                    .beginConfig()
+            mAvatar.setImageDrawable(new TextDrawable.Builder()
                     .toUpperCase()
-                    .width(size)
-                    .height(size)
-                    .endConfig()
-                    .buildRound(firstLetter, getResources().getColor(theme.accentColor)));
+                    .setWidth(size)
+                    .setHeight(size)
+                    .setShape(TextDrawable.DRAWABLE_SHAPE_OVAL)
+                    .setColor(getResources().getColor(theme.accentColor))
+                    .setText(firstLetter)
+                    .build());
 
-            name.setText(user.getUsername());
-            rep.setText(user.getNotoriety().getStringId());
+            mName.setText(user.getUsername());
+            mRep.setText(user.getNotoriety().getStringId());
+            mBadgeContainer.setVisibility(View.VISIBLE);
+            int notificationCount = app.getSql().getNotifications(true).size();
+            updateNotificationBadge(notificationCount);
         } else {
-            avatar.setImageResource(R.drawable.ic_account_circle);
-            name.setText(R.string.profile);
-            rep.setText(R.string.login_msg);
+            mAvatar.setImageResource(R.drawable.ic_account_circle);
+            mName.setText(R.string.profile);
+            mRep.setText(R.string.login_msg);
+            mBadge.setVisibility(View.GONE);
+            mBadgeContainer.setVisibility(View.GONE);
+        }
+    }
+
+    private void updateNotificationBadge(int notificationCount) {
+        mBadge.setVisibility(notificationCount > 0 ? View.VISIBLE : View.GONE);
+        String badgeText = null;
+
+        if (notificationCount > 0) {
+            badgeText = notificationCount > 9 ? "9+" : String.valueOf(notificationCount);
         }
 
-        header.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawer.closeDrawers();
-                startActivityForResult(ProfileActivity.createIntent(getApplicationContext(), null), RequestCodes.PROFILE);
-            }
-        });
+        mBadge.setText(badgeText);
     }
 
     /**
@@ -366,11 +383,21 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         }
     }
 
-    @OnClick({R.id.fab})
+    @OnClick({R.id.fab, R.id.header, R.id.badgeContainer})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab:
                 startActivity(UploadActivity.createIntent(getApplicationContext()));
+                break;
+
+            case R.id.header:
+                mDrawer.closeDrawers();
+                startActivityForResult(ProfileActivity.createIntent(getApplicationContext(), null), RequestCodes.PROFILE);
+                break;
+
+            case R.id.badgeContainer:
+                mDrawer.closeDrawers();
+                startActivityForResult(NotificationActivity.createIntent(getApplicationContext()), RequestCodes.NOTIFICATIONS);
                 break;
         }
     }
@@ -451,6 +478,11 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                         updateUserHeader(null);
                     }
                 }
+                break;
+
+            case RequestCodes.NOTIFICATIONS:
+                // Notifications will clear when going into the activity
+                updateNotificationBadge(0);
                 break;
         }
 

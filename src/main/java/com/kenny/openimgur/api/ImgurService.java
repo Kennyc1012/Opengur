@@ -5,9 +5,10 @@ import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.CommentPostResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
-import com.kenny.openimgur.api.responses.ConverastionResponse;
+import com.kenny.openimgur.api.responses.ConversationResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
+import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.api.responses.OAuthResponse;
 import com.kenny.openimgur.api.responses.PhotoResponse;
 import com.kenny.openimgur.api.responses.TagResponse;
@@ -33,7 +34,6 @@ import retrofit.mime.TypedString;
 public interface ImgurService {
 
     // Get Requests
-
     @GET("/3/gallery/{section}/{sort}/{page}")
     void getGallery(@Path("section") String section, @Path("sort") String sort, @Path("page") int page, @Query("showViral") boolean showViral, Callback<GalleryResponse> callback);
 
@@ -116,7 +116,13 @@ public interface ImgurService {
     void getTags(@Path("id") String itemId, Callback<TagResponse> callback);
 
     @GET("/3/conversations/{id}/{page}/0")
-    void getMessages(@Path("id") String conversationId, @Path("page") int page, Callback<ConverastionResponse> callback);
+    void getMessages(@Path("id") String conversationId, @Path("page") int page, Callback<ConversationResponse> callback);
+
+    @GET("/3/notification?new=true")
+    void getNotifications(Callback<NotificationResponse> response);
+
+    @GET("/3/notification?new=true")
+    NotificationResponse getNotifications();
 
 
     // Post Requests. Some of the POST requests have fields when they are not needed. This is because OKHTTP requires a body when posting
@@ -166,16 +172,23 @@ public interface ImgurService {
 
     @FormUrlEncoded
     @POST("/3/conversations/block/{username}")
-    void blockUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> respoonse);
+    void blockUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> response);
 
     @FormUrlEncoded
     @POST("/3/conversations/report/{username}")
-    void reportUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> respoonse);
+    void reportUser(@Path("username") String username, @Field("username") String user, Callback<BasicResponse> response);
 
     @FormUrlEncoded
     @POST("/oauth2/token")
     OAuthResponse refreshToken(@Field("client_id") String clientId, @Field("client_secret") String clientSecret, @Field("refresh_token") String refreshToken, @Field("grant_type") String grantType);
 
+    @FormUrlEncoded
+    @POST("/3/gallery/{id}/report")
+    void reportPost(@Path("id") String galleryId, @Field("reason") int reason, Callback<BasicResponse> response);
+
+    @FormUrlEncoded
+    @POST("/3/notification/")
+    void markNotificationsRead(@Field("ids") String ids, Callback<BasicResponse> response);
 
     // Delete Requests
     @DELETE("/3/album/{deleteHash}")

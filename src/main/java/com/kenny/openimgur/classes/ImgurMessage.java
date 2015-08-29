@@ -16,6 +16,9 @@ public class ImgurMessage extends ImgurBaseObject {
     @SerializedName("from")
     private String mFrom;
 
+    @SerializedName("last_message")
+    private String mLastMessage;
+
     @SerializedName("sender_id")
     private int mSenderId;
 
@@ -41,6 +44,15 @@ public class ImgurMessage extends ImgurBaseObject {
         return mBody;
     }
 
+    /**
+     * Returns the last message. This is for use with notifications
+     *
+     * @return
+     */
+    public String getLastMessage() {
+        return mLastMessage;
+    }
+
     public boolean isSending() {
         return mIsSending;
     }
@@ -54,6 +66,7 @@ public class ImgurMessage extends ImgurBaseObject {
         mSenderId = in.readInt();
         mBody = in.readString();
         mFrom = in.readString();
+        mLastMessage = in.readString();
         mIsSending = in.readInt() == 1;
     }
 
@@ -62,6 +75,7 @@ public class ImgurMessage extends ImgurBaseObject {
         out.writeInt(mSenderId);
         out.writeString(mBody);
         out.writeString(mFrom);
+        out.writeString(mLastMessage);
         out.writeInt(mIsSending ? 1 : 0);
     }
 

@@ -26,6 +26,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.activities.SettingsActivity;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.CircleBitmapDisplayer;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
@@ -156,7 +157,7 @@ public class ImageUtil {
         DiskCache discCache;
         int threadPoolSize;
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        String discCacheAllowance = pref.getString(SettingsActivity.CACHE_SIZE_KEY, SettingsActivity.CACHE_SIZE_512MB);
+        String discCacheAllowance = pref.getString(SettingsActivity.KEY_CACHE_SIZE, SettingsActivity.CACHE_SIZE_512MB);
         String threadSize = pref.getString(SettingsActivity.KEY_THREAD_SIZE, SettingsActivity.THREAD_SIZE_5);
         String cacheKey = pref.getString(SettingsActivity.KEY_CACHE_LOC, SettingsActivity.CACHE_LOC_INTERNAL);
         File dir = getCacheDirectory(context, cacheKey);
@@ -280,7 +281,7 @@ public class ImageUtil {
 
     public static DisplayImageOptions.Builder getDisplayOptionsForComments() {
         return getDefaultDisplayOptions()
-                .displayer(new CircleBitmapDisplayer());
+                .displayer(new CircleBitmapDisplayer(OpengurApp.getInstance().getResources()));
     }
 
     public static DisplayImageOptions.Builder getDisplayOptionsForFullscreen() {

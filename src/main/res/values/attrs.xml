@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="MultiStateView">
-        <attr name="loadingView" format="reference" />
-        <attr name="emptyView" format="reference" />
-        <attr name="errorView" format="reference" />
-        <attr name="viewState" format="enum">
-            <enum name="content" value="0" />
-            <enum name="error" value="1" />
-            <enum name="empty" value="2" />
-            <enum name="loading" value="3" />
-        </attr>
-    </declare-styleable>
-
     <!-- Theme attributes -->
     <attr name="errorDrawable" format="reference" />
     <attr name="emptyDrawableUploads" format="reference" />
     <attr name="emptyDrawableMessages" format="reference" />
+    <attr name="emptyDrawableNotifications" format="reference" />
     <attr name="repliesDrawable" format="reference" />
     <attr name="cardBG" format="color" />
     <attr name="toolBarPopupTheme" format="reference" />

@@ -124,7 +124,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         switch (item.getItemId()) {
             case R.id.refresh:
                 if (mPhotoAdapter != null) mPhotoAdapter.clear();
-                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                 fetchGalleryDetails();
                 return true;
 
@@ -166,6 +166,22 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             case R.id.share:
                 startActivity(Intent.createChooser(mImgurObject.getShareIntent(), getString(R.string.share)));
                 return true;
+
+            case R.id.report:
+                if (user != null) {
+                    new AlertDialog.Builder(getActivity(), app.getImgurTheme().getAlertDialogTheme())
+                            .setTitle(R.string.report_reason)
+                            .setItems(R.array.report_reasons, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Report reasons are in the order of their array index, just add 1 for the API
+                                    reportItem(which + 1);
+                                }
+                            }).show();
+                } else {
+                    SnackBar.show(getActivity(), R.string.user_not_logged_in);
+                }
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -182,6 +198,8 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         if (TextUtils.isEmpty(mImgurObject.getRedditLink())) {
             menu.findItem(R.id.reddit).setVisible(false);
+        } else {
+            menu.findItem(R.id.report).setVisible(false);
         }
 
         menu.findItem(R.id.favorite).setIcon(mImgurObject.isFavorited() ?
@@ -202,7 +220,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             List<ImgurPhoto> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
             mPhotoAdapter = new PhotoAdapter(getActivity(), photos, mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             fetchTags();
         } else {
             mDisplayTags = args.getBoolean(KEY_DISPLAY_TAGS, true);
@@ -223,14 +241,14 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             photo.add(((ImgurPhoto) mImgurObject));
             mPhotoAdapter = new PhotoAdapter(getActivity(), photo, mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             fetchTags();
         } else if (((ImgurAlbum) mImgurObject).getAlbumPhotos() == null || ((ImgurAlbum) mImgurObject).getAlbumPhotos().isEmpty()) {
             fetchAlbumImages();
         } else {
             mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             fetchTags();
         }
     }
@@ -488,11 +506,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     ((ImgurAlbum) mImgurObject).addPhotosToAlbum(albumResponse.data);
                     mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
                     mListView.setAdapter(mPhotoAdapter);
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     fetchTags();
                 } else {
                     mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
 
@@ -501,7 +519,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch album images", error);
                 mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
     }
@@ -542,7 +560,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     setupFragmentWithObject(basicObjectResponse.data);
                 } else {
                     mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
 
@@ -551,7 +569,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch gallery details", error);
                 mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
     }
@@ -584,5 +602,26 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         } else {
             ApiClient.getService().favoriteAlbum(id, id, cb);
         }
+    }
+
+    private void reportItem(int reason) {
+        ApiClient.getService().reportPost(mImgurObject.getId(), reason, new Callback<BasicResponse>() {
+            @Override
+            public void success(BasicResponse basicResponse, Response response) {
+                if (!isAdded()) return;
+
+                if (basicResponse != null && basicResponse.data) {
+                    SnackBar.show(getActivity(), R.string.report_post_success);
+                } else {
+                    SnackBar.show(getActivity(), R.string.report_post_failure);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                if (!isAdded()) return;
+                SnackBar.show(getActivity(), R.string.report_post_failure);
+            }
+        });
     }
 }

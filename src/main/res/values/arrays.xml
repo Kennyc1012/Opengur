@@ -96,6 +96,21 @@
         <item>Subreddit</item>
     </string-array>
 
+    <string-array name="report_reasons">
+        <item>Doesn\'t belong on Imgur</item>
+        <item>Spam</item>
+        <item>Abusive</item>
+        <item>Mature content not marked as mature</item>
+        <item>Pornography</item>
+    </string-array>
+
+    <string-array name="notification_times">
+        <item>15 Minutes</item>
+        <item>30 Minutes</item>
+        <item>1 Hour</item>
+        <item>2 Hours</item>
+    </string-array>
+
     <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
     <string-array name="pref_cache_size_keys" translatable="false">
         <item>256</item>
@@ -153,5 +168,11 @@
         <item>reddit</item>
     </string-array>
 
+    <string-array name="pref_notification_keys" translatable="false">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+    </string-array>
 
 </resources>

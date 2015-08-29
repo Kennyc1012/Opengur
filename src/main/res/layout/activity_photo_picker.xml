@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="?actionBarSize"
-    app:emptyView="@layout/uploads_empty"
-    app:loadingView="@layout/loading_view"
-    app:viewState="loading">
+    app:msv_emptyView="@layout/uploads_empty"
+    app:msv_loadingView="@layout/loading_view"
+    app:msv_viewState="loading">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/grid"

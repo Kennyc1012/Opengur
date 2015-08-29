@@ -147,7 +147,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
         }
 
         if (adapter == null || adapter.isEmpty()) {
-            mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             mIsLoading = true;
 
             if (mListener != null) {
@@ -199,14 +199,14 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
         mIsLoading = true;
         if (getAdapter() != null) getAdapter().clear();
         if (mListener != null) mListener.onLoadingStarted();
-        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
         fetchGallery();
     }
 
     @Nullable
     @OnClick(R.id.errorButton)
     public void onRetryClick() {
-        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
         fetchGallery();
     }
 
@@ -226,7 +226,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
                     mListener.onLoadingComplete();
                 }
 
-                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
         }
     }
@@ -276,7 +276,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
 
         if (galleryResponse == null) {
             mMultiStateView.setErrorText(R.id.errorMessage, R.string.error_generic);
-            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             return;
         }
 
@@ -288,7 +288,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
             }
 
             if (mMultiStateView != null)
-                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
 
             if (mCurrentPage == 0) {
                 if (mListener != null) mListener.onLoadingComplete();
@@ -315,7 +315,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
         if (getAdapter() == null || getAdapter().isEmpty()) {
             if (mListener != null) mListener.onError();
             mMultiStateView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
 
         mIsLoading = false;
@@ -326,7 +326,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
         mHasMore = false;
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
-            mMultiStateView.setViewState(MultiStateView.ViewState.EMPTY);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
 
         if (mListener != null) mListener.onUpdateActionBar(true);

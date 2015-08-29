@@ -68,7 +68,7 @@ public class ProfileSubmissionsFragment extends BaseGridFragment2 {
         if (getAdapter() == null || getAdapter().isEmpty()) {
             String errorMessage = getString(R.string.profile_no_submissions, mSelectedUser.getUsername());
             mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
-            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
     }
 }

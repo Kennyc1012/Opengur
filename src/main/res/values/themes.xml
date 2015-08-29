@@ -23,6 +23,7 @@
         <item name="cardBG">@color/cardview_light_background</item>
         <item name="emptyDrawableUploads">@drawable/empty_uploads_light</item>
         <item name="emptyDrawableMessages">@drawable/no_comments_light</item>
+        <item name="emptyDrawableNotifications">@drawable/no_notifications_light</item>
         <item name="errorDrawable">@drawable/error_light</item>
         <item name="repliesDrawable">@drawable/ic_add_black_18dp</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
@@ -35,60 +36,70 @@
         <item name="colorPrimary">@color/theme_blue_primary</item>
         <item name="colorPrimaryDark">@color/theme_blue_dark</item>
         <item name="colorAccent">@color/theme_blue_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Blue</item>
     </style>
 
     <style name="Theme_Light.Orange">
         <item name="colorPrimary">@color/theme_orange_primary</item>
         <item name="colorPrimaryDark">@color/theme_orange_dark</item>
         <item name="colorAccent">@color/theme_light_blue_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Orange</item>
     </style>
 
     <style name="Theme_Light.Cyan">
         <item name="colorPrimary">@color/theme_cyan_primary</item>
         <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
         <item name="colorAccent">@color/theme_cyan_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Cyan</item>
     </style>
 
     <style name="Theme_Light.Green">
         <item name="colorPrimary">@color/theme_green_primary</item>
         <item name="colorPrimaryDark">@color/theme_green_dark</item>
         <item name="colorAccent">@color/theme_green_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Green</item>
     </style>
 
     <style name="Theme_Light.Teal">
         <item name="colorPrimary">@color/theme_teal_primary</item>
         <item name="colorPrimaryDark">@color/theme_teal_dark</item>
         <item name="colorAccent">@color/theme_teal_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Teal</item>
     </style>
 
     <style name="Theme_Light.Red">
         <item name="colorPrimary">@color/theme_red_primary</item>
         <item name="colorPrimaryDark">@color/theme_red_dark</item>
         <item name="colorAccent">@color/theme_red_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Red</item>
     </style>
 
     <style name="Theme_Light.Pink">
         <item name="colorPrimary">@color/theme_pink_primary</item>
         <item name="colorPrimaryDark">@color/theme_pink_dark</item>
         <item name="colorAccent">@color/theme_pink_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Pink</item>
     </style>
 
     <style name="Theme_Light.Purple">
         <item name="colorPrimary">@color/theme_purple_primary</item>
         <item name="colorPrimaryDark">@color/theme_purple_dark</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Purple</item>
     </style>
 
     <style name="Theme_Light.Grey">
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Grey</item>
     </style>
 
     <style name="Theme_Light.Black">
         <item name="colorPrimary">@color/theme_black_primary</item>
         <item name="colorPrimaryDark">@color/theme_black_dark</item>
         <item name="colorAccent">@color/theme_black_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Black</item>
     </style>
 
     <!-- Override styles (Dark) -->
@@ -114,6 +125,7 @@
         <item name="cardBG">@color/card_bg_dark</item>
         <item name="emptyDrawableUploads">@drawable/empty_uploads_dark</item>
         <item name="emptyDrawableMessages">@drawable/no_comments_dark</item>
+        <item name="emptyDrawableNotifications">@drawable/no_notifications_dark</item>
         <item name="errorDrawable">@drawable/error_dark</item>
         <item name="repliesDrawable">@drawable/ic_add_white_18dp</item>
         <item name="snack_bar_background_color">@color/background_floating_material_light</item>
@@ -128,60 +140,70 @@
         <item name="colorPrimary">@color/theme_blue_primary</item>
         <item name="colorPrimaryDark">@color/theme_blue_dark</item>
         <item name="colorAccent">@color/theme_blue_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Blue</item>
     </style>
 
     <style name="Theme_Dark.Orange">
         <item name="colorPrimary">@color/theme_orange_primary</item>
         <item name="colorPrimaryDark">@color/theme_orange_dark</item>
         <item name="colorAccent">@color/theme_light_blue_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Orange</item>
     </style>
 
     <style name="Theme_Dark.Cyan">
         <item name="colorPrimary">@color/theme_cyan_primary</item>
         <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
         <item name="colorAccent">@color/theme_cyan_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Cyan</item>
     </style>
 
     <style name="Theme_Dark.Green">
         <item name="colorPrimary">@color/theme_green_primary</item>
         <item name="colorPrimaryDark">@color/theme_green_dark</item>
         <item name="colorAccent">@color/theme_green_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Green</item>
     </style>
 
     <style name="Theme_Dark.Teal">
         <item name="colorPrimary">@color/theme_teal_primary</item>
         <item name="colorPrimaryDark">@color/theme_teal_dark</item>
         <item name="colorAccent">@color/theme_teal_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Teal</item>
     </style>
 
     <style name="Theme_Dark.Red">
         <item name="colorPrimary">@color/theme_red_primary</item>
         <item name="colorPrimaryDark">@color/theme_red_dark</item>
         <item name="colorAccent">@color/theme_red_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Red</item>
     </style>
 
     <style name="Theme_Dark.Pink">
         <item name="colorPrimary">@color/theme_pink_primary</item>
         <item name="colorPrimaryDark">@color/theme_pink_dark</item>
         <item name="colorAccent">@color/theme_pink_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Pink</item>
     </style>
 
     <style name="Theme_Dark.Purple">
         <item name="colorPrimary">@color/theme_purple_primary</item>
         <item name="colorPrimaryDark">@color/theme_purple_dark</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Purple</item>
     </style>
 
     <style name="Theme_Dark.Grey">
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Grey</item>
     </style>
 
     <style name="Theme_Dark.Black">
         <item name="colorPrimary">@color/theme_black_primary</item>
         <item name="colorPrimaryDark">@color/theme_black_dark</item>
         <item name="colorAccent">@color/theme_black_accent</item>
+        <item name="actionModeStyle">@style/ActionMode.Black</item>
     </style>
 
 </resources>

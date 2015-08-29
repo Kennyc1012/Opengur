@@ -5,9 +5,9 @@
     android:background="@android:color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:loadingView="@layout/loading_view"
-    app:errorView="@layout/error_view"
-    app:viewState="loading">
+    app:msv_loadingView="@layout/loading_view"
+    app:msv_errorView="@layout/error_view"
+    app:msv_viewState="loading">
 
     <FrameLayout
         android:layout_width="match_parent"

@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".classes.OpengurApp"
@@ -228,12 +229,14 @@
         <activity android:name=".activities.MemeActivity" />
         <activity android:name=".activities.GallerySearchActivity" />
         <activity android:name=".activities.PhotoPickerActivity" />
+        <activity android:name=".activities.NotificationActivity" />
         <activity
             android:name=".activities.MuzeiSettingsActivity"
             android:exported="true" />
 
         <service android:name=".services.DownloaderService" />
         <service android:name=".services.UploadService" />
+        <service android:name=".services.NotificationService" />
 
         <service
             android:name=".services.ImgurMuzeiService"
@@ -253,6 +256,13 @@
         </service>
 
         <receiver android:name=".services.NotificationReceiver" />
+        <receiver android:name=".services.AlarmReceiver" />
+
+        <receiver android:name="com.kenny.openimgur.services.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="com.crashlytics.ApiKey"

@@ -96,7 +96,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-        ((Button) mMultiView.getView(MultiStateView.ViewState.ERROR).findViewById(R.id.errorButton)).setText(null);
+        ((Button) mMultiView.getView(MultiStateView.VIEW_STATE_ERROR).findViewById(R.id.errorButton)).setText(null);
 
         if (savedInstanceState != null) {
             mPhoto = savedInstanceState.getParcelable(KEY_IMGUR_OBJECT);
@@ -105,7 +105,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
         }
 
         if (mPhoto == null) {
-            mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         } else {
             configView(savedInstanceState);
         }
@@ -170,7 +170,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
                     return;
                 }
 
-                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
 
             @Override
@@ -211,13 +211,13 @@ public class FullScreenPhotoFragment extends BaseFragment {
                                 @Override
                                 public void onImageLoadError(Exception e) {
                                     LogUtil.e(TAG, "Error loading image", e);
-                                    if (mMultiView != null) mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                                    if (mMultiView != null) mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                                 }
 
                                 @Override
                                 public void onTileLoadError(Exception e) {
                                     LogUtil.e(TAG, "Error creating tile", e);
-                                    if (mMultiView != null) mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                                    if (mMultiView != null) mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                                 }
                             });
 
@@ -225,13 +225,13 @@ public class FullScreenPhotoFragment extends BaseFragment {
                             mImageView.setImage(ImageSource.uri(fileUri).dimensions(dimensions[0], dimensions[1]).tiling(enableTiling));
                             mVideoView.setVisibility(View.GONE);
                             mGifImageView.setVisibility(View.GONE);
-                            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                         } else {
-                            mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                            mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                         }
                     } catch (Exception e) {
                         LogUtil.e(TAG, "Error creating tile bitmap", e);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     }
                 }
             }
@@ -256,7 +256,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
         }
 
         if (FileUtil.isFileValid(file)) {
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             mVideoView.setVisibility(View.VISIBLE);
             mImageView.setVisibility(View.GONE);
 
@@ -279,16 +279,16 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
                 @Override
                 public void onVideoDownloadFailed(Exception ex, String url) {
-                    if (getActivity() == null | !isAdded() || isRemoving()) return;
+                    if (!isAdded() || isRemoving()) return;
 
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
 
                 @Override
                 public void onVideoDownloadComplete(File file) {
-                    if (getActivity() == null | !isAdded() || isRemoving()) return;
+                    if (!isAdded() || isRemoving()) return;
 
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     mVideoView.setVisibility(View.VISIBLE);
                     mImageView.setVisibility(View.GONE);
 
@@ -314,17 +314,17 @@ public class FullScreenPhotoFragment extends BaseFragment {
             // Auto play the gif if we are visible
             File file = app.getImageLoader().getDiskCache().get(url);
             if (!ImageUtil.loadAndDisplayGif(mGifImageView, file)) {
-                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             } else {
                 mVideoView.setVisibility(View.GONE);
                 mImageView.setVisibility(View.GONE);
-                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
         } else {
             mVideoView.setVisibility(View.GONE);
             mImageView.setVisibility(View.GONE);
             app.getImageLoader().displayImage(url, mGifImageView);
-            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         }
     }
 

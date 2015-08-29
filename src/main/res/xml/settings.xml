@@ -65,6 +65,33 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/notifications">
+
+        <CheckBoxPreference
+            android:key="notifications"
+            android:title="@string/pref_notification_title"
+            android:defaultValue="true" />
+
+        <ListPreference
+            android:key="notificationFrequency"
+            android:title="@string/pref_notification_frequency"
+            android:entries="@array/notification_times"
+            android:entryValues="@array/pref_notification_keys"
+            android:defaultValue="30" />
+
+        <RingtonePreference
+            android:key="notificationRingtone"
+            android:title="@string/pref_notification_ringtone" />
+
+        <CheckBoxPreference
+            android:key="notificationVibrate"
+            android:title="@string/pref_notification_vibrate"
+            android:summaryOn="@string/pref_notification_vibrate_on"
+            android:summaryOff="@string/pref_notification_vibrate_off"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/pref_cache_title">
 
         <ListPreference

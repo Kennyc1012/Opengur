@@ -5,8 +5,8 @@
     android:background="@android:color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:loadingView="@layout/loading_view"
-    app:viewState="loading">
+    app:msv_loadingView="@layout/loading_view"
+    app:msv_viewState="loading">
 
     <ImageView
         android:id="@+id/image"

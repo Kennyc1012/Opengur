@@ -4,9 +4,9 @@
     android:id="@+id/multiView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:loadingView="@layout/loading_view"
-    app:emptyView="@layout/uploads_empty"
-    app:viewState="loading">
+    app:msv_loadingView="@layout/loading_view"
+    app:msv_emptyView="@layout/uploads_empty"
+    app:msv_viewState="loading">
 
     <include layout="@layout/grid_view" />
 

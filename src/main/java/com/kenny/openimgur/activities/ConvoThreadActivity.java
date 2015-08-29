@@ -20,12 +20,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.amulyakhare.textdrawable.MaterialColor;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
-import com.kenny.openimgur.api.responses.ConverastionResponse;
+import com.kenny.openimgur.api.responses.ConversationResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurListener;
@@ -112,7 +112,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
                 if (mAdapter != null) mAdapter.clear();
                 mHasMore = true;
@@ -144,7 +144,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         }
 
         if (mConvo.getMessages() != null && !mConvo.getMessages().isEmpty()) {
-            mAdapter = new MessagesAdapter(getApplicationContext(), ColorGenerator.DEFAULT.getColor(mConvo.getWithAccount()), mConvo.getMessages(), this);
+            mAdapter = new MessagesAdapter(getApplicationContext(), MaterialColor.getColor(mConvo.getWithAccount()), mConvo.getMessages(), this);
             mConvoList.setAdapter(mAdapter);
             mConvoList.scrollToPosition(mAdapter.getItemCount() - 1);
             mHasScrolledInitially = true;
@@ -168,7 +168,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
     protected void onResume() {
         super.onResume();
         if (mAdapter == null || mAdapter.isEmpty()) {
-            mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             fetchMessages();
         }
 
@@ -189,24 +189,28 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
 
     private void fetchMessages() {
         // Having an id of -1 means that they are starting the convo from the Info fragment where an id is not known
-        if (mConvo.getId().equals("-1")) onEmpty();
+        if (mConvo.getId().equals("-1")) {
+            onEmpty();
+            return;
+        }
+
         mIsLoading = true;
-        ApiClient.getService().getMessages(mConvo.getId(), mCurrentPage, new Callback<ConverastionResponse>() {
+        ApiClient.getService().getMessages(mConvo.getId(), mCurrentPage, new Callback<ConversationResponse>() {
             @Override
-            public void success(ConverastionResponse converastionResponse, Response response) {
+            public void success(ConversationResponse conversationResponse, Response response) {
                 mIsLoading = false;
 
-                if (converastionResponse == null) {
+                if (conversationResponse == null) {
                     mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     return;
                 }
 
-                if (converastionResponse.data.hasMessages()) {
+                if (conversationResponse.data.hasMessages()) {
                     boolean scrollToBottom = false;
 
                     if (mAdapter == null) {
-                        mAdapter = new MessagesAdapter(getApplicationContext(), ColorGenerator.DEFAULT.getColor(mConvo.getWithAccount()), converastionResponse.data.getMessages(), ConvoThreadActivity.this);
+                        mAdapter = new MessagesAdapter(getApplicationContext(), MaterialColor.getColor(mConvo.getWithAccount()), conversationResponse.data.getMessages(), ConvoThreadActivity.this);
                         mConvoList.setAdapter(mAdapter);
                         // Start at the bottom of the list when we receive the first set of messages
                         scrollToBottom = true;
@@ -214,14 +218,15 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                         // The list needs to be reorder so that the newly fetch messages will
                         // be at the top of the list as they will be older
                         List<ImgurMessage> retainedMessages = mAdapter.retainItems();
-                        converastionResponse.data.getMessages().addAll(retainedMessages);
+                        conversationResponse.data.getMessages().addAll(retainedMessages);
                         mAdapter.clear();
-                        mAdapter.addItems(converastionResponse.data.getMessages());
-                        if (mLayoutManager.findFirstVisibleItemPosition() != 0) scrollToBottom = true;
+                        mAdapter.addItems(conversationResponse.data.getMessages());
+                        if (mLayoutManager.findFirstVisibleItemPosition() != 0)
+                            scrollToBottom = true;
                     }
 
 
-                    mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
 
                     if (scrollToBottom) {
                         mMultiView.post(new Runnable() {
@@ -242,7 +247,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
             public void failure(RetrofitError error) {
                 LogUtil.e(TAG, "Error fetching message", error);
                 mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 mIsLoading = false;
             }
         });
@@ -252,13 +257,13 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         if (mAdapter == null) {
             List<ImgurMessage> messages = new ArrayList<>();
             messages.add(message);
-            mAdapter = new MessagesAdapter(getApplicationContext(), ColorGenerator.DEFAULT.getColor(mConvo.getWithAccount()), messages, this);
+            mAdapter = new MessagesAdapter(getApplicationContext(), MaterialColor.getColor(mConvo.getWithAccount()), messages, this);
             mConvoList.setAdapter(mAdapter);
         } else {
             mAdapter.addItem(message);
         }
 
-        mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+        mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         mConvoList.scrollToPosition(mAdapter.getItemCount() - 1);
         mMessageInput.setText(null);
 
@@ -337,7 +342,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
 
         if (mAdapter == null || mAdapter.isEmpty()) {
             mMultiView.setEmptyText(R.id.emptyMessage, getString(R.string.convo_message_hint));
-            mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
     }
 

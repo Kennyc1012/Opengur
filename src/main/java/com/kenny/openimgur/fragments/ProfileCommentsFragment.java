@@ -110,7 +110,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
                                 mHasMore = true;
                                 mIsLoading = false;
                                 fetchComments();
-                                mMultiStatView.setViewState(MultiStateView.ViewState.LOADING);
+                                mMultiStatView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                             }
                         }).show();
                 return true;
@@ -152,7 +152,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
                 mAdapter = new ProfileCommentAdapter(getActivity(), comments, this);
                 mCommentList.setAdapter(mAdapter);
                 mCommentList.scrollToPosition(savedInstanceState.getInt(KEY_POSITION, 0));
-                mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
+                mMultiStatView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
         } else {
             if (args == null || !args.containsKey(KEY_USER)) {
@@ -179,7 +179,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
     public void onResume() {
         super.onResume();
         if (mAdapter == null || mAdapter.isEmpty()) {
-            mMultiStatView.setViewState(MultiStateView.ViewState.LOADING);
+            mMultiStatView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             fetchComments();
         }
     }
@@ -199,7 +199,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
                         mAdapter.addItems(commentResponse.data);
                     }
 
-                    mMultiStatView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiStatView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
 
                     if (mPage == 0) {
                         mMultiStatView.post(new Runnable() {
@@ -216,7 +216,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
                     // Only show empty view when the user has posted no comments
                     if (mAdapter == null || mAdapter.isEmpty()) {
                         mMultiStatView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_comments, mSelectedUser.getUsername()));
-                        mMultiStatView.setViewState(MultiStateView.ViewState.EMPTY);
+                        mMultiStatView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                     }
                 }
 
@@ -230,7 +230,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
 
                 if (mAdapter == null || !mAdapter.isEmpty()) {
                     mMultiStatView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                    mMultiStatView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiStatView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
 
                 mIsLoading = false;

@@ -1,7 +1,6 @@
 package com.kenny.openimgur.services;
 
 import android.app.IntentService;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -22,8 +21,10 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.Upload;
+import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
 
 import java.io.File;
@@ -53,11 +54,7 @@ public class UploadService extends IntentService {
     // No Topic
     private static final int FALLBACK_TOPIC = 29;
 
-    private NotificationManager mManager;
-
-    private NotificationCompat.Builder mBuilder;
-
-    private int mNotificationId;
+    private UploadNotification mNotification;
 
     /**
      * Creates service for uploading photos.
@@ -101,7 +98,7 @@ public class UploadService extends IntentService {
 
         try {
             OpengurApp app = OpengurApp.getInstance(getApplicationContext());
-            onUploadStarted(app);
+            mNotification = new UploadNotification(getApplicationContext());
 
             ImgurTopic topic = intent.getParcelableExtra(KEY_TOPIC);
             String title = intent.getStringExtra(KEY_TITLE);
@@ -116,7 +113,7 @@ public class UploadService extends IntentService {
 
             for (int i = 0; i < totalUploads; i++) {
                 Upload u = uploads.get(i);
-                onPhotoUploading(totalUploads, i + 1);
+                mNotification.onPhotoUploading(totalUploads, i + 1);
                 PhotoResponse response = null;
 
                 try {
@@ -169,62 +166,11 @@ public class UploadService extends IntentService {
             } else {
                 // No photos were uploaded, double you tee eff mate
                 LogUtil.w(TAG, "No photos were uploaded");
-                onPhotoUploadFailed();
+                mNotification.onPhotoUploadFailed();
             }
         } finally {
             if (wakeLock.isHeld()) wakeLock.release();
         }
-    }
-
-    /**
-     * Called when the upload is about to begin.
-     *
-     * @param app
-     */
-    private void onUploadStarted(OpengurApp app) {
-        mNotificationId = (int) System.currentTimeMillis();
-        mManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        mBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle(getString(R.string.upload_notif_starting))
-                .setContentText(getString(R.string.upload_notif_starting_content))
-                .setSmallIcon(R.drawable.ic_notif)
-                .setColor(getResources().getColor(app.getImgurTheme().primaryColor));
-
-        mManager.notify(mNotificationId, mBuilder.build());
-    }
-
-    /**
-     * Called when a photo has begun to upload to the API
-     *
-     * @param totalUploads The total number of photos to upload
-     * @param uploadNumber The current photo number that is being uploaded
-     */
-    private void onPhotoUploading(int totalUploads, int uploadNumber) {
-        String contentText = getResources().getQuantityString(R.plurals.upload_notif_photos, totalUploads, uploadNumber, totalUploads);
-
-        mBuilder.setContentTitle(getString(R.string.upload_notif_in_progress))
-                .setContentText(contentText);
-
-        if (totalUploads > 1) {
-            mBuilder.setProgress(totalUploads, uploadNumber, false);
-        } else {
-            mBuilder.setProgress(0, 0, true);
-        }
-
-        mManager.notify(mNotificationId, mBuilder.build());
-    }
-
-    /**
-     * Called when there is an error while uploading
-     */
-    private void onPhotoUploadFailed() {
-        mBuilder.setContentTitle(getString(R.string.error))
-                .setContentText(getString(R.string.upload_notif_error))
-                .setProgress(0, 0, false)
-                .setAutoCancel(true);
-
-        mManager.notify(mNotificationId, mBuilder.build());
     }
 
     /**
@@ -237,22 +183,7 @@ public class UploadService extends IntentService {
      */
     private void onPartialPhotoUpload(List<ImgurPhoto> uploadedPhotos, int total, @Nullable String title, @Nullable String desc) {
         if (uploadedPhotos.size() == 1) {
-            // Show the notification immediately as an album will not be created for only 1 photo
-            String msg = getString(R.string.upload_notif_error_upload_complete_long, uploadedPhotos.size(), total);
-            String url = uploadedPhotos.get(0).getLink();
-            Intent intent = NotificationReceiver.createCopyIntent(getApplicationContext(), url, mNotificationId);
-            PendingIntent pIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-            mBuilder.setContentTitle(getString(R.string.error))
-                    .setContentText(getString(R.string.upload_notif_error_upload_incomplete_short))
-                    .setProgress(0, 0, false)
-                    .setAutoCancel(true)
-                    .addAction(R.drawable.ic_action_copy, getString(R.string.copy_link), pIntent)
-                    .setStyle(new NotificationCompat
-                            .BigTextStyle()
-                            .bigText(msg));
-
-            mManager.notify(mNotificationId, mBuilder.build());
+            mNotification.onPartialPhotoUpload(uploadedPhotos.get(0), total);
         } else {
             createAlbum(uploadedPhotos, false, title, desc, null);
         }
@@ -273,7 +204,7 @@ public class UploadService extends IntentService {
 
             if (!submitToGallery) {
                 LogUtil.v(TAG, "Image uploaded successfully, not submitting to gallery");
-                onSuccessfulUpload(photo);
+                mNotification.onSuccessfulUpload(photo);
             } else {
                 // Upload to gallery
                 LogUtil.v(TAG, "Uploading image to gallery with title " + title);
@@ -283,58 +214,6 @@ public class UploadService extends IntentService {
             LogUtil.v(TAG, "Creating album");
             createAlbum(uploadedPhotos, submitToGallery, title, desc, topic);
         }
-    }
-
-    /**
-     * Called when submitting to the gallery has failed
-     *
-     * @param upload
-     */
-    private void onGallerySubmitFailed(ImgurBaseObject upload) {
-        String url = upload.getLink();
-        Intent intent = NotificationReceiver.createCopyIntent(getApplicationContext(), url, mNotificationId);
-        PendingIntent pIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        mBuilder.setContentTitle(getString(R.string.error))
-                .setContentText(getString(R.string.upload_gallery_failed))
-                .addAction(R.drawable.ic_action_copy, getString(R.string.copy_link), pIntent)
-                .setProgress(0, 0, false)
-                .setContentInfo(null)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(getString(R.string.upload_gallery_failed_long)));
-
-        mManager.notify(mNotificationId, mBuilder.build());
-    }
-
-    /**
-     * Called when creating the album failed
-     */
-    private void onAlbumCreationFailed() {
-        mBuilder.setContentTitle(getString(R.string.error))
-                .setContentText(getString(R.string.upload_album_failed))
-                .setProgress(0, 0, false)
-                .setContentInfo(null)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(getString(R.string.upload_album_failed_long)));
-
-        mManager.notify(mNotificationId, mBuilder.build());
-    }
-
-    /**
-     * Called when everything has been successfully uploaded/created and the success notification should be displayed
-     *
-     * @param obj
-     */
-    private void onSuccessfulUpload(ImgurBaseObject obj) {
-        String url = obj.getLink();
-        Intent intent = NotificationReceiver.createCopyIntent(getApplicationContext(), url, mNotificationId);
-        PendingIntent pIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        mBuilder.setContentTitle(getString(R.string.upload_complete))
-                .setContentText(getString(R.string.upload_success, url))
-                .addAction(R.drawable.ic_action_copy, getString(R.string.copy_link), pIntent)
-                .setProgress(0, 0, false)
-                .setContentInfo(null);
-
-        mManager.notify(mNotificationId, mBuilder.build());
     }
 
     /**
@@ -368,18 +247,18 @@ public class UploadService extends IntentService {
 
                 if (!submitToGallery) {
                     LogUtil.v(TAG, "Album creation successful");
-                    onSuccessfulUpload(album);
+                    mNotification.onSuccessfulUpload(album);
                 } else {
                     LogUtil.v(TAG, "Submitting album to gallery with title " + title);
                     submitToGallery(title, topic != null ? topic.getId() : FALLBACK_TOPIC, album);
                 }
             } else {
                 LogUtil.w(TAG, "Response did not receive an object");
-                onAlbumCreationFailed();
+                mNotification.onAlbumCreationFailed();
             }
         } catch (RetrofitError ex) {
             LogUtil.e(TAG, "Error while creating album", ex);
-            onAlbumCreationFailed();
+            mNotification.onAlbumCreationFailed();
         }
     }
 
@@ -391,31 +270,169 @@ public class UploadService extends IntentService {
      * @param upload  The item being submitted to the gallery
      */
     private void submitToGallery(@NonNull String title, int topicId, ImgurBaseObject upload) {
-        mBuilder.setContentTitle(getString(R.string.upload_gallery_title))
-                .setContentText(getString(R.string.upload_gallery_message))
-                .setProgress(0, 0, true);
-
-        mManager.notify(mNotificationId, mBuilder.build());
+        mNotification.onSubmitToGallery();
 
         try {
             BasicResponse response = ApiClient.getService().submitToGallery(upload.getId(), title, topicId, "1");
 
             if (response != null && response.data) {
-                onSuccessfulUpload(upload);
+                mNotification.onSuccessfulUpload(upload);
             } else {
-                onGallerySubmitFailed(upload);
+                mNotification.onGallerySubmitFailed(upload);
             }
         } catch (RetrofitError ex) {
             LogUtil.e(TAG, "Error while submitting to gallery", ex);
-            onGallerySubmitFailed(upload);
+            mNotification.onGallerySubmitFailed(upload);
         }
     }
 
     @Override
     public void onDestroy() {
         LogUtil.v(TAG, "onDestroy");
-        mManager = null;
-        mBuilder = null;
+        mNotification = null;
         super.onDestroy();
+    }
+
+    private static class UploadNotification extends BaseNotification {
+        private int notificationId;
+
+        public UploadNotification(Context context) {
+            super(context);
+            notificationId = (int) System.currentTimeMillis();
+            builder.setContentTitle(app.getString(R.string.upload_notif_starting))
+                    .setContentText(app.getString(R.string.upload_notif_starting_content));
+        }
+
+        /**
+         * Called when a photo has begun to upload to the API
+         *
+         * @param totalUploads The total number of photos to upload
+         * @param uploadNumber The current photo number that is being uploaded
+         */
+        public void onPhotoUploading(int totalUploads, int uploadNumber) {
+            String contentText = app.getResources().getQuantityString(R.plurals.upload_notif_photos, totalUploads, uploadNumber, totalUploads);
+
+            builder.setContentTitle(app.getString(R.string.upload_notif_in_progress))
+                    .setContentText(contentText);
+
+            if (totalUploads > 1) {
+                builder.setProgress(totalUploads, uploadNumber, false);
+            } else {
+                builder.setProgress(0, 0, true);
+            }
+
+            postNotification();
+        }
+
+        /**
+         * Called when everything has been successfully uploaded/created and the success notification should be displayed
+         *
+         * @param obj
+         */
+        public void onSuccessfulUpload(ImgurBaseObject obj) {
+            String url = obj.getLink();
+            Intent intent = NotificationReceiver.createCopyIntent(app, url, getNotificationId());
+            PendingIntent pIntent = PendingIntent.getBroadcast(app, RequestCodes.UPLOADS, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+            builder.setContentTitle(app.getString(R.string.upload_complete))
+                    .setContentText(app.getString(R.string.upload_success, url))
+                    .addAction(R.drawable.ic_action_copy, app.getString(R.string.copy_link), pIntent)
+                    .setProgress(0, 0, false)
+                    .setContentInfo(null);
+
+            postNotification();
+        }
+
+        /**
+         * Called when submitting to the gallery has failed
+         *
+         * @param upload
+         */
+        public void onGallerySubmitFailed(ImgurBaseObject upload) {
+            String url = upload.getLink();
+            Intent intent = NotificationReceiver.createCopyIntent(app, url, getNotificationId());
+            PendingIntent pIntent = PendingIntent.getBroadcast(app, RequestCodes.UPLOADS, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+            builder.setContentTitle(app.getString(R.string.error))
+                    .setContentText(app.getString(R.string.upload_gallery_failed))
+                    .addAction(R.drawable.ic_action_copy, app.getString(R.string.copy_link), pIntent)
+                    .setProgress(0, 0, false)
+                    .setContentInfo(null)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(app.getString(R.string.upload_gallery_failed_long)));
+
+            postNotification();
+        }
+
+        /**
+         * Called when creating the album failed
+         */
+        public void onAlbumCreationFailed() {
+            builder.setContentTitle(app.getString(R.string.error))
+                    .setContentText(app.getString(R.string.upload_album_failed))
+                    .setProgress(0, 0, false)
+                    .setContentInfo(null)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(app.getString(R.string.upload_album_failed_long)));
+
+            postNotification();
+        }
+
+        /**
+         * Called when there is an error while uploading
+         */
+        public void onPhotoUploadFailed() {
+            builder.setContentTitle(app.getString(R.string.error))
+                    .setContentText(app.getString(R.string.upload_notif_error))
+                    .setProgress(0, 0, false)
+                    .setAutoCancel(true);
+
+            postNotification();
+        }
+
+        /**
+         * Called when submitting to gallery
+         */
+        public void onSubmitToGallery() {
+            builder.setContentTitle(app.getString(R.string.upload_gallery_title))
+                    .setContentText(app.getString(R.string.upload_gallery_message))
+                    .setProgress(0, 0, true);
+
+            postNotification();
+        }
+
+        /**
+         * Called when not every photo was uploaded successfully.
+         *
+         * @param photo The photo that was uploaded
+         * @param total How many photos were supposed to be uploaded
+         */
+        public void onPartialPhotoUpload(ImgurPhoto photo, int total) {
+            // Show the notification immediately as an album will not be created for only 1 photo
+            String msg = app.getString(R.string.upload_notif_error_upload_complete_long, 1, total);
+            String url = photo.getLink();
+            Intent intent = NotificationReceiver.createCopyIntent(app, url, getNotificationId());
+            PendingIntent pIntent = PendingIntent.getBroadcast(app, RequestCodes.UPLOADS, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+            builder.setContentTitle(app.getString(R.string.error))
+                    .setContentText(app.getString(R.string.upload_notif_error_upload_incomplete_short))
+                    .setProgress(0, 0, false)
+                    .setAutoCancel(true)
+                    .addAction(R.drawable.ic_action_copy, app.getString(R.string.copy_link), pIntent)
+                    .setStyle(new NotificationCompat
+                            .BigTextStyle()
+                            .bigText(msg));
+
+            postNotification();
+        }
+
+        @NonNull
+        @Override
+        protected String getTitle() {
+            return "";
+        }
+
+        @Override
+        protected int getNotificationId() {
+            return notificationId;
+        }
     }
 }

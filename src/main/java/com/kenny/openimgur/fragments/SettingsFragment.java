@@ -5,12 +5,15 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.RingtonePreference;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
@@ -39,11 +42,12 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bindListPreference(findPreference(SettingsActivity.CACHE_SIZE_KEY));
-        bindListPreference(findPreference(SettingsActivity.THEME_KEY));
+        bindListPreference(findPreference(SettingsActivity.KEY_CACHE_SIZE));
+        bindListPreference(findPreference(SettingsActivity.KEY_THEME));
         bindListPreference(findPreference(SettingsActivity.KEY_CACHE_LOC));
         bindListPreference(findPreference(SettingsActivity.KEY_THUMBNAIL_QUALITY));
-        findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setOnPreferenceClickListener(this);
+        bindListPreference(findPreference(SettingsActivity.KEY_NOTIFICATION_FREQUENCY));
+        findPreference(SettingsActivity.KEY_CURRENT_CACHE_SIZE).setOnPreferenceClickListener(this);
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
         findPreference("redditHistory").setOnPreferenceClickListener(this);
@@ -51,6 +55,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         findPreference("experimentalSettings").setOnPreferenceClickListener(this);
         findPreference(SettingsActivity.KEY_ADB).setOnPreferenceChangeListener(this);
         findPreference(SettingsActivity.KEY_DARK_THEME).setOnPreferenceChangeListener(this);
+        findPreference(SettingsActivity.KEY_NOTIFICATION_RINGTONE).setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -63,14 +68,18 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
     public void onResume() {
         super.onResume();
         long cacheSize = FileUtil.getDirectorySize(mApp.getImageLoader().getDiskCache().getDirectory());
-        findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
+        findPreference(SettingsActivity.KEY_CURRENT_CACHE_SIZE).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
 
         try {
             String version = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName;
             findPreference("version").setSummary(version);
         } catch (PackageManager.NameNotFoundException e) {
-            LogUtil.e("Settings Activity", "Unable to get version summary", e);
+            LogUtil.e(TAG, "Unable to get version summary", e);
         }
+
+
+        String ringtone = mApp.getPreferences().getString(SettingsActivity.KEY_NOTIFICATION_RINGTONE, null);
+        if (!TextUtils.isEmpty(ringtone)) findPreference(SettingsActivity.KEY_NOTIFICATION_RINGTONE).setSummary(getNotificationRingtone(ringtone));
     }
 
     @Override
@@ -83,7 +92,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
             int prefIndex = listPreference.findIndexOfValue(object.toString());
 
             switch (key) {
-                case SettingsActivity.THEME_KEY:
+                case SettingsActivity.KEY_THEME:
                     boolean isDarkTheme = mApp.getImgurTheme().isDarkTheme;
                     ImgurTheme theme = ImgurTheme.getThemeFromString(listPreference.getEntries()[prefIndex].toString());
                     theme.isDarkTheme = isDarkTheme;
@@ -115,6 +124,9 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
                     updated = true;
                     break;
             }
+        } else if (preference instanceof RingtonePreference) {
+            preference.setSummary(getNotificationRingtone(object.toString()));
+            updated = true;
         }
 
         return updated;
@@ -123,7 +135,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
     @Override
     public boolean onPreferenceClick(final Preference preference) {
         switch (preference.getKey()) {
-            case SettingsActivity.CURRENT_CACHE_SIZE_KEY:
+            case SettingsActivity.KEY_CURRENT_CACHE_SIZE:
                 new AlertDialog.Builder(getActivity(), mApp.getImgurTheme().getAlertDialogTheme())
                         .setTitle(R.string.clear_cache)
                         .setMessage(R.string.clear_cache_message)
@@ -175,6 +187,17 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         return super.onPreferenceClick(preference);
     }
 
+    @Nullable
+    private String getNotificationRingtone(String uri) {
+        try {
+            Uri ringTone = Uri.parse(uri);
+            return RingtoneManager.getRingtone(getActivity(), ringTone).getTitle(getActivity());
+        } catch (Exception ex) {
+            LogUtil.e(TAG, "Unable to parse ringtone", ex);
+            return null;
+        }
+    }
+
     private static class DeleteCacheTask extends AsyncTask<Void, Void, Long> {
         private WeakReference<SettingsFragment> mFragment;
 
@@ -211,7 +234,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
             SettingsFragment frag = mFragment.get();
 
             if (frag != null) {
-                frag.findPreference(SettingsActivity.CURRENT_CACHE_SIZE_KEY).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
+                frag.findPreference(SettingsActivity.KEY_CURRENT_CACHE_SIZE).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
                 Fragment fragment = frag.getFragmentManager().findFragmentByTag("loading");
 
                 if (fragment != null) {

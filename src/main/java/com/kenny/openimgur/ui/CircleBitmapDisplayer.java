@@ -1,15 +1,16 @@
 package com.kenny.openimgur.ui;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
+import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.Shader;
-import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
@@ -19,105 +20,85 @@ import com.nostra13.universalimageloader.core.imageaware.ImageAware;
  * Created by kcampagna on 12/22/14.
  */
 public class CircleBitmapDisplayer implements BitmapDisplayer {
-    @Override
-    public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
-        imageAware.setImageDrawable(new RoundedDrawable(bitmap));
+
+    private final Resources mResources;
+
+    public CircleBitmapDisplayer(Resources resources) {
+        mResources = resources;
     }
 
-    /*
- * Copyright 2013 Evelio Tarazona Cáceres <evelio@evelio.info>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+    @Override
+    public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
+        imageAware.setImageDrawable(getRoundedBitmapDrawable(mResources, bitmap));
+    }
 
     /**
-     * A Drawable that draws an oval with given {@link Bitmap}
+     * Creates a round drawable
+     *
+     * @param res
+     * @param bitmap
+     * @return
      */
-    public static class RoundedDrawable extends Drawable {
-        private final Bitmap mBitmap;
+    @Nullable
+    public static RoundedBitmapDrawable getRoundedBitmapDrawable(Resources res, Bitmap bitmap) {
+        if (bitmap == null || bitmap.isRecycled()) return null;
+        float radius = Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f;
+        return getRoundedBitmapDrawable(res, bitmap, radius);
+    }
 
-        private final Paint mPaint;
+    /**
+     * Creates a drawable with rounded corners
+     *
+     * @param res
+     * @param bitmap
+     * @param radius
+     * @return
+     */
+    @Nullable
+    public static RoundedBitmapDrawable getRoundedBitmapDrawable(Resources res, Bitmap bitmap, float radius) {
+        if (bitmap == null || bitmap.isRecycled()) return null;
+        RoundedBitmapDrawable drawable = RoundedBitmapDrawableFactory.create(res, bitmap);
+        drawable.setCornerRadius(radius);
+        return drawable;
+    }
 
-        private final RectF mRectF;
+    /**
+     * Returns a bitmap that has been rounded
+     *
+     * @param bitmap
+     * @return
+     */
+    @Nullable
+    public static Bitmap getRoundedBitmap(Bitmap bitmap) {
+        if (bitmap == null || bitmap.isRecycled()) return null;
 
-        private final int mBitmapWidth;
+        Bitmap output;
 
-        private final int mBitmapHeight;
-
-        public RoundedDrawable(Bitmap bitmap) {
-            mBitmap = bitmap;
-            mRectF = new RectF();
-            mPaint = new Paint();
-            mPaint.setAntiAlias(true);
-            mPaint.setDither(true);
-            final BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-            mPaint.setShader(shader);
-
-            // NOTE: we assume bitmap is properly scaled to current density
-            mBitmapWidth = mBitmap.getWidth();
-            mBitmapHeight = mBitmap.getHeight();
+        if (bitmap.getWidth() > bitmap.getHeight()) {
+            output = Bitmap.createBitmap(bitmap.getHeight(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        } else {
+            output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getWidth(), Bitmap.Config.ARGB_8888);
         }
 
-        @Override
-        public void draw(Canvas canvas) {
-            canvas.drawOval(mRectF, mPaint);
+        float radius;
+
+        if (bitmap.getWidth() > bitmap.getHeight()) {
+            radius = bitmap.getHeight() / 2;
+        } else {
+            radius = bitmap.getWidth() / 2;
         }
 
-        @Override
-        protected void onBoundsChange(Rect bounds) {
-            super.onBoundsChange(bounds);
+        Canvas canvas = new Canvas(output);
 
-            mRectF.set(bounds);
-        }
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
 
-        @Override
-        public void setAlpha(int alpha) {
-            if (mPaint.getAlpha() != alpha) {
-                mPaint.setAlpha(alpha);
-                invalidateSelf();
-            }
-        }
-
-        @Override
-        public void setColorFilter(ColorFilter cf) {
-            mPaint.setColorFilter(cf);
-        }
-
-        @Override
-        public int getOpacity() {
-            return PixelFormat.TRANSLUCENT;
-        }
-
-        @Override
-        public int getIntrinsicWidth() {
-            return mBitmapWidth;
-        }
-
-        @Override
-        public int getIntrinsicHeight() {
-            return mBitmapHeight;
-        }
-
-        @Override
-        public void setFilterBitmap(boolean filter) {
-            mPaint.setFilterBitmap(filter);
-            invalidateSelf();
-        }
-
-        @Override
-        public void setDither(boolean dither) {
-            mPaint.setDither(dither);
-            invalidateSelf();
-        }
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(Color.BLACK);
+        canvas.drawCircle(radius, radius, radius, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        return output;
     }
 }

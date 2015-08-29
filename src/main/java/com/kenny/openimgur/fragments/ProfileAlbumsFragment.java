@@ -142,12 +142,12 @@ public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnL
         if (getAdapter() == null || getAdapter().isEmpty()) {
             String errorMessage = getString(R.string.profile_no_albums, mSelectedUser.getUsername());
             mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
-            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
     }
 
     private void deleteAlbum(final ImgurBaseObject album) {
-        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
         ApiClient.getService().deleteAlbum(album.getDeleteHash(), new Callback<BasicResponse>() {
             @Override
@@ -164,7 +164,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnL
                     if (adapter == null || adapter.isEmpty()) {
                         onEmptyResults();
                     } else {
-                        mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     }
 
                     SnackBar.show(getActivity(), R.string.profile_delete_success_album);
@@ -178,7 +178,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnL
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to delete Album", error);
                 SnackBar.show(getActivity(), R.string.error_generic);
-                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
         });
 

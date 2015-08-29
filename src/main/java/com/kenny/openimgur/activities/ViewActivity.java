@@ -20,6 +20,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
@@ -27,8 +29,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.cocosw.bottomsheet.BottomSheet;
-import com.cocosw.bottomsheet.BottomSheetListener;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -54,7 +54,10 @@ import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
+import com.kennyc.bottomsheet.BottomSheet;
+import com.kennyc.bottomsheet.BottomSheetListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -70,7 +73,7 @@ import retrofit.client.Response;
  * Created by kcampagna on 7/12/14.
  */
 public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener,
-        SideGalleryFragment.SideGalleryListener, BottomSheetListener, CommentPopupFragment.CommentListener {
+        SideGalleryFragment.SideGalleryListener, CommentPopupFragment.CommentListener {
     private enum CommentSort {
         BEST("best"),
         NEW("new"),
@@ -140,6 +143,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private static final String KEY_PANEL_EXPANDED = "panelExpanded";
 
+    private static final String PREF_HIDE_PANEL = "hide_panel";
+
     @Bind(R.id.pager)
     ViewPager mViewPager;
 
@@ -197,7 +202,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         setContentView(R.layout.activity_view);
         mCommentList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mSideGalleryFragment = (SideGalleryFragment) getFragmentManager().findFragmentById(R.id.sideGallery);
-        ((Button) mMultiView.getView(MultiStateView.ViewState.ERROR).findViewById(R.id.errorButton)).setText(R.string.load_comments);
+        ((Button) mMultiView.getView(MultiStateView.VIEW_STATE_ERROR).findViewById(R.id.errorButton)).setText(R.string.load_comments);
 
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -305,6 +310,38 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.view_activity, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mSlidingPane != null) {
+            boolean hidePanel = app.getPreferences().getBoolean(PREF_HIDE_PANEL, false);
+            if (hidePanel) mSlidingPane.setPanelHeight(0);
+            menu.findItem(R.id.hideBar).setChecked(hidePanel);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.hideBar:
+                boolean isChecked = item.isChecked();
+                item.setChecked(!isChecked);
+                app.getPreferences().edit().putBoolean(PREF_HIDE_PANEL, !isChecked).commit();
+                int height = isChecked ? ViewUtils.getActionBarHeight(this) : 0;
+                mSlidingPane.setPanelHeight(height);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (savedInstanceState == null) {
@@ -315,6 +352,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             if (!TextUtils.isEmpty(mGalleryId)) {
                 boolean isAlbumLink = getIntent().getBooleanExtra(KEY_VIEW_FOR_ALBUM, false);
                 fetchItemDetails(mGalleryId, isAlbumLink);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             } else {
                 mViewPager.setAdapter(mPagerAdapter);
 
@@ -347,10 +385,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             if (mLoadComments) {
-                mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             } else {
                 mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
-                mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
 
             if (savedInstanceState.getBoolean(KEY_PANEL_EXPANDED, false))
@@ -580,70 +618,63 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             boolean shouldClose = mCommentAdapter.setSelectedIndex(position);
 
             if (!shouldClose) {
-                new BottomSheet.Builder(this, R.style.BottomSheet_StyleDialog)
-                        .title(R.string.options)
+                final ImgurComment comment = mCommentAdapter.getItem(position);
+                new BottomSheet.Builder(this, R.menu.comment_menu)
+                        .setStyle(app.getImgurTheme().getBottomSheetTheme())
                         .grid()
-                        .sheet(R.menu.comment_menu)
-                        .listener(this)
-                        .object(mCommentAdapter.getItem(position))
+                        .setTitle(R.string.options)
+                        .setListener(new BottomSheetListener() {
+                            @Override
+                            public void onSheetShown() {
+                                LogUtil.v(TAG, "ImgurComment Selected " + comment);
+                            }
+
+                            @Override
+                            public void onSheetItemSelected(MenuItem menuItem) {
+                                int id = menuItem.getItemId();
+
+                                switch (id) {
+                                    case R.id.upVote:
+                                    case R.id.downVote:
+                                        if (user != null) {
+                                            String vote = id == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
+                                            comment.setVote(vote);
+                                            mCommentAdapter.notifyDataSetChanged();
+                                            voteOnComment(comment.getId(), vote);
+                                        } else {
+                                            SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                                        }
+                                        break;
+
+                                    case R.id.profile:
+                                        startActivity(ProfileActivity.createIntent(ViewActivity.this, comment.getAuthor()));
+                                        break;
+
+                                    case R.id.reply:
+                                        if (user != null) {
+                                            DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), comment.getId());
+                                            showDialogFragment(fragment, "comment");
+                                        } else {
+                                            SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                                        }
+                                        break;
+
+                                    case R.id.copy:
+                                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                        ClipData clip = ClipData.newPlainText(getString(R.string.comment), comment.getComment());
+                                        clipboard.setPrimaryClip(clip);
+                                        SnackBar.show(ViewActivity.this, R.string.comment_copied);
+                                        break;
+                                }
+                            }
+
+                            @Override
+                            public void onSheetDismissed() {
+                                mCommentAdapter.setSelectedIndex(-1);
+                            }
+                        })
                         .show();
             }
-        }
-    }
-
-    @Override
-    public void onSheetDismissed(Object object) {
-        mCommentAdapter.setSelectedIndex(-1);
-    }
-
-    @Override
-    public void onItemClicked(int id, Object object) {
-        if (!(object instanceof ImgurComment)) {
-            LogUtil.w(TAG, "onItemClicked did not yield an ImgurComment");
-            return;
-        }
-
-        ImgurComment comment = (ImgurComment) object;
-
-        switch (id) {
-            case R.id.upVote:
-            case R.id.downVote:
-                if (user != null) {
-                    String vote = id == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
-                    comment.setVote(vote);
-                    mCommentAdapter.notifyDataSetChanged();
-                    voteOnComment(comment.getId(), vote);
-                } else {
-                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
-                }
-                break;
-
-            case R.id.profile:
-                startActivity(ProfileActivity.createIntent(ViewActivity.this, comment.getAuthor()));
-                break;
-
-            case R.id.reply:
-                if (user != null) {
-                    DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), comment.getId());
-                    showDialogFragment(fragment, "comment");
-                } else {
-                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
-                }
-                break;
-
-            case R.id.copy:
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText(getString(R.string.comment), comment.getComment());
-                clipboard.setPrimaryClip(clip);
-                SnackBar.show(ViewActivity.this, R.string.comment_copied);
-                break;
-        }
-    }
-
-    @Override
-    public void onSheetShown(Object object) {
-        if (object instanceof ImgurComment) {
-            LogUtil.v(TAG, "ImgurComment Selected " + object);
         }
     }
 
@@ -656,7 +687,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 return;
             }
 
-            mMultiView.setViewState(MultiStateView.ViewState.LOADING);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort(), new Callback<CommentResponse>() {
                 @Override
                 public void success(CommentResponse commentResponse, Response response) {
@@ -666,7 +697,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                     if (commentResponse == null) {
                         mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                         return;
                     }
 
@@ -687,7 +718,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                             mCommentAdapter.setOP(imgurBaseObject.getAccount());
                             mCommentAdapter.clearExpansionInfo();
-                            mMultiView.setViewState(MultiStateView.ViewState.CONTENT);
+                            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
 
                             mMultiView.post(new Runnable() {
                                 @Override
@@ -697,19 +728,19 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             });
                         }
                     } else {
-                        mMultiView.setViewState(MultiStateView.ViewState.EMPTY);
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                     }
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
                     mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             });
-        } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.ViewState.ERROR) {
+        } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.VIEW_STATE_ERROR) {
             mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
-            mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
     }
 
@@ -720,7 +751,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 public void success(AlbumResponse albumResponse, Response response) {
                     if (albumResponse == null) {
                         mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                         return;
                     }
 
@@ -739,7 +770,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 public void failure(RetrofitError error) {
                     LogUtil.e(TAG, "Unable to fetch album details", error);
                     mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             });
         } else {
@@ -755,7 +786,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         fetchComments();
                     } else {
                         mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
-                        mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     }
                 }
 
@@ -763,7 +794,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 public void failure(RetrofitError error) {
                     LogUtil.e(TAG, "Unable to fetch album details", error);
                     mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
-                    mMultiView.setViewState(MultiStateView.ViewState.ERROR);
+                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             });
         }

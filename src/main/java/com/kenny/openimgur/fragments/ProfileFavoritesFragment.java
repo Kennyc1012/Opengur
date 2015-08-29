@@ -69,7 +69,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mMultiStateView.setViewState(MultiStateView.ViewState.LOADING);
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                         removeFavorite(obj);
                     }
                 })
@@ -105,18 +105,22 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
 
     @Override
     public void onClick(View v) {
-        ImgurBaseObject obj = getAdapter().getItem(mGrid.getChildAdapterPosition(v));
-        Intent intent;
+        int position = mGrid.getChildAdapterPosition(v);
 
-        if (obj instanceof ImgurAlbum || obj.getUpVotes() > Integer.MIN_VALUE) {
-            ArrayList<ImgurBaseObject> items = new ArrayList<>(1);
-            items.add(obj);
-            intent = ViewActivity.createIntent(getActivity(), items, 0);
-        } else {
-            intent = FullScreenPhotoActivity.createIntent(getActivity(), obj.getLink());
+        if (position >= 0) {
+            ImgurBaseObject obj = getAdapter().getItem(position);
+            Intent intent;
+
+            if (obj instanceof ImgurAlbum || obj.getUpVotes() > Integer.MIN_VALUE) {
+                ArrayList<ImgurBaseObject> items = new ArrayList<>(1);
+                items.add(obj);
+                intent = ViewActivity.createIntent(getActivity(), items, 0);
+            } else {
+                intent = FullScreenPhotoActivity.createIntent(getActivity(), obj.getLink());
+            }
+
+            startActivity(intent);
         }
-
-        startActivity(intent);
     }
 
     @Override
@@ -157,7 +161,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
         if (getAdapter() == null || getAdapter().isEmpty()) {
             String errorMessage = getString(R.string.profile_no_favorites, mSelectedUser.getUsername());
             mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
-            mMultiStateView.setViewState(MultiStateView.ViewState.ERROR);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
     }
 
@@ -171,10 +175,10 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
                 if (basicResponse != null && basicResponse.success) {
                     GalleryAdapter2 adapter = getAdapter();
                     if (adapter != null) adapter.removeItem(object);
-                    mMultiStateView.setViewState(adapter != null && adapter.isEmpty() ? MultiStateView.ViewState.EMPTY : MultiStateView.ViewState.CONTENT);
+                    mMultiStateView.setViewState(adapter != null && adapter.isEmpty() ? MultiStateView.VIEW_STATE_EMPTY : MultiStateView.VIEW_STATE_CONTENT);
                 } else {
                     SnackBar.show(getActivity(), R.string.error_generic);
-                    mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                    mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 }
             }
 
@@ -183,7 +187,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to favorite item", error);
                 SnackBar.show(getActivity(), R.string.error_generic);
-                mMultiStateView.setViewState(MultiStateView.ViewState.CONTENT);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
         };
 
