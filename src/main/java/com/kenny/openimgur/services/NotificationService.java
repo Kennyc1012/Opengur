@@ -30,7 +30,6 @@ import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.ui.CircleBitmapDisplayer;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -265,6 +264,11 @@ public class NotificationService extends IntentService {
             Intent intent = NotificationReceiver.createNotificationIntent(app, obj);
             pendingIntent = PendingIntent.getBroadcast(app, getNotificationId(), intent, PendingIntent.FLAG_ONE_SHOT);
             builder.setContentIntent(pendingIntent);
+
+            Intent readIntent = NotificationReceiver.createReadNotificationsIntent(app, getNotificationId());
+            PendingIntent readPIntent = PendingIntent.getBroadcast(app, RequestCodes.NOTIFICATIONS_READ, readIntent, PendingIntent.FLAG_ONE_SHOT);
+            String msg = resources.getQuantityString(R.plurals.notification_mark_read, messageNotifications + replyNotifications);
+            builder.addAction(R.drawable.ic_done_white_24dp, msg, readPIntent);
         }
 
         @Override

@@ -31,7 +31,9 @@ import com.kenny.openimgur.util.DBContracts.UploadContract;
 import com.kenny.openimgur.util.DBContracts.UserContract;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by kcampagna on 7/25/14.
@@ -678,20 +680,17 @@ public class SqlHelper extends SQLiteOpenHelper {
      */
     @Nullable
     public String getNotificationIds() {
-        List<ImgurNotification> notifications = getNotifications(true);
+        Cursor cursor = getReadableDatabase().rawQuery(NotificationContract.GET_UNREAD_NOTIFICATIONS_SQL, null);
+        String[] ids = new String[cursor.getCount()];
+        int i = 0;
 
-        if (!notifications.isEmpty()) {
-            String[] ids = new String[notifications.size()];
-            int i = 0;
-
-            for (ImgurNotification n : notifications) {
-                ids[i] = String.valueOf(n.getId());
-            }
-
-            return TextUtils.join(",", ids);
+        while (cursor.moveToNext()) {
+            ids[i] = cursor.getString(0);
+            i++;
         }
 
-        return null;
+        cursor.close();
+        return ids.length > 0 ? TextUtils.join(",", ids) : null;
     }
 
     /**
@@ -712,7 +711,8 @@ public class SqlHelper extends SQLiteOpenHelper {
         }
 
         messagesCursor.close();
-        Cursor repliesCursor = db.rawQuery(NotificationContract.GET_REPLIES_SQL, null);
+        query = unreadOnly ? NotificationContract.GET_UNREAD_REPLIES_SQL : NotificationContract.GET_REPLIES_SQL;
+        Cursor repliesCursor = db.rawQuery(query, null);
 
         while (repliesCursor.moveToNext()) {
             notifications.add(new ImgurNotification(repliesCursor));
@@ -731,22 +731,29 @@ public class SqlHelper extends SQLiteOpenHelper {
     public void deleteNotifications(List<ImgurNotification> notifications) {
         if (notifications == null || notifications.isEmpty()) return;
 
-        String ids[] = new String[notifications.size()];
-        int i = 0;
+        SQLiteDatabase db = getWritableDatabase();
+        Set<String> ids = new HashSet<>();
 
         for (ImgurNotification n : notifications) {
-            ids[i] = String.valueOf(n.getId());
-            i++;
+            if (n.getType() == ImgurNotification.TYPE_MESSAGE) {
+                // Messages also have to delete all rows associated with their content_id
+                String delete = String.format(NotificationContract.DELETE_MESSAGE_SQL, n.getContentId());
+                db.execSQL(delete);
+            } else {
+                ids.add(String.valueOf(n.getId()));
+            }
         }
 
-        String query = String.format(NotificationContract.DELETE_NOTIFICATIONS_SQL, TextUtils.join(",", ids));
-        getWritableDatabase().execSQL(query);
+        if (!ids.isEmpty()) {
+            String delete = String.format(NotificationContract.DELETE_NOTIFICATIONS_SQL, TextUtils.join(",", ids));
+            db.execSQL(delete);
+        }
     }
 
     /**
      * Deletes all notifications
      */
-    public void deleteNotificatins() {
+    public void deleteNotifications() {
         getWritableDatabase().delete(NotificationContract.TABLE_NAME, null, null);
     }
 

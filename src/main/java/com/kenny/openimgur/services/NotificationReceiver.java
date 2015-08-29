@@ -46,6 +46,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     private static final int ACTION_NOTIFICATION_CLICKED = 2;
 
+    private static final int ACTION_NOTIFICATIONS_READ = 3;
+
     /**
      * Returns an intent for when an image is successfully uploaded
      *
@@ -65,6 +67,12 @@ public class NotificationReceiver extends BroadcastReceiver {
         return new Intent(context, NotificationReceiver.class)
                 .putExtra(KEY_ACTION, ACTION_NOTIFICATION_CLICKED)
                 .putExtra(KEY_NOTIFICATION_CONTENT, content);
+    }
+
+    public static Intent createReadNotificationsIntent(Context context, int notificationId) {
+        return new Intent(context, NotificationReceiver.class)
+                .putExtra(KEY_ACTION, ACTION_NOTIFICATIONS_READ)
+                .putExtra(KEY_NOTIF_ID, notificationId);
     }
 
     @Override
@@ -123,6 +131,28 @@ public class NotificationReceiver extends BroadcastReceiver {
 
                 dest.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(dest);
+                break;
+
+            case ACTION_NOTIFICATIONS_READ:
+                SqlHelper sql = OpengurApp.getInstance(context).getSql();
+                String ids = sql.getNotificationIds();
+                sql.markNotificationsRead();
+
+                if (!TextUtils.isEmpty(ids)) {
+                    ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {
+                        @Override
+                        public void success(BasicResponse basicResponse, Response response) {
+                            // Don't care about response
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            LogUtil.e(TAG, "Failure marking notifications read, error", error);
+                        }
+                    });
+                }
+
+                ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(notificationId);
                 break;
 
             default:

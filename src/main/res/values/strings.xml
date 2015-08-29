@@ -347,6 +347,10 @@
     <string name="notification_selected">%d selected</string>
     <string name="notification_delete_all">Delete all notifications</string>
     <string name="notification_delete_all_msg">Are you sure you want to delete all your notifications</string>
+    <plurals name="notification_mark_read">
+        <item quantity="one">Mark read</item>
+        <item quantity="other">Mark all read</item>
+    </plurals>
 
     <string name="hide_comment_bar">Hide bottom bar</string>
 

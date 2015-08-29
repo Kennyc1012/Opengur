@@ -98,7 +98,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     mAdapter.clear();
-                                    app.getSql().deleteNotificatins();
+                                    app.getSql().deleteNotifications();
                                     mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                                 }
                             }).show();
@@ -223,11 +223,12 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                 if (notificationResponse != null && notificationResponse.hasNotifications()) {
                     app.getSql().insertNotifications(notificationResponse);
                     List<ImgurNotification> notifications = app.getSql().getNotifications(false);
+                    // Mark any notifications immediately read
+                    markNotificationsRead();
 
                     if (notifications.isEmpty() && (mAdapter == null || mAdapter.isEmpty())) {
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                     } else {
-
                         if (mAdapter != null) {
                             mAdapter.clear();
                             mAdapter.addItems(notifications);
@@ -276,10 +277,10 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
 
     private void markNotificationsRead() {
         String ids = app.getSql().getNotificationIds();
-        app.getSql().markNotificationsRead();
 
         // Mark all the notifications read when loaded
         if (!TextUtils.isEmpty(ids)) {
+            app.getSql().markNotificationsRead();
             ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {
                 @Override
                 public void success(BasicResponse basicResponse, Response response) {
