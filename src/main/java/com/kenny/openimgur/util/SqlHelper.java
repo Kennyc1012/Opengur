@@ -739,7 +739,8 @@ public class SqlHelper extends SQLiteOpenHelper {
             i++;
         }
 
-        getWritableDatabase().delete(NotificationContract.TABLE_NAME, NotificationContract._ID + "=?", ids);
+        String query = String.format(NotificationContract.DELETE_NOTIFICATIONS_SQL, TextUtils.join(",", ids));
+        getWritableDatabase().execSQL(query);
     }
 
     /**

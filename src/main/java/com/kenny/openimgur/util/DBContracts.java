@@ -297,5 +297,8 @@ public class DBContracts {
 
         public static final String GET_REPLY_NOTIFICATION_ID = "SELECT " + _ID + " FROM " + TABLE_NAME
                 + " WHERE " + COLUMN_CONTENT_ID + "='%s' AND " + COLUMN_CONTENT + "='%s' LIMIT 0,1";
+
+        public static final String DELETE_NOTIFICATIONS_SQL = "DELETE FROM " + TABLE_NAME
+                + " WHERE " + _ID + " IN (%s)";
     }
 }
