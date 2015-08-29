@@ -742,6 +742,13 @@ public class SqlHelper extends SQLiteOpenHelper {
         getWritableDatabase().delete(NotificationContract.TABLE_NAME, NotificationContract._ID + "=?", ids);
     }
 
+    /**
+     * Deletes all notifications
+     */
+    public void deleteNotificatins() {
+        getWritableDatabase().delete(NotificationContract.TABLE_NAME, null, null);
+    }
+
     @Override
     public synchronized void close() {
         if (mReadableDatabase != null) {

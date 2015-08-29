@@ -345,6 +345,8 @@
     <string name="notification_preview"><![CDATA[<b>%1$s:</b> %2$s ]]></string>
     <string name="notification_empty">You have no notifications</string>
     <string name="notification_selected">%d selected</string>
+    <string name="notification_delete_all">Delete all notifications</string>
+    <string name="notification_delete_all_msg">Are you sure you want to delete all your notifications</string>
 
     <string name="hide_comment_bar">Hide bottom bar</string>
 
