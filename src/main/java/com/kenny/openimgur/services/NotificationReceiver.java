@@ -156,7 +156,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 break;
 
             default:
-                Log.w(TAG, "Unable to determine action");
+                LogUtil.w(TAG, "Unable to determine action");
                 break;
         }
     }

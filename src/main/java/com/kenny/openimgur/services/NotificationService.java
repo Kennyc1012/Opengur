@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
@@ -30,6 +31,7 @@ import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.ui.CircleBitmapDisplayer;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -97,7 +99,7 @@ public class NotificationService extends IntentService {
 
         private String mTitle;
 
-        private Uri mNotification;
+        private Uri mNotificationSound;
 
         private boolean mVibrate = false;
 
@@ -109,10 +111,10 @@ public class NotificationService extends IntentService {
 
             if (!TextUtils.isEmpty(ringTone)) {
                 try {
-                    mNotification = Uri.parse(ringTone);
+                    mNotificationSound = Uri.parse(ringTone);
                 } catch (Exception e) {
                     LogUtil.e(TAG, "Unable to parse ringtone", e);
-                    mNotification = null;
+                    mNotificationSound = null;
                 }
             }
 
@@ -221,21 +223,11 @@ public class NotificationService extends IntentService {
                         photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, comment.getAlbumCoverId() + ImgurPhoto.THUMBNAIL_MEDIUM);
                     }
 
-                    try {
-                        // The Large icon will be the gallery thumbnail
-                        Bitmap b = app.getImageLoader().loadImageSync(photoUrl);
+                    Bitmap b = getReplyIcon(photoUrl);
 
-                        if (b != null) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                builder.setLargeIcon(CircleBitmapDisplayer.getRoundedBitmap(b));
-                            } else {
-                                builder.setLargeIcon(b);
-                            }
-                        } else {
-                            builder.setLargeIcon(createLargeIcon(-1, comment.getAuthor()));
-                        }
-                    } catch (Exception ex) {
-                        LogUtil.e(TAG, "Unable to load gallery thumbnail", ex);
+                    if (b != null) {
+                        builder.setLargeIcon(b);
+                    } else {
                         builder.setLargeIcon(createLargeIcon(-1, comment.getAuthor()));
                     }
                 } else {
@@ -273,7 +265,7 @@ public class NotificationService extends IntentService {
 
         @Override
         protected Uri getNotificationSound() {
-            return mNotification;
+            return mNotificationSound;
         }
 
         @Override
@@ -296,6 +288,24 @@ public class NotificationService extends IntentService {
         protected void postNotification(android.app.Notification notification) {
             notification.flags |= android.app.Notification.FLAG_ONLY_ALERT_ONCE;
             super.postNotification(notification);
+        }
+
+        @Nullable
+        private Bitmap getReplyIcon(String url) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Bitmap bitmap = app.getImageLoader().loadImageSync(url);
+                    if (bitmap != null) return CircleBitmapDisplayer.getRoundedBitmap(bitmap);
+                } else {
+                    int iconSize = resources.getDimensionPixelSize(R.dimen.notification_icon);
+                    return app.getImageLoader().loadImageSync(url, new ImageSize(iconSize, iconSize));
+                }
+            } catch (Exception ex) {
+                LogUtil.e(TAG, "Unable to load gallery thumbnail", ex);
+
+            }
+
+            return null;
         }
     }
 }
