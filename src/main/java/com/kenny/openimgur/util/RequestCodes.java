@@ -18,4 +18,10 @@ public final class RequestCodes {
     public static final int NOTIFICATION_ALARM = 500;
 
     public static final int NOTIFICATIONS = 600;
+
+    public static final int UPLOADS = 700;
+
+    public static final int DOWNLOAD_SHARE = 800;
+
+    public static final int DOWNLOAD_VIEW = 801;
 }
