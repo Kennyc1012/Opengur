@@ -22,7 +22,7 @@ repositories {
 }
 
 def VERSION_NAME = '3.4.0'
-def VERSION_CODE = 49
+def VERSION_CODE = 50
 
 android {
     compileSdkVersion 22
@@ -43,7 +43,7 @@ android {
         }
 
         beta {
-            versionName VERSION_NAME + "-beta4"
+            versionName VERSION_NAME + "-beta"
         }
     }
 
