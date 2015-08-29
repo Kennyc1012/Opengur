@@ -9,16 +9,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.MaterialColor;
 import com.amulyakhare.textdrawable.TextDrawable;
-import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-
-import org.apache.commons.collections15.list.SetUniqueList;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,7 +43,7 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
     private final Set<ImgurNotification> mSelected = new HashSet<>();
 
     public NotificationAdapter(Context context, List<ImgurNotification> notifications, View.OnClickListener clickListener, View.OnLongClickListener longClickListener) {
-        super(context, SetUniqueList.decorate(notifications), true);
+        super(context, notifications, true);
         mCircleSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
         mClickListener = clickListener;
         mLongClickListener = longClickListener;
@@ -89,16 +87,17 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
 
     private void renderMessage(ImgurNotification notification, NotificationHolder holder) {
         String firstLetter = notification.getAuthor().substring(0, 1);
-        int color = ColorGenerator.DEFAULT.getColor(notification.getAuthor());
+        int color = MaterialColor.getColor(notification.getAuthor());
 
         holder.image.setImageDrawable(
-                TextDrawable.builder()
-                        .beginConfig()
+                new TextDrawable.Builder()
                         .toUpperCase()
-                        .width(mCircleSize)
-                        .height(mCircleSize)
-                        .endConfig()
-                        .buildRound(firstLetter, color));
+                        .setWidth(mCircleSize)
+                        .setHeight(mCircleSize)
+                        .setShape(TextDrawable.DRAWABLE_SHAPE_OVAL)
+                        .setColor(color)
+                        .setText(firstLetter)
+                        .build());
 
         holder.author.setText(notification.getAuthor() + " " + getDateFormattedTime(notification.getDate(), holder.author.getContext()));
         holder.content.setText(notification.getContent());
@@ -124,12 +123,18 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
     }
 
     /**
-     * Sets the notification to be selected or un selected
+     * Sets the notification to be selected or un selected. Passing null will clear all selections
      *
      * @param notification
      * @return If the item was selected. False will infer that it was deselected
      */
     public boolean setSelected(ImgurNotification notification) {
+        if (notification == null) {
+            mSelected.clear();
+            notifyDataSetChanged();
+            return true;
+        }
+
         boolean selected;
 
         if (mSelected.contains(notification)) {

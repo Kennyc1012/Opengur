@@ -22,6 +22,7 @@ import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.RequestCodes;
 
 import java.io.File;
 
@@ -103,12 +104,12 @@ public class DownloaderService extends IntentService {
                 shareIntent.setType(photoType);
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), 0, Intent.createChooser(shareIntent, getString(R.string.share)), PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), RequestCodes.DOWNLOAD_SHARE, Intent.createChooser(shareIntent, getString(R.string.share)), PendingIntent.FLAG_UPDATE_CURRENT);
 
                 Intent viewIntent = new Intent(Intent.ACTION_VIEW);
                 viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 viewIntent.setDataAndType(fileUri, isUsingVideoLink ? "video/mp4" : photoType);
-                PendingIntent viewP = PendingIntent.getActivity(getApplicationContext(), 1, viewIntent, PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent viewP = PendingIntent.getActivity(getApplicationContext(), RequestCodes.DOWNLOAD_VIEW, viewIntent, PendingIntent.FLAG_ONE_SHOT);
 
                 // Get the correct preview image for the notification based on if it is a video or not
                 Bitmap bm = isUsingVideoLink ? ImageUtil.toGrayScale(ThumbnailUtils.createVideoThumbnail(photoFile.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND)) :

@@ -1,8 +1,10 @@
 package com.kenny.openimgur.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -36,7 +38,7 @@ import retrofit.client.Response;
 public class NotificationActivity extends BaseActivity implements View.OnClickListener, View.OnLongClickListener, ActionMode.Callback {
     private static final String KEY_ITEMS = "items";
 
-    private static final String KEY_POSIION = "position";
+    private static final String KEY_POSITION = "position";
 
     @Bind(R.id.multiView)
     MultiStateView mMultiView;
@@ -64,7 +66,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
             List<ImgurNotification> notifications = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
 
             if (notifications != null && !notifications.isEmpty()) {
-                int position = savedInstanceState.getInt(KEY_POSIION, 0);
+                int position = savedInstanceState.getInt(KEY_POSITION, 0);
                 mList.setAdapter(mAdapter = new NotificationAdapter(this, notifications, this, this));
                 mList.scrollToPosition(position);
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
@@ -74,7 +76,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.topics, menu);
+        getMenuInflater().inflate(R.menu.notifications, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -84,6 +86,23 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
             case R.id.refresh:
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                 fetchNotifications();
+                return true;
+
+            case R.id.delete:
+                if (mAdapter != null && !mAdapter.isEmpty()) {
+                    new AlertDialog.Builder(this, app.getImgurTheme().getAlertDialogTheme())
+                            .setTitle(R.string.delete)
+                            .setMessage(R.string.notification_delete_all_msg)
+                            .setNegativeButton(R.string.cancel, null)
+                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mAdapter.clear();
+                                    app.getSql().deleteNotifications();
+                                    mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+                                }
+                            }).show();
+                }
                 break;
         }
 
@@ -193,6 +212,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
 
     @Override
     public void onDestroyActionMode(ActionMode mode) {
+        mAdapter.setSelected(null);
         mMode = null;
     }
 
@@ -203,12 +223,14 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                 if (notificationResponse != null && notificationResponse.hasNotifications()) {
                     app.getSql().insertNotifications(notificationResponse);
                     List<ImgurNotification> notifications = app.getSql().getNotifications(false);
+                    // Mark any notifications immediately read
+                    markNotificationsRead();
 
                     if (notifications.isEmpty() && (mAdapter == null || mAdapter.isEmpty())) {
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                     } else {
-                        // Don't remove any notifications that may have been cleared when first viewed
                         if (mAdapter != null) {
+                            mAdapter.clear();
                             mAdapter.addItems(notifications);
                         } else {
                             mAdapter = new NotificationAdapter(NotificationActivity.this, notifications, NotificationActivity.this, NotificationActivity.this);
@@ -244,7 +266,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
         if (mAdapter != null && !mAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_ITEMS, mAdapter.retainItems());
             LinearLayoutManager manager = (LinearLayoutManager) mList.getLayoutManager();
-            outState.putInt(KEY_POSIION, manager.findFirstVisibleItemPosition());
+            outState.putInt(KEY_POSITION, manager.findFirstVisibleItemPosition());
         }
     }
 
@@ -255,10 +277,10 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
 
     private void markNotificationsRead() {
         String ids = app.getSql().getNotificationIds();
-        app.getSql().markNotificationsRead();
 
         // Mark all the notifications read when loaded
         if (!TextUtils.isEmpty(ids)) {
+            app.getSql().markNotificationsRead();
             ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {
                 @Override
                 public void success(BasicResponse basicResponse, Response response) {

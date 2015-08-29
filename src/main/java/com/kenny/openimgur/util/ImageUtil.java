@@ -26,6 +26,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.activities.SettingsActivity;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.CircleBitmapDisplayer;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
@@ -280,7 +281,7 @@ public class ImageUtil {
 
     public static DisplayImageOptions.Builder getDisplayOptionsForComments() {
         return getDefaultDisplayOptions()
-                .displayer(new CircleBitmapDisplayer());
+                .displayer(new CircleBitmapDisplayer(OpengurApp.getInstance().getResources()));
     }
 
     public static DisplayImageOptions.Builder getDisplayOptionsForFullscreen() {

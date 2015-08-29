@@ -208,13 +208,14 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
             String firstLetter = user.getUsername().substring(0, 1);
 
-            mAvatar.setImageDrawable(TextDrawable.builder()
-                    .beginConfig()
+            mAvatar.setImageDrawable(new TextDrawable.Builder()
                     .toUpperCase()
-                    .width(size)
-                    .height(size)
-                    .endConfig()
-                    .buildRound(firstLetter, getResources().getColor(theme.accentColor)));
+                    .setWidth(size)
+                    .setHeight(size)
+                    .setShape(TextDrawable.DRAWABLE_SHAPE_OVAL)
+                    .setColor(getResources().getColor(theme.accentColor))
+                    .setText(firstLetter)
+                    .build());
 
             mName.setText(user.getUsername());
             mRep.setText(user.getNotoriety().getStringId());

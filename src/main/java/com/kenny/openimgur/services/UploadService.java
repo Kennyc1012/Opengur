@@ -24,6 +24,7 @@ import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
 
 import java.io.File;
@@ -331,7 +332,7 @@ public class UploadService extends IntentService {
         public void onSuccessfulUpload(ImgurBaseObject obj) {
             String url = obj.getLink();
             Intent intent = NotificationReceiver.createCopyIntent(app, url, getNotificationId());
-            PendingIntent pIntent = PendingIntent.getBroadcast(app, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent pIntent = PendingIntent.getBroadcast(app, RequestCodes.UPLOADS, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
             builder.setContentTitle(app.getString(R.string.upload_complete))
                     .setContentText(app.getString(R.string.upload_success, url))
@@ -350,7 +351,7 @@ public class UploadService extends IntentService {
         public void onGallerySubmitFailed(ImgurBaseObject upload) {
             String url = upload.getLink();
             Intent intent = NotificationReceiver.createCopyIntent(app, url, getNotificationId());
-            PendingIntent pIntent = PendingIntent.getBroadcast(app, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent pIntent = PendingIntent.getBroadcast(app, RequestCodes.UPLOADS, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
             builder.setContentTitle(app.getString(R.string.error))
                     .setContentText(app.getString(R.string.upload_gallery_failed))
@@ -409,7 +410,7 @@ public class UploadService extends IntentService {
             String msg = app.getString(R.string.upload_notif_error_upload_complete_long, 1, total);
             String url = photo.getLink();
             Intent intent = NotificationReceiver.createCopyIntent(app, url, getNotificationId());
-            PendingIntent pIntent = PendingIntent.getBroadcast(app, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            PendingIntent pIntent = PendingIntent.getBroadcast(app, RequestCodes.UPLOADS, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
             builder.setContentTitle(app.getString(R.string.error))
                     .setContentText(app.getString(R.string.upload_notif_error_upload_incomplete_short))
