@@ -1,4 +1,14 @@
 #Open Imgur Changelog
+<b>3.4.0</b> August 29, 2015
+- Notifications addd
+- Added reporting posts
+- Allow hiding of comment bar in gallery view
+- Update Gif Drawable to v1.1.9
+- Update [TextDrawable](https://github.com/Kennyc1012/TextDrawable) to use own fork
+- Switch to new [BottomSheet](https://github.com/Kennyc1012/BottomSheet) library
+- Convert to [MultiStateView](https://github.com/Kennyc1012/MultiStateView) library 
+- Multiple crash fixes
+
 <b>3.3.0</b> August 6, 2015
 - Convert ProfileActivity to use design lib scrolling components
 - Add ability to use own photos for memes
