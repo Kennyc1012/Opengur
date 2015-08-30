@@ -645,19 +645,18 @@ public class SqlHelper extends SQLiteOpenHelper {
     public String getNotificationIds(ImgurBaseObject content) {
         if (content == null) return null;
         String query;
+        String[] args;
 
-        if (content instanceof ImgurConvo) {
-            query = String.format(NotificationContract.GET_MESSAGE_NOTIFICATION_ID, content.getId());
-        } else if (content instanceof ImgurComment) {
-            ImgurComment comment = (ImgurComment) content;
-            query = String.format(NotificationContract.GET_REPLY_NOTIFICATION_ID, comment.getImageId(), comment.getComment());
+        if (content instanceof ImgurConvo || content instanceof ImgurComment) {
+            query = NotificationContract.GET_NOTIFICATION_ID;
+            args = new String[]{content instanceof ImgurConvo ? content.getId() : ((ImgurComment) content).getImageId()};
         } else {
             LogUtil.w(TAG, "Invalid type of content for retrieving  notification id :" + content.getClass().getSimpleName());
             return null;
         }
 
         if (!TextUtils.isEmpty(query)) {
-            Cursor cursor = getReadableDatabase().rawQuery(query, null);
+            Cursor cursor = getReadableDatabase().rawQuery(query, args);
             String[] ids = new String[cursor.getCount()];
             int i = 0;
 
