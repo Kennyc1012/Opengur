@@ -46,6 +46,7 @@ import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
+import com.kennyc.bottomsheet.BottomSheet;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -164,7 +165,12 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
 
             case R.id.share:
-                startActivity(Intent.createChooser(mImgurObject.getShareIntent(), getString(R.string.share)));
+                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), mImgurObject.getShareIntent(), R.string.share);
+                if (shareDialog != null) {
+                    shareDialog.show();
+                } else {
+                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                }
                 return true;
 
             case R.id.report:
