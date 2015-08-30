@@ -1,4 +1,7 @@
 #Open Imgur Changelog
+<b>3.4.1</b> August 30, 2015
+- Fix a crash in a SQL statement regarding notifications 
+
 <b>3.4.0</b> August 29, 2015
 - Notifications addd
 - Added reporting posts
