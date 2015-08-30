@@ -296,11 +296,8 @@ public class DBContracts {
                 " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_REPLY +
                 "' AND " + COLUMN_VIEWED + "='0'";
 
-        public static final String GET_MESSAGE_NOTIFICATION_ID = "SELECT " + _ID + " FROM " + TABLE_NAME
-                + " WHERE " + COLUMN_CONTENT_ID + " ='%s'";
-
-        public static final String GET_REPLY_NOTIFICATION_ID = "SELECT " + _ID + " FROM " + TABLE_NAME
-                + " WHERE " + COLUMN_CONTENT_ID + "='%s' AND " + COLUMN_CONTENT + "='%s' LIMIT 0,1";
+        public static final String GET_NOTIFICATION_ID = "SELECT " + _ID + " FROM " + TABLE_NAME
+                + " WHERE " + COLUMN_CONTENT_ID + " =?";
 
         public static final String GET_UNREAD_NOTIFICATIONS_SQL = "SELECT " + _ID + " FROM " + TABLE_NAME +
                 " WHERE " + COLUMN_VIEWED + "='0'";
