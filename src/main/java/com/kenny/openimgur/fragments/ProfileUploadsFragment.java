@@ -21,6 +21,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
+import com.kennyc.bottomsheet.BottomSheet;
 
 import java.util.ArrayList;
 
@@ -81,9 +82,10 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
                                 shareIntent.setType("text/plain");
                                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
                                 shareIntent.putExtra(Intent.EXTRA_TEXT, photo.getLink());
+                                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share);
 
-                                if (shareIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                                    startActivity(Intent.createChooser(shareIntent, getString(R.string.send_feedback)));
+                                if (shareDialog != null) {
+                                    shareDialog.show();
                                 } else {
                                     SnackBar.show(getActivity(), R.string.cant_launch_intent);
                                 }

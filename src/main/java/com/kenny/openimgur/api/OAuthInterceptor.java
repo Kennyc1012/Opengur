@@ -4,8 +4,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.api.responses.OAuthResponse;
+import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
-import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Request;
@@ -13,7 +13,6 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit.RetrofitError;
 
@@ -23,9 +22,7 @@ import retrofit.RetrofitError;
 public class OAuthInterceptor implements Interceptor {
     private static final String TAG = OAuthInterceptor.class.getSimpleName();
 
-    private static Object mLock = new Object();
-
-    private static AtomicBoolean mIsAuthenticated = new AtomicBoolean(false);
+    private static final Object sLock = new Object();
 
     @Override
     public Response intercept(Chain chain) throws IOException {
@@ -34,29 +31,28 @@ public class OAuthInterceptor implements Interceptor {
 
         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED || response.code() == HttpURLConnection.HTTP_FORBIDDEN) {
             OpengurApp app = OpengurApp.getInstance();
+            ImgurUser user = app.getUser();
 
-            if (app.getUser() != null) {
+            if (user != null) {
                 LogUtil.v(TAG, "Token is no longer valid");
-                mIsAuthenticated.set(false);
+                String token = user.getAccessToken();
 
-                synchronized (mLock) {
-                    if (!mIsAuthenticated.get()) {
-                        String token = refreshToken(app);
+                synchronized (sLock) {
+                    String currentToken = user.getAccessToken();
 
-                        if (!TextUtils.isEmpty(token)) {
-                            mIsAuthenticated.set(true);
-                            Request newRequest = request.newBuilder()
-                                    .removeHeader(ApiClient.AUTHORIZATION_HEADER)
-                                    .addHeader(ApiClient.AUTHORIZATION_HEADER, "Bearer " + token)
-                                    .build();
-
-                            FileUtil.closeStream(response.body());
-                            return chain.proceed(newRequest);
-                        }
-
-
-                        mIsAuthenticated.set(false);
+                    // Check if our current token has been updated, if it hasn't fetch a new one.
+                    if (!TextUtils.isEmpty(currentToken) && currentToken.equals(token)) {
+                        refreshToken(app);
                     }
+                }
+
+                if (!TextUtils.isEmpty(user.getAccessToken())) {
+                    Request newRequest = request.newBuilder()
+                            .removeHeader(ApiClient.AUTHORIZATION_HEADER)
+                            .addHeader(ApiClient.AUTHORIZATION_HEADER, "Bearer " + user.getAccessToken())
+                            .build();
+
+                    return chain.proceed(newRequest);
                 }
             } else {
                 LogUtil.w(TAG, "Received unauthorized status from API but no user is present... wat?");

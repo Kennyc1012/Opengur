@@ -7,14 +7,10 @@ import android.text.format.DateUtils;
 
 import com.kenny.openimgur.util.DBContracts;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 /**
  * Created by Kenny-PC on 8/8/2015.
  */
-public class ImgurNotification implements Parcelable {
+public class ImgurNotification implements Parcelable, Comparable<ImgurNotification> {
     public static final int TYPE_MESSAGE = 1;
 
     public static final int TYPE_REPLY = 2;
@@ -133,19 +129,14 @@ public class ImgurNotification implements Parcelable {
         }
     };
 
-    /**
-     * Sorts a list of notifications by newest first
-     *
-     * @param notifications
-     */
-    public static void sort(List<ImgurNotification> notifications) {
-        if (notifications == null || notifications.isEmpty()) return;
-
-        Collections.sort(notifications, new Comparator<ImgurNotification>() {
-            @Override
-            public int compare(ImgurNotification lhs, ImgurNotification rhs) {
-                return (int) (rhs.getDate() - lhs.getDate());
-            }
-        });
+    @Override
+    public int compareTo(ImgurNotification another) {
+        try {
+            long lhs_date = getDate();
+            long rhs_date = another.getDate();
+            return lhs_date < rhs_date ? -1 : (lhs_date == rhs_date ? 0 : 1);
+        } catch (Exception ex) {
+            return 0;
+        }
     }
 }

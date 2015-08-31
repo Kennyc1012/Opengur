@@ -39,6 +39,7 @@ import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
+import com.kennyc.bottomsheet.BottomSheet;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -285,9 +286,10 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                         "mailto", "kennyc.developer@gmail.com", null));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Open Imgur Feedback");
+                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(this, emailIntent, R.string.send_feedback);
 
-                if (emailIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(Intent.createChooser(emailIntent, getString(R.string.send_feedback)));
+                if (shareDialog != null) {
+                    shareDialog.show();
                 } else {
                     SnackBar.show(this, R.string.cant_launch_intent);
                 }
@@ -483,6 +485,10 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             case RequestCodes.NOTIFICATIONS:
                 // Notifications will clear when going into the activity
                 updateNotificationBadge(0);
+
+                if (data != null && data.getBooleanExtra(NotificationActivity.KEY_USER_NOT_LOGGED_IN, false)) {
+                    updateUserHeader(null);
+                }
                 break;
         }
 
