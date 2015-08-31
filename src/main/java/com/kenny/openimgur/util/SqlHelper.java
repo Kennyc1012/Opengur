@@ -31,6 +31,7 @@ import com.kenny.openimgur.util.DBContracts.UploadContract;
 import com.kenny.openimgur.util.DBContracts.UserContract;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -718,7 +719,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         }
 
         repliesCursor.close();
-        ImgurNotification.sort(notifications);
+        Collections.sort(notifications);
         return notifications;
     }
 
