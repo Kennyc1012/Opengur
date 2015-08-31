@@ -1,4 +1,11 @@
 #Open Imgur Changelog
+<b>3.4.2</b> August 31, 2015
+- Fix crash when sorting notifications
+- Update BottomSheet to version 1.2.4
+- Use BottomSheet for shate dialogs
+- Don't crash on notifications when no user is present
+- Update Token refresh logic
+
 <b>3.4.1</b> August 30, 2015
 - Fix a crash in a SQL statement regarding notifications 
 
