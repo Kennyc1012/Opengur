@@ -485,6 +485,10 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             case RequestCodes.NOTIFICATIONS:
                 // Notifications will clear when going into the activity
                 updateNotificationBadge(0);
+
+                if (data != null && data.getBooleanExtra(NotificationActivity.KEY_USER_NOT_LOGGED_IN, false)) {
+                    updateUserHeader(null);
+                }
                 break;
         }
 
