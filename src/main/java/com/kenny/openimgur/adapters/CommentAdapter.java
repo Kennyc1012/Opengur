@@ -1,7 +1,6 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
@@ -57,10 +56,9 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
         super(context, comments);
         mListener = listener;
-        Resources res = context.getResources();
-        mGreenTextColor = res.getColor(R.color.notoriety_positive);
-        mRedTextColor = res.getColor(R.color.notoriety_negative);
-        mCommentIndent = res.getDimensionPixelSize(R.dimen.comment_padding);
+        mGreenTextColor = mResources.getColor(R.color.notoriety_positive);
+        mRedTextColor = mResources.getColor(R.color.notoriety_negative);
+        mCommentIndent = mResources.getDimensionPixelSize(R.dimen.comment_padding);
     }
 
     /**
@@ -105,7 +103,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         final ImgurComment comment = getItem(position);
 
         commentHolder.comment.setText(comment.getComment());
-        commentHolder.author.setText(constructSpan(comment, commentHolder.author.getContext()));
+        commentHolder.author.setText(constructSpan(comment));
         Linkify.addLinks(commentHolder.comment, Linkify.WEB_URLS);
         Linkify.addLinks(commentHolder.comment, sUserPattern, null);
         commentHolder.replies.setVisibility(comment.getReplyCount() > 0 ? View.VISIBLE : View.GONE);
@@ -122,9 +120,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
             lp.setMargins(0, 0, 0, 0);
         }
 
-        int bgColor = position == mSelectedIndex ?
-                commentHolder.itemView.getResources().getColor(R.color.comment_bg_selected) :
-                commentHolder.itemView.getResources().getColor(android.R.color.transparent);
+        int bgColor = position == mSelectedIndex ? mResources.getColor(R.color.comment_bg_selected) : mResources.getColor(android.R.color.transparent);
         commentHolder.itemView.setBackgroundColor(bgColor);
     }
 
@@ -132,16 +128,15 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
      * Creates the spannable object for the authors name, points, and time
      *
      * @param comment
-     * @param context
      * @return
      */
-    private Spannable constructSpan(ImgurComment comment, Context context) {
-        CharSequence date = getDateFormattedTime(comment.getDate() * DateUtils.SECOND_IN_MILLIS, context);
+    private Spannable constructSpan(ImgurComment comment) {
+        CharSequence date = getDateFormattedTime(comment.getDate() * DateUtils.SECOND_IN_MILLIS);
         String author = comment.getAuthor();
         StringBuilder sb = new StringBuilder(author);
         boolean isOp = isOP(author);
         int spanLength = author.length();
-        String points = context.getResources().getQuantityString(R.plurals.comment_points, (int) comment.getPoints(), comment.getPoints());
+        String points = mResources.getQuantityString(R.plurals.comment_points, (int) comment.getPoints(), comment.getPoints());
         int scoreTextLength = points.length();
 
         if (isOp) {
@@ -164,12 +159,12 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         return span;
     }
 
-    private CharSequence getDateFormattedTime(long commentDate, Context context) {
+    private CharSequence getDateFormattedTime(long commentDate) {
         long now = System.currentTimeMillis();
         long difference = System.currentTimeMillis() - commentDate;
 
         return (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) ?
-                context.getResources().getString(R.string.moments_ago) :
+                mResources.getString(R.string.moments_ago) :
                 DateUtils.getRelativeTimeSpanString(
                         commentDate,
                         now,

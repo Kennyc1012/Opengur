@@ -100,7 +100,6 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
 
         if (holder instanceof PhotoTitleHolder) {
             PhotoTitleHolder titleHolder = (PhotoTitleHolder) holder;
-            Resources res = titleHolder.author.getResources();
 
             if (!TextUtils.isEmpty(mImgurObject.getTitle())) {
                 titleHolder.title.setText(mImgurObject.getTitle());
@@ -117,14 +116,14 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
             }
 
             int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
-            titleHolder.points.setText((mImgurObject.getUpVotes() - mImgurObject.getDownVotes()) + " " + res.getString(R.string.points));
+            titleHolder.points.setText((mImgurObject.getUpVotes() - mImgurObject.getDownVotes()) + " " + mResources.getString(R.string.points));
             titleHolder.pointsBar.setUpVotes(mImgurObject.getUpVotes());
             titleHolder.pointsBar.setTotalPoints(totalPoints);
 
             if (mImgurObject.isFavorited() || ImgurBaseObject.VOTE_UP.equals(mImgurObject.getVote())) {
-                titleHolder.points.setTextColor(res.getColor(R.color.notoriety_positive));
+                titleHolder.points.setTextColor(mResources.getColor(R.color.notoriety_positive));
             } else if (ImgurBaseObject.VOTE_DOWN.equals(mImgurObject.getVote())) {
-                titleHolder.points.setTextColor(res.getColor(R.color.notoriety_negative));
+                titleHolder.points.setTextColor(mResources.getColor(R.color.notoriety_negative));
             }
 
             if (mImgurObject.getTags() != null && !mImgurObject.getTags().isEmpty()) {
@@ -134,9 +133,9 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
 
                 // Tag icon is already dark themed
                 if (mIsDarkTheme) {
-                    tagDrawable = ResourcesCompat.getDrawable(res, R.drawable.ic_action_tag, null);
+                    tagDrawable = ResourcesCompat.getDrawable(mResources, R.drawable.ic_action_tag, null);
                 } else {
-                    tagDrawable = ImageUtil.tintDrawable(R.drawable.ic_action_tag, res, Color.BLACK);
+                    tagDrawable = ImageUtil.tintDrawable(R.drawable.ic_action_tag, mResources, Color.BLACK);
                 }
 
                 for (int i = 0; i < size; i++) {

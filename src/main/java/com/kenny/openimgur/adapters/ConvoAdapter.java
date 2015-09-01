@@ -29,10 +29,10 @@ public class ConvoAdapter extends BaseRecyclerAdapter<ImgurConvo> {
 
     public ConvoAdapter(Context context, List<ImgurConvo> convos, View.OnClickListener clickListener, View.OnLongClickListener longClickListener) {
         super(context, convos);
-        mCircleSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
+        mCircleSize = mResources.getDimensionPixelSize(R.dimen.avatar_size);
         mClickListener = clickListener;
         mLongClickListener = longClickListener;
-        mDividerColor = mIsDarkTheme ? context.getResources().getColor(R.color.primary_dark_material_light) : context.getResources().getColor(R.color.primary_dark_material_dark);
+        mDividerColor = mIsDarkTheme ? mResources.getColor(R.color.primary_dark_material_light) : mResources.getColor(R.color.primary_dark_material_dark);
     }
 
     @Override
