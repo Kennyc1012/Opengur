@@ -144,7 +144,8 @@ public class DownloaderService extends IntentService {
 
         String photoFileName;
         String photoType = LinkUtils.getImageType(url);
-        String photoId = String.valueOf(System.currentTimeMillis());
+        String photoId = LinkUtils.getId(url);
+        if (TextUtils.isEmpty(photoId)) photoId = String.valueOf(System.currentTimeMillis());
 
         if (ImgurPhoto.IMAGE_TYPE_JPEG.equals(photoType)) {
             photoFileName = photoId + FileUtil.EXTENSION_JPEG;
