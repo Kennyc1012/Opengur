@@ -329,7 +329,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     private boolean showCancelDialog() {
         if (mAdapter == null || mAdapter.isEmpty()) return false;
 
-        new AlertDialog.Builder(this, app.getImgurTheme().getAlertDialogTheme())
+        new AlertDialog.Builder(this, theme.getAlertDialogTheme())
                 .setTitle(R.string.upload_cancel_title)
                 .setMessage(R.string.upload_cancel_msg)
                 .setNegativeButton(R.string.cancel, null)

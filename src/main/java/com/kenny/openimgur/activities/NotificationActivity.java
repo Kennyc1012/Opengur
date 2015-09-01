@@ -100,7 +100,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
 
             case R.id.delete:
                 if (mAdapter != null && !mAdapter.isEmpty()) {
-                    new AlertDialog.Builder(this, app.getImgurTheme().getAlertDialogTheme())
+                    new AlertDialog.Builder(this, theme.getAlertDialogTheme())
                             .setTitle(R.string.delete)
                             .setMessage(R.string.notification_delete_all_msg)
                             .setNegativeButton(R.string.cancel, null)

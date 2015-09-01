@@ -199,7 +199,7 @@ public class MemeActivity extends BaseActivity {
             final Uri fileUri = Uri.fromFile(file);
             FileUtil.scanFile(fileUri, getApplicationContext());
             new BottomSheet.Builder(this, R.menu.meme_saved)
-                    .setStyle(app.getImgurTheme().getBottomSheetTheme())
+                    .setStyle(theme.getBottomSheetTheme())
                     .setTitle(R.string.meme_success)
                     .setListener(new BottomSheetListener() {
                         @Override

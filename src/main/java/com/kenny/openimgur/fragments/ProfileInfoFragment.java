@@ -2,12 +2,10 @@ package com.kenny.openimgur.fragments;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -17,9 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
@@ -32,7 +28,6 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.LinkUtils;
-import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 
 import java.text.SimpleDateFormat;
@@ -109,7 +104,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.message:
-                if (app.getUser() != null) {
+                if (user != null) {
                     ImgurConvo convo = new ImgurConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
                     startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
                 } else {

@@ -119,9 +119,9 @@ public class ProfileActivity extends BaseActivity {
                 String username = args.getStringExtra(KEY_USERNAME);
                 mSelectedUser = app.getSql().getUser(username);
                 configUser(username);
-            } else if (app.getUser() != null) {
+            } else if (user != null) {
                 LogUtil.v(TAG, "User already logged in");
-                mSelectedUser = app.getUser();
+                mSelectedUser = user;
                 configUser(null);
             } else {
                 LogUtil.v(TAG, "No user present. Showing Login screen");
