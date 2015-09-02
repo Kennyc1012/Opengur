@@ -50,10 +50,12 @@ import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
 import com.kenny.snackbar.SnackBarItem;
 import com.kenny.snackbar.SnackBarListener;
+import com.kennyc.bottomsheet.BottomSheet;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -172,12 +174,17 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
 
             case R.id.share:
-                startActivity(Intent.createChooser(mImgurObject.getShareIntent(), getString(R.string.share)));
+                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), mImgurObject.getShareIntent(), R.string.share);
+                if (shareDialog != null) {
+                    shareDialog.show();
+                } else {
+                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                }
                 return true;
 
             case R.id.report:
                 if (user != null) {
-                    new AlertDialog.Builder(getActivity(), app.getImgurTheme().getAlertDialogTheme())
+                    new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                             .setTitle(R.string.report_reason)
                             .setItems(R.array.report_reasons, new DialogInterface.OnClickListener() {
                                 @Override
@@ -190,6 +197,23 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     SnackBar.show(getActivity(), R.string.user_not_logged_in);
                 }
                 break;
+
+            case R.id.download_album:
+                if (NetworkUtils.isConnectedToWiFi(getActivity())) {
+                    downloadAlbum();
+                } else {
+                    new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                            .setTitle(R.string.download_no_wifi_title)
+                            .setMessage(R.string.download_no_wifi_msg)
+                            .setNegativeButton(R.string.cancel, null)
+                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    downloadAlbum();
+                                }
+                            }).show();
+                }
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -198,7 +222,9 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        menu.findItem(R.id.copy_album_link).setVisible(mImgurObject instanceof ImgurAlbum);
+        boolean isAlbum = mImgurObject instanceof ImgurAlbum;
+        menu.findItem(R.id.copy_album_link).setVisible(isAlbum);
+        menu.findItem(R.id.download_album).setVisible(isAlbum);
 
         if (TextUtils.isEmpty(mImgurObject.getAccount())) {
             menu.findItem(R.id.profile).setVisible(false);
@@ -526,6 +552,25 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         outState.putBoolean(KEY_DISPLAY_TAGS, mDisplayTags);
         outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);
+    }
+
+    private void downloadAlbum() {
+        if (mImgurObject instanceof ImgurAlbum) {
+            // TODO Check for permission for Marshmallow
+            if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
+                ArrayList<String> urls = new ArrayList<>(mPhotoAdapter.getItemCount());
+
+                for (ImgurPhoto p : mPhotoAdapter.retainItems()) {
+                    urls.add(p.getLink());
+                }
+
+                getActivity().startService(DownloaderService.createIntent(getActivity(), urls));
+            } else {
+                SnackBar.show(getActivity(), R.string.error_generic);
+            }
+        } else {
+            LogUtil.w(TAG, "Item is not an album");
+        }
     }
 
     private void fetchAlbumImages() {

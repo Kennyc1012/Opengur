@@ -104,7 +104,7 @@ public class UploadInfoFragment extends BaseFragment {
 
     @OnCheckedChanged(R.id.gallerySwitch)
     public void onCheckChanged(boolean checked) {
-        if (checked && app.getUser() == null) {
+        if (checked && user == null) {
             mGallerySwitch.setChecked(false);
             SnackBar.show(getActivity(), R.string.upload_gallery_no_user);
             return;

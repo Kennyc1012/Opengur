@@ -40,7 +40,7 @@ public class MessagesAdapter extends BaseRecyclerAdapter<ImgurMessage> {
     public MessagesAdapter(Context context, int userColor, List<ImgurMessage> messages, ImgurListener listener) {
         super(context, messages);
         mUserId = OpengurApp.getInstance(context).getUser().getId();
-        mMargin = (int) (context.getResources().getDisplayMetrics().widthPixels * .25);
+        mMargin = (int) (mResources.getDisplayMetrics().widthPixels * .25);
         mListener = listener;
         mUserColor = userColor;
     }
@@ -100,7 +100,7 @@ public class MessagesAdapter extends BaseRecyclerAdapter<ImgurMessage> {
         long difference = System.currentTimeMillis() - commentDate;
 
         return (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) ?
-                context.getResources().getString(R.string.moments_ago) :
+                mResources.getString(R.string.moments_ago) :
                 DateUtils.getRelativeTimeSpanString(
                         commentDate,
                         now,

@@ -9,11 +9,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.fragments.FullScreenPhotoFragment;
+import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.ViewPager;
 
 import java.util.ArrayList;
@@ -67,6 +70,35 @@ public class FullScreenPhotoActivity extends BaseActivity {
         handleArguments(savedInstanceState, intent);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.full_screen, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean isAlbumDownloadable = mAdapter != null && mAdapter.getCount() > 1;
+        menu.findItem(R.id.download_album).setVisible(isAlbumDownloadable);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.download_album:
+                ArrayList<String> urls = new ArrayList<>(mAdapter.getCount());
+
+                for (ImgurPhoto p : mAdapter.mPhotos) {
+                    urls.add(p.getLink());
+                }
+
+                startService(DownloaderService.createIntent(getApplicationContext(), urls));
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void handleArguments(Bundle savedInstanceState, Intent intent) {
         ArrayList<ImgurPhoto> photos;
         int startingPosition;
@@ -114,6 +146,8 @@ public class FullScreenPhotoActivity extends BaseActivity {
                 }
             });
         }
+
+        supportInvalidateOptionsMenu();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,11 +34,10 @@ public class PhotoPickerAdapter extends BaseRecyclerAdapter<String> {
 
     public PhotoPickerAdapter(Context context, RecyclerView view, List<String> photos, View.OnClickListener listener) {
         super(context, photos, true);
-        Resources res = context.getResources();
-        int gridSize = res.getInteger(R.integer.gallery_num_columns);
+        int gridSize = mResources.getInteger(R.integer.gallery_num_columns);
         view.setLayoutManager(new GridLayoutManager(context, gridSize));
-        view.addItemDecoration(new GridItemDecoration(res.getDimensionPixelSize(R.dimen.grid_padding), gridSize));
-        mTintColor = res.getColor(OpengurApp.getInstance(context).getImgurTheme().accentColor);
+        view.addItemDecoration(new GridItemDecoration(mResources.getDimensionPixelSize(R.dimen.grid_padding), gridSize));
+        mTintColor = mResources.getColor(OpengurApp.getInstance(context).getImgurTheme().accentColor);
         mClickListener = listener;
     }
 
@@ -58,7 +56,7 @@ public class PhotoPickerAdapter extends BaseRecyclerAdapter<String> {
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         PhotoViewHolder holder = new PhotoViewHolder(mInflater.inflate(R.layout.photo_picker_item, parent, false));
         holder.itemView.setOnClickListener(mClickListener);
-        holder.checkMark.setImageDrawable(ImageUtil.tintDrawable(R.drawable.ic_check_circle_white_36dp, holder.checkMark.getResources(), mTintColor));
+        holder.checkMark.setImageDrawable(ImageUtil.tintDrawable(R.drawable.ic_check_circle_white_36dp, mResources, mTintColor));
         return holder;
     }
 

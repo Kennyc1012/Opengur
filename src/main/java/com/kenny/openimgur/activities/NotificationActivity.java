@@ -1,5 +1,6 @@
 package com.kenny.openimgur.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.NotificationAdapter;
@@ -36,6 +38,8 @@ import retrofit.client.Response;
  * Created by Kenny-PC on 8/9/2015.
  */
 public class NotificationActivity extends BaseActivity implements View.OnClickListener, View.OnLongClickListener, ActionMode.Callback {
+    public static final String KEY_USER_NOT_LOGGED_IN = "no_user";
+
     private static final String KEY_ITEMS = "items";
 
     private static final String KEY_POSITION = "position";
@@ -57,7 +61,13 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (user == null) throw new IllegalStateException("No user present");
+        if (user == null) {
+            setResult(Activity.RESULT_CANCELED, new Intent().putExtra(KEY_USER_NOT_LOGGED_IN, true));
+            Toast.makeText(getApplicationContext(), R.string.notification_no_user, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         getSupportActionBar().setTitle(R.string.notifications);
         setContentView(R.layout.activity_notifications);
         mList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -90,7 +100,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
 
             case R.id.delete:
                 if (mAdapter != null && !mAdapter.isEmpty()) {
-                    new AlertDialog.Builder(this, app.getImgurTheme().getAlertDialogTheme())
+                    new AlertDialog.Builder(this, theme.getAlertDialogTheme())
                             .setTitle(R.string.delete)
                             .setMessage(R.string.notification_delete_all_msg)
                             .setNegativeButton(R.string.cancel, null)

@@ -39,6 +39,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/download_album"
+        android:title="@string/download_album"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/report"
         android:title="@string/report"
         app:showAsAction="never" />

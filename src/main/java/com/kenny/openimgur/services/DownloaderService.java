@@ -8,14 +8,16 @@ import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.util.FileUtil;
@@ -25,6 +27,7 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Created by kcampagna on 6/30/14.
@@ -34,10 +37,16 @@ public class DownloaderService extends IntentService {
 
     private static final String TAG = DownloaderService.class.getSimpleName();
 
-    private static final String KEY_IMAGE_URL = "image_url";
+    private static final String KEY_IMAGE_URLS = "image_urls";
 
     public static Intent createIntent(@NonNull Context context, @NonNull String url) {
-        return new Intent(context, DownloaderService.class).putExtra(DownloaderService.KEY_IMAGE_URL, url);
+        ArrayList<String> urls = new ArrayList<>(1);
+        urls.add(url);
+        return createIntent(context, urls);
+    }
+
+    public static Intent createIntent(@NonNull Context context, ArrayList<String> urls) {
+        return new Intent(context, DownloaderService.class).putExtra(DownloaderService.KEY_IMAGE_URLS, urls);
     }
 
     public DownloaderService() {
@@ -46,112 +55,200 @@ public class DownloaderService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        try {
-            String url = intent.getStringExtra(KEY_IMAGE_URL);
+        // Get a wake lock so any long uploads will not be interrupted
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+        wakeLock.acquire();
 
-            if (TextUtils.isEmpty(url)) {
+        try {
+            ArrayList<String> photoUrls = intent.getStringArrayListExtra(KEY_IMAGE_URLS);
+
+            if (photoUrls == null || photoUrls.isEmpty()) {
                 LogUtil.e(TAG, "Nothing was passed in to be downloaded");
                 return;
             }
 
+
+            boolean isMultiUpload = photoUrls.size() > 1;
+            DownloadNotification notification = new DownloadNotification(getApplicationContext(), photoUrls.size());
+            int count = 1;
+            int totalDownloaded = 0;
+            int totalPhotos = photoUrls.size();
+
+            // Make any needed folders
             File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), FOLDER_NAME);
             file.mkdirs();
-            String photoFileName;
-            boolean isUsingVideoLink = false;
-            String photoType = LinkUtils.getImageType(url);
-            String photoId = String.valueOf(System.currentTimeMillis() / DateUtils.SECOND_IN_MILLIS);
+            String directoryPath = file.getAbsolutePath();
+            LogUtil.v(TAG, "Downloading " + totalPhotos + " photos");
 
-            // JPEG Image
-            if (ImgurPhoto.IMAGE_TYPE_JPEG.equals(photoType)) {
-                photoFileName = photoId + FileUtil.EXTENSION_JPEG;
-            } else if (ImgurPhoto.IMAGE_TYPE_GIF.equals(photoType)) {
-                // Gif Image, urls don't need to be tested for an mp4 here
-                photoFileName = photoId + FileUtil.EXTENSION_GIF;
-            } else if (LinkUtils.isVideoLink(url)) {
-                // Check the photo link for videos
-                isUsingVideoLink = true;
-                photoFileName = photoId + FileUtil.EXTENSION_MP4;
-            } else {
-                photoFileName = photoId + FileUtil.EXTENSION_PNG;
-            }
+            for (String url : photoUrls) {
+                File savedFile = saveUrl(url, directoryPath);
+                notification.updateMessage(count);
 
-            File photoFile = new File(file.getAbsolutePath(), photoFileName);
-            LogUtil.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
-            DownloadNotification notification = new DownloadNotification(getApplicationContext(), photoId.hashCode());
-            boolean saved;
+                if (FileUtil.isFileValid(savedFile)) {
+                    totalDownloaded++;
+                    LogUtil.v(TAG, "Image download completed for URL " + url);
+                    Uri fileUri = Uri.fromFile(savedFile);
+                    // Let the system know we have a new file
+                    FileUtil.scanFile(fileUri, getApplicationContext());
 
-            // Check if the video is already in our cache
-            if (isUsingVideoLink) {
-                File cachedFile = VideoCache.getInstance().getVideoFile(url);
+                    // Single image downloads will show multiple options and a preview in the notification
+                    if (!isMultiUpload) {
+                        String photoType = LinkUtils.getImageType(url);
+                        boolean isVideoLink = savedFile.getAbsolutePath().endsWith(FileUtil.EXTENSION_MP4);
 
-                if (FileUtil.isFileValid(cachedFile)) {
-                    LogUtil.v(TAG, "Video file present in cache, copying");
-                    saved = FileUtil.copyFile(cachedFile, photoFile);
-                } else {
-                    saved = FileUtil.saveUrl(url, photoFile);
+                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                        shareIntent.setType(photoType);
+                        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+                        PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), RequestCodes.DOWNLOAD_SHARE, Intent.createChooser(shareIntent, getString(R.string.share)), PendingIntent.FLAG_UPDATE_CURRENT);
+
+                        Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+                        viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        viewIntent.setDataAndType(fileUri, isVideoLink ? "video/mp4" : photoType);
+                        PendingIntent viewP = PendingIntent.getActivity(getApplicationContext(), RequestCodes.DOWNLOAD_VIEW, viewIntent, PendingIntent.FLAG_ONE_SHOT);
+
+                        // Get the correct preview image for the notification based on if it is a video or not
+                        Bitmap bm = isVideoLink ? ImageUtil.toGrayScale(ThumbnailUtils.createVideoThumbnail(savedFile.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND)) :
+                                ImageUtil.toGrayScale(ImageUtil.decodeSampledBitmapFromResource(savedFile, 256, 256));
+
+                        notification.onSingleImageDownloadComplete(bm, viewP, shareP);
+                    }
+                } else if (!isMultiUpload) {
+                    notification.onError();
                 }
-            } else {
-                saved = FileUtil.saveUrl(url, photoFile);
+
+                count++;
             }
 
-            if (saved) {
-                LogUtil.v(TAG, "Image download completed");
-                Uri fileUri = Uri.fromFile(photoFile);
+            if (isMultiUpload) {
+                if (totalDownloaded == totalPhotos) {
+                    LogUtil.v(TAG, "All photos downloaded successfully");
+                    notification.onMultiImageDownloadComplete(totalDownloaded);
+                } else {
+                    LogUtil.w(TAG, totalDownloaded + " of " + totalPhotos + " downloaded successfully");
+                    notification.onMultiImageDownloadError(totalDownloaded, totalPhotos);
+                }
 
-                // Let the system know we have a new file
-                FileUtil.scanFile(fileUri, getApplicationContext());
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setType(photoType);
-                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), RequestCodes.DOWNLOAD_SHARE, Intent.createChooser(shareIntent, getString(R.string.share)), PendingIntent.FLAG_UPDATE_CURRENT);
-
-                Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-                viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                viewIntent.setDataAndType(fileUri, isUsingVideoLink ? "video/mp4" : photoType);
-                PendingIntent viewP = PendingIntent.getActivity(getApplicationContext(), RequestCodes.DOWNLOAD_VIEW, viewIntent, PendingIntent.FLAG_ONE_SHOT);
-
-                // Get the correct preview image for the notification based on if it is a video or not
-                Bitmap bm = isUsingVideoLink ? ImageUtil.toGrayScale(ThumbnailUtils.createVideoThumbnail(photoFile.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND)) :
-                        ImageUtil.toGrayScale(ImageUtil.decodeSampledBitmapFromResource(photoFile, 256, 256));
-
-                notification.onDownloadComplete(bm, viewP, shareP);
-            } else {
-                LogUtil.w(TAG, "Image download failed");
-                notification.onError();
             }
-
         } catch (Exception e) {
             LogUtil.e(TAG, "Exception while downloading image", e);
+        } finally {
+            if (wakeLock.isHeld()) wakeLock.release();
         }
     }
 
-    private static class DownloadNotification extends BaseNotification {
-        private int mPhotoHash;
+    @Nullable
+    private String getPhotoFileName(@Nullable String url) {
+        if (TextUtils.isEmpty(url)) return null;
 
-        public DownloadNotification(Context context, int photoHash) {
+        String photoFileName;
+        String photoType = LinkUtils.getImageType(url);
+        String photoId = LinkUtils.getId(url);
+        if (TextUtils.isEmpty(photoId)) photoId = String.valueOf(System.currentTimeMillis());
+
+        if (ImgurPhoto.IMAGE_TYPE_JPEG.equals(photoType)) {
+            photoFileName = photoId + FileUtil.EXTENSION_JPEG;
+        } else if (ImgurPhoto.IMAGE_TYPE_GIF.equals(photoType)) {
+            photoFileName = photoId + FileUtil.EXTENSION_GIF;
+        } else if (LinkUtils.isVideoLink(url)) {
+            photoFileName = photoId + FileUtil.EXTENSION_MP4;
+        } else {
+            photoFileName = photoId + FileUtil.EXTENSION_PNG;
+        }
+
+        return photoFileName;
+    }
+
+    /**
+     * Attempts to save the url to the device
+     *
+     * @param url           URL of the photo
+     * @param directoryPath The parent directory where the photo will be saved
+     * @return The {@link File} representing the photo. NULL may be returned if unsuccessful
+     */
+    @Nullable
+    private File saveUrl(@NonNull String url, @NonNull String directoryPath) {
+        File photoFile = null;
+        String fileName = getPhotoFileName(url);
+
+        if (!TextUtils.isEmpty(fileName)) {
+            boolean isVideoLink = fileName.endsWith(FileUtil.EXTENSION_MP4);
+            photoFile = new File(directoryPath, fileName);
+            File cachedFile;
+
+            // Check if we already downloaded the image before
+            if (isVideoLink) {
+                cachedFile = VideoCache.getInstance().getVideoFile(url);
+            } else {
+                cachedFile = OpengurApp.getInstance(getApplication()).getImageLoader().getDiskCache().get(url);
+            }
+
+            if (FileUtil.isFileValid(cachedFile)) {
+                LogUtil.v(TAG, "Image present in cache, copying");
+                FileUtil.copyFile(cachedFile, photoFile);
+            } else {
+                LogUtil.v(TAG, "Downloading image to " + photoFile.getAbsolutePath());
+                FileUtil.saveUrl(url, photoFile);
+            }
+        }
+
+        return photoFile;
+    }
+
+    private static class DownloadNotification extends BaseNotification {
+        private int mId;
+
+        private int mNumPhotos;
+
+        public DownloadNotification(Context context, int numPhotos) {
             super(context);
-            mPhotoHash = photoHash;
-            builder.setProgress(0, 0, true);
-            postNotification();
+            mNumPhotos = numPhotos;
+            mId = (int) System.currentTimeMillis();
+
+            if (numPhotos == 1) {
+                builder.setProgress(0, 0, false);
+                postNotification();
+            }
         }
 
         @NonNull
         @Override
         protected String getTitle() {
-            return app.getString(R.string.image_downloading);
+            return resources.getQuantityString(R.plurals.download_notif_title, mNumPhotos);
         }
 
         @Override
         protected int getNotificationId() {
-            return mPhotoHash;
+            return mId;
         }
 
-        public void onDownloadComplete(Bitmap bitmap, PendingIntent viewIntent, PendingIntent shareIntent) {
+        /**
+         * Updates the message for the notification. This should only be called when multiple images are being downloaded
+         *
+         * @param currentPhotoNumber The current photo number that is being downloaded
+         */
+        public void updateMessage(int currentPhotoNumber) {
+            String message = resources.getString(R.string.download_notif_message, currentPhotoNumber, mNumPhotos);
+            builder.setProgress(mNumPhotos, currentPhotoNumber, false);
+            builder.setContentText(message);
+            postNotification();
+        }
+
+        /**
+         * Called when a single image has been downloaded. A single image will have a view and share action
+         *
+         * @param bitmap      The {@link Bitmap} for display in the notification
+         * @param viewIntent  The {@link PendingIntent} for viewing the image
+         * @param shareIntent The {@link PendingIntent} for sharing the image
+         */
+        public void onSingleImageDownloadComplete(Bitmap bitmap, PendingIntent viewIntent, PendingIntent shareIntent) {
+            String title = resources.getString(R.string.download_notif_complete);
+
             if (bitmap != null) {
                 NotificationCompat.BigPictureStyle bigPicStyle = new NotificationCompat.BigPictureStyle();
-                bigPicStyle.setBigContentTitle(app.getString(R.string.download_complete));
-                bigPicStyle.setSummaryText(app.getString(R.string.tap_to_view));
+                bigPicStyle.setBigContentTitle(title);
+                bigPicStyle.setSummaryText(resources.getString(R.string.tap_to_view));
                 bigPicStyle.bigPicture(bitmap);
                 builder.setStyle(bigPicStyle)
                         .setLargeIcon(bitmap);
@@ -159,17 +256,44 @@ public class DownloaderService extends IntentService {
 
             builder.setProgress(0, 0, false)
                     .setContentIntent(viewIntent)
-                    .addAction(R.drawable.ic_share_white_24dp, app.getString(R.string.share), shareIntent)
-                    .setContentTitle(app.getString(R.string.download_complete))
-                    .setContentText(app.getString(R.string.tap_to_view));
+                    .addAction(R.drawable.ic_share_white_24dp, resources.getString(R.string.share), shareIntent)
+                    .setContentTitle(title)
+                    .setContentText(resources.getString(R.string.tap_to_view));
+
+            postNotification();
+        }
+
+        /**
+         * Called when all images have successfully downloaded
+         *
+         * @param totalImages The total number of images downloaded
+         */
+        public void onMultiImageDownloadComplete(int totalImages) {
+            builder.setProgress(0, 0, false)
+                    .setContentTitle(resources.getString(R.string.download_notif_complete))
+                    .setContentText(resources.getString(R.string.download_notif_multi_message, totalImages));
+
+            postNotification();
+        }
+
+        /**
+         * Called when not all images are downloaded successfully
+         *
+         * @param totalDownloaded The total number of images that were downloaded
+         * @param totalPhotos     The total number of photos that were supposed to be downloaded
+         */
+        public void onMultiImageDownloadError(int totalDownloaded, int totalPhotos) {
+            builder.setProgress(0, 0, false)
+                    .setContentTitle(resources.getString(R.string.download_notif_error))
+                    .setContentText(resources.getString(R.string.download_notif_multi_error_msg, totalDownloaded, totalPhotos));
 
             postNotification();
         }
 
         public void onError() {
             builder.setProgress(0, 0, false)
-                    .setContentTitle(app.getString(R.string.error))
-                    .setContentText(app.getString(R.string.download_error));
+                    .setContentTitle(resources.getString(R.string.download_notif_error))
+                    .setContentText(resources.getString(R.string.download_error));
 
             postNotification();
         }

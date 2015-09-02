@@ -620,7 +620,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             if (!shouldClose) {
                 final ImgurComment comment = mCommentAdapter.getItem(position);
                 new BottomSheet.Builder(this, R.menu.comment_menu)
-                        .setStyle(app.getImgurTheme().getBottomSheetTheme())
+                        .setStyle(theme.getBottomSheetTheme())
                         .grid()
                         .setTitle(R.string.options)
                         .setListener(new BottomSheetListener() {
