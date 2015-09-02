@@ -4,7 +4,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.api.responses.OAuthResponse;
-import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
 import com.squareup.okhttp.Interceptor;
@@ -30,32 +29,30 @@ public class OAuthInterceptor implements Interceptor {
         Response response = chain.proceed(request);
 
         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED || response.code() == HttpURLConnection.HTTP_FORBIDDEN) {
-            OpengurApp app = OpengurApp.getInstance();
-            ImgurUser user = app.getUser();
+            String token = ApiClient.getAccessToken();
 
-            if (user != null) {
+            if (!TextUtils.isEmpty(token)) {
                 LogUtil.v(TAG, "Token is no longer valid");
-                String token = user.getAccessToken();
 
                 synchronized (sLock) {
-                    String currentToken = user.getAccessToken();
+                    String currentToken = ApiClient.getAccessToken();
 
                     // Check if our current token has been updated, if it hasn't fetch a new one.
                     if (!TextUtils.isEmpty(currentToken) && currentToken.equals(token)) {
-                        refreshToken(app);
+                        ApiClient.setAccessToken(refreshToken(OpengurApp.getInstance()));
                     }
                 }
 
-                if (!TextUtils.isEmpty(user.getAccessToken())) {
+                if (!TextUtils.isEmpty(ApiClient.getAccessToken())) {
                     Request newRequest = request.newBuilder()
                             .removeHeader(ApiClient.AUTHORIZATION_HEADER)
-                            .addHeader(ApiClient.AUTHORIZATION_HEADER, "Bearer " + user.getAccessToken())
+                            .addHeader(ApiClient.AUTHORIZATION_HEADER, "Bearer " + ApiClient.getAccessToken())
                             .build();
 
                     return chain.proceed(newRequest);
                 }
             } else {
-                LogUtil.w(TAG, "Received unauthorized status from API but no user is present... wat?");
+                LogUtil.w(TAG, "Received unauthorized status from API but no access token present... wat?");
             }
         }
 
