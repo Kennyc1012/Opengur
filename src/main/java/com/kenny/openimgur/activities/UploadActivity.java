@@ -7,7 +7,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,7 +30,6 @@ import com.kenny.openimgur.adapters.UploadPhotoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
-import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.fragments.UploadEditDialogFragment;
@@ -41,6 +39,7 @@ import com.kenny.openimgur.services.UploadService;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
 import com.kenny.snackbar.SnackBarItem;
@@ -378,39 +377,43 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
      * @return If the permissions are available. If false is returned, the necessary prompts will be shown
      */
     private boolean checkPermissions() {
-        int readPermission = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        int writePermission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionType(this, PERMISSIONS);
 
-        if (readPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED) {
-            LogUtil.v(TAG, "Permissions available");
-            return true;
-        } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            mUploadContainer.setVisibility(View.GONE);
+        switch (permissionLevel) {
+            case PermissionUtils.PERMISSION_AVAILABLE:
+                LogUtil.v(TAG, "Permissions available");
+                return true;
 
-            new SnackBarItem.Builder(this)
-                    .setMessageResource(R.string.permission_rationale_upload)
-                    .setActionMessageResource(R.string.okay)
-                    .setAutoDismiss(false)
-                    .setSnackBarListener(new SnackBarListener() {
-                        @Override
-                        public void onSnackBarStarted(Object o) {
-                            LogUtil.v(TAG, "Permissions have been denied before, showing rationale");
-                        }
+            case PermissionUtils.PERMISSION_DENIED:
+                mUploadContainer.setVisibility(View.GONE);
 
-                        @Override
-                        public void onSnackBarFinished(Object o, boolean actionClicked) {
-                            if (actionClicked) {
-                                ActivityCompat.requestPermissions(UploadActivity.this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
-                            } else {
-                                Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
-                                finish();
+                new SnackBarItem.Builder(this)
+                        .setMessageResource(R.string.permission_rationale_upload)
+                        .setActionMessageResource(R.string.okay)
+                        .setAutoDismiss(false)
+                        .setSnackBarListener(new SnackBarListener() {
+                            @Override
+                            public void onSnackBarStarted(Object o) {
+                                LogUtil.v(TAG, "Permissions have been denied before, showing rationale");
                             }
-                        }
-                    }).show();
-        } else {
-            LogUtil.v(TAG, "Prompting for permissions");
-            ActivityCompat.requestPermissions(this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
+
+                            @Override
+                            public void onSnackBarFinished(Object o, boolean actionClicked) {
+                                if (actionClicked) {
+                                    ActivityCompat.requestPermissions(UploadActivity.this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
+                                } else {
+                                    Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+                                    finish();
+                                }
+                            }
+                        }).show();
+                break;
+
+            case PermissionUtils.PERMISSION_UNAVAILABLE:
+            default:
+                LogUtil.v(TAG, "Prompting for permissions");
+                ActivityCompat.requestPermissions(this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
+                break;
         }
 
         return false;
@@ -469,7 +472,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case RequestCodes.REQUEST_PERMISSIONS:
-                if (OpengurApp.verifyPermissions(grantResults)) {
+                if (PermissionUtils.verifyPermissions(grantResults)) {
                     SnackBar.show(this, R.string.permission_granted);
                     mUploadContainer.setVisibility(View.VISIBLE);
                     checkIntent(getIntent());

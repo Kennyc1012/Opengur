@@ -2,7 +2,6 @@ package com.kenny.openimgur.fragments;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -11,7 +10,6 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentCompat;
-import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,7 +25,6 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.MultiStateView;
@@ -36,6 +33,7 @@ import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
 import com.kenny.snackbar.SnackBarItem;
@@ -350,32 +348,40 @@ public class FullScreenPhotoFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.download:
-                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
-                } else if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    new SnackBarItem.Builder(getActivity())
-                            .setMessageResource(R.string.permission_rationale_download)
-                            .setActionMessageResource(R.string.okay)
-                            .setAutoDismiss(false)
-                            .setSnackBarListener(new SnackBarListener() {
-                                @Override
-                                public void onSnackBarStarted(Object o) {
-                                    // NOOP
-                                }
+                @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionType(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-                                @Override
-                                public void onSnackBarFinished(Object o, boolean actionClicked) {
-                                    if (actionClicked) {
-                                        FragmentCompat.requestPermissions(FullScreenPhotoFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
-                                    } else {
-                                        SnackBar.show(getActivity(), R.string.permission_denied);
+                switch (permissionLevel) {
+                    case PermissionUtils.PERMISSION_AVAILABLE:
+                        getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
+                        break;
+
+                    case PermissionUtils.PERMISSION_DENIED:
+                        new SnackBarItem.Builder(getActivity())
+                                .setMessageResource(R.string.permission_rationale_download)
+                                .setActionMessageResource(R.string.okay)
+                                .setAutoDismiss(false)
+                                .setSnackBarListener(new SnackBarListener() {
+                                    @Override
+                                    public void onSnackBarStarted(Object o) {
+                                        // NOOP
                                     }
-                                }
-                            }).show();
-                } else {
-                    FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
-                }
 
+                                    @Override
+                                    public void onSnackBarFinished(Object o, boolean actionClicked) {
+                                        if (actionClicked) {
+                                            FragmentCompat.requestPermissions(FullScreenPhotoFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                                        } else {
+                                            SnackBar.show(getActivity(), R.string.permission_denied);
+                                        }
+                                    }
+                                }).show();
+                        break;
+
+                    case PermissionUtils.PERMISSION_UNAVAILABLE:
+                    default:
+                        FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                        break;
+                }
                 return true;
 
             case R.id.share:
@@ -441,14 +447,9 @@ public class FullScreenPhotoFragment extends BaseFragment {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case RequestCodes.REQUEST_PERMISSIONS:
-                boolean granted = OpengurApp.verifyPermissions(grantResults);
+                boolean granted = PermissionUtils.verifyPermissions(grantResults);
                 int message = granted ? R.string.permission_granted : R.string.permission_denied;
                 SnackBar.show(getActivity(), message);
-
-                // Kick off the download immediately if granted
-                if (granted) {
-                    getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
-                }
                 break;
         }
 
