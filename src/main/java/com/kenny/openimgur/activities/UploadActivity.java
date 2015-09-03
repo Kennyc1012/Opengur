@@ -2,12 +2,14 @@ package com.kenny.openimgur.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -150,10 +152,16 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
     private void onUrisDecoded(@Nullable List<Upload> uploads) {
         if (uploads == null || uploads.isEmpty()) {
-            mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+            boolean isEmpty = mAdapter == null || mAdapter.isEmpty();
+            mMultiView.setViewState(isEmpty ? MultiStateView.VIEW_STATE_EMPTY : MultiStateView.VIEW_STATE_CONTENT);
         } else {
-            mAdapter = new UploadPhotoAdapter(this, uploads, this);
-            mRecyclerView.setAdapter(mAdapter);
+            if (mAdapter == null) {
+                mAdapter = new UploadPhotoAdapter(this, uploads, this);
+                mRecyclerView.setAdapter(mAdapter);
+            } else {
+                mAdapter.addItems(uploads);
+            }
+
             mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         }
     }
@@ -207,7 +215,16 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                 break;
 
             case R.id.galleryBtn:
-                startActivityForResult(PhotoPickerActivity.createInstance(getApplicationContext()), RequestCodes.SELECT_PHOTO);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(intent, RequestCodes.SELECT_PHOTO_API18);
+                } else {
+                    // TODO Remove when min API is >= 18
+                    startActivityForResult(PhotoPickerActivity.createInstance(getApplicationContext()), RequestCodes.SELECT_PHOTO);
+                }
                 break;
 
             case R.id.linkBtn:
@@ -260,6 +277,34 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                     supportInvalidateOptionsMenu();
                 } else {
                     SnackBar.show(this, R.string.upload_camera_error);
+                }
+                break;
+
+            case RequestCodes.SELECT_PHOTO_API18:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    ClipData clipData = data.getClipData();
+                    List<Uri> uris = null;
+
+                    // Check if we have multiple images
+                    if (clipData != null) {
+                        int size = clipData.getItemCount();
+                        uris = new ArrayList<>(size);
+
+                        for (int i = 0; i < size; i++) {
+                            uris.add(clipData.getItemAt(i).getUri());
+                        }
+                    } else if (data.getData() != null) {
+                        // If not multiple images, then only one was selected
+                        uris = new ArrayList<>(1);
+                        uris.add(data.getData());
+                    }
+
+                    if (uris != null && !uris.isEmpty()) {
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
+                        new DecodeImagesTask(this).execute(uris);
+                    } else {
+                        SnackBar.show(this, R.string.error_generic);
+                    }
                 }
                 break;
         }
