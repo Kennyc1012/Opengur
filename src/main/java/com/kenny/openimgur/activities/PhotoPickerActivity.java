@@ -202,7 +202,7 @@ public class PhotoPickerActivity extends BaseActivity implements LoaderManager.L
                 List<String> photos = new ArrayList<>();
 
                 while (cursor.moveToNext()) {
-                    photos.add(cursor.getString(0));
+                    photos.add("file://" + cursor.getString(0));
                 }
 
                 LogUtil.v(TAG, "Found " + photos.size() + " photos");
