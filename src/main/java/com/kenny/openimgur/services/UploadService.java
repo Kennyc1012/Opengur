@@ -24,6 +24,7 @@ import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
 
@@ -169,7 +170,7 @@ public class UploadService extends IntentService {
                 mNotification.onPhotoUploadFailed();
             }
         } finally {
-            if (wakeLock.isHeld()) wakeLock.release();
+            NetworkUtils.releaseWakeLock(wakeLock);
         }
     }
 
