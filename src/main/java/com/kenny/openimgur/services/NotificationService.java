@@ -30,6 +30,7 @@ import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.ui.CircleBitmapDisplayer;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -80,7 +81,7 @@ public class NotificationService extends IntentService {
             } catch (Exception ex) {
                 LogUtil.e(TAG, "Error fetching notifications", ex);
             } finally {
-                if (wakeLock.isHeld()) wakeLock.release();
+                NetworkUtils.releaseWakeLock(wakeLock);
             }
 
             // Create the next alarm when everything is finished

@@ -260,6 +260,7 @@ public class ProfileActivity extends BaseActivity {
                         app.setUser(newUser);
                         user = newUser;
                         mSelectedUser = newUser;
+                        ApiClient.setAccessToken(accessToken);
                         LogUtil.v(TAG, "User " + newUser.getUsername() + " logged in");
                         fetchProfile(mSelectedUser.getUsername());
                         CookieManager.getInstance().removeAllCookie();

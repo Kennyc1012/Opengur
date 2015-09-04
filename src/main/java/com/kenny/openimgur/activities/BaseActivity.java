@@ -246,7 +246,7 @@ abstract public class BaseActivity extends AppCompatActivity {
      * @return
      */
     protected boolean canDoFragmentTransaction() {
-        return !isFinishing() && !isChangingConfigurations();
+        return !isDestroyed() && !isFinishing() && !isChangingConfigurations();
     }
 
     /**

@@ -65,7 +65,7 @@ public class PhotoPickerAdapter extends BaseRecyclerAdapter<String> {
         PhotoViewHolder photoHolder = (PhotoViewHolder) holder;
         String path = getItem(position);
         photoHolder.checkMark.setVisibility(mCheckPhotos.contains(path) ? View.VISIBLE : View.GONE);
-        displayImage(photoHolder.image, "file://" + path);
+        displayImage(photoHolder.image, path);
     }
 
     public int onSelected(String path, View view) {

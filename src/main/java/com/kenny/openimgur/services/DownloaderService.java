@@ -24,6 +24,7 @@ import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.RequestCodes;
 
 import java.io.File;
@@ -134,7 +135,7 @@ public class DownloaderService extends IntentService {
         } catch (Exception e) {
             LogUtil.e(TAG, "Exception while downloading image", e);
         } finally {
-            if (wakeLock.isHeld()) wakeLock.release();
+            NetworkUtils.releaseWakeLock(wakeLock);
         }
     }
 
