@@ -175,6 +175,8 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
             mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         }
+
+        supportInvalidateOptionsMenu();
     }
 
     @Override
