@@ -21,8 +21,8 @@ repositories {
     jcenter()
 }
 
-def VERSION_NAME = '3.4.2'
-def VERSION_CODE = 52
+def VERSION_NAME = 'marshmallow'
+def VERSION_CODE = 53
 
 android {
     compileSdkVersion 23
