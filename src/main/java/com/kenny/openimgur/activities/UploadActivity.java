@@ -473,7 +473,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
      * @return If the permissions are available. If false is returned, the necessary prompts will be shown
      */
     private boolean checkPermissions() {
-        @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionType(this, PERMISSIONS);
+        @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionLevel(this, PERMISSIONS);
 
         switch (permissionLevel) {
             case PermissionUtils.PERMISSION_AVAILABLE:
@@ -505,7 +505,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                         }).show();
                 break;
 
-            case PermissionUtils.PERMISSION_UNAVAILABLE:
+            case PermissionUtils.PERMISSION_NEVER_ASKED:
             default:
                 LogUtil.v(TAG, "Prompting for permissions");
                 ActivityCompat.requestPermissions(this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);

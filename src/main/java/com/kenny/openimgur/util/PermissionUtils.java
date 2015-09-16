@@ -25,7 +25,7 @@ public class PermissionUtils {
     /**
      * The user has never been asked to accept the permission
      */
-    public static final int PERMISSION_UNAVAILABLE = -1;
+    public static final int PERMISSION_NEVER_ASKED = -1;
 
     /**
      * The user has accepted the permission
@@ -33,7 +33,7 @@ public class PermissionUtils {
     public static final int PERMISSION_AVAILABLE = 1;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({PERMISSION_AVAILABLE, PERMISSION_UNAVAILABLE, PERMISSION_DENIED})
+    @IntDef({PERMISSION_AVAILABLE, PERMISSION_NEVER_ASKED, PERMISSION_DENIED})
     public @interface PermissionLevel {
     }
 
@@ -89,7 +89,7 @@ public class PermissionUtils {
      * @return
      */
     @PermissionLevel
-    public static int getPermissionType(@NonNull Fragment fragment, String... permissions) {
+    public static int getPermissionLevel(@NonNull Fragment fragment, String... permissions) {
         int[] grantResults = getGrantResults(fragment.getActivity(), permissions);
         boolean hasAllPermissions = verifyPermissions(grantResults);
 
@@ -101,7 +101,7 @@ public class PermissionUtils {
             if (FragmentCompat.shouldShowRequestPermissionRationale(fragment, s)) return PERMISSION_DENIED;
         }
 
-        return PERMISSION_UNAVAILABLE;
+        return PERMISSION_NEVER_ASKED;
     }
 
     /**
@@ -112,7 +112,7 @@ public class PermissionUtils {
      * @return
      */
     @PermissionLevel
-    public static int getPermissionType(@NonNull Activity activity, String... permissions) {
+    public static int getPermissionLevel(@NonNull Activity activity, String... permissions) {
         int[] grantResults = getGrantResults(activity, permissions);
         boolean hasAllPermissions = verifyPermissions(grantResults);
 
@@ -124,6 +124,6 @@ public class PermissionUtils {
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, s)) return PERMISSION_DENIED;
         }
 
-        return PERMISSION_UNAVAILABLE;
+        return PERMISSION_NEVER_ASKED;
     }
 }

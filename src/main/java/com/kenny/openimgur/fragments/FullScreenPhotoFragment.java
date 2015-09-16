@@ -348,7 +348,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.download:
-                @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionType(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionLevel(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
                 switch (permissionLevel) {
                     case PermissionUtils.PERMISSION_AVAILABLE:
@@ -377,7 +377,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
                                 }).show();
                         break;
 
-                    case PermissionUtils.PERMISSION_UNAVAILABLE:
+                    case PermissionUtils.PERMISSION_NEVER_ASKED:
                     default:
                         FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
                         break;
