@@ -481,28 +481,27 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                 return true;
 
             case PermissionUtils.PERMISSION_DENIED:
-                mUploadContainer.setVisibility(View.GONE);
-
-                new SnackBarItem.Builder(this)
-                        .setMessageResource(R.string.permission_rationale_upload)
-                        .setActionMessageResource(R.string.okay)
-                        .setAutoDismiss(false)
-                        .setSnackBarListener(new SnackBarListener() {
+                new AlertDialog.Builder(this, app.getImgurTheme().getAlertDialogTheme())
+                        .setTitle(R.string.permission_title)
+                        .setMessage(R.string.permission_rationale_upload)
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onSnackBarStarted(Object o) {
-                                LogUtil.v(TAG, "Permissions have been denied before, showing rationale");
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+                                finish();
                             }
-
-                            @Override
-                            public void onSnackBarFinished(Object o, boolean actionClicked) {
-                                if (actionClicked) {
-                                    ActivityCompat.requestPermissions(UploadActivity.this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
-                                } else {
-                                    Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
-                                    finish();
-                                }
-                            }
-                        }).show();
+                        }).setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ActivityCompat.requestPermissions(UploadActivity.this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
+                    }
+                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }).show();
                 break;
 
             case PermissionUtils.PERMISSION_NEVER_ASKED:
@@ -521,7 +520,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
             case RequestCodes.REQUEST_PERMISSIONS:
                 if (PermissionUtils.verifyPermissions(grantResults)) {
                     SnackBar.show(this, R.string.permission_granted);
-                    mUploadContainer.setVisibility(View.VISIBLE);
                     checkIntent(getIntent());
                 } else {
                     Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_LONG).show();
