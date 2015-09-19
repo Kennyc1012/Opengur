@@ -1,5 +1,6 @@
 package com.kenny.openimgur.fragments;
 
+import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v13.app.FragmentCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -46,7 +48,11 @@ import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.NetworkUtils;
+import com.kenny.openimgur.util.PermissionUtils;
+import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
+import com.kenny.snackbar.SnackBarItem;
+import com.kenny.snackbar.SnackBarListener;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -191,19 +197,21 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 break;
 
             case R.id.download_album:
-                if (NetworkUtils.isConnectedToWiFi(getActivity())) {
-                    downloadAlbum();
-                } else {
-                    new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
-                            .setTitle(R.string.download_no_wifi_title)
-                            .setMessage(R.string.download_no_wifi_msg)
-                            .setNegativeButton(R.string.cancel, null)
-                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    downloadAlbum();
-                                }
-                            }).show();
+                if (checkPermissions()) {
+                    if (NetworkUtils.isConnectedToWiFi(getActivity())) {
+                        downloadAlbum();
+                    } else {
+                        new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                                .setTitle(R.string.download_no_wifi_title)
+                                .setMessage(R.string.download_no_wifi_msg)
+                                .setNegativeButton(R.string.cancel, null)
+                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        downloadAlbum();
+                                    }
+                                }).show();
+                    }
                 }
                 break;
         }
@@ -367,7 +375,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
                                 // Download
                                 case 1:
-                                    getActivity().startService(DownloaderService.createIntent(getActivity(), link));
+                                    if (checkPermissions()) getActivity().startService(DownloaderService.createIntent(getActivity(), link));
                                     break;
 
                                 // Share
@@ -528,6 +536,44 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);
     }
 
+    private boolean checkPermissions() {
+        @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionLevel(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        switch (permissionLevel) {
+            case PermissionUtils.PERMISSION_AVAILABLE:
+                return true;
+
+            case PermissionUtils.PERMISSION_DENIED:
+                new SnackBarItem.Builder(getActivity())
+                        .setMessageResource(R.string.permission_rationale_download)
+                        .setActionMessageResource(R.string.okay)
+                        .setAutoDismiss(false)
+                        .setSnackBarListener(new SnackBarListener() {
+                            @Override
+                            public void onSnackBarStarted(Object o) {
+                                // NOOP
+                            }
+
+                            @Override
+                            public void onSnackBarFinished(Object o, boolean actionClicked) {
+                                if (actionClicked) {
+                                    FragmentCompat.requestPermissions(ImgurViewFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                                } else {
+                                    SnackBar.show(getActivity(), R.string.permission_denied);
+                                }
+                            }
+                        }).show();
+                break;
+
+            case PermissionUtils.PERMISSION_NEVER_ASKED:
+            default:
+                FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                break;
+        }
+
+        return false;
+    }
+
     private void downloadAlbum() {
         if (mImgurObject instanceof ImgurAlbum) {
             // TODO Check for permission for Marshmallow
@@ -674,5 +720,18 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 SnackBar.show(getActivity(), R.string.report_post_failure);
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case RequestCodes.REQUEST_PERMISSIONS:
+                boolean granted = PermissionUtils.verifyPermissions(grantResults);
+                int message = granted ? R.string.permission_granted : R.string.permission_denied;
+                SnackBar.show(getActivity(), message);
+                break;
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

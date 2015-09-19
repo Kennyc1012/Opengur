@@ -1,5 +1,6 @@
 package com.kenny.openimgur.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ClipData;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.UploadPhotoAdapter;
@@ -38,6 +41,7 @@ import com.kenny.openimgur.services.UploadService;
 import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
 import com.kenny.snackbar.SnackBarItem;
@@ -64,11 +68,16 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
     private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
 
+    private static final String[] PERMISSIONS = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
     @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
     @Bind(R.id.list)
     RecyclerView mRecyclerView;
+
+    @Bind(R.id.uploadContainer)
+    View mUploadContainer;
 
     private UploadPhotoAdapter mAdapter;
 
@@ -91,7 +100,10 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         new ItemTouchHelper(mSimpleItemTouchCallback).attachToRecyclerView(mRecyclerView);
         getSupportActionBar().setTitle(R.string.upload);
         checkForTopics();
-        checkForNag();
+
+        if (!checkForNag()) {
+            if (!checkPermissions()) return;
+        }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SAVED_ITEMS)) {
             List<Upload> uploads = savedInstanceState.getParcelableArrayList(KEY_SAVED_ITEMS);
@@ -112,7 +124,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
             LogUtil.v(TAG, "Received file from intent");
             uploads = new ArrayList<>(1);
             uploads.add(new Upload(intent.getStringExtra(KEY_PASSED_FILE)));
-
         } else if (Intent.ACTION_SEND.equals(intent.getAction())) {
             String type = intent.getType();
             LogUtil.v(TAG, "Received an image via Share intent, type " + type);
@@ -418,7 +429,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     /**
      * Checks if the user is not logged in and if we should nag about it
      */
-    private void checkForNag() {
+    private boolean checkForNag() {
         boolean nag = app.getPreferences().getBoolean(PREF_NOTIFY_NO_USER, true);
 
         if (nag && user == null) {
@@ -441,10 +452,83 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                             }
                         }
                     })
-                    .setPositiveButton(R.string.yes, null)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            checkPermissions();
+                        }
+                    })
                     .setView(nagView)
                     .show();
+
+            return true;
         }
+
+        return false;
+    }
+
+    /**
+     * Checks if the needed permissions are available
+     *
+     * @return If the permissions are available. If false is returned, the necessary prompts will be shown
+     */
+    private boolean checkPermissions() {
+        @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionLevel(this, PERMISSIONS);
+
+        switch (permissionLevel) {
+            case PermissionUtils.PERMISSION_AVAILABLE:
+                LogUtil.v(TAG, "Permissions available");
+                return true;
+
+            case PermissionUtils.PERMISSION_DENIED:
+                new AlertDialog.Builder(this, app.getImgurTheme().getAlertDialogTheme())
+                        .setTitle(R.string.permission_title)
+                        .setMessage(R.string.permission_rationale_upload)
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+                                finish();
+                            }
+                        }).setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ActivityCompat.requestPermissions(UploadActivity.this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
+                    }
+                }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }).show();
+                break;
+
+            case PermissionUtils.PERMISSION_NEVER_ASKED:
+            default:
+                LogUtil.v(TAG, "Prompting for permissions");
+                ActivityCompat.requestPermissions(this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
+                break;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case RequestCodes.REQUEST_PERMISSIONS:
+                if (PermissionUtils.verifyPermissions(grantResults)) {
+                    SnackBar.show(this, R.string.permission_granted);
+                    checkIntent(getIntent());
+                } else {
+                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                break;
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

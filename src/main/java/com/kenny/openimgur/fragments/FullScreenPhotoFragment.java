@@ -1,5 +1,6 @@
 package com.kenny.openimgur.fragments;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v13.app.FragmentCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,7 +33,11 @@ import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.PermissionUtils;
+import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
+import com.kenny.snackbar.SnackBarItem;
+import com.kenny.snackbar.SnackBarListener;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -213,13 +219,15 @@ public class FullScreenPhotoFragment extends BaseFragment {
                                 @Override
                                 public void onImageLoadError(Exception e) {
                                     LogUtil.e(TAG, "Error loading image", e);
-                                    if (mMultiView != null) mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                                    if (mMultiView != null)
+                                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                                 }
 
                                 @Override
                                 public void onTileLoadError(Exception e) {
                                     LogUtil.e(TAG, "Error creating tile", e);
-                                    if (mMultiView != null) mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                                    if (mMultiView != null)
+                                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                                 }
                             });
 
@@ -340,7 +348,40 @@ public class FullScreenPhotoFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.download:
-                getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
+                @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionLevel(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                switch (permissionLevel) {
+                    case PermissionUtils.PERMISSION_AVAILABLE:
+                        getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
+                        break;
+
+                    case PermissionUtils.PERMISSION_DENIED:
+                        new SnackBarItem.Builder(getActivity())
+                                .setMessageResource(R.string.permission_rationale_download)
+                                .setActionMessageResource(R.string.okay)
+                                .setAutoDismiss(false)
+                                .setSnackBarListener(new SnackBarListener() {
+                                    @Override
+                                    public void onSnackBarStarted(Object o) {
+                                        // NOOP
+                                    }
+
+                                    @Override
+                                    public void onSnackBarFinished(Object o, boolean actionClicked) {
+                                        if (actionClicked) {
+                                            FragmentCompat.requestPermissions(FullScreenPhotoFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                                        } else {
+                                            SnackBar.show(getActivity(), R.string.permission_denied);
+                                        }
+                                    }
+                                }).show();
+                        break;
+
+                    case PermissionUtils.PERMISSION_NEVER_ASKED:
+                    default:
+                        FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                        break;
+                }
                 return true;
 
             case R.id.share:
@@ -400,6 +441,19 @@ public class FullScreenPhotoFragment extends BaseFragment {
                 mVideoView.pause();
             }
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case RequestCodes.REQUEST_PERMISSIONS:
+                boolean granted = PermissionUtils.verifyPermissions(grantResults);
+                int message = granted ? R.string.permission_granted : R.string.permission_denied;
+                SnackBar.show(getActivity(), message);
+                break;
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private class PhotoHandler extends ImgurHandler {
