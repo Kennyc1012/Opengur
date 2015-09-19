@@ -10,8 +10,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -52,6 +56,9 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
     @Bind(R.id.grid)
     public HeaderGridView mGrid;
 
+    @Bind(R.id.refreshLayout)
+    protected SwipeRefreshLayout mRefreshLayout;
+
     private FragmentListener mListener;
 
     private UploadAdapter mAdapter;
@@ -60,6 +67,12 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
 
     public static Fragment createInstance() {
         return new UploadedPhotosFragment();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -91,23 +104,41 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
         mGrid.setOnItemClickListener(this);
         mGrid.setOnItemLongClickListener(this);
         mGrid.setOnScrollListener(this);
+        mRefreshLayout.setColorSchemeColors(getResources().getColor(theme.accentColor));
+        int bgColor = theme.isDarkTheme ? R.color.background_material_dark : R.color.background_material_light;
+        mRefreshLayout.setProgressBackgroundColorSchemeColor(getResources().getColor(bgColor));
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mRefreshLayout.setRefreshing(true);
+                refresh();
+            }
+        });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.topics, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                refresh();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if (mAdapter == null || mAdapter.isEmpty()) {
-            List<UploadedPhoto> photos = app.getSql().getUploadedPhotos(true);
-
-            if (!photos.isEmpty()) {
-                mAdapter = new UploadAdapter(getActivity(), photos);
-                mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
-                mGrid.setAdapter(mAdapter);
-                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-            } else {
-                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-                if (mListener != null) mListener.onUpdateActionBar(true);
-            }
+            refresh();
         }
     }
 
@@ -230,5 +261,28 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
         } else {
             apiService.deletePhoto(photo.getDeleteHash(), cb);
         }
+    }
+
+    private void refresh() {
+        if (mAdapter != null) mAdapter.clear();
+        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
+        List<UploadedPhoto> photos = app.getSql().getUploadedPhotos(true);
+
+        if (!photos.isEmpty()) {
+            if (mAdapter == null) {
+                mAdapter = new UploadAdapter(getActivity(), photos);
+                mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
+                mGrid.setAdapter(mAdapter);
+            } else {
+                mAdapter.addItems(photos);
+            }
+
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+        } else {
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+            if (mListener != null) mListener.onUpdateActionBar(true);
+        }
+
+        mRefreshLayout.setRefreshing(false);
     }
 }
