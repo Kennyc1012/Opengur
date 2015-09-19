@@ -198,7 +198,8 @@ public class MemeActivity extends BaseActivity {
         if (FileUtil.isFileValid(file)) {
             final Uri fileUri = Uri.fromFile(file);
             FileUtil.scanFile(fileUri, getApplicationContext());
-            new BottomSheet.Builder(this, R.menu.meme_saved)
+            new BottomSheet.Builder(this)
+                    .setSheet(R.menu.meme_saved)
                     .setStyle(theme.getBottomSheetTheme())
                     .setTitle(R.string.meme_success)
                     .setListener(new BottomSheetListener() {
@@ -225,7 +226,7 @@ public class MemeActivity extends BaseActivity {
                         }
 
                         @Override
-                        public void onSheetDismissed() {
+                        public void onSheetDismissed(int which) {
                             finish();
                         }
                     })

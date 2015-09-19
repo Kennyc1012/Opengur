@@ -619,7 +619,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             if (!shouldClose) {
                 final ImgurComment comment = mCommentAdapter.getItem(position);
-                new BottomSheet.Builder(this, R.menu.comment_menu)
+                new BottomSheet.Builder(this)
+                        .setSheet(R.menu.comment_menu)
                         .setStyle(theme.getBottomSheetTheme())
                         .grid()
                         .setTitle(R.string.options)
@@ -669,7 +670,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             }
 
                             @Override
-                            public void onSheetDismissed() {
+                            public void onSheetDismissed(int which) {
                                 mCommentAdapter.setSelectedIndex(-1);
                             }
                         })
