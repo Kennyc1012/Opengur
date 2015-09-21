@@ -49,7 +49,6 @@ import com.kenny.openimgur.fragments.ImgurViewFragment;
 import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LinkUtils;
@@ -58,6 +57,7 @@ import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
+import com.kennyc.view.MultiStateView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -387,7 +387,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             if (mLoadComments) {
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             } else {
-                mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
+                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.comments_off);
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
 
@@ -697,7 +697,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     }
 
                     if (commentResponse == null) {
-                        mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                         return;
                     }
@@ -735,12 +735,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 @Override
                 public void failure(RetrofitError error) {
-                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             });
         } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.VIEW_STATE_ERROR) {
-            mMultiView.setErrorText(R.id.errorMessage, R.string.comments_off);
+            ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.comments_off);
             mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
     }
@@ -751,7 +751,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 @Override
                 public void success(AlbumResponse albumResponse, Response response) {
                     if (albumResponse == null) {
-                        mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                         return;
                     }
@@ -770,7 +770,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 @Override
                 public void failure(RetrofitError error) {
                     LogUtil.e(TAG, "Unable to fetch album details", error);
-                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             });
@@ -786,7 +786,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         invalidateOptionsMenu();
                         fetchComments();
                     } else {
-                        mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     }
                 }
@@ -794,7 +794,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 @Override
                 public void failure(RetrofitError error) {
                     LogUtil.e(TAG, "Unable to fetch album details", error);
-                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             });

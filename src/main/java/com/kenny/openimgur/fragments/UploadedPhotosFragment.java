@@ -33,11 +33,11 @@ import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.ui.HeaderGridView;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
+import com.kennyc.view.MultiStateView;
 
 import java.util.List;
 

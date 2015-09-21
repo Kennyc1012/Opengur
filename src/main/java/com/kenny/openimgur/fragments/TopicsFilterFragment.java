@@ -23,9 +23,9 @@ import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurTopic;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
+import com.kennyc.view.MultiStateView;
 
 import java.util.List;
 
@@ -339,7 +339,7 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
                     mSpinner.setAdapter(new TopicsAdapter(getActivity(), topicResponse.data));
                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 } else {
-                    mMultiStateView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.error_generic);
                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
@@ -348,7 +348,7 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch topics", error);
-                mMultiStateView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(error));
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });

@@ -31,11 +31,12 @@ import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurMessage;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
+import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -201,7 +202,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                 mIsLoading = false;
 
                 if (conversationResponse == null) {
-                    mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     return;
                 }
@@ -246,7 +247,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
             @Override
             public void failure(RetrofitError error) {
                 LogUtil.e(TAG, "Error fetching message", error);
-                mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 mIsLoading = false;
             }
@@ -341,7 +342,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         mHasMore = false;
 
         if (mAdapter == null || mAdapter.isEmpty()) {
-            mMultiView.setEmptyText(R.id.emptyMessage, getString(R.string.convo_message_hint));
+            ViewUtils.setEmptyText(mMultiView, R.id.emptyMessage, getString(R.string.convo_message_hint));
             mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
     }

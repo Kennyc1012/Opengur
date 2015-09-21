@@ -18,8 +18,9 @@ import android.view.View;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.PhotoPickerAdapter;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
+import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -156,7 +157,7 @@ public class PhotoPickerActivity extends BaseActivity implements LoaderManager.L
             mGrid.setAdapter(mAdapter);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         } else {
-            mMultiStateView.setEmptyText(R.id.emptyMessage, getString(R.string.device_no_photos));
+            ViewUtils.setEmptyText(mMultiStateView, R.id.emptyMessage, getString(R.string.device_no_photos));
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
     }

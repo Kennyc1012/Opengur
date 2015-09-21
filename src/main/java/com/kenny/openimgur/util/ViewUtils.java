@@ -4,13 +4,17 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
+import android.support.annotation.IdRes;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
+import android.widget.TextView;
 
 import com.kenny.openimgur.R;
+import com.kennyc.view.MultiStateView;
 
 /**
  * Created by kcampagna on 7/27/14.
@@ -125,5 +129,85 @@ public class ViewUtils {
                 return false;
             }
         });
+    }
+
+    /**
+     * Sets the text for the Error View in a {@link MultiStateView}
+     *
+     * @param multiStateView The {@link MultiStateView}
+     * @param textViewId     TextView id in the ErrorView
+     * @param errorMessage   String resource of the error message
+     */
+    public static void setErrorText(MultiStateView multiStateView, @IdRes int textViewId, @StringRes int errorMessage) {
+        if (multiStateView == null) return;
+
+        View errorView = multiStateView.getView(MultiStateView.VIEW_STATE_ERROR);
+
+        if (errorView == null) {
+            throw new NullPointerException("Error view is null");
+        }
+
+        TextView errorTextView = (TextView) errorView.findViewById(textViewId);
+        if (errorTextView != null) errorTextView.setText(errorMessage);
+    }
+
+    /**
+     * Sets the text for the Error View in a {@link MultiStateView}
+     *
+     * @param multiStateView The {@link MultiStateView}
+     * @param textViewId     TextView id in the ErrorView
+     * @param errorMessage   String  of the error message
+     */
+    public static void setErrorText(MultiStateView multiStateView, @IdRes int textViewId, String errorMessage) {
+        if (multiStateView == null) return;
+
+        View errorView = multiStateView.getView(MultiStateView.VIEW_STATE_ERROR);
+
+        if (errorView == null) {
+            throw new NullPointerException("Error view is null");
+        }
+
+        TextView errorTextView = (TextView) errorView.findViewById(textViewId);
+        if (errorTextView != null) errorTextView.setText(errorMessage);
+    }
+
+    /**
+     * Sets the text for the empty view in a {@link MultiStateView}
+     *
+     * @param multiStateView The {@link MultiStateView}
+     * @param textViewId     TextView id in the Empty View
+     * @param emptyMessage   The empty message
+     */
+    public static void setEmptyText(MultiStateView multiStateView, @IdRes int textViewId, String emptyMessage) {
+        if (multiStateView == null) return;
+
+        View emptyView = multiStateView.getView(MultiStateView.VIEW_STATE_EMPTY);
+
+        if (emptyView == null) {
+            throw new NullPointerException("Empty view is null");
+        }
+
+        TextView emptyTextView = (TextView) emptyView.findViewById(textViewId);
+        if (emptyTextView != null) emptyTextView.setText(emptyMessage);
+    }
+
+    /**
+     * Sets the text for the empty view in a {@link MultiStateView}
+     *
+     * @param multiStateView The {@link MultiStateView}
+     * @param textViewId     TextView id in the Empty View
+     * @param emptyMessage   The empty message
+     */
+    public static void setEmptyText(MultiStateView multiStateView, @IdRes int textViewId, @StringRes int emptyMessage) {
+        if (multiStateView == null) return;
+
+        View emptyView = multiStateView.getView(MultiStateView.VIEW_STATE_EMPTY);
+
+        if (emptyView == null) {
+            throw new NullPointerException("Empty view is null");
+        }
+
+        TextView emptyTextView = (TextView) emptyView.findViewById(textViewId);
+        if (emptyTextView != null) emptyTextView.setText(emptyMessage);
     }
 }

@@ -15,9 +15,10 @@ import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurFilters;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
+import com.kennyc.view.MultiStateView;
 
 import retrofit.client.Response;
 
@@ -159,7 +160,7 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
         mHasMore = false;
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
-            mMultiStateView.setErrorText(R.id.errorMessage, getString(R.string.reddit_empty, mQuery));
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, getString(R.string.reddit_empty, mQuery));
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             if (mListener != null) mListener.onUpdateActionBar(true);
         }

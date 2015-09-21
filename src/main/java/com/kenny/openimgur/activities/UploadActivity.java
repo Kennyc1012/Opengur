@@ -38,14 +38,15 @@ import com.kenny.openimgur.fragments.UploadEditDialogFragment;
 import com.kenny.openimgur.fragments.UploadInfoFragment;
 import com.kenny.openimgur.fragments.UploadLinkDialogFragment;
 import com.kenny.openimgur.services.UploadService;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kenny.snackbar.SnackBarItem;
 import com.kenny.snackbar.SnackBarListener;
+import com.kennyc.view.MultiStateView;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -96,7 +97,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        mMultiView.setEmptyText(R.id.emptyMessage, R.string.upload_empty_message);
+        ViewUtils.setEmptyText(mMultiView, R.id.emptyMessage, R.string.upload_empty_message);
         new ItemTouchHelper(mSimpleItemTouchCallback).attachToRecyclerView(mRecyclerView);
         getSupportActionBar().setTitle(R.string.upload);
         checkForTopics();

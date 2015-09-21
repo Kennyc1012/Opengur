@@ -23,9 +23,10 @@ import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
+import com.kennyc.view.MultiStateView;
 
 import retrofit.client.Response;
 
@@ -287,6 +288,6 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     @Override
     protected void onEmptyResults() {
         super.onEmptyResults();
-        mMultiStateView.setEmptyText(R.id.empty, getString(R.string.reddit_empty, mQuery));
+        ViewUtils.setEmptyText(mMultiStateView, R.id.empty, getString(R.string.reddit_empty, mQuery));
     }
 }

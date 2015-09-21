@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize" />
 
-            <com.kenny.openimgur.ui.MultiStateView
+            <com.kennyc.view.MultiStateView
                 android:id="@+id/multiView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -44,7 +44,7 @@
 
                 <include layout="@layout/comment_list" />
 
-            </com.kenny.openimgur.ui.MultiStateView>
+            </com.kennyc.view.MultiStateView>
 
         </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>

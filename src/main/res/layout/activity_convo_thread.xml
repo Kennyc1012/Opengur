@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_marginTop="?actionBarSize">
 
-    <com.kenny.openimgur.ui.MultiStateView
+    <com.kennyc.view.MultiStateView
         android:id="@+id/multiView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical" />
 
-    </com.kenny.openimgur.ui.MultiStateView>
+    </com.kennyc.view.MultiStateView>
 
     <RelativeLayout
         android:id="@+id/messageInputContainer"

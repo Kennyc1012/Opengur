@@ -1,4 +1,4 @@
-<com.kenny.openimgur.ui.MultiStateView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.kennyc.view.MultiStateView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/multiView"
     android:layout_width="match_parent"
@@ -14,4 +14,4 @@
         android:layout_marginTop="?attr/actionBarSize"
         android:scrollbars="vertical" />
 
-</com.kenny.openimgur.ui.MultiStateView>
+</com.kennyc.view.MultiStateView>

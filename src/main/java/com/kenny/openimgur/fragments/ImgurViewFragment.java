@@ -42,7 +42,6 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.services.DownloaderService;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
@@ -50,10 +49,12 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kenny.snackbar.SnackBarItem;
 import com.kenny.snackbar.SnackBarListener;
 import com.kennyc.bottomsheet.BottomSheet;
+import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -606,7 +607,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     fetchTags();
                 } else {
-                    mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
@@ -615,7 +616,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch album images", error);
-                mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
@@ -656,7 +657,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (basicObjectResponse != null && basicObjectResponse.data != null) {
                     setupFragmentWithObject(basicObjectResponse.data);
                 } else {
-                    mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
@@ -665,7 +666,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch gallery details", error);
-                mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });

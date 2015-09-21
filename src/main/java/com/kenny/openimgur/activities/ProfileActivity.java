@@ -34,9 +34,10 @@ import com.kenny.openimgur.fragments.ProfileMessagesFragment;
 import com.kenny.openimgur.fragments.ProfileSubmissionsFragment;
 import com.kenny.openimgur.fragments.ProfileUploadsFragment;
 import com.kenny.openimgur.services.AlarmReceiver;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
+import com.kennyc.view.MultiStateView;
 
 import butterknife.Bind;
 import retrofit.Callback;
@@ -272,7 +273,7 @@ public class ProfileActivity extends BaseActivity {
                         setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_LOGGED_IN, true));
                         AlarmReceiver.createNotificationAlarm(getApplicationContext());
                     } else {
-                        mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     }
                 } else {
@@ -309,14 +310,14 @@ public class ProfileActivity extends BaseActivity {
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     supportInvalidateOptionsMenu();
                 } else {
-                    mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });

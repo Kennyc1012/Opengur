@@ -27,7 +27,6 @@ import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.services.DownloaderService;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
@@ -35,10 +34,12 @@ import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kenny.snackbar.SnackBarItem;
 import com.kenny.snackbar.SnackBarListener;
 import com.kennyc.bottomsheet.BottomSheet;
+import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
@@ -103,7 +104,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
         ((Button) mMultiView.getView(MultiStateView.VIEW_STATE_ERROR).findViewById(R.id.errorButton)).setText(null);
 
         if (savedInstanceState != null) {

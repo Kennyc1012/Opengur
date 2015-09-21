@@ -22,9 +22,10 @@ import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
+import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
 
@@ -160,7 +161,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
             String errorMessage = getString(R.string.profile_no_favorites, mSelectedUser.getUsername());
-            mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, errorMessage);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
     }
