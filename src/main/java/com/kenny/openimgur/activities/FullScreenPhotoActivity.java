@@ -26,7 +26,6 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
-import com.kenny.snackbar.SnackBar;
 import com.kenny.snackbar.SnackBarItem;
 import com.kenny.snackbar.SnackBarListener;
 
@@ -237,7 +236,6 @@ public class FullScreenPhotoActivity extends BaseActivity {
         switch (requestCode) {
             case RequestCodes.REQUEST_PERMISSIONS:
                 if (PermissionUtils.verifyPermissions(grantResults)) {
-                    SnackBar.show(this, R.string.permission_granted);
                     downloadAlbum();
                 } else {
                     Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_LONG).show();

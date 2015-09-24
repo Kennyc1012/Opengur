@@ -25,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.UploadPhotoAdapter;
@@ -69,16 +68,13 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
     private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
 
-    private static final String[] PERMISSIONS = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private static final String[] PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
     @Bind(R.id.list)
     RecyclerView mRecyclerView;
-
-    @Bind(R.id.uploadContainer)
-    View mUploadContainer;
 
     private UploadPhotoAdapter mAdapter;
 
@@ -101,10 +97,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         new ItemTouchHelper(mSimpleItemTouchCallback).attachToRecyclerView(mRecyclerView);
         getSupportActionBar().setTitle(R.string.upload);
         checkForTopics();
-
-        if (!checkForNag()) {
-            if (!checkPermissions()) return;
-        }
+        checkForNag();
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SAVED_ITEMS)) {
             List<Upload> uploads = savedInstanceState.getParcelableArrayList(KEY_SAVED_ITEMS);
@@ -215,30 +208,16 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.cameraBtn:
-                mTempFile = FileUtil.createFile(FileUtil.EXTENSION_JPEG);
-
-                if (FileUtil.isFileValid(mTempFile)) {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTempFile));
-                    if (intent.resolveActivity(getPackageManager()) != null) {
-                        startActivityForResult(intent, RequestCodes.TAKE_PHOTO);
-                    } else {
-                        SnackBar.show(this, R.string.cant_launch_intent);
-                    }
-                }
+                if (checkPermissions()) startCamera();
                 break;
 
             case R.id.galleryBtn:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    Intent intent = new Intent();
-                    intent.setType("image/*");
-                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(intent, RequestCodes.SELECT_PHOTO_API18);
-                } else {
-                    // TODO Remove when min API is >= 18
-                    startActivityForResult(PhotoPickerActivity.createInstance(getApplicationContext()), RequestCodes.SELECT_PHOTO);
-                }
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                // Allow multiple selection for API 18+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent, RequestCodes.SELECT_PHOTO);
                 break;
 
             case R.id.linkBtn:
@@ -252,26 +231,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case RequestCodes.SELECT_PHOTO:
-                if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(PhotoPickerActivity.KEY_PHOTOS)) {
-                    List<String> photos = data.getStringArrayListExtra(PhotoPickerActivity.KEY_PHOTOS);
-                    List<Upload> uploads = new ArrayList<>(photos.size());
-
-                    for (String s : photos) {
-                        uploads.add(new Upload(s));
-                    }
-
-                    if (mAdapter == null) {
-                        mAdapter = new UploadPhotoAdapter(this, uploads, this);
-                        mRecyclerView.setAdapter(mAdapter);
-                    } else {
-                        mAdapter.addItems(uploads);
-                    }
-
-                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-                    supportInvalidateOptionsMenu();
-                }
-                break;
 
             case RequestCodes.TAKE_PHOTO:
                 if (resultCode == Activity.RESULT_OK && FileUtil.isFileValid(mTempFile)) {
@@ -294,7 +253,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                 }
                 break;
 
-            case RequestCodes.SELECT_PHOTO_API18:
+            case RequestCodes.SELECT_PHOTO:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     ClipData clipData = data.getClipData();
                     List<Uri> uris = null;
@@ -453,12 +412,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                             }
                         }
                     })
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            checkPermissions();
-                        }
-                    })
+                    .setPositiveButton(R.string.yes, null)
                     .setView(nagView)
                     .show();
 
@@ -488,8 +442,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
-                                finish();
+                                SnackBar.show(UploadActivity.this, R.string.permission_denied);
                             }
                         }).setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
                     @Override
@@ -499,8 +452,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                 }).setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
-                        Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
-                        finish();
+                        SnackBar.show(UploadActivity.this, R.string.permission_denied);
                     }
                 }).show();
                 break;
@@ -515,21 +467,33 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         return false;
     }
 
+    private void startCamera() {
+        mTempFile = FileUtil.createFile(FileUtil.EXTENSION_JPEG);
+
+        if (FileUtil.isFileValid(mTempFile)) {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTempFile));
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(intent, RequestCodes.TAKE_PHOTO);
+            } else {
+                SnackBar.show(this, R.string.cant_launch_intent);
+            }
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         switch (requestCode) {
             case RequestCodes.REQUEST_PERMISSIONS:
                 if (PermissionUtils.verifyPermissions(grantResults)) {
-                    SnackBar.show(this, R.string.permission_granted);
-                    checkIntent(getIntent());
+                    startCamera();
                 } else {
-                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_LONG).show();
-                    finish();
+                    SnackBar.show(this, R.string.permission_denied);
                 }
                 break;
         }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
