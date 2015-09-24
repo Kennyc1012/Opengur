@@ -217,7 +217,12 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                 // Allow multiple selection for API 18+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(intent, RequestCodes.SELECT_PHOTO);
+
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, RequestCodes.SELECT_PHOTO);
+                } else {
+                    SnackBar.show(this, R.string.cant_launch_intent);
+                }
                 break;
 
             case R.id.linkBtn:
