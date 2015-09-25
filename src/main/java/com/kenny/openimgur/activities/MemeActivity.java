@@ -80,6 +80,7 @@ public class MemeActivity extends BaseActivity {
         if (intent == null) {
             LogUtil.w(TAG, "No object was found in the intent");
             finish();
+            return;
         }
 
         if (intent.hasExtra(KEY_OBJECT)) {
