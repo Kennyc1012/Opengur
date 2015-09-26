@@ -1,5 +1,6 @@
 package com.kenny.openimgur.activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -26,6 +28,8 @@ import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.PermissionUtils;
+import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
@@ -105,12 +109,35 @@ public class MemeActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save:
-                LoadingDialogFragment.createInstance(R.string.meme_saving, false)
-                        .show(getFragmentManager(), "saving");
+                int level = PermissionUtils.getPermissionLevel(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-                // Clear any memory cache before we save to avoid an OOM
-                app.getImageLoader().clearMemoryCache();
-                new SaveMemeTask().execute(this);
+                switch (level) {
+                    case PermissionUtils.PERMISSION_AVAILABLE:
+                        LoadingDialogFragment.createInstance(R.string.meme_saving, false)
+                                .show(getFragmentManager(), "saving");
+
+                        // Clear any memory cache before we save to avoid an OOM
+                        app.getImageLoader().clearMemoryCache();
+                        new SaveMemeTask().execute(this);
+                        break;
+
+                    case PermissionUtils.PERMISSION_NEVER_ASKED:
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                        break;
+
+                    case PermissionUtils.PERMISSION_DENIED:
+                        new AlertDialog.Builder(this, app.getImgurTheme().getAlertDialogTheme())
+                                .setTitle(R.string.permission_title)
+                                .setMessage(R.string.permission_rational_meme)
+                                .setNegativeButton(R.string.cancel, null)
+                                .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        ActivityCompat.requestPermissions(MemeActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                                    }
+                                }).show();
+                        break;
+                }
                 return true;
 
             case R.id.fontSize:
@@ -262,6 +289,28 @@ public class MemeActivity extends BaseActivity {
     @Override
     protected int getStyleRes() {
         return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case RequestCodes.REQUEST_PERMISSIONS:
+                boolean hasPermission = PermissionUtils.verifyPermissions(grantResults);
+
+                if (hasPermission) {
+                    LoadingDialogFragment.createInstance(R.string.meme_saving, false)
+                            .show(getFragmentManager(), "saving");
+
+                    // Clear any memory cache before we save to avoid an OOM
+                    app.getImageLoader().clearMemoryCache();
+                    new SaveMemeTask().execute(this);
+                } else {
+                    SnackBar.show(this, R.string.permission_denied);
+                }
+                break;
+        }
     }
 
     private static class SaveMemeTask extends AsyncTask<MemeActivity, Void, File> {

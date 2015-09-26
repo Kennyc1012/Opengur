@@ -1,13 +1,9 @@
 package com.kenny.openimgur.fragments;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v13.app.FragmentCompat;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -107,30 +103,7 @@ public class MemeFragment extends BaseGridFragment {
     @Override
     protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
         mSelectedItem = items.get(position);
-        int level = PermissionUtils.getPermissionLevel(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        switch (level) {
-            case PermissionUtils.PERMISSION_AVAILABLE:
-                startActivity(MemeActivity.createIntent(getActivity(), mSelectedItem));
-                break;
-
-            case PermissionUtils.PERMISSION_NEVER_ASKED:
-                FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
-                break;
-
-            case PermissionUtils.PERMISSION_DENIED:
-                new AlertDialog.Builder(getActivity(), app.getImgurTheme().getAlertDialogTheme())
-                        .setTitle(R.string.permission_title)
-                        .setMessage(R.string.permission_rational_meme)
-                        .setNegativeButton(R.string.cancel, null)
-                        .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                FragmentCompat.requestPermissions(MemeFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
-                            }
-                        }).show();
-                break;
-        }
+        startActivity(MemeActivity.createIntent(getActivity(), mSelectedItem));
     }
 
     @Override
@@ -179,22 +152,5 @@ public class MemeFragment extends BaseGridFragment {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case RequestCodes.REQUEST_PERMISSIONS:
-                boolean hasPermission = PermissionUtils.verifyPermissions(grantResults);
-
-                if (hasPermission) {
-                    if (mSelectedItem != null) startActivity(MemeActivity.createIntent(getActivity(), mSelectedItem));
-                } else {
-                    SnackBar.show(getActivity(), R.string.permission_denied);
-                }
-                break;
-        }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }
