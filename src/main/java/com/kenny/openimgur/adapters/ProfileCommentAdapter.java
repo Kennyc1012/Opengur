@@ -33,7 +33,7 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     public ProfileCommentAdapter(Context context, List<ImgurComment> comments, View.OnClickListener listener) {
         super(context, comments, true);
         mClickListener = listener;
-        mDividerColor = mIsDarkTheme ? context.getResources().getColor(R.color.primary_dark_material_light) : context.getResources().getColor(R.color.primary_dark_material_dark);
+        mDividerColor = mIsDarkTheme ? mResources.getColor(R.color.primary_dark_material_light) : mResources.getColor(R.color.primary_dark_material_dark);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         ImgurComment comment = getItem(position);
         String photoUrl;
 
-        commentViewHolder.author.setText(constructSpan(comment, commentViewHolder.author.getContext()));
+        commentViewHolder.author.setText(constructSpan(comment));
         commentViewHolder.comment.setText(comment.getComment());
 
         if (comment.isAlbumComment() && !TextUtils.isEmpty(comment.getAlbumCoverId())) {
@@ -78,23 +78,24 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
      * Creates the spannable object for the authors name, points, and time
      *
      * @param comment
-     * @param context
      * @return
      */
-    private Spannable constructSpan(ImgurComment comment, Context context) {
-        CharSequence date = getDateFormattedTime(comment.getDate() * 1000L, context);
+    private Spannable constructSpan(ImgurComment comment) {
+        CharSequence date = getDateFormattedTime(comment.getDate() * DateUtils.SECOND_IN_MILLIS);
         String author = comment.getAuthor();
         StringBuilder sb = new StringBuilder(author);
         int spanLength = author.length();
 
-        sb.append(" ").append(comment.getPoints()).append(" ").append(context.getString(R.string.points))
-                .append(" : ").append(date);
+        sb.append(" ")
+                .append(comment.getPoints())
+                .append(" ")
+                .append(mResources.getString(R.string.points))
+                .append(" : ")
+                .append(date);
+
         Spannable span = new SpannableString(sb.toString());
 
-        int color = context.getResources().getColor(R.color.notoriety_positive);
-        if (comment.getPoints() < 0) {
-            color = context.getResources().getColor(R.color.notoriety_negative);
-        }
+        int color = comment.getPoints() < 0 ? mResources.getColor(R.color.notoriety_negative) : mResources.getColor(R.color.notoriety_positive);
 
         span.setSpan(new ForegroundColorSpan(color), spanLength, sb.length() - date.length() - 2,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -102,12 +103,12 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         return span;
     }
 
-    private CharSequence getDateFormattedTime(long commentDate, Context context) {
+    private CharSequence getDateFormattedTime(long commentDate) {
         long now = System.currentTimeMillis();
         long difference = System.currentTimeMillis() - commentDate;
 
         return (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) ?
-                context.getResources().getString(R.string.moments_ago) :
+                mResources.getString(R.string.moments_ago) :
                 DateUtils.getRelativeTimeSpanString(
                         commentDate,
                         now,

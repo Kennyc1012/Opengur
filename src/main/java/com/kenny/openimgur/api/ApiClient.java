@@ -1,7 +1,9 @@
 package com.kenny.openimgur.api;
 
 
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -44,6 +46,9 @@ public class ApiClient {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
+    @Nullable
+    private static String sAccessToken = null;
+
     /**
      * Returns the service used for API requests
      *
@@ -60,6 +65,9 @@ public class ApiClient {
                     .build();
 
             sService = sRestAdapter.create(ImgurService.class);
+
+            ImgurUser user = OpengurApp.getInstance().getUser();
+            if (user != null) sAccessToken = user.getAccessToken();
         }
 
         return sService;
@@ -70,11 +78,10 @@ public class ApiClient {
         return new RequestInterceptor() {
             @Override
             public void intercept(RequestFacade request) {
-                ImgurUser user = OpengurApp.getInstance().getUser();
 
-                if (user != null) {
+                if (!TextUtils.isEmpty(sAccessToken)) {
                     LogUtil.v(TAG, "Access Token present");
-                    request.addHeader(AUTHORIZATION_HEADER, "Bearer " + user.getAccessToken());
+                    request.addHeader(AUTHORIZATION_HEADER, "Bearer " + sAccessToken);
                 } else {
                     LogUtil.v(TAG, "No access token present, using Client-ID");
                     request.addHeader(AUTHORIZATION_HEADER, "Client-ID " + CLIENT_ID);
@@ -150,5 +157,14 @@ public class ApiClient {
             default:
                 return R.string.error_generic;
         }
+    }
+
+    public static void setAccessToken(String token) {
+        sAccessToken = token;
+    }
+
+    @Nullable
+    public static String getAccessToken() {
+        return sAccessToken;
     }
 }

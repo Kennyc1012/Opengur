@@ -44,11 +44,11 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
 
     public NotificationAdapter(Context context, List<ImgurNotification> notifications, View.OnClickListener clickListener, View.OnLongClickListener longClickListener) {
         super(context, notifications, true);
-        mCircleSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size);
+        mCircleSize = mResources.getDimensionPixelSize(R.dimen.avatar_size);
         mClickListener = clickListener;
         mLongClickListener = longClickListener;
-        mDividerColor = mIsDarkTheme ? context.getResources().getColor(R.color.primary_dark_material_light) : context.getResources().getColor(R.color.primary_dark_material_dark);
-        mSelectedColor = context.getResources().getColor(R.color.comment_bg_selected);
+        mDividerColor = mIsDarkTheme ? mResources.getColor(R.color.primary_dark_material_light) : mResources.getColor(R.color.primary_dark_material_dark);
+        mSelectedColor = mResources.getColor(R.color.comment_bg_selected);
     }
 
     @Override
@@ -172,7 +172,7 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
         long difference = System.currentTimeMillis() - commentDate;
 
         return (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) ?
-                context.getResources().getString(R.string.moments_ago) :
+                mResources.getString(R.string.moments_ago) :
                 DateUtils.getRelativeTimeSpanString(
                         commentDate,
                         now,

@@ -19,9 +19,10 @@ import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.ViewUtils;
+import com.kennyc.view.MultiStateView;
 
 import java.util.List;
 
@@ -118,7 +119,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
                     mMessageList.setAdapter(mAdapter);
                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 } else {
-                    mMultiStateView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_convos));
+                    ViewUtils.setEmptyText(mMultiStateView, R.id.emptyMessage, getString(R.string.profile_no_convos));
                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                 }
             }
@@ -127,7 +128,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch convos", error);
-                mMultiStateView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(error));
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
@@ -137,7 +138,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
         mAdapter.removeItem(id);
 
         if (mAdapter.isEmpty()) {
-            mMultiStateView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_convos));
+            ViewUtils.setEmptyText(mMultiStateView, R.id.emptyMessage, getString(R.string.profile_no_convos));
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
 

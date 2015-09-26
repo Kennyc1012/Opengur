@@ -2,7 +2,6 @@ package com.kenny.openimgur.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,12 +48,11 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
 
     public GalleryAdapter2(Context context, RecyclerView view, SetUniqueList<ImgurBaseObject> objects, View.OnClickListener listener) {
         super(context, objects, true);
-        Resources res = context.getResources();
-        int gridSize = res.getInteger(R.integer.gallery_num_columns);
+        int gridSize = mResources.getInteger(R.integer.gallery_num_columns);
         view.setLayoutManager(new GridLayoutManager(context, gridSize));
-        view.addItemDecoration(new GridItemDecoration(res.getDimensionPixelSize(R.dimen.grid_padding), gridSize));
-        mUpvoteColor = res.getColor(R.color.notoriety_positive);
-        mDownVoteColor = res.getColor(R.color.notoriety_negative);
+        view.addItemDecoration(new GridItemDecoration(mResources.getDimensionPixelSize(R.dimen.grid_padding), gridSize));
+        mUpvoteColor = mResources.getColor(R.color.notoriety_positive);
+        mDownVoteColor = mResources.getColor(R.color.notoriety_negative);
         SharedPreferences pref = OpengurApp.getInstance(context).getPreferences();
         mAllowNSFWThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
         mThumbnailQuality = pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY);

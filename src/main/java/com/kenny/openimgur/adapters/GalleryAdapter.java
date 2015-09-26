@@ -44,8 +44,8 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
 
     public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects) {
         super(context, objects, true);
-        mUpvoteColor = context.getResources().getColor(R.color.notoriety_positive);
-        mDownVoteColor = context.getResources().getColor(R.color.notoriety_negative);
+        mUpvoteColor = mResources.getColor(R.color.notoriety_positive);
+        mDownVoteColor = mResources.getColor(R.color.notoriety_negative);
         SharedPreferences pref = OpengurApp.getInstance(context).getPreferences();
         mAllowNSFWThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
         mThumbnailQuality = pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY);

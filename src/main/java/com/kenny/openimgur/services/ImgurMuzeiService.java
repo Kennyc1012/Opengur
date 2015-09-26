@@ -1,10 +1,7 @@
 package com.kenny.openimgur.services;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -21,6 +18,7 @@ import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.SqlHelper;
 
 import java.util.ArrayList;
@@ -70,14 +68,9 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
         String source = pref.getString(MuzeiSettingsActivity.KEY_SOURCE, MuzeiSettingsActivity.SOURCE_VIRAL);
         String updateInterval = pref.getString(MuzeiSettingsActivity.KEY_UPDATE, MuzeiSettingsActivity.UPDATE_3_HOURS);
 
-        if (wifiOnly) {
-            ConnectivityManager cm = (ConnectivityManager) app.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-            if (activeNetwork == null || activeNetwork.getType() != ConnectivityManager.TYPE_WIFI) {
-                LogUtil.w(TAG, "Not connected to WiFi when user requires it");
-                return;
-            }
+        if (wifiOnly && !NetworkUtils.isConnectedToWiFi(getApplicationContext())) {
+            LogUtil.w(TAG, "Not connected to WiFi when user requires it");
+            return;
         }
 
         String url;

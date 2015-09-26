@@ -23,8 +23,9 @@ import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurFilters.CommentSort;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
+import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
 
@@ -215,7 +216,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
 
                     // Only show empty view when the user has posted no comments
                     if (mAdapter == null || mAdapter.isEmpty()) {
-                        mMultiStatView.setEmptyText(R.id.emptyMessage, getString(R.string.profile_no_comments, mSelectedUser.getUsername()));
+                        ViewUtils.setEmptyText(mMultiStatView, R.id.emptyMessage, getString(R.string.profile_no_comments, mSelectedUser.getUsername()));
                         mMultiStatView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                     }
                 }
@@ -229,7 +230,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
                 LogUtil.e(TAG, "Unable to fetch comments", error);
 
                 if (mAdapter == null || !mAdapter.isEmpty()) {
-                    mMultiStatView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                    ViewUtils.setErrorText(mMultiStatView, R.id.errorMessage, ApiClient.getErrorCode(error));
                     mMultiStatView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
 

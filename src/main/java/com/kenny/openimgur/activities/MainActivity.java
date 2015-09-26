@@ -469,6 +469,12 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                     overridePendingTransition(0, 0);
                     startActivity(intent);
                 }
+
+                Fragment fragment = getFragmentManager().findFragmentById(R.id.container);
+
+                if (fragment instanceof RedditFragment) {
+                    fragment.onActivityResult(requestCode, resultCode, data);
+                }
                 break;
 
             case RequestCodes.PROFILE:

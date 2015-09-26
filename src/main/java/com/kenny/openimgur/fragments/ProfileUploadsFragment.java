@@ -18,10 +18,11 @@ import com.kenny.openimgur.adapters.GalleryAdapter2;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
+import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
 
@@ -122,7 +123,7 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
             String errorMessage = getString(R.string.profile_no_uploads);
-            mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, errorMessage);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
     }

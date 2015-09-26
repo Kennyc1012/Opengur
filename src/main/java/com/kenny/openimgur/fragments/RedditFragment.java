@@ -2,10 +2,14 @@ package com.kenny.openimgur.fragments;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FilterQueryProvider;
 
 import com.kenny.openimgur.R;
@@ -23,22 +28,36 @@ import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
+import com.kenny.snackbar.SnackBar;
+import com.kennyc.view.MultiStateView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import butterknife.Bind;
+import butterknife.OnClick;
 import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 8/14/14.
  */
 public class RedditFragment extends BaseGridFragment implements RedditFilterFragment.FilterListener {
+    public static final String KEY_PINNED_SUBREDDITS = "pinnedSubreddits";
 
     private static final String KEY_QUERY = "query";
 
     private static final String KEY_SORT = "redditSort";
 
     private static final String KEY_TOP_SORT = "redditTopSort";
+
+    @Bind(R.id.mySubreddits)
+    Button mMySubredditsBtn;
 
     private String mQuery;
 
@@ -51,6 +70,8 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     private MenuItem mSearchMenuItem;
 
     private SearchView mSearchView;
+
+    private final Set<String> mPinnedSubs = new HashSet<>();
 
     public static RedditFragment newInstance() {
         return new RedditFragment();
@@ -126,6 +147,65 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        boolean hasPinned = !mPinnedSubs.isEmpty();
+        menu.findItem(R.id.mySubreddits).setVisible(hasPinned);
+        mMySubredditsBtn.setVisibility(hasPinned ? View.VISIBLE : View.GONE);
+        MenuItem action = menu.findItem(R.id.mySubredditAction);
+
+        if (TextUtils.isEmpty(mQuery)) {
+            action.setVisible(false);
+        } else {
+            action.setVisible(true);
+            boolean isPinned = mPinnedSubs.contains(mQuery);
+            action.setTitle(isPinned ? R.string.my_subreddits_remove : R.string.my_subreddits_add);
+            action.setIcon(isPinned ? R.drawable.ic_remove_circle_outline_white_24dp : R.drawable.ic_add_circle_outline_white_24dp);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.filter:
+                if (mListener != null) mListener.onUpdateActionBar(false);
+
+                RedditFilterFragment fragment = RedditFilterFragment.createInstance(mSort, mTopSort);
+                fragment.setFilterListener(this);
+                getFragmentManager().beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .add(android.R.id.content, fragment, "filter")
+                        .commit();
+                return true;
+
+            case R.id.refresh:
+                if (!TextUtils.isEmpty(mQuery)) refresh();
+                return true;
+
+            case R.id.mySubreddits:
+                viewMySubreddits();
+                return true;
+
+            case R.id.mySubredditAction:
+                int messageId;
+
+                if (mPinnedSubs.contains(mQuery)) {
+                    mPinnedSubs.remove(mQuery);
+                    messageId = R.string.subreddit_removed;
+                } else {
+                    mPinnedSubs.add(mQuery);
+                    messageId = R.string.subreddit_added;
+                }
+
+                getActivity().invalidateOptionsMenu();
+                SnackBar.show(getActivity(), messageId);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private boolean search(String query) {
         if (!mIsLoading && !TextUtils.isEmpty(query)) {
             if (getAdapter() != null) {
@@ -151,25 +231,28 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
         return false;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.filter:
-                if (mListener != null) mListener.onUpdateActionBar(false);
+    @OnClick(R.id.mySubreddits)
+    public void viewMySubreddits() {
+        // Alphabetize the list
+        List<String> subreddits = new ArrayList<>(mPinnedSubs);
+        Collections.sort(subreddits);
+        final String[] items = new String[subreddits.size()];
+        subreddits.toArray(items);
 
-                RedditFilterFragment fragment = RedditFilterFragment.createInstance(mSort, mTopSort);
-                fragment.setFilterListener(this);
-                getFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .add(android.R.id.content, fragment, "filter")
-                        .commit();
-                return true;
-            case R.id.refresh:
-                if (!TextUtils.isEmpty(mQuery)) refresh();
-                return true;
-        }
+        new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                .setTitle(R.string.my_subreddits)
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String query = items[i];
 
-        return super.onOptionsItemSelected(item);
+                        if (!query.equals(mQuery)) {
+                            search(items[i]);
+                        }
+                    }
+                })
+                .setPositiveButton(R.string.close, null)
+                .show();
     }
 
     @Override
@@ -214,9 +297,11 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     @Override
     protected void onRestoreSavedInstance(Bundle savedInstanceState) {
         super.onRestoreSavedInstance(savedInstanceState);
+        SharedPreferences pref = app.getPreferences();
+
         if (savedInstanceState == null) {
-            mSort = RedditSort.getSortFromString(app.getPreferences().getString(KEY_SORT, RedditSort.TIME.getSort()));
-            mTopSort = ImgurFilters.TimeSort.getSortFromString(app.getPreferences().getString(KEY_TOP_SORT, RedditSort.TIME.getSort()));
+            mSort = RedditSort.getSortFromString(pref.getString(KEY_SORT, RedditSort.TIME.getSort()));
+            mTopSort = ImgurFilters.TimeSort.getSortFromString(pref.getString(KEY_TOP_SORT, RedditSort.TIME.getSort()));
         } else {
             mQuery = savedInstanceState.getString(KEY_QUERY, null);
             mSort = RedditSort.getSortFromString(savedInstanceState.getString(KEY_SORT, RedditSort.TIME.getSort()));
@@ -228,14 +313,24 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
         } else if (mListener != null) {
             mListener.onUpdateActionBarTitle(mQuery);
         }
+
+        Set<String> pinned = pref.getStringSet(KEY_PINNED_SUBREDDITS, null);
+        if (pinned != null) mPinnedSubs.addAll(pinned);
     }
 
     @Override
     protected void saveFilterSettings() {
-        app.getPreferences().edit()
-                .putString(KEY_SORT, mSort.getSort())
-                .putString(KEY_TOP_SORT, mTopSort.getSort())
-                .apply();
+        SharedPreferences.Editor edit = app.getPreferences().edit();
+        edit.putString(KEY_SORT, mSort.getSort()).putString(KEY_TOP_SORT, mTopSort.getSort());
+
+        if (mPinnedSubs.isEmpty()) {
+            // Remove from shared preferences if saved
+            if (app.getPreferences().contains(KEY_PINNED_SUBREDDITS)) edit.remove(KEY_PINNED_SUBREDDITS);
+        } else {
+            edit.putStringSet(KEY_PINNED_SUBREDDITS, mPinnedSubs);
+        }
+
+        edit.apply();
     }
 
     @Override
@@ -281,12 +376,26 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
             }
 
             mCursorAdapter.notifyDataSetChanged();
+            getActivity().invalidateOptionsMenu();
         }
     }
 
     @Override
     protected void onEmptyResults() {
         super.onEmptyResults();
-        mMultiStateView.setEmptyText(R.id.empty, getString(R.string.reddit_empty, mQuery));
+        ViewUtils.setEmptyText(mMultiStateView, R.id.empty, getString(R.string.reddit_empty, mQuery));
+        mQuery = null;
+        getActivity().invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Reload pinned subreddits
+
+        mPinnedSubs.clear();
+        Set<String> pinned = app.getPreferences().getStringSet(KEY_PINNED_SUBREDDITS, null);
+        if (pinned != null) mPinnedSubs.addAll(pinned);
+        getActivity().invalidateOptionsMenu();
     }
 }

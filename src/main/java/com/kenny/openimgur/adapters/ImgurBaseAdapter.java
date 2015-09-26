@@ -1,6 +1,7 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -29,10 +30,13 @@ public abstract class ImgurBaseAdapter<T> extends BaseAdapter {
 
     protected LayoutInflater mInflater;
 
+    protected Resources mResources;
+
     public ImgurBaseAdapter(Context context, List<T> collection, boolean hasImageLoader) {
         if (hasImageLoader) mImageLoader = OpengurApp.getInstance(context).getImageLoader();
         mItems = collection;
         mInflater = LayoutInflater.from(context);
+        mResources = context.getResources();
     }
 
     public ImgurBaseAdapter(Context context, List<T> collection) {

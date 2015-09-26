@@ -1,6 +1,7 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,11 +30,14 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
 
     protected boolean mIsDarkTheme = false;
 
+    protected Resources mResources;
+
     public BaseRecyclerAdapter(Context context, List<T> collection, boolean hasImageLoader) {
         if (hasImageLoader) mImageLoader = OpengurApp.getInstance(context).getImageLoader();
         mItems = collection;
         mInflater = LayoutInflater.from(context);
         mIsDarkTheme = OpengurApp.getInstance(context).getImgurTheme().isDarkTheme;
+        mResources = context.getResources();
     }
 
     /**

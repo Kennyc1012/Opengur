@@ -115,6 +115,11 @@
             android:title="@string/pref_reddit_title"
             android:summary="@string/pref_reddit_desc" />
 
+        <Preference
+            android:key="mySubreddits"
+            android:title="@string/my_subreddits"
+            android:summary="@string/pref_subreddit_clear_desc" />
+
         <ListPreference
             android:key="cacheSize"
             android:title="@string/pref_cache_size_title"

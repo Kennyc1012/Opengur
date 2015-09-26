@@ -17,11 +17,12 @@ import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
+import com.kennyc.view.MultiStateView;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -35,6 +36,9 @@ import retrofit.client.Response;
  * Created by Kenny-PC on 3/7/2015.
  */
 public class MemeFragment extends BaseGridFragment {
+
+    @Nullable
+    private ImgurBaseObject mSelectedItem;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,12 @@ public class MemeFragment extends BaseGridFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (mListener != null) mListener.onUpdateActionBarTitle(getString(R.string.meme_gen));
+    }
+
+    @Override
+    public void onDestroyView() {
+        mSelectedItem = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -92,7 +102,8 @@ public class MemeFragment extends BaseGridFragment {
 
     @Override
     protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        startActivity(MemeActivity.createIntent(getActivity(), items.get(position)));
+        mSelectedItem = items.get(position);
+        startActivity(MemeActivity.createIntent(getActivity(), mSelectedItem));
     }
 
     @Override

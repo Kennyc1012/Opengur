@@ -10,7 +10,8 @@ import android.view.ViewGroup;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.ui.MultiStateView;
+import com.kenny.openimgur.util.ViewUtils;
+import com.kennyc.view.MultiStateView;
 
 /**
  * Created by kcampagna on 12/23/14.
@@ -67,7 +68,7 @@ public class ProfileSubmissionsFragment extends BaseGridFragment2 {
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
             String errorMessage = getString(R.string.profile_no_submissions, mSelectedUser.getUsername());
-            mMultiStateView.setErrorText(R.id.errorMessage, errorMessage);
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, errorMessage);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
     }

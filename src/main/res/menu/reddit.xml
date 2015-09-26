@@ -10,14 +10,25 @@
         app:actionViewClass="android.support.v7.widget.SearchView" />
 
     <item
+        android:id="@+id/filter"
+        android:title="@string/filter"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_filter" />
+
+    <item
+        android:id="@+id/mySubredditAction"
+        android:title="@string/my_subreddits_add"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/mySubreddits"
+        android:title="@string/my_subreddits"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/refresh"
         android:title="@string/refresh"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_navigation_refresh" />
 
-    <item
-        android:id="@+id/filter"
-        android:title="@string/filter"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_filter" />
 </menu>

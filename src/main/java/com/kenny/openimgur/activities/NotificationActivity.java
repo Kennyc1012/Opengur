@@ -22,9 +22,10 @@ import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurNotification;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
+import com.kennyc.view.MultiStateView;
 
 import java.util.List;
 
@@ -100,7 +101,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
 
             case R.id.delete:
                 if (mAdapter != null && !mAdapter.isEmpty()) {
-                    new AlertDialog.Builder(this, app.getImgurTheme().getAlertDialogTheme())
+                    new AlertDialog.Builder(this, theme.getAlertDialogTheme())
                             .setTitle(R.string.delete)
                             .setMessage(R.string.notification_delete_all_msg)
                             .setNegativeButton(R.string.cancel, null)
@@ -259,7 +260,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
             @Override
             public void failure(RetrofitError error) {
                 if (mAdapter == null || mAdapter.isEmpty()) {
-                    mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 } else {
                     SnackBar.show(NotificationActivity.this, ApiClient.getErrorCode(error));

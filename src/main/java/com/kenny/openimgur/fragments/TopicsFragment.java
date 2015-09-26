@@ -17,8 +17,9 @@ import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurTopic;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.ViewUtils;
+import com.kennyc.view.MultiStateView;
 
 /**
  * Created by kcampagna on 2/19/15.
@@ -147,7 +148,7 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
                          This needs to be confirmed that this can happen */
             String message = getString(R.string.topics_empty_result, mTopic.getName());
             app.getSql().deleteTopic(mTopic.getId());
-            mMultiStateView.setErrorText(R.id.errorMessage, message);
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, message);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
 
@@ -176,7 +177,7 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
                 @Override
                 public void run() {
                     if (isAdded() && mMultiStateView != null) {
-                        mMultiStateView.setErrorText(R.id.errorMessage, R.string.topics_empty_message);
+                        ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.topics_empty_message);
                         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     }
                 }

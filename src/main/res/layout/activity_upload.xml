@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.kenny.openimgur.ui.MultiStateView
+    <com.kennyc.view.MultiStateView
         android:id="@+id/multiView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -21,9 +21,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </com.kenny.openimgur.ui.MultiStateView>
+    </com.kennyc.view.MultiStateView>
 
     <LinearLayout
+        android:id="@+id/uploadContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?colorPrimaryDark"

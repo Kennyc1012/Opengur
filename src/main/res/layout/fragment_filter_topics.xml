@@ -20,7 +20,7 @@
             app:title="@string/topics_filter"
             app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha" />
 
-        <com.kenny.openimgur.ui.MultiStateView
+        <com.kennyc.view.MultiStateView
             android:id="@+id/multiView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -30,7 +30,7 @@
 
             <include layout="@layout/topics_filter" />
 
-        </com.kenny.openimgur.ui.MultiStateView>
+        </com.kennyc.view.MultiStateView>
 
     </LinearLayout>
 

@@ -51,6 +51,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         findPreference("licenses").setOnPreferenceClickListener(this);
         findPreference("openSource").setOnPreferenceClickListener(this);
         findPreference("redditHistory").setOnPreferenceClickListener(this);
+        findPreference("mySubreddits").setOnPreferenceClickListener(this);
         findPreference("gallerySearchHistory").setOnPreferenceClickListener(this);
         findPreference("experimentalSettings").setOnPreferenceClickListener(this);
         findPreference(SettingsActivity.KEY_ADB).setOnPreferenceChangeListener(this);
@@ -181,6 +182,11 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
 
             case "experimentalSettings":
                 startActivity(SettingsActivity.createIntent(getActivity(), true));
+                return true;
+
+            case "mySubreddits":
+                mApp.getPreferences().edit().remove(RedditFragment.KEY_PINNED_SUBREDDITS).apply();
+                SnackBar.show(getActivity(), R.string.pref_reddit_deleted);
                 return true;
         }
 

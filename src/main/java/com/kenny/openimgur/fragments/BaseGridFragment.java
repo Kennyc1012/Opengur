@@ -20,9 +20,9 @@ import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.ui.HeaderGridView;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.ScrollHelper;
 import com.kenny.openimgur.util.ViewUtils;
+import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -312,7 +312,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         if (!isAdded()) return;
 
         if (galleryResponse == null) {
-            mMultiStateView.setErrorText(R.id.errorMessage, R.string.error_generic);
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.error_generic);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             return;
         }
@@ -352,7 +352,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
             if (mListener != null) mListener.onError();
-            mMultiStateView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(error));
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
 

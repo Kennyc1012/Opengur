@@ -25,9 +25,9 @@ import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySection;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
 import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
+import com.kennyc.view.MultiStateView;
 
 /**
  * Created by kcampagna on 8/14/14.

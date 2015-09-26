@@ -1,5 +1,6 @@
 package com.kenny.openimgur.fragments;
 
+import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v13.app.FragmentCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,13 +42,19 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.services.DownloaderService;
-import com.kenny.openimgur.ui.MultiStateView;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.NetworkUtils;
+import com.kenny.openimgur.util.PermissionUtils;
+import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
+import com.kenny.snackbar.SnackBarItem;
+import com.kenny.snackbar.SnackBarListener;
 import com.kennyc.bottomsheet.BottomSheet;
+import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -175,7 +183,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
             case R.id.report:
                 if (user != null) {
-                    new AlertDialog.Builder(getActivity(), app.getImgurTheme().getAlertDialogTheme())
+                    new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
                             .setTitle(R.string.report_reason)
                             .setItems(R.array.report_reasons, new DialogInterface.OnClickListener() {
                                 @Override
@@ -188,6 +196,25 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     SnackBar.show(getActivity(), R.string.user_not_logged_in);
                 }
                 break;
+
+            case R.id.download_album:
+                if (checkPermissions()) {
+                    if (NetworkUtils.isConnectedToWiFi(getActivity())) {
+                        downloadAlbum();
+                    } else {
+                        new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                                .setTitle(R.string.download_no_wifi_title)
+                                .setMessage(R.string.download_no_wifi_msg)
+                                .setNegativeButton(R.string.cancel, null)
+                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        downloadAlbum();
+                                    }
+                                }).show();
+                    }
+                }
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -196,7 +223,9 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        menu.findItem(R.id.copy_album_link).setVisible(mImgurObject instanceof ImgurAlbum);
+        boolean isAlbum = mImgurObject instanceof ImgurAlbum;
+        menu.findItem(R.id.copy_album_link).setVisible(isAlbum);
+        menu.findItem(R.id.download_album).setVisible(isAlbum);
 
         if (TextUtils.isEmpty(mImgurObject.getAccount())) {
             menu.findItem(R.id.profile).setVisible(false);
@@ -330,13 +359,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             ImgurPhoto photo = mPhotoAdapter.getItem(position);
-                            String link;
-
-                            if (photo.isLinkAThumbnail() && photo.hasMP4Link()) {
-                                link = photo.getMP4Link();
-                            } else {
-                                link = photo.getLink();
-                            }
+                            String link = getLink(photo);
 
                             switch (which) {
                                 // Copy
@@ -347,7 +370,8 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
                                 // Download
                                 case 1:
-                                    getActivity().startService(DownloaderService.createIntent(getActivity(), link));
+                                    if (checkPermissions())
+                                        getActivity().startService(DownloaderService.createIntent(getActivity(), link));
                                     break;
 
                                 // Share
@@ -356,7 +380,13 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                                     shareIntent.setType("text/plain");
                                     shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-                                    startActivity(shareIntent);
+                                    BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share);
+
+                                    if (shareDialog != null) {
+                                        shareDialog.show();
+                                    } else {
+                                        SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                                    }
                                     break;
                             }
                         }
@@ -502,6 +532,75 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);
     }
 
+    private String getLink(ImgurPhoto photo) {
+        String link;
+
+        if (photo.isLinkAThumbnail() && photo.hasMP4Link()) {
+            link = photo.getMP4Link();
+        } else {
+            link = photo.getLink();
+        }
+
+        return link;
+    }
+
+    private boolean checkPermissions() {
+        @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionLevel(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        switch (permissionLevel) {
+            case PermissionUtils.PERMISSION_AVAILABLE:
+                return true;
+
+            case PermissionUtils.PERMISSION_DENIED:
+                new SnackBarItem.Builder(getActivity())
+                        .setMessageResource(R.string.permission_rationale_download)
+                        .setActionMessageResource(R.string.okay)
+                        .setAutoDismiss(false)
+                        .setSnackBarListener(new SnackBarListener() {
+                            @Override
+                            public void onSnackBarStarted(Object o) {
+                                // NOOP
+                            }
+
+                            @Override
+                            public void onSnackBarFinished(Object o, boolean actionClicked) {
+                                if (actionClicked) {
+                                    FragmentCompat.requestPermissions(ImgurViewFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                                } else {
+                                    SnackBar.show(getActivity(), R.string.permission_denied);
+                                }
+                            }
+                        }).show();
+                break;
+
+            case PermissionUtils.PERMISSION_NEVER_ASKED:
+            default:
+                FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                break;
+        }
+
+        return false;
+    }
+
+    private void downloadAlbum() {
+        if (mImgurObject instanceof ImgurAlbum) {
+            // TODO Check for permission for Marshmallow
+            if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
+                ArrayList<String> urls = new ArrayList<>(mPhotoAdapter.getItemCount());
+
+                for (ImgurPhoto p : mPhotoAdapter.retainItems()) {
+                    urls.add(p.getLink());
+                }
+
+                getActivity().startService(DownloaderService.createIntent(getActivity(), urls));
+            } else {
+                SnackBar.show(getActivity(), R.string.error_generic);
+            }
+        } else {
+            LogUtil.w(TAG, "Item is not an album");
+        }
+    }
+
     private void fetchAlbumImages() {
         ApiClient.getService().getAlbumImages(mImgurObject.getId(), new Callback<AlbumResponse>() {
             @Override
@@ -515,7 +614,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     fetchTags();
                 } else {
-                    mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
@@ -524,7 +623,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch album images", error);
-                mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
@@ -565,7 +664,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (basicObjectResponse != null && basicObjectResponse.data != null) {
                     setupFragmentWithObject(basicObjectResponse.data);
                 } else {
-                    mMultiView.setErrorText(R.id.errorMessage, R.string.error_generic);
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }
@@ -574,7 +673,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             public void failure(RetrofitError error) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch gallery details", error);
-                mMultiView.setErrorText(R.id.errorMessage, ApiClient.getErrorCode(error));
+                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
@@ -629,5 +728,28 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 SnackBar.show(getActivity(), R.string.report_post_failure);
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case RequestCodes.REQUEST_PERMISSIONS:
+                boolean granted = PermissionUtils.verifyPermissions(grantResults);
+
+                if (granted) {
+                    // Kick off the download if only one photo
+                    if (mImgurObject instanceof ImgurPhoto) {
+                        String link = getLink((ImgurPhoto) mImgurObject);
+                        getActivity().startService(DownloaderService.createIntent(getActivity(), link));
+                    } else {
+                        SnackBar.show(getActivity(), R.string.permission_granted);
+                    }
+                } else {
+                    SnackBar.show(getActivity(), R.string.permission_denied);
+                }
+                break;
+        }
     }
 }

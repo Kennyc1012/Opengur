@@ -1,20 +1,33 @@
 package com.kenny.openimgur.activities;
 
+import android.Manifest;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.fragments.FullScreenPhotoFragment;
+import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.ViewPager;
+import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.NetworkUtils;
+import com.kenny.openimgur.util.PermissionUtils;
+import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.snackbar.SnackBarItem;
+import com.kenny.snackbar.SnackBarListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +80,94 @@ public class FullScreenPhotoActivity extends BaseActivity {
         handleArguments(savedInstanceState, intent);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.full_screen, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean isAlbumDownloadable = mAdapter != null && mAdapter.getCount() > 1;
+        menu.findItem(R.id.download_album).setVisible(isAlbumDownloadable);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void downloadAlbum() {
+        if (NetworkUtils.isConnectedToWiFi(getApplicationContext())) {
+            ArrayList<String> urls = new ArrayList<>(mAdapter.getCount());
+
+            for (ImgurPhoto p : mAdapter.mPhotos) {
+                urls.add(p.getLink());
+            }
+
+            startService(DownloaderService.createIntent(getApplicationContext(), urls));
+        } else {
+            new AlertDialog.Builder(this, theme.getAlertDialogTheme())
+                    .setTitle(R.string.download_no_wifi_title)
+                    .setMessage(R.string.download_no_wifi_msg)
+                    .setNegativeButton(R.string.cancel, null)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ArrayList<String> urls = new ArrayList<>(mAdapter.getCount());
+
+                            for (ImgurPhoto p : mAdapter.mPhotos) {
+                                urls.add(p.getLink());
+                            }
+
+                            startService(DownloaderService.createIntent(getApplicationContext(), urls));
+                        }
+                    }).show();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.download_album:
+                @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionLevel(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                switch (permissionLevel) {
+                    case PermissionUtils.PERMISSION_AVAILABLE:
+                        downloadAlbum();
+                        break;
+
+                    case PermissionUtils.PERMISSION_DENIED:
+                        new SnackBarItem.Builder(this)
+                                .setMessageResource(R.string.permission_rationale_download)
+                                .setActionMessageResource(R.string.okay)
+                                .setAutoDismiss(false)
+                                .setSnackBarListener(new SnackBarListener() {
+                                    @Override
+                                    public void onSnackBarStarted(Object o) {
+                                        LogUtil.v(TAG, "Permissions have been denied before, showing rationale");
+                                    }
+
+                                    @Override
+                                    public void onSnackBarFinished(Object o, boolean actionClicked) {
+                                        if (actionClicked) {
+                                            ActivityCompat.requestPermissions(FullScreenPhotoActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+                                            finish();
+                                        }
+                                    }
+                                }).show();
+                        break;
+
+                    case PermissionUtils.PERMISSION_NEVER_ASKED:
+                    default:
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                        break;
+                }
+
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void handleArguments(Bundle savedInstanceState, Intent intent) {
         ArrayList<ImgurPhoto> photos;
         int startingPosition;
@@ -114,6 +215,8 @@ public class FullScreenPhotoActivity extends BaseActivity {
                 }
             });
         }
+
+        supportInvalidateOptionsMenu();
     }
 
     @Override
@@ -126,6 +229,22 @@ public class FullScreenPhotoActivity extends BaseActivity {
     @Override
     protected int getStyleRes() {
         return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case RequestCodes.REQUEST_PERMISSIONS:
+                if (PermissionUtils.verifyPermissions(grantResults)) {
+                    downloadAlbum();
+                } else {
+                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                break;
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private static class FullScreenPagerAdapter extends FragmentStatePagerAdapter {
