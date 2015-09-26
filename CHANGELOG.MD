@@ -1,5 +1,5 @@
 #Open Imgur Changelog
-<b>4.0</b September 26, 2015
+<b>4.0</b> September 26, 2015
 - Marshmallow support
 - Album Downloads
 - Subreddit pinning
