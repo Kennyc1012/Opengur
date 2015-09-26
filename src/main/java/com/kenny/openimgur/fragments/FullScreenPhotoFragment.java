@@ -446,15 +446,19 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         switch (requestCode) {
             case RequestCodes.REQUEST_PERMISSIONS:
                 boolean granted = PermissionUtils.verifyPermissions(grantResults);
-                int message = granted ? R.string.permission_granted : R.string.permission_denied;
-                SnackBar.show(getActivity(), message);
+
+                if (granted) {
+                    getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
+                } else {
+                    SnackBar.show(getActivity(), R.string.permission_denied);
+                }
                 break;
         }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private class PhotoHandler extends ImgurHandler {

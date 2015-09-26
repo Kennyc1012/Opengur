@@ -359,13 +359,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             ImgurPhoto photo = mPhotoAdapter.getItem(position);
-                            String link;
-
-                            if (photo.isLinkAThumbnail() && photo.hasMP4Link()) {
-                                link = photo.getMP4Link();
-                            } else {
-                                link = photo.getLink();
-                            }
+                            String link = getLink(photo);
 
                             switch (which) {
                                 // Copy
@@ -376,7 +370,8 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
                                 // Download
                                 case 1:
-                                    if (checkPermissions()) getActivity().startService(DownloaderService.createIntent(getActivity(), link));
+                                    if (checkPermissions())
+                                        getActivity().startService(DownloaderService.createIntent(getActivity(), link));
                                     break;
 
                                 // Share
@@ -535,6 +530,18 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         outState.putBoolean(KEY_DISPLAY_TAGS, mDisplayTags);
         outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);
+    }
+
+    private String getLink(ImgurPhoto photo) {
+        String link;
+
+        if (photo.isLinkAThumbnail() && photo.hasMP4Link()) {
+            link = photo.getMP4Link();
+        } else {
+            link = photo.getLink();
+        }
+
+        return link;
     }
 
     private boolean checkPermissions() {
@@ -725,14 +732,24 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         switch (requestCode) {
             case RequestCodes.REQUEST_PERMISSIONS:
                 boolean granted = PermissionUtils.verifyPermissions(grantResults);
-                int message = granted ? R.string.permission_granted : R.string.permission_denied;
-                SnackBar.show(getActivity(), message);
+
+                if (granted) {
+                    // Kick off the download if only one photo
+                    if (mImgurObject instanceof ImgurPhoto) {
+                        String link = getLink((ImgurPhoto) mImgurObject);
+                        getActivity().startService(DownloaderService.createIntent(getActivity(), link));
+                    } else {
+                        SnackBar.show(getActivity(), R.string.permission_granted);
+                    }
+                } else {
+                    SnackBar.show(getActivity(), R.string.permission_denied);
+                }
                 break;
         }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }
