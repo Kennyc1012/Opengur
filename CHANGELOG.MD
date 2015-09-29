@@ -1,4 +1,21 @@
 #Open Imgur Changelog
+<b>4.0</b> September 26, 2015
+- Marshmallow support
+- Album Downloads
+- Subreddit pinning
+- Remove internal photo picker
+- Wake lock crash catch 
+- More token refresh logic
+- Update Bottom sheet to 2.0.1
+- Remove custom MultiStateView
+
+<b>3.4.2</b> August 31, 2015
+- Fix crash when sorting notifications
+- Update BottomSheet to version 1.2.4
+- Use BottomSheet for shate dialogs
+- Don't crash on notifications when no user is present
+- Update Token refresh logic
+
 <b>3.4.1</b> August 30, 2015
 - Fix a crash in a SQL statement regarding notifications 
 
