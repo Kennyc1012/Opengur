@@ -42,7 +42,6 @@ import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 8/14/14.
@@ -362,8 +361,8 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     }
 
     @Override
-    public void success(GalleryResponse galleryResponse, Response response) {
-        super.success(galleryResponse, response);
+    protected void onApiResult(GalleryResponse galleryResponse) {
+        super.onApiResult(galleryResponse);
 
         if (mCurrentPage == 0 && galleryResponse != null && !galleryResponse.data.isEmpty()) {
             app.getSql().addSubReddit(mQuery);

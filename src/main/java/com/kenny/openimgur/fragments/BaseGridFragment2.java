@@ -274,6 +274,24 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
     @Override
     public void success(GalleryResponse galleryResponse, Response response) {
         if (!isAdded()) return;
+        onApiResult(galleryResponse);
+    }
+
+    @Override
+    public void failure(RetrofitError error) {
+        if (!isAdded()) return;
+
+        if (getAdapter() == null || getAdapter().isEmpty()) {
+            if (mListener != null) mListener.onError();
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(error));
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+        }
+
+        mIsLoading = false;
+        if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
+    }
+
+    protected void onApiResult(GalleryResponse galleryResponse) {
 
         if (galleryResponse == null) {
             ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.error_generic);
@@ -303,20 +321,6 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
             }
         } else {
             onEmptyResults();
-        }
-
-        mIsLoading = false;
-        if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
-    }
-
-    @Override
-    public void failure(RetrofitError error) {
-        if (!isAdded()) return;
-
-        if (getAdapter() == null || getAdapter().isEmpty()) {
-            if (mListener != null) mListener.onError();
-            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(error));
-            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
 
         mIsLoading = false;

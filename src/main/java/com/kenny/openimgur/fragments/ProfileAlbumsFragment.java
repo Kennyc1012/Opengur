@@ -132,8 +132,8 @@ public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnL
     }
 
     @Override
-    public void success(GalleryResponse galleryResponse, Response response) {
-        super.success(galleryResponse, response);
+    protected void onApiResult(GalleryResponse galleryResponse) {
+        super.onApiResult(galleryResponse);
         if (mSelectedUser.isSelf(app)) mHasMore = false;
     }
 

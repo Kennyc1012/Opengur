@@ -310,7 +310,34 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     @Override
     public void success(GalleryResponse galleryResponse, Response response) {
         if (!isAdded()) return;
+        onApiResult(galleryResponse);
+    }
 
+    @Override
+    public void failure(RetrofitError error) {
+        if (!isAdded()) return;
+
+        if (getAdapter() == null || getAdapter().isEmpty()) {
+            if (mListener != null) mListener.onError();
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(error));
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+        }
+
+        mIsLoading = false;
+        if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
+    }
+
+    protected void onEmptyResults() {
+        mHasMore = false;
+
+        if (getAdapter() == null || getAdapter().isEmpty()) {
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+        }
+
+        if (mListener != null) mListener.onUpdateActionBar(true);
+    }
+
+    protected void onApiResult(GalleryResponse galleryResponse) {
         if (galleryResponse == null) {
             ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.error_generic);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
@@ -344,30 +371,6 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
         mIsLoading = false;
         if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
-    }
-
-    @Override
-    public void failure(RetrofitError error) {
-        if (!isAdded()) return;
-
-        if (getAdapter() == null || getAdapter().isEmpty()) {
-            if (mListener != null) mListener.onError();
-            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(error));
-            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-        }
-
-        mIsLoading = false;
-        if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
-    }
-
-    protected void onEmptyResults() {
-        mHasMore = false;
-
-        if (getAdapter() == null || getAdapter().isEmpty()) {
-            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-        }
-
-        if (mListener != null) mListener.onUpdateActionBar(true);
     }
 
     /**
