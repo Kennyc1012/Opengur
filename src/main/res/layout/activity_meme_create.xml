@@ -1,60 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.kennyc.view.MultiStateView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/multiView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="?actionBarSize"
-    android:drawingCacheQuality="low">
+    app:msv_loadingView="@layout/loading_view"
+    app:msv_viewState="loading">
 
-    <FrameLayout
-        android:id="@+id/content"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:drawingCacheQuality="low">
 
-        <ImageView
-            android:id="@+id/image"
+        <FrameLayout
+            android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            tools:src="@drawable/error_dark" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/topText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/meme_text_medium"
-            android:gravity="center"
-            android:layout_gravity="top"
-            android:text="@string/meme_top_text"
-            android:textAllCaps="true"
-            android:shadowColor="#000000"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:shadowRadius="1" />
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                tools:src="@drawable/error_dark" />
 
-        <TextView
-            android:id="@+id/bottomText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/meme_text_medium"
-            android:gravity="center"
-            android:layout_gravity="bottom"
-            android:text="@string/meme_bottom_text"
-            android:textAllCaps="true"
-            android:shadowColor="#000000"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:shadowRadius="1" />
+            <TextView
+                android:id="@+id/topText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/meme_text_medium"
+                android:gravity="center"
+                android:layout_gravity="top"
+                android:text="@string/meme_top_text"
+                android:textAllCaps="true"
+                android:shadowColor="#000000"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="1" />
 
-    </FrameLayout>
+            <TextView
+                android:id="@+id/bottomText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/meme_text_medium"
+                android:gravity="center"
+                android:layout_gravity="bottom"
+                android:text="@string/meme_bottom_text"
+                android:textAllCaps="true"
+                android:shadowColor="#000000"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="1" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
+        </FrameLayout>
 
-</RelativeLayout>
+    </RelativeLayout>
+
+</com.kennyc.view.MultiStateView>
