@@ -1,5 +1,6 @@
 package com.kenny.openimgur.fragments;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.DialogInterface;
@@ -223,14 +224,14 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         @Override
         protected Long doInBackground(Void... voids) {
             SettingsFragment frag = mFragment.get();
+            Activity activity = frag.getActivity();
             frag.mApp.deleteAllCache();
 
             if (!TextUtils.isEmpty(mCacheDirKey)) {
-                File dir = ImageUtil.getCacheDirectory(frag.getActivity(), mCacheDirKey);
-                ImageUtil.initImageLoader(frag.getActivity());
+                File dir = ImageUtil.getCacheDirectory(activity, mCacheDirKey);
+                ImageUtil.initImageLoader(activity);
                 VideoCache.getInstance().setCacheDirectory(dir);
             }
-
 
             return FileUtil.getDirectorySize(frag.mApp.getCacheDir());
         }
