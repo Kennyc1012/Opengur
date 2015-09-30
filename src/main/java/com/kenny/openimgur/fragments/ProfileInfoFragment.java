@@ -96,7 +96,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.message).setVisible(!mSelectedUser.isSelf(app));
+        menu.findItem(R.id.message).setVisible(app.getUser() != null && !mSelectedUser.isSelf(app));
         super.onPrepareOptionsMenu(menu);
     }
 
