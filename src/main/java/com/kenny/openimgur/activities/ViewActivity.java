@@ -46,7 +46,6 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.fragments.CommentPopupFragment;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
-import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
 import com.kenny.openimgur.ui.VideoView;
@@ -128,8 +127,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private static final String KEY_VIEW_FOR_ALBUM = "view_link_for_album";
-
-    private static final String DIALOG_LOADING = "loading";
 
     private static final String KEY_COMMENT = "comments";
 
@@ -413,7 +410,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     protected void onDestroy() {
-        dismissDialogFragment(DIALOG_LOADING);
         dismissDialogFragment("comment");
 
         if (mCommentAdapter != null) {
@@ -846,8 +842,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onPostComment(String comment, String galleryId, String parentId) {
-        showDialogFragment(LoadingDialogFragment.createInstance(R.string.posting_comment, false), DIALOG_LOADING);
+        final @MultiStateView.ViewState int viewState = mMultiView.getViewState();
+        mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
         ImgurService apiService = ApiClient.getService();
+
         Callback<CommentPostResponse> cb = new Callback<CommentPostResponse>() {
             @Override
             public void success(CommentPostResponse commentPostResponse, Response response) {
@@ -856,16 +854,15 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     fetchComments();
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.comment_post_unsuccessful);
+                    mMultiView.setViewState(viewState);
                 }
-
-                dismissDialogFragment(DIALOG_LOADING);
             }
 
             @Override
             public void failure(RetrofitError error) {
                 LogUtil.e(TAG, "Unable to post comment", error);
-                dismissDialogFragment(DIALOG_LOADING);
                 SnackBar.show(ViewActivity.this, R.string.comment_post_unsuccessful);
+                mMultiView.setViewState(viewState);
             }
         };
 
