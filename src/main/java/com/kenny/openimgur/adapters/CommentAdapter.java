@@ -33,7 +33,7 @@ import butterknife.Bind;
 public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     private static final float EXPANDED = 135.0f;
 
-    private static final float COLLASPED = 0.0f;
+    private static final float COLLAPSED = 0.0f;
 
     private static final Pattern sUserPattern = Pattern.compile("@\\w+");
 
@@ -108,7 +108,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         Linkify.addLinks(commentHolder.comment, sUserPattern, null);
         commentHolder.replies.setVisibility(comment.getReplyCount() > 0 ? View.VISIBLE : View.GONE);
         boolean isExpanded = mExpandedComments.contains(comment);
-        commentHolder.replies.setRotation(isExpanded ? EXPANDED : COLLASPED);
+        commentHolder.replies.setRotation(isExpanded ? EXPANDED : COLLAPSED);
         commentHolder.indicator.setVisibility(comment.getParentId() > 0 ? View.VISIBLE : View.GONE);
 
         Integer multiple = mIndicatorMultiples.get(comment.getParentId());
@@ -205,7 +205,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
 
         // Should always be the case
         if (view.getTag() instanceof CommentViewHolder) {
-            ((CommentViewHolder) view.getTag()).replies.animate().rotation(COLLASPED);
+            ((CommentViewHolder) view.getTag()).replies.animate().rotation(COLLAPSED);
         }
 
         position++;

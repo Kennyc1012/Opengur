@@ -217,7 +217,6 @@
     <string name="meme_bottom_text">BOTTOM TEXT TAP TO CHANGE</string>
     <string name="meme_font_size">Change font size</string>
     <string name="meme_input_title">Enter caption</string>
-    <string name="meme_saving">Saving Meme, one moment&#8230;</string>
     <string name="meme_failed">Unable to save Meme, please try again.</string>
     <string name="meme_success">Meme saved successfully</string>
     <string name="meme_import">Import from Photos</string>
@@ -231,7 +230,6 @@
     <string name="comment_hint">Enter Comment (Max 140)</string>
     <string name="comment">Comment</string>
     <string name="open_src_licenses">Open Source Licenses</string>
-    <string name="posting_comment">Posting Comment…</string>
     <string name="comment_post_successful">Comment Posted</string>
     <string name="comment_post_unsuccessful">Unable to post comment. Please try again</string>
     <string name="comments_off">Comments set not to load</string>
@@ -341,7 +339,6 @@
     </plurals>
     <string name="notification_remaining">+%d more</string>
     <string name="notification_new_message">New message from %s</string>
-    <string name="notification_new_reply">New reply from %s</string>
     <string name="notification_preview"><![CDATA[<b>%1$s:</b> %2$s ]]></string>
     <string name="notification_empty">You have no notifications</string>
     <string name="notification_selected">%d selected</string>
