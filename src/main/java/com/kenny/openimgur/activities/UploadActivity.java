@@ -574,8 +574,12 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                 List<Upload> uploads = new ArrayList<>(photoUris.size());
 
                 for (Uri uri : photoUris) {
-                    File file = FileUtil.createFile(uri, resolver);
-                    if (FileUtil.isFileValid(file)) uploads.add(new Upload(file.getAbsolutePath()));
+                    try {
+                        File file = FileUtil.createFile(uri, resolver);
+                        if (FileUtil.isFileValid(file)) uploads.add(new Upload(file.getAbsolutePath()));
+                    } catch (Exception ex) {
+                        LogUtil.e("DecodeImageTask", "Unable to decode image", ex);
+                    }
                 }
 
                 return uploads;
