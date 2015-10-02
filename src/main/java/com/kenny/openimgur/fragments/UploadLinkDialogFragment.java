@@ -57,7 +57,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
     private PhotoUploadListener mListener;
 
-    public static final DialogFragment newInstance(@Nullable String link) {
+    public static DialogFragment newInstance(@Nullable String link) {
         UploadLinkDialogFragment fragment = new UploadLinkDialogFragment();
 
         if (!TextUtils.isEmpty(link)) {

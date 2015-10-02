@@ -43,8 +43,6 @@ abstract public class BaseActivity extends AppCompatActivity {
 
     private boolean mIsLandscape = false;
 
-    private boolean mShouldShowHome = true;
-
     private boolean mIsTablet = false;
 
     @Override
@@ -57,11 +55,8 @@ abstract public class BaseActivity extends AppCompatActivity {
 
         if (ab != null) {
             ab.setTitle(null);
-
-            if (mShouldShowHome) {
-                ab.setDisplayHomeAsUpEnabled(true);
-                ab.setDisplayShowHomeEnabled(true);
-            }
+            ab.setDisplayHomeAsUpEnabled(true);
+            ab.setDisplayShowHomeEnabled(true);
         } else {
             LogUtil.w(TAG, "Action bar is null. Unable to set defaults");
         }
