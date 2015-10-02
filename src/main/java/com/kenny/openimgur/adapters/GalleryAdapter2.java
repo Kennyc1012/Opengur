@@ -134,7 +134,8 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
         }
 
         if (mShowPoints) {
-            galleryHolder.score.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + galleryHolder.score.getContext().getString(R.string.points));
+            int totalPoints = obj.getUpVotes() - obj.getDownVotes();
+            galleryHolder.score.setText(mResources.getQuantityString(R.plurals.points, totalPoints, totalPoints));
             galleryHolder.score.setVisibility(View.VISIBLE);
         } else {
             galleryHolder.score.setVisibility(View.GONE);

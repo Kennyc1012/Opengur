@@ -116,7 +116,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
             }
 
             int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
-            titleHolder.points.setText((mImgurObject.getUpVotes() - mImgurObject.getDownVotes()) + " " + mResources.getString(R.string.points));
+            titleHolder.points.setText(mResources.getQuantityString(R.plurals.points, totalPoints, totalPoints));
             titleHolder.pointsBar.setUpVotes(mImgurObject.getUpVotes());
             titleHolder.pointsBar.setTotalPoints(totalPoints);
 
@@ -189,7 +189,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
             PhotoTitleHolder titleHolder = (PhotoTitleHolder) holder;
             Resources res = titleHolder.author.getResources();
             int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
-            titleHolder.points.setText((mImgurObject.getUpVotes() - mImgurObject.getDownVotes()) + " " + res.getString(R.string.points));
+            titleHolder.points.setText(mResources.getQuantityString(R.plurals.points, totalPoints, totalPoints));
             titleHolder.pointsBar.setUpVotes(mImgurObject.getUpVotes());
             titleHolder.pointsBar.setTotalPoints(totalPoints);
 

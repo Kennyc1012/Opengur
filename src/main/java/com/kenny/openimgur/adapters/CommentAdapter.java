@@ -136,7 +136,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         StringBuilder sb = new StringBuilder(author);
         boolean isOp = isOP(author);
         int spanLength = author.length();
-        String points = mResources.getQuantityString(R.plurals.comment_points, (int) comment.getPoints(), comment.getPoints());
+        String points = mResources.getQuantityString(R.plurals.points, (int) comment.getPoints(), comment.getPoints());
         int scoreTextLength = points.length();
 
         if (isOp) {

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <plurals name="points">
+        <item quantity="one">%d point</item>
+        <item quantity="other">%d points</item>
+    </plurals>
+
+    <plurals name="notification_messages">
+        <item quantity="one">%d new message</item>
+        <item quantity="other">%d new messages</item>
+    </plurals>
+
+    <plurals name="notification_replies">
+        <item quantity="one">%d new reply</item>
+        <item quantity="other">%d new replies</item>
+    </plurals>
+
+    <plurals name="notification_mark_read">
+        <item quantity="one">Mark read</item>
+        <item quantity="other">Mark all read</item>
+    </plurals>
+
+    <plurals name="download_notif_title">
+        <item quantity="one">Downloading Image</item>
+        <item quantity="other">Downloading Images</item>
+    </plurals>
+
+    <plurals name="upload_notif_photos">
+        <item quantity="one">Uploading Photo&#8230;</item>
+        <item quantity="other">Uploading Photo %1$d of %2$d</item>
+    </plurals>
+
+</resources>

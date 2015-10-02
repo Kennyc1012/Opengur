@@ -3,7 +3,6 @@
 
     <!-- Generic -->
     <string name="app_name">Opengur</string>
-    <string name="points">points</string>
     <string name="action_settings">Settings</string>
     <string name="random">Random</string>
     <string name="refresh">Refresh</string>
@@ -280,11 +279,6 @@
     <string name="upload_cancel_msg">Are you sure you want to cancel your upload?</string>
     <string name="upload_gallery_no_user">You must be logged in to submit to Imgur</string>
 
-    <plurals name="upload_notif_photos">
-        <item quantity="one">Uploading Photo&#8230;</item>
-        <item quantity="other">Uploading Photo %1$d of %2$d</item>
-    </plurals>
-
     <!-- Nav Items -->
     <string name="nav_gallery">Gallery</string>
     <string name="nav_topics">Topics</string>
@@ -295,12 +289,6 @@
     <string name="nav_settings">Settings</string>
     <string name="nav_beta">Beta</string>
     <string name="nav_feedback">Feedback</string>
-
-    <plurals name="comment_points">
-        <item quantity="zero">No Points</item>
-        <item quantity="one">%d Point</item>
-        <item quantity="other">%d Points</item>
-    </plurals>
 
     <!-- Muzei -->
     <string name="muzei_settings">Muzei Settings</string>
@@ -329,14 +317,6 @@
     <!-- Notifications -->
     <string name="notifications_multiple_types">%d New Notifications</string>
     <string name="notifications_multiple_types_body">You have %d new notifications</string>
-    <plurals name="notification_messages">
-        <item quantity="one">%d new message</item>
-        <item quantity="other">%d new messages</item>
-    </plurals>
-    <plurals name="notification_replies">
-        <item quantity="one">%d new reply</item>
-        <item quantity="other">%d new replies</item>
-    </plurals>
     <string name="notification_remaining">+%d more</string>
     <string name="notification_new_message">New message from %s</string>
     <string name="notification_preview"><![CDATA[<b>%1$s:</b> %2$s ]]></string>
@@ -345,10 +325,6 @@
     <string name="notification_delete_all">Delete all notifications</string>
     <string name="notification_delete_all_msg">Are you sure you want to delete all your notifications</string>
     <string name="notification_no_user">You must be logged in to view notifications</string>
-    <plurals name="notification_mark_read">
-        <item quantity="one">Mark read</item>
-        <item quantity="other">Mark all read</item>
-    </plurals>
 
     <!-- Downloads -->
     <string name="download_notif_message">Downloading image %1$d of %2$d</string>
@@ -358,11 +334,6 @@
     <string name="download_notif_multi_error_msg">%1$d of %2$d were downloaded</string>
     <string name="download_no_wifi_title">Not Connected to WiFi</string>
     <string name="download_no_wifi_msg">You are currently not connected to a WiFi network. Continue with album download anyway?</string>
-
-    <plurals name="download_notif_title">
-        <item quantity="one">Downloading Image</item>
-        <item quantity="other">Downloading Images</item>
-    </plurals>
 
     <!-- Subreddits -->
     <string name="enter_sub_reddit">Enter Subreddit</string>

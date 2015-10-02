@@ -153,7 +153,8 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
         }
 
         if (mShowPoints) {
-            holder.score.setText((obj.getUpVotes() - obj.getDownVotes()) + " " + holder.score.getContext().getString(R.string.points));
+            int totalPoints = obj.getUpVotes() - obj.getDownVotes();
+            holder.score.setText(mResources.getQuantityString(R.plurals.points, totalPoints, totalPoints));
             holder.score.setVisibility(View.VISIBLE);
         } else {
             holder.score.setVisibility(View.GONE);
