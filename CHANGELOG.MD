@@ -1,4 +1,17 @@
 #Open Imgur Changelog
+<b>4.0.1</b> October 4, 2015
+- Handle retrofit crashes when fragment has been destroyed 
+- Catch any errors when decoding images for upload
+- Don't fetch comments/tags when unlisted 
+- Hide message button on profiles when not logged in
+- Fix Holo theme on start up on pre L devices. Thanks [Jawnnypoo](https://github.com/Jawnnypoo)
+- Use plurals for point(s) text
+- Resource clean up
+- Update Gradle to v2.7
+- Update Gradle build tools to v1.4.0-beta3
+- Update Gif Drawable to v1.1.10
+- Update Subsampling Scale Image View to v3.4.0
+
 <b>4.0</b> September 26, 2015
 - Marshmallow support
 - Album Downloads
