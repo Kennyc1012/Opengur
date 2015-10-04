@@ -18,13 +18,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -33,6 +31,7 @@ import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
+import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -62,8 +61,8 @@ public class MemeActivity extends BaseActivity {
     @Bind(R.id.content)
     View mView;
 
-    @Bind(R.id.progressBar)
-    ProgressBar mProgressBar;
+    @Bind(R.id.multiView)
+    MultiStateView mMultiStateView;
 
     private ImgurBaseObject mObject;
 
@@ -113,8 +112,7 @@ public class MemeActivity extends BaseActivity {
 
                 switch (level) {
                     case PermissionUtils.PERMISSION_AVAILABLE:
-                        LoadingDialogFragment.createInstance(R.string.meme_saving, false)
-                                .show(getFragmentManager(), "saving");
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
                         // Clear any memory cache before we save to avoid an OOM
                         app.getImageLoader().clearMemoryCache();
@@ -186,22 +184,16 @@ public class MemeActivity extends BaseActivity {
     }
 
     private void loadImage() {
-        mTopText.setVisibility(View.GONE);
-        mBottomText.setVisibility(View.GONE);
-
         app.getImageLoader().displayImage(mObject.getLink(), mImage, new SimpleImageLoadingListener() {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 super.onLoadingComplete(imageUri, view, loadedImage);
-                mProgressBar.setVisibility(View.GONE);
-                mTopText.setVisibility(View.VISIBLE);
-                mBottomText.setVisibility(View.VISIBLE);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
 
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
                 super.onLoadingFailed(imageUri, view, failReason);
-                mProgressBar.setVisibility(View.GONE);
                 finish();
                 // Toast error message
             }
@@ -209,18 +201,19 @@ public class MemeActivity extends BaseActivity {
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
                 super.onLoadingCancelled(imageUri, view);
-                mProgressBar.setVisibility(View.GONE);
+                finish();
             }
 
             @Override
             public void onLoadingStarted(String imageUri, View view) {
                 super.onLoadingStarted(imageUri, view);
-                mProgressBar.setVisibility(View.VISIBLE);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             }
         });
     }
 
     private void onMemeCreated(@Nullable final File file) {
+        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         dismissDialogFragment("saving");
 
         if (FileUtil.isFileValid(file)) {
@@ -300,8 +293,7 @@ public class MemeActivity extends BaseActivity {
                 boolean hasPermission = PermissionUtils.verifyPermissions(grantResults);
 
                 if (hasPermission) {
-                    LoadingDialogFragment.createInstance(R.string.meme_saving, false)
-                            .show(getFragmentManager(), "saving");
+                    mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
                     // Clear any memory cache before we save to avoid an OOM
                     app.getImageLoader().clearMemoryCache();

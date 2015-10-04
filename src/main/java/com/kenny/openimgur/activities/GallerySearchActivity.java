@@ -20,8 +20,6 @@ import butterknife.Bind;
 public class GallerySearchActivity extends BaseActivity implements FragmentListener {
     private static final String KEY_QUERY = "query";
 
-    private GallerySearchFragment mFragment;
-
     @Bind(R.id.toolBar)
     Toolbar mToolBar;
 
@@ -34,7 +32,7 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery_search);
         setStatusBarColorResource(theme.darkColor);
-        mFragment = (GallerySearchFragment) getFragmentManager().findFragmentById(R.id.searchFragment);
+        GallerySearchFragment fragment = (GallerySearchFragment) getFragmentManager().findFragmentById(R.id.searchFragment);
         String query;
 
         if (savedInstanceState != null) {
@@ -44,7 +42,7 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
         }
 
         setupToolBar(query);
-        mFragment.setQuery(query);
+        fragment.setQuery(query);
     }
 
     /**

@@ -18,7 +18,7 @@
     <dimen name="meme_text_large">42sp</dimen>
     <dimen name="meme_text_xlarge">50sp</dimen>
 
-    <!-- Material Design Guidlines -->
+    <!-- Material Design Guidelines -->
     <dimen name="keyline_margin">72dp</dimen>
     <dimen name="content_padding">16dp</dimen>
     <dimen name="avatar_size">48dp</dimen>

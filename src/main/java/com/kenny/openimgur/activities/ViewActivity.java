@@ -46,7 +46,6 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.fragments.CommentPopupFragment;
 import com.kenny.openimgur.fragments.ImgurViewFragment;
-import com.kenny.openimgur.fragments.LoadingDialogFragment;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
 import com.kenny.openimgur.ui.VideoView;
@@ -128,8 +127,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private static final String KEY_VIEW_FOR_ALBUM = "view_link_for_album";
-
-    private static final String DIALOG_LOADING = "loading";
 
     private static final String KEY_COMMENT = "comments";
 
@@ -413,7 +410,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     protected void onDestroy() {
-        dismissDialogFragment(DIALOG_LOADING);
         dismissDialogFragment("comment");
 
         if (mCommentAdapter != null) {
@@ -688,57 +684,62 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 return;
             }
 
-            mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
-            ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort(), new Callback<CommentResponse>() {
-                @Override
-                public void success(CommentResponse commentResponse, Response response) {
-                    if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
-                        return;
-                    }
-
-                    if (commentResponse == null) {
-                        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
-                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-                        return;
-                    }
-
-                    if (!commentResponse.data.isEmpty()) {
-                        ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
-                        ImgurComment comment = commentResponse.data.get(0);
-
-                        if (comment.getImageId().equals(imgurBaseObject.getId())) {
-                            // We only show the comments for the correct gallery item
-                            if (mCommentAdapter == null) {
-                                mCommentAdapter = new CommentAdapter(ViewActivity.this, commentResponse.data, ViewActivity.this);
-                                mCommentList.setAdapter(mCommentAdapter);
-                            } else {
-                                mCommentAdapter.clear();
-                                mCommentAdapter.clearExpansionInfo();
-                                mCommentAdapter.addItems(commentResponse.data);
-                            }
-
-                            mCommentAdapter.setOP(imgurBaseObject.getAccount());
-                            mCommentAdapter.clearExpansionInfo();
-                            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-
-                            mMultiView.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (mCommentList != null) mCommentList.scrollToPosition(0);
-                                }
-                            });
+            if (imgurBaseObject.isListed()) {
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
+                ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort(), new Callback<CommentResponse>() {
+                    @Override
+                    public void success(CommentResponse commentResponse, Response response) {
+                        if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
+                            return;
                         }
-                    } else {
-                        mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-                    }
-                }
 
-                @Override
-                public void failure(RetrofitError error) {
-                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
-                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-                }
-            });
+                        if (commentResponse == null) {
+                            ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
+                            mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                            return;
+                        }
+
+                        if (!commentResponse.data.isEmpty()) {
+                            ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
+                            ImgurComment comment = commentResponse.data.get(0);
+
+                            if (comment.getImageId().equals(imgurBaseObject.getId())) {
+                                // We only show the comments for the correct gallery item
+                                if (mCommentAdapter == null) {
+                                    mCommentAdapter = new CommentAdapter(ViewActivity.this, commentResponse.data, ViewActivity.this);
+                                    mCommentList.setAdapter(mCommentAdapter);
+                                } else {
+                                    mCommentAdapter.clear();
+                                    mCommentAdapter.clearExpansionInfo();
+                                    mCommentAdapter.addItems(commentResponse.data);
+                                }
+
+                                mCommentAdapter.setOP(imgurBaseObject.getAccount());
+                                mCommentAdapter.clearExpansionInfo();
+                                mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+
+                                mMultiView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (mCommentList != null) mCommentList.scrollToPosition(0);
+                                    }
+                                });
+                            }
+                        } else {
+                            mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                    }
+                });
+            } else {
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+                ViewUtils.setEmptyText(mMultiView, R.id.emptyMessage, R.string.comments_unlisted);
+            }
         } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.VIEW_STATE_ERROR) {
             ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.comments_off);
             mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
@@ -846,8 +847,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onPostComment(String comment, String galleryId, String parentId) {
-        showDialogFragment(LoadingDialogFragment.createInstance(R.string.posting_comment, false), DIALOG_LOADING);
+        final @MultiStateView.ViewState int viewState = mMultiView.getViewState();
+        mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
         ImgurService apiService = ApiClient.getService();
+
         Callback<CommentPostResponse> cb = new Callback<CommentPostResponse>() {
             @Override
             public void success(CommentPostResponse commentPostResponse, Response response) {
@@ -856,16 +859,15 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     fetchComments();
                 } else {
                     SnackBar.show(ViewActivity.this, R.string.comment_post_unsuccessful);
+                    mMultiView.setViewState(viewState);
                 }
-
-                dismissDialogFragment(DIALOG_LOADING);
             }
 
             @Override
             public void failure(RetrofitError error) {
                 LogUtil.e(TAG, "Unable to post comment", error);
-                dismissDialogFragment(DIALOG_LOADING);
                 SnackBar.show(ViewActivity.this, R.string.comment_post_unsuccessful);
+                mMultiView.setViewState(viewState);
             }
         };
 

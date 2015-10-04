@@ -559,23 +559,27 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     };
 
     private static class DecodeImagesTask extends AsyncTask<List<Uri>, Void, List<Upload>> {
-        WeakReference<UploadActivity> mActivty;
+        WeakReference<UploadActivity> mActivity;
 
         public DecodeImagesTask(@NonNull UploadActivity activity) {
-            mActivty = new WeakReference<>(activity);
+            mActivity = new WeakReference<>(activity);
         }
 
         @Override
         protected List<Upload> doInBackground(List<Uri>... params) {
             if (params != null && params[0] != null && !params[0].isEmpty()) {
-                ContentResolver resolver = mActivty.get().getContentResolver();
+                ContentResolver resolver = mActivity.get().getContentResolver();
                 List<Uri> photoUris = params[0];
 
                 List<Upload> uploads = new ArrayList<>(photoUris.size());
 
                 for (Uri uri : photoUris) {
-                    File file = FileUtil.createFile(uri, resolver);
-                    if (FileUtil.isFileValid(file)) uploads.add(new Upload(file.getAbsolutePath()));
+                    try {
+                        File file = FileUtil.createFile(uri, resolver);
+                        if (FileUtil.isFileValid(file)) uploads.add(new Upload(file.getAbsolutePath()));
+                    } catch (Exception ex) {
+                        LogUtil.e("DecodeImageTask", "Unable to decode image", ex);
+                    }
                 }
 
                 return uploads;
@@ -586,10 +590,10 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
         @Override
         protected void onPostExecute(List<Upload> uploads) {
-            if (mActivty != null && mActivty.get() != null) {
-                mActivty.get().onUrisDecoded(uploads);
-                mActivty.clear();
-                mActivty = null;
+            if (mActivity != null && mActivity.get() != null) {
+                mActivity.get().onUrisDecoded(uploads);
+                mActivity.clear();
+                mActivity = null;
             }
         }
     }

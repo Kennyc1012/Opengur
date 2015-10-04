@@ -85,11 +85,10 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         String author = comment.getAuthor();
         StringBuilder sb = new StringBuilder(author);
         int spanLength = author.length();
+        int points = (int) comment.getPoints();
 
         sb.append(" ")
-                .append(comment.getPoints())
-                .append(" ")
-                .append(mResources.getString(R.string.points))
+                .append(mResources.getQuantityString(R.plurals.points, points, points))
                 .append(" : ")
                 .append(date);
 

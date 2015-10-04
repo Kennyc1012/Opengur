@@ -20,6 +20,15 @@ public class ImgurSerializer implements JsonDeserializer<ImgurBaseObject> {
     public ImgurBaseObject deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject object = json.getAsJsonObject();
         boolean isAlbum = object.has("images_count") && object.get("images_count").getAsInt() > 0;
-        return new GsonBuilder().create().fromJson(json, isAlbum ? ImgurAlbum.class : ImgurPhoto.class);
+        ImgurBaseObject obj = new GsonBuilder().create().fromJson(json, isAlbum ? ImgurAlbum.class : ImgurPhoto.class);
+
+        // Need to manually check if the up/down votes are set to null as GSON will initialize it to 0
+        if (object.has("ups") && object.has("downs")) {
+            boolean hasUpVotes = !object.get("ups").isJsonNull();
+            boolean hasDownVotes = !object.get("downs").isJsonNull();
+            obj.setIsListed(hasUpVotes && hasDownVotes);
+        }
+
+        return obj;
     }
 }

@@ -19,7 +19,6 @@ import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
@@ -29,8 +28,6 @@ import org.apache.commons.collections15.list.SetUniqueList;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit.client.Response;
 
 /**
  * Created by Kenny-PC on 3/7/2015.
@@ -124,8 +121,8 @@ public class MemeFragment extends BaseGridFragment {
     }
 
     @Override
-    public void success(GalleryResponse galleryResponse, Response response) {
-        super.success(galleryResponse, response);
+    protected void onApiResult(GalleryResponse galleryResponse) {
+        super.onApiResult(galleryResponse);
         mHasMore = false;
 
         if (galleryResponse != null && !galleryResponse.data.isEmpty()) {
