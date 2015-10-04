@@ -23,8 +23,8 @@ repositories {
     jcenter()
 }
 
-def VERSION_NAME = '4.0'
-def VERSION_CODE = 54
+def VERSION_NAME = '4.0.1'
+def VERSION_CODE = 55
 
 android {
     compileSdkVersion 23
