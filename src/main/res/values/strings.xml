@@ -233,6 +233,7 @@
     <string name="comments_off">Comments set not to load</string>
     <string name="load_comments">Load Comments</string>
     <string name="comment_copied">Comment Copied</string>
+    <string name="comments_unlisted">Gallery is unlisted</string>
 
     <!-- Beta Community -->
     <string name="beta_test">Beta Tester</string>

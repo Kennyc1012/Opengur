@@ -684,57 +684,62 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 return;
             }
 
-            mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
-            ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort(), new Callback<CommentResponse>() {
-                @Override
-                public void success(CommentResponse commentResponse, Response response) {
-                    if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
-                        return;
-                    }
-
-                    if (commentResponse == null) {
-                        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
-                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-                        return;
-                    }
-
-                    if (!commentResponse.data.isEmpty()) {
-                        ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
-                        ImgurComment comment = commentResponse.data.get(0);
-
-                        if (comment.getImageId().equals(imgurBaseObject.getId())) {
-                            // We only show the comments for the correct gallery item
-                            if (mCommentAdapter == null) {
-                                mCommentAdapter = new CommentAdapter(ViewActivity.this, commentResponse.data, ViewActivity.this);
-                                mCommentList.setAdapter(mCommentAdapter);
-                            } else {
-                                mCommentAdapter.clear();
-                                mCommentAdapter.clearExpansionInfo();
-                                mCommentAdapter.addItems(commentResponse.data);
-                            }
-
-                            mCommentAdapter.setOP(imgurBaseObject.getAccount());
-                            mCommentAdapter.clearExpansionInfo();
-                            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-
-                            mMultiView.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (mCommentList != null) mCommentList.scrollToPosition(0);
-                                }
-                            });
+            if (imgurBaseObject.isListed()) {
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
+                ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort(), new Callback<CommentResponse>() {
+                    @Override
+                    public void success(CommentResponse commentResponse, Response response) {
+                        if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
+                            return;
                         }
-                    } else {
-                        mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-                    }
-                }
 
-                @Override
-                public void failure(RetrofitError error) {
-                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
-                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-                }
-            });
+                        if (commentResponse == null) {
+                            ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
+                            mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                            return;
+                        }
+
+                        if (!commentResponse.data.isEmpty()) {
+                            ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
+                            ImgurComment comment = commentResponse.data.get(0);
+
+                            if (comment.getImageId().equals(imgurBaseObject.getId())) {
+                                // We only show the comments for the correct gallery item
+                                if (mCommentAdapter == null) {
+                                    mCommentAdapter = new CommentAdapter(ViewActivity.this, commentResponse.data, ViewActivity.this);
+                                    mCommentList.setAdapter(mCommentAdapter);
+                                } else {
+                                    mCommentAdapter.clear();
+                                    mCommentAdapter.clearExpansionInfo();
+                                    mCommentAdapter.addItems(commentResponse.data);
+                                }
+
+                                mCommentAdapter.setOP(imgurBaseObject.getAccount());
+                                mCommentAdapter.clearExpansionInfo();
+                                mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+
+                                mMultiView.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (mCommentList != null) mCommentList.scrollToPosition(0);
+                                    }
+                                });
+                            }
+                        } else {
+                            mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
+                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                    }
+                });
+            } else {
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+                ViewUtils.setEmptyText(mMultiView, R.id.emptyMessage, R.string.comments_unlisted);
+            }
         } else if (mMultiView != null && mMultiView.getViewState() != MultiStateView.VIEW_STATE_ERROR) {
             ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.comments_off);
             mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);

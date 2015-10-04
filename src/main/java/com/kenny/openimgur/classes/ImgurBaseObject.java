@@ -81,6 +81,8 @@ public class ImgurBaseObject implements Parcelable {
     @SerializedName("nsfw")
     private boolean mIsNSFW;
 
+    private boolean mIsListed = true;
+
     private List<ImgurTag> mTags;
 
     public ImgurBaseObject(String id, String title, String link) {
@@ -230,6 +232,14 @@ public class ImgurBaseObject implements Parcelable {
         mLink = link;
     }
 
+    public void setIsListed(boolean isListed) {
+        mIsListed = isListed;
+    }
+
+    public boolean isListed() {
+        return mIsListed;
+    }
+
     @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(mUpVotes);
@@ -250,6 +260,7 @@ public class ImgurBaseObject implements Parcelable {
         out.writeString(mTopic);
         out.writeInt(mIsFavorited ? 1 : 0);
         out.writeInt(mIsNSFW ? 1 : 0);
+        out.writeInt(mIsListed ? 1 : 0);
         out.writeLong(mDate);
         out.writeLong(mBandwidth);
         out.writeTypedList(mTags);
@@ -289,6 +300,7 @@ public class ImgurBaseObject implements Parcelable {
         mTopic = in.readString();
         mIsFavorited = in.readInt() == 1;
         mIsNSFW = in.readInt() == 1;
+        mIsListed = in.readInt() == 1;
         mDate = in.readLong();
         mBandwidth = in.readLong();
         mTags = new ArrayList<>();
@@ -314,7 +326,7 @@ public class ImgurBaseObject implements Parcelable {
 
     @Override
     public int hashCode() {
-        return mId.hashCode();
+        return !TextUtils.isEmpty(mId) ? mId.hashCode() : super.hashCode();
     }
 
     @Override
