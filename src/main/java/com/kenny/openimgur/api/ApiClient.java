@@ -15,16 +15,17 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
+import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.concurrent.TimeUnit;
 
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.OkClient;
-import retrofit.converter.GsonConverter;
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
 
 
 /**
@@ -36,7 +37,7 @@ public class ApiClient {
 
     private static final String API_URL = "https://api.imgur.com";
 
-    private static RestAdapter sRestAdapter;
+    private static Retrofit sRestAdapter;
 
     private static ImgurService sService;
 
@@ -56,12 +57,10 @@ public class ApiClient {
      */
     public static ImgurService getService() {
         if (sRestAdapter == null || sService == null) {
-            sRestAdapter = new RestAdapter.Builder()
-                    .setEndpoint(API_URL)
-                    .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.BASIC : RestAdapter.LogLevel.NONE)
-                    .setRequestInterceptor(getRequestInterceptor())
-                    .setClient(getClient())
-                    .setConverter(getConverter())
+            sRestAdapter = new Retrofit.Builder()
+                    .baseUrl(API_URL)
+                    .client(getClient())
+                    .addConverterFactory(getConverter())
                     .build();
 
             sService = sRestAdapter.create(ImgurService.class);
@@ -74,37 +73,45 @@ public class ApiClient {
 
     }
 
-    private static RequestInterceptor getRequestInterceptor() {
-        return new RequestInterceptor() {
+    private static Interceptor getRequestInterceptor() {
+        return new Interceptor() {
             @Override
-            public void intercept(RequestFacade request) {
+            public Response intercept(Chain chain) throws IOException {
+                Request original = chain.request();
+
+                // Customize the request
+                Request.Builder builder = original.newBuilder();
 
                 if (!TextUtils.isEmpty(sAccessToken)) {
                     LogUtil.v(TAG, "Access Token present");
-                    request.addHeader(AUTHORIZATION_HEADER, "Bearer " + sAccessToken);
+                    builder.addHeader(AUTHORIZATION_HEADER, "Bearer " + sAccessToken);
                 } else {
                     LogUtil.v(TAG, "No access token present, using Client-ID");
-                    request.addHeader(AUTHORIZATION_HEADER, "Client-ID " + CLIENT_ID);
+                    builder.addHeader(AUTHORIZATION_HEADER, "Client-ID " + CLIENT_ID);
                 }
+
+                Request request = builder.method(original.method(), original.body()).build();
+                return chain.proceed(request);
             }
         };
     }
 
-    private static OkClient getClient() {
+    private static OkHttpClient getClient() {
         OkHttpClient client = new OkHttpClient();
         client.setConnectTimeout(15, TimeUnit.SECONDS);
         client.interceptors().add(new OAuthInterceptor());
-        return new OkClient(client);
+        client.interceptors().add(getRequestInterceptor());
+        return client;
     }
 
-    private static GsonConverter getConverter() {
+    private static GsonConverterFactory getConverter() {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(ImgurBaseObject.class, new ImgurSerializer())
                 .registerTypeAdapter(ConvoResponse.class, new ConvoResponse())
                 .create();
 
-        return new GsonConverter(gson);
+        return GsonConverterFactory.create(gson);
     }
 
     /**
@@ -114,23 +121,9 @@ public class ApiClient {
      * @return
      */
     @StringRes
-    public static int getErrorCode(RetrofitError error) {
-        switch (error.getKind()) {
-            case NETWORK:
-                return R.string.error_network;
-
-            case HTTP:
-                if (error.getResponse() != null) {
-                    return getErrorCode(error.getResponse().getStatus());
-                } else {
-                    return R.string.error_generic;
-                }
-
-            case CONVERSION:
-            case UNEXPECTED:
-            default:
-                return R.string.error_generic;
-        }
+    public static int getErrorCode(Throwable error) {
+        // TODO Return correct errors
+        return R.string.error_generic;
     }
 
     /**

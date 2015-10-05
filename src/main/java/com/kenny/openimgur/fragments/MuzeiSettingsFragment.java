@@ -16,8 +16,8 @@ import com.kenny.openimgur.util.LogUtil;
 import java.util.List;
 
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by Kenny-PC on 6/21/2015.
@@ -55,11 +55,12 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
             mTopicPreference.setEntryValues(topicIds);
         } else {
             LogUtil.v(TAG, "No topics found, fetching");
-            ApiClient.getService().getDefaultTopics(new Callback<TopicResponse>() {
+            ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
                 @Override
-                public void success(TopicResponse topicResponse, Response response) {
-                    if (!isAdded() || topicResponse == null) return;
+                public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
+                    if (!isAdded() || response == null || response.body() == null) return;
 
+                    TopicResponse topicResponse = response.body();
                     mApp.getSql().addTopics(topicResponse.data);
 
                     if (!topicResponse.data.isEmpty()) {
@@ -80,10 +81,8 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
                 }
 
                 @Override
-                public void failure(RetrofitError error) {
-                    if (!isAdded()) return;
-                    LogUtil.e(TAG, "Failed to receive topics", error);
-                    // TODO Some error?
+                public void onFailure(Throwable t) {
+                    LogUtil.e(TAG, "Failed to receive topics", t);
                 }
             });
         }

@@ -38,7 +38,7 @@ public class ProfileSubmissionsFragment extends BaseGridFragment2 {
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ApiClient.getService().getProfileSubmissions(mSelectedUser.getUsername(), mCurrentPage, this);
+        ApiClient.getService().getProfileSubmissions(mSelectedUser.getUsername(), mCurrentPage).enqueue(this);
     }
 
     @Override

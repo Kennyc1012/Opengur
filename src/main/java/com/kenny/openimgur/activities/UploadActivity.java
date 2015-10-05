@@ -55,8 +55,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.OnClick;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by Kenny-PC on 6/20/2015.
@@ -374,16 +374,15 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
         if (topics == null || topics.isEmpty()) {
             LogUtil.v(TAG, "No topics found, fetching");
-            ApiClient.getService().getDefaultTopics(new Callback<TopicResponse>() {
+            ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
                 @Override
-                public void success(TopicResponse topicResponse, Response response) {
-                    if (topicResponse != null) app.getSql().addTopics(topicResponse.data);
+                public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
+                    if (response != null && response.body() != null) app.getSql().addTopics(response.body().data);
                 }
 
                 @Override
-                public void failure(RetrofitError error) {
-                    LogUtil.e(TAG, "Failed to receive topics", error);
-                    // TODO Some error?
+                public void onFailure(Throwable t) {
+                    LogUtil.e(TAG, "Failed to receive topics", t);
                 }
             });
         } else {

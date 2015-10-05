@@ -13,7 +13,7 @@ import com.squareup.okhttp.Response;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-import retrofit.RetrofitError;
+import retrofit.Call;
 
 /**
  * Created by kcampagna on 7/15/15.
@@ -62,17 +62,26 @@ public class OAuthInterceptor implements Interceptor {
     @Nullable
     private String refreshToken(OpengurApp app) {
         try {
-            OAuthResponse response = ApiClient.getService().refreshToken(ApiClient.CLIENT_ID, ApiClient.CLIENT_SECRET, app.getUser().getRefreshToken(), "refresh_token");
+            Call<OAuthResponse> call = ApiClient.getService().refreshToken(ApiClient.CLIENT_ID, ApiClient.CLIENT_SECRET, app.getUser().getRefreshToken(), "refresh_token");
+            retrofit.Response<OAuthResponse> response = call.execute();
 
-            if (!TextUtils.isEmpty(response.access_token) && !TextUtils.isEmpty(response.refresh_token)) {
-                app.getUser().setTokens(response.access_token, response.refresh_token, response.expires_in);
-                app.getSql().updateUserTokens(response.access_token, response.refresh_token, response.expires_in);
-                return response.access_token;
+            if (response == null || response.body() == null) {
+                LogUtil.e(TAG, "Respons came back as null");
+                app.onLogout();
+                return null;
+            }
+
+            OAuthResponse oAuthResponse = response.body();
+
+            if (!TextUtils.isEmpty(oAuthResponse.access_token) && !TextUtils.isEmpty(oAuthResponse.refresh_token)) {
+                app.getUser().setTokens(oAuthResponse.access_token, oAuthResponse.refresh_token, oAuthResponse.expires_in);
+                app.getSql().updateUserTokens(oAuthResponse.access_token, oAuthResponse.refresh_token, oAuthResponse.expires_in);
+                return oAuthResponse.access_token;
             }
 
             app.onLogout();
             return null;
-        } catch (RetrofitError error) {
+        } catch (Throwable error) {
             LogUtil.e(TAG, "Error while refreshing token, logging out user", error);
             app.onLogout();
         }

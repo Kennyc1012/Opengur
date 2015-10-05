@@ -44,8 +44,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.OnClick;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 12/25/14.
@@ -196,16 +196,18 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         }
 
         mIsLoading = true;
-        ApiClient.getService().getMessages(mConvo.getId(), mCurrentPage, new Callback<ConversationResponse>() {
+        ApiClient.getService().getMessages(mConvo.getId(), mCurrentPage).enqueue(new Callback<ConversationResponse>() {
             @Override
-            public void success(ConversationResponse conversationResponse, Response response) {
+            public void onResponse(Response<ConversationResponse> response, Retrofit retrofit) {
                 mIsLoading = false;
 
-                if (conversationResponse == null) {
+                if (response == null || response.body() == null) {
                     ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     return;
                 }
+
+                ConversationResponse conversationResponse = response.body();
 
                 if (conversationResponse.data.hasMessages()) {
                     boolean scrollToBottom = false;
@@ -245,9 +247,9 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                LogUtil.e(TAG, "Error fetching message", error);
-                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
+            public void onFailure(Throwable t) {
+                LogUtil.e(TAG, "Error fetching message", t);
+                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 mIsLoading = false;
             }
@@ -268,16 +270,16 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         mConvoList.scrollToPosition(mAdapter.getItemCount() - 1);
         mMessageInput.setText(null);
 
-        ApiClient.getService().sendMessage(mConvo.getWithAccount(), message.getBody(), new Callback<BasicResponse>() {
+        ApiClient.getService().sendMessage(mConvo.getWithAccount(), message.getBody()).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void success(BasicResponse basicResponse, Response response) {
-                boolean success = basicResponse != null && basicResponse.data;
+            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                boolean success = response != null && response.body() != null && response.body().data;
                 if (mAdapter != null) mAdapter.onMessageSendComplete(success, message.getId());
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                LogUtil.e(TAG, "Error sending message", error);
+            public void onFailure(Throwable t) {
+                LogUtil.e(TAG, "Error sending message", t);
                 if (mAdapter != null) mAdapter.onMessageSendComplete(false, message.getId());
             }
         });
@@ -291,10 +293,11 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ApiClient.getService().blockUser(mConvo.getWithAccount(), mConvo.getWithAccount(), new Callback<BasicResponse>() {
+                        ApiClient.getService().blockUser(mConvo.getWithAccount(), mConvo.getWithAccount()).enqueue(new Callback<BasicResponse>() {
+
                             @Override
-                            public void success(BasicResponse basicResponse, Response response) {
-                                if (basicResponse != null && basicResponse.data) {
+                            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                                if (response != null && response.body() != null && response.body().data) {
                                     setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_BLOCKED_CONVO, mConvo));
                                     finish();
                                 } else {
@@ -303,7 +306,8 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                             }
 
                             @Override
-                            public void failure(RetrofitError error) {
+                            public void onFailure(Throwable t) {
+                                LogUtil.e(TAG, "Unable to block user", t);
                                 SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
                             }
                         });
@@ -319,10 +323,10 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ApiClient.getService().reportUser(mConvo.getWithAccount(), mConvo.getWithAccount(), new Callback<BasicResponse>() {
+                        ApiClient.getService().reportUser(mConvo.getWithAccount(), mConvo.getWithAccount()).enqueue(new Callback<BasicResponse>() {
                             @Override
-                            public void success(BasicResponse basicResponse, Response response) {
-                                if (basicResponse != null && basicResponse.data) {
+                            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                                if (response != null && response.body() != null && response.body().data) {
                                     SnackBar.show(ConvoThreadActivity.this, getString(R.string.convo_user_reported, mConvo.getWithAccount()));
                                 } else {
                                     SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
@@ -330,7 +334,8 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                             }
 
                             @Override
-                            public void failure(RetrofitError error) {
+                            public void onFailure(Throwable t) {
+                                LogUtil.e(TAG, "Unable to report user", t);
                                 SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
                             }
                         });

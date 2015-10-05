@@ -31,8 +31,8 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 12/22/14.
@@ -187,12 +187,14 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
 
     private void fetchComments() {
         mIsLoading = true;
-        ApiClient.getService().getProfileComments(mSelectedUser.getUsername(), mSort.getSort(), mPage, new Callback<CommentResponse>() {
+        ApiClient.getService().getProfileComments(mSelectedUser.getUsername(), mSort.getSort(), mPage).enqueue(new Callback<CommentResponse>() {
             @Override
-            public void success(CommentResponse commentResponse, Response response) {
+            public void onResponse(Response<CommentResponse> response, Retrofit retrofit) {
                 if (!isAdded()) return;
 
-                if (commentResponse != null && !commentResponse.data.isEmpty()) {
+                if (response != null && response.body() != null && !response.body().data.isEmpty()) {
+                    CommentResponse commentResponse = response.body();
+
                     if (mAdapter == null) {
                         mAdapter = new ProfileCommentAdapter(getActivity(), commentResponse.data, ProfileCommentsFragment.this);
                         mCommentList.setAdapter(mAdapter);
@@ -225,12 +227,12 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (!isAdded()) return;
-                LogUtil.e(TAG, "Unable to fetch comments", error);
+                LogUtil.e(TAG, "Unable to fetch comments", t);
 
                 if (mAdapter == null || !mAdapter.isEmpty()) {
-                    ViewUtils.setErrorText(mMultiStatView, R.id.errorMessage, ApiClient.getErrorCode(error));
+                    ViewUtils.setErrorText(mMultiStatView, R.id.errorMessage, ApiClient.getErrorCode(t));
                     mMultiStatView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
 

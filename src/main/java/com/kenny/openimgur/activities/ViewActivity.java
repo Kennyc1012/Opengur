@@ -32,7 +32,6 @@ import android.widget.ProgressBar;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.BasicResponse;
@@ -64,9 +63,10 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
+import retrofit.Call;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 7/12/14.
@@ -686,18 +686,20 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             if (imgurBaseObject.isListed()) {
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
-                ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort(), new Callback<CommentResponse>() {
+                ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort()).enqueue(new Callback<CommentResponse>() {
                     @Override
-                    public void success(CommentResponse commentResponse, Response response) {
+                    public void onResponse(Response<CommentResponse> response, Retrofit retrofit) {
                         if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
                             return;
                         }
 
-                        if (commentResponse == null) {
+                        if (response == null || response.body() == null) {
                             ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                             mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                             return;
                         }
+
+                        CommentResponse commentResponse = response.body();
 
                         if (!commentResponse.data.isEmpty()) {
                             ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
@@ -731,8 +733,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     }
 
                     @Override
-                    public void failure(RetrofitError error) {
-                        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
+                    public void onFailure(Throwable t) {
+                        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     }
                 });
@@ -748,15 +750,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     private void fetchItemDetails(final String id, final boolean isAlbum) {
         if (isAlbum) {
-            ApiClient.getService().getAlbumImages(id, new Callback<AlbumResponse>() {
+            ApiClient.getService().getAlbumImages(id).enqueue(new Callback<AlbumResponse>() {
                 @Override
-                public void success(AlbumResponse albumResponse, Response response) {
-                    if (albumResponse == null) {
+                public void onResponse(Response<AlbumResponse> response, Retrofit retrofit) {
+                    if (response == null || response.body() == null) {
                         ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                         return;
                     }
 
+                    AlbumResponse albumResponse = response.body();
                     ImgurAlbum album = new ImgurAlbum(mGalleryId, null, getIntent().getData().toString());
                     mGalleryId = null;
                     album.addPhotosToAlbum(albumResponse.data);
@@ -769,19 +772,19 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
 
                 @Override
-                public void failure(RetrofitError error) {
-                    LogUtil.e(TAG, "Unable to fetch album details", error);
-                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
+                public void onFailure(Throwable t) {
+                    LogUtil.e(TAG, "Unable to fetch album details", t);
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             });
         } else {
-            ApiClient.getService().getGalleryDetails(id, new Callback<BasicObjectResponse>() {
+            ApiClient.getService().getGalleryDetails(id).enqueue(new Callback<BasicObjectResponse>() {
                 @Override
-                public void success(BasicObjectResponse basicObjectResponse, Response response) {
-                    if (basicObjectResponse != null && basicObjectResponse.data != null) {
+                public void onResponse(Response<BasicObjectResponse> response, Retrofit retrofit) {
+                    if (response != null && response.body() != null && response.body().data != null) {
                         final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
-                        objects.add(basicObjectResponse.data);
+                        objects.add(response.body().data);
                         mPagerAdapter = new BrowsingAdapter(getApplicationContext(), getFragmentManager(), objects);
                         mViewPager.setAdapter(mPagerAdapter);
                         invalidateOptionsMenu();
@@ -793,9 +796,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
 
                 @Override
-                public void failure(RetrofitError error) {
-                    LogUtil.e(TAG, "Unable to fetch album details", error);
-                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
+                public void onFailure(Throwable t) {
+                    LogUtil.e(TAG, "Unable to fetch album details", t);
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             });
@@ -803,10 +806,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void voteOnGallery(String id, final String vote) {
-        ApiClient.getService().voteOnGallery(id, vote, vote, new Callback<BasicResponse>() {
+        ApiClient.getService().voteOnGallery(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void success(BasicResponse basicResponse, Response response) {
-                if (basicResponse != null && basicResponse.data) {
+            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                if (response != null && response.body() != null && response.body().data) {
                     View animateView = ImgurBaseObject.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
                     AnimatorSet set = new AnimatorSet();
                     set.playTogether(
@@ -822,24 +825,24 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                LogUtil.e(TAG, "Unable to vote on gallery", error);
+            public void onFailure(Throwable t) {
+                LogUtil.e(TAG, "Unable to vote on gallery", t);
                 SnackBar.show(ViewActivity.this, R.string.error_generic);
             }
         });
     }
 
     private void voteOnComment(String id, final String vote) {
-        ApiClient.getService().voteOnComment(id, vote, vote, new Callback<BasicResponse>() {
+        ApiClient.getService().voteOnComment(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void success(BasicResponse basicResponse, Response response) {
-                int stringId = basicResponse != null && basicResponse.data ? R.string.vote_cast : R.string.error_generic;
+            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                int stringId = response != null && response.body() != null && response.body().data ? R.string.vote_cast : R.string.error_generic;
                 SnackBar.show(ViewActivity.this, stringId);
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                LogUtil.e(TAG, "Unable to vote on comment", error);
+            public void onFailure(Throwable t) {
+                LogUtil.e(TAG, "Unable to vote on comment", t);
                 SnackBar.show(ViewActivity.this, R.string.error_generic);
             }
         });
@@ -849,12 +852,18 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     public void onPostComment(String comment, String galleryId, String parentId) {
         final @MultiStateView.ViewState int viewState = mMultiView.getViewState();
         mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
-        ImgurService apiService = ApiClient.getService();
+        Call<CommentPostResponse> call;
 
-        Callback<CommentPostResponse> cb = new Callback<CommentPostResponse>() {
+        if (!TextUtils.isEmpty(parentId)) {
+            call = ApiClient.getService().postCommentReply(galleryId, parentId, comment);
+        } else {
+            call = ApiClient.getService().postComment(galleryId, comment);
+        }
+
+        call.enqueue(new Callback<CommentPostResponse>() {
             @Override
-            public void success(CommentPostResponse commentPostResponse, Response response) {
-                if (commentPostResponse != null && commentPostResponse.data != null && !TextUtils.isEmpty(commentPostResponse.data.id)) {
+            public void onResponse(Response<CommentPostResponse> response, Retrofit retrofit) {
+                if (response != null && response.body() != null && response.body().data != null && !TextUtils.isEmpty(response.body().data.id)) {
                     SnackBar.show(ViewActivity.this, R.string.comment_post_successful);
                     fetchComments();
                 } else {
@@ -864,18 +873,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                LogUtil.e(TAG, "Unable to post comment", error);
+            public void onFailure(Throwable t) {
+                LogUtil.e(TAG, "Unable to post comment", t);
                 SnackBar.show(ViewActivity.this, R.string.comment_post_unsuccessful);
                 mMultiView.setViewState(viewState);
             }
-        };
-
-        if (!TextUtils.isEmpty(parentId)) {
-            apiService.postCommentReply(galleryId, parentId, comment, cb);
-        } else {
-            apiService.postComment(galleryId, comment, cb);
-        }
+        });
     }
 
     @Override

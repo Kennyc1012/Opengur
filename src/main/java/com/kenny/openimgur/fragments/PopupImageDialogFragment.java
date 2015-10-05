@@ -33,8 +33,8 @@ import java.io.File;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 7/19/14.
@@ -258,13 +258,13 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     }
 
     private void fetchImageDetails() {
-        ApiClient.getService().getImageDetails(mImageUrl, new Callback<PhotoResponse>() {
+        ApiClient.getService().getImageDetails(mImageUrl).enqueue(new Callback<PhotoResponse>() {
             @Override
-            public void success(PhotoResponse photoResponse, Response response) {
+            public void onResponse(Response<PhotoResponse> response, Retrofit retrofit) {
                 if (!isAdded()) return;
 
-                if (photoResponse != null && photoResponse.data != null) {
-                    ImgurPhoto photo = photoResponse.data;
+                if (response != null && response.body() != null && response.body().data != null) {
+                    ImgurPhoto photo = response.body().data;
 
                     if (photo.isAnimated()) {
                         if (photo.isLinkAThumbnail() || photo.getSize() > PHOTO_SIZE_LIMIT) {
@@ -285,7 +285,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (!isAdded()) return;
                 SnackBar.show(getActivity(), R.string.error_generic);
                 dismissAllowingStateLoss();

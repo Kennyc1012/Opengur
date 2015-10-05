@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -30,8 +31,8 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.OnClick;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Base class for fragments that display images in a grid like style
@@ -272,18 +273,22 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
     }
 
     @Override
-    public void success(GalleryResponse galleryResponse, Response response) {
+    public void onResponse(Response<GalleryResponse> response, Retrofit retrofit) {
         if (!isAdded()) return;
-        onApiResult(galleryResponse);
+        if (response != null && response.body() != null) {
+            onApiResult(response.body());
+        } else {
+            // TODO
+        }
     }
 
     @Override
-    public void failure(RetrofitError error) {
+    public void onFailure(Throwable t) {
         if (!isAdded()) return;
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
             if (mListener != null) mListener.onError();
-            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(error));
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(t));
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
 
@@ -291,7 +296,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
         if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
     }
 
-    protected void onApiResult(GalleryResponse galleryResponse) {
+    protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
 
         if (galleryResponse == null) {
             ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.error_generic);

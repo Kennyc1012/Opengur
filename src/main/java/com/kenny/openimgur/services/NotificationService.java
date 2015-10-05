@@ -38,6 +38,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import retrofit.Response;
+
 /**
  * Created by kcampagna on 8/12/15.
  */
@@ -69,11 +71,13 @@ public class NotificationService extends IntentService {
             wakeLock.acquire();
 
             try {
-                NotificationResponse response = ApiClient.getService().getNotifications();
+                Response<NotificationResponse> response = ApiClient.getService().getNotifications().execute();
 
-                if (response != null && response.hasNotifications()) {
-                    app.getSql().insertNotifications(response);
-                    Notification notification = new Notification(getApplicationContext(), response.data);
+                if (response != null && response.body() != null && response.body().hasNotifications()) {
+                    NotificationResponse notificationResponse = response.body();
+
+                    app.getSql().insertNotifications(notificationResponse);
+                    Notification notification = new Notification(getApplicationContext(), notificationResponse.data);
                     notification.postNotification();
                 } else {
                     LogUtil.v(TAG, "No notifications found");
