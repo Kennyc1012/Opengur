@@ -139,9 +139,9 @@ public class UploadService extends IntentService {
                             RequestBody uploadFile = RequestBody.create(MediaType.parse(type), file);
                             RequestBody uploadTitle = null;
                             RequestBody uploadDesc = null;
-                            RequestBody uploadType = RequestBody.create(MediaType.parse("text"), "file");
-                            if (!TextUtils.isEmpty(u.getTitle())) uploadTitle = RequestBody.create(MediaType.parse("text"), u.getTitle());
-                            if (!TextUtils.isEmpty(u.getDescription())) uploadDesc = RequestBody.create(MediaType.parse("text"), u.getDescription());
+                            RequestBody uploadType = RequestBody.create(MediaType.parse("text/plain"), "file");
+                            if (!TextUtils.isEmpty(u.getTitle())) uploadTitle = RequestBody.create(MediaType.parse("text/plain"), u.getTitle());
+                            if (!TextUtils.isEmpty(u.getDescription())) uploadDesc = RequestBody.create(MediaType.parse("text/plain"), u.getDescription());
                             response = ApiClient.getService().uploadPhoto(uploadFile, uploadTitle, uploadDesc, uploadType).execute();
                         } else {
                             LogUtil.w(TAG, "Unable to find file at location " + u.getLocation());
