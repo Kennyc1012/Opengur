@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.AbsListView;
@@ -311,25 +312,22 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     @Override
     public void onResponse(Response<GalleryResponse> response, Retrofit retrofit) {
         if (!isAdded()) return;
-        if (response != null && response.body() != null) {
-            onApiResult(response.body());
+
+        if (response != null) {
+            if (response.body() != null) {
+                onApiResult(response.body());
+            } else {
+                onApiFailure(ApiClient.getErrorCode(response.code()));
+            }
         } else {
-            // TODO
+            onApiFailure(R.string.error_generic);
         }
     }
 
     @Override
     public void onFailure(Throwable t) {
         if (!isAdded()) return;
-
-        if (getAdapter() == null || getAdapter().isEmpty()) {
-            if (mListener != null) mListener.onError();
-            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(t));
-            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-        }
-
-        mIsLoading = false;
-        if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
+        onApiFailure(ApiClient.getErrorCode(t));
     }
 
     protected void onEmptyResults() {
@@ -343,12 +341,6 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     }
 
     protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
-        if (galleryResponse == null) {
-            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.error_generic);
-            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-            return;
-        }
-
         if (!galleryResponse.data.isEmpty()) {
             if (getAdapter() == null) {
                 setUpGridTop();
@@ -372,6 +364,17 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
             }
         } else {
             onEmptyResults();
+        }
+
+        mIsLoading = false;
+        if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
+    }
+
+    protected void onApiFailure(@StringRes int errorString) {
+        if (getAdapter() == null || getAdapter().isEmpty()) {
+            if (mListener != null) mListener.onError();
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, errorString);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
 
         mIsLoading = false;

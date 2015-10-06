@@ -22,6 +22,7 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.GsonConverterFactory;
@@ -122,12 +123,15 @@ public class ApiClient {
      */
     @StringRes
     public static int getErrorCode(Throwable error) {
-        // TODO Return correct errors
+        if (error instanceof UnknownHostException) {
+            return R.string.error_network;
+        }
+
         return R.string.error_generic;
     }
 
     /**
-     * Returns the string resource for the HTTP status thrown in an error
+     * Returns the string resource for the HTTP status returned by the API
      *
      * @param httpStatus
      * @return
