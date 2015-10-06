@@ -585,7 +585,6 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     private void downloadAlbum() {
         if (mImgurObject instanceof ImgurAlbum) {
-            // TODO Check for permission for Marshmallow
             if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
                 ArrayList<String> urls = new ArrayList<>(mPhotoAdapter.getItemCount());
 

@@ -10,14 +10,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -89,19 +87,6 @@ public class ProfileActivity extends BaseActivity {
         setStatusBarColorResource(theme.darkColor);
         setupToolBar();
         handleData(savedInstanceState, getIntent());
-
-        // TODO remove when bug has been fixed in support library
-        if (ViewCompat.isLaidOut(mSlidingTabs)) {
-            mSlidingTabs.setupWithViewPager(mPager);
-        } else {
-            mSlidingTabs.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    mSlidingTabs.setupWithViewPager(mPager);
-                    mSlidingTabs.removeOnLayoutChangeListener(this);
-                }
-            });
-        }
     }
 
     /**
