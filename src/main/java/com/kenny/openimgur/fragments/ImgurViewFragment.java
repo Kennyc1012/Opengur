@@ -565,7 +565,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                             @Override
                             public void onSnackBarFinished(Object o, boolean actionClicked) {
                                 if (actionClicked) {
-                                    FragmentCompat.requestPermissions(ImgurViewFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                                    FragmentCompat.requestPermissions(ImgurViewFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                                 } else {
                                     SnackBar.show(getActivity(), R.string.permission_denied);
                                 }
@@ -575,7 +575,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
             case PermissionUtils.PERMISSION_NEVER_ASKED:
             default:
-                FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                 break;
         }
 
@@ -735,7 +735,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case RequestCodes.REQUEST_PERMISSIONS:
+            case RequestCodes.REQUEST_PERMISSION_WRITE:
                 boolean granted = PermissionUtils.verifyPermissions(grantResults);
 
                 if (granted) {

@@ -1,5 +1,6 @@
 package com.kenny.openimgur.util;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -125,5 +126,15 @@ public class PermissionUtils {
         }
 
         return PERMISSION_NEVER_ASKED;
+    }
+
+    /**
+     * Returns if the user has granted read permission
+     *
+     * @param activity
+     * @return
+     */
+    public static boolean hasReadPermission(@NonNull Activity activity) {
+        return getPermissionLevel(activity, Manifest.permission.READ_EXTERNAL_STORAGE) == PERMISSION_AVAILABLE;
     }
 }

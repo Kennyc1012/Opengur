@@ -31,4 +31,9 @@
         <item quantity="other">Uploading Photo %1$d of %2$d</item>
     </plurals>
 
+    <plurals name="permission_rational_file_access">
+        <item quantity="one">Media access is needed to open this photo</item>
+        <item quantity="other">Media access is needed to open these photos</item>
+    </plurals>
+
 </resources>
