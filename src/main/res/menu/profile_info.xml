@@ -4,6 +4,6 @@
     <item
         android:id="@+id/message"
         android:title="@string/profile_send_message"
-        android:icon="@drawable/ic_action_message"
+        android:icon="@drawable/ic_action_message_24dp"
         app:showAsAction="ifRoom" />
 </menu>

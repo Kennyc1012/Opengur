@@ -126,7 +126,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         setSupportActionBar(mToolBar);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-        ab.setHomeAsUpIndicator(R.drawable.ic_action_navigation_menu);
+        ab.setHomeAsUpIndicator(R.drawable.ic_action_navigation_menu_24dp);
         ab.setHomeButtonEnabled(true);
     }
 

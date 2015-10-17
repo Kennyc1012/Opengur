@@ -34,7 +34,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:src="@drawable/ic_action_message"
+        android:src="@drawable/ic_action_message_24dp"
         style="@android:style/Widget.ActionButton" />
 
     <ImageButton
@@ -42,7 +42,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:src="@drawable/ic_action_sort"
+        android:src="@drawable/ic_action_sort_24dp"
         style="@android:style/Widget.ActionButton" />
 
 </LinearLayout>

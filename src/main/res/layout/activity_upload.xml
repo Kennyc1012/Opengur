@@ -47,7 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_action_gallery"
+            android:drawableLeft="@drawable/ic_action_gallery_24dp"
             android:text="@string/upload_gallery"
             android:textColor="@android:color/white" />
 
@@ -57,7 +57,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_action_link"
+            android:drawableLeft="@drawable/ic_action_link_24dp"
             android:text="@string/upload_link"
             android:textColor="@android:color/white" />
 

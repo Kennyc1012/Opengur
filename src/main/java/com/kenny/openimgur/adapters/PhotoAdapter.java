@@ -133,9 +133,9 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
 
                 // Tag icon is already dark themed
                 if (mIsDarkTheme) {
-                    tagDrawable = ResourcesCompat.getDrawable(mResources, R.drawable.ic_action_tag, null);
+                    tagDrawable = ResourcesCompat.getDrawable(mResources, R.drawable.ic_action_tag_16dp, null);
                 } else {
-                    tagDrawable = ImageUtil.tintDrawable(R.drawable.ic_action_tag, mResources, Color.BLACK);
+                    tagDrawable = ImageUtil.tintDrawable(R.drawable.ic_action_tag_16dp, mResources, Color.BLACK);
                 }
 
                 for (int i = 0; i < size; i++) {

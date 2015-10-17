@@ -8,7 +8,7 @@
 
     <item
         android:id="@+id/upload"
-        android:icon="@drawable/ic_action_upload"
+        android:icon="@drawable/ic_action_upload_24dp"
         android:title="@string/upload" />
 
     <item

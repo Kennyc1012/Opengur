@@ -5,7 +5,7 @@
     <item
         android:id="@+id/fontSize"
         android:title="@string/meme_font_size"
-        android:icon="@drawable/ic_action_format_size"
+        android:icon="@drawable/ic_action_format_size_24dp"
         app:showAsAction="ifRoom" />
 
     <item

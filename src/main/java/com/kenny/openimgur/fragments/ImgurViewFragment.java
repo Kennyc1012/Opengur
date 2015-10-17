@@ -239,7 +239,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         }
 
         menu.findItem(R.id.favorite).setIcon(mImgurObject.isFavorited() ?
-                R.drawable.ic_action_favorite : R.drawable.ic_action_unfavorite);
+                R.drawable.ic_action_favorite_24dp : R.drawable.ic_action_unfavorite_24dp);
     }
 
     /**
