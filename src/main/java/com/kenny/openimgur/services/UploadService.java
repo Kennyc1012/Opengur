@@ -140,8 +140,10 @@ public class UploadService extends IntentService {
                             RequestBody uploadTitle = null;
                             RequestBody uploadDesc = null;
                             RequestBody uploadType = RequestBody.create(MediaType.parse("text/plain"), "file");
-                            if (!TextUtils.isEmpty(u.getTitle())) uploadTitle = RequestBody.create(MediaType.parse("text/plain"), u.getTitle());
-                            if (!TextUtils.isEmpty(u.getDescription())) uploadDesc = RequestBody.create(MediaType.parse("text/plain"), u.getDescription());
+                            if (!TextUtils.isEmpty(u.getTitle()))
+                                uploadTitle = RequestBody.create(MediaType.parse("text/plain"), u.getTitle());
+                            if (!TextUtils.isEmpty(u.getDescription()))
+                                uploadDesc = RequestBody.create(MediaType.parse("text/plain"), u.getDescription());
                             response = ApiClient.getService().uploadPhoto(uploadFile, uploadTitle, uploadDesc, uploadType).execute();
                         } else {
                             LogUtil.w(TAG, "Unable to find file at location " + u.getLocation());
@@ -341,7 +343,7 @@ public class UploadService extends IntentService {
 
             builder.setContentTitle(app.getString(R.string.upload_complete))
                     .setContentText(app.getString(R.string.upload_success, url))
-                    .addAction(R.drawable.ic_action_copy, app.getString(R.string.copy_link), pIntent)
+                    .addAction(R.drawable.ic_action_copy_24dp, app.getString(R.string.copy_link), pIntent)
                     .setProgress(0, 0, false)
                     .setContentInfo(null);
 
@@ -360,7 +362,7 @@ public class UploadService extends IntentService {
 
             builder.setContentTitle(app.getString(R.string.error))
                     .setContentText(app.getString(R.string.upload_gallery_failed))
-                    .addAction(R.drawable.ic_action_copy, app.getString(R.string.copy_link), pIntent)
+                    .addAction(R.drawable.ic_action_copy_24dp, app.getString(R.string.copy_link), pIntent)
                     .setProgress(0, 0, false)
                     .setContentInfo(null)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(app.getString(R.string.upload_gallery_failed_long)));
@@ -421,7 +423,7 @@ public class UploadService extends IntentService {
                     .setContentText(app.getString(R.string.upload_notif_error_upload_incomplete_short))
                     .setProgress(0, 0, false)
                     .setAutoCancel(true)
-                    .addAction(R.drawable.ic_action_copy, app.getString(R.string.copy_link), pIntent)
+                    .addAction(R.drawable.ic_action_copy_24dp, app.getString(R.string.copy_link), pIntent)
                     .setStyle(new NotificationCompat
                             .BigTextStyle()
                             .bigText(msg));

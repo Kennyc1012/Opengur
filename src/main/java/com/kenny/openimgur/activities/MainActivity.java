@@ -224,7 +224,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             int notificationCount = app.getSql().getNotifications(true).size();
             updateNotificationBadge(notificationCount);
         } else {
-            mAvatar.setImageResource(R.drawable.ic_account_circle);
+            mAvatar.setImageResource(R.drawable.ic_account_circle_24dp);
             mName.setText(R.string.profile);
             mRep.setText(R.string.login_msg);
             mBadge.setVisibility(View.GONE);

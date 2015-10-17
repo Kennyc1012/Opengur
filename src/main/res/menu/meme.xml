@@ -11,7 +11,7 @@
     <item
         android:id="@+id/save"
         android:title="@string/save"
-        android:icon="@drawable/ic_action_content_save"
+        android:icon="@drawable/ic_action_content_save_24dp"
         app:showAsAction="ifRoom" />
 
 </menu>
