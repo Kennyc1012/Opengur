@@ -32,8 +32,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.OnClick;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by Kenny-PC on 8/9/2015.
@@ -228,9 +228,16 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
     }
 
     private void fetchNotifications() {
-        ApiClient.getService().getNotifications(new Callback<NotificationResponse>() {
+        ApiClient.getService().getNotifications().enqueue(new Callback<NotificationResponse>() {
             @Override
-            public void success(NotificationResponse notificationResponse, Response response) {
+            public void onResponse(Response<NotificationResponse> response, Retrofit retrofit) {
+                if (response == null || response.body() == null) {
+                    if (mAdapter == null || mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+                    return;
+                }
+
+                NotificationResponse notificationResponse = response.body();
+
                 if (notificationResponse != null && notificationResponse.hasNotifications()) {
                     app.getSql().insertNotifications(notificationResponse);
                     List<ImgurNotification> notifications = app.getSql().getNotifications(false);
@@ -258,12 +265,12 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (mAdapter == null || mAdapter.isEmpty()) {
-                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 } else {
-                    SnackBar.show(NotificationActivity.this, ApiClient.getErrorCode(error));
+                    SnackBar.show(NotificationActivity.this, ApiClient.getErrorCode(t));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 }
             }
@@ -292,15 +299,19 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
         // Mark all the notifications read when loaded
         if (!TextUtils.isEmpty(ids)) {
             app.getSql().markNotificationsRead();
-            ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {
+            ApiClient.getService().markNotificationsRead(ids).enqueue(new Callback<BasicResponse>() {
                 @Override
-                public void success(BasicResponse basicResponse, Response response) {
-                    // Don't care about response
+                public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                    if (response != null && response.body() != null) {
+                        LogUtil.v(TAG, "Marking Notifications Read Response " + response.body().data);
+                    } else {
+                        LogUtil.w(TAG, "Did not receive a response when marking notifications read");
+                    }
                 }
 
                 @Override
-                public void failure(RetrofitError error) {
-                    LogUtil.e(TAG, "Failure marking notifications read, error", error);
+                public void onFailure(Throwable t) {
+                    LogUtil.e(TAG, "Failure marking notifications read, error", t);
                 }
             });
         }

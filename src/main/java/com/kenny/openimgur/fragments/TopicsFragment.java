@@ -133,9 +133,9 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
         ImgurService apiService = ApiClient.getService();
 
         if (mSort == ImgurFilters.GallerySort.HIGHEST_SCORING) {
-            apiService.getTopicForTopSorted(mTopic.getId(), mTimeSort.getSort(), mCurrentPage, this);
+            apiService.getTopicForTopSorted(mTopic.getId(), mTimeSort.getSort(), mCurrentPage).enqueue(this);
         } else {
-            apiService.getTopic(mTopic.getId(), mSort.getSort(), mCurrentPage, this);
+            apiService.getTopic(mTopic.getId(), mSort.getSort(), mCurrentPage).enqueue(this);
         }
     }
 

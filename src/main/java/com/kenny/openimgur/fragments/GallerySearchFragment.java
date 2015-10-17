@@ -3,6 +3,7 @@ package com.kenny.openimgur.fragments;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -19,8 +20,6 @@ import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
-
-import retrofit.client.Response;
 
 /**
  * Created by kcampagna on 3/21/15.
@@ -75,9 +74,9 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
         mIsLoading = true;
 
         if (mSort == ImgurFilters.GallerySort.HIGHEST_SCORING) {
-            apiService.searchGalleryForTopSorted(mTimeSort.getSort(), mCurrentPage, mQuery, this);
+            apiService.searchGalleryForTopSorted(mTimeSort.getSort(), mCurrentPage, mQuery).enqueue(this);
         } else {
-            apiService.searchGallery(mSort.getSort(), mCurrentPage, mQuery, this);
+            apiService.searchGallery(mSort.getSort(), mCurrentPage, mQuery).enqueue(this);
         }
     }
 
@@ -138,10 +137,9 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
     }
 
     @Override
-    public void success(GalleryResponse galleryResponse, Response response) {
-        super.success(galleryResponse, response);
-
-        if (mCurrentPage == 0 && galleryResponse != null && !galleryResponse.data.isEmpty()) {
+    protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
+        super.onApiResult(galleryResponse);
+        if (mCurrentPage == 0 && !galleryResponse.data.isEmpty()) {
             app.getSql().addPreviousGallerySearch(mQuery);
 
             if (mSearchAdapter == null) {

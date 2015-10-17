@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
@@ -354,17 +355,17 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
         String query = mQuery.replaceAll("\\s", "");
 
         if (mSort == RedditSort.TOP) {
-            apiService.getSubRedditForTopSorted(query, mTopSort.getSort(), mCurrentPage, this);
+            apiService.getSubRedditForTopSorted(query, mTopSort.getSort(), mCurrentPage).enqueue(this);
         } else {
-            apiService.getSubReddit(query, mSort.getSort(), mCurrentPage, this);
+            apiService.getSubReddit(query, mSort.getSort(), mCurrentPage).enqueue(this);
         }
     }
 
     @Override
-    protected void onApiResult(GalleryResponse galleryResponse) {
+    protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
         super.onApiResult(galleryResponse);
 
-        if (mCurrentPage == 0 && galleryResponse != null && !galleryResponse.data.isEmpty()) {
+        if (mCurrentPage == 0 && !galleryResponse.data.isEmpty()) {
             app.getSql().addSubReddit(mQuery);
 
             if (mCursorAdapter == null) {

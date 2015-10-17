@@ -27,6 +27,8 @@ public class ImgurSerializer implements JsonDeserializer<ImgurBaseObject> {
             boolean hasUpVotes = !object.get("ups").isJsonNull();
             boolean hasDownVotes = !object.get("downs").isJsonNull();
             obj.setIsListed(hasUpVotes && hasDownVotes);
+        } else {
+            obj.setIsListed(false);
         }
 
         return obj;

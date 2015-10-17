@@ -32,8 +32,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.OnClick;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 2/21/15.
@@ -329,14 +329,16 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
     public void fetchTopics() {
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
-        ApiClient.getService().getDefaultTopics(new Callback<TopicResponse>() {
+        ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
+
             @Override
-            public void success(TopicResponse topicResponse, Response response) {
+            public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
                 if (!isAdded()) return;
 
-                if (topicResponse != null && !topicResponse.data.isEmpty()) {
-                    app.getSql().addTopics(topicResponse.data);
-                    mSpinner.setAdapter(new TopicsAdapter(getActivity(), topicResponse.data));
+                if (response != null && response.body() != null && !response.body().data.isEmpty()) {
+                    List<ImgurTopic> topics = response.body().data;
+                    app.getSql().addTopics(topics);
+                    mSpinner.setAdapter(new TopicsAdapter(getActivity(), topics));
                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 } else {
                     ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.error_generic);
@@ -345,10 +347,10 @@ public class TopicsFilterFragment extends BaseFragment implements SeekBar.OnSeek
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (!isAdded()) return;
-                LogUtil.e(TAG, "Unable to fetch topics", error);
-                ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(error));
+                LogUtil.e(TAG, "Unable to fetch topics", t);
+                ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(t));
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });

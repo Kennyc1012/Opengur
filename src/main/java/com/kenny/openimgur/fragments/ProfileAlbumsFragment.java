@@ -27,8 +27,8 @@ import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.view.MultiStateView;
 
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by Kenny-PC on 7/4/2015.
@@ -55,7 +55,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnL
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ApiClient.getService().getProfileAlbums(mSelectedUser.getUsername(), mCurrentPage, this);
+        ApiClient.getService().getProfileAlbums(mSelectedUser.getUsername(), mCurrentPage).enqueue(this);
     }
 
     @Override
@@ -152,12 +152,12 @@ public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnL
     private void deleteAlbum(final ImgurBaseObject album) {
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
-        ApiClient.getService().deleteAlbum(album.getDeleteHash(), new Callback<BasicResponse>() {
+        ApiClient.getService().deleteAlbum(album.getDeleteHash()).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void success(BasicResponse basicResponse, Response response) {
+            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
                 if (!isAdded()) return;
 
-                if (basicResponse != null && basicResponse.data) {
+                if (response != null && response.body() != null && response.body().data) {
                     GalleryAdapter2 adapter = getAdapter();
 
                     if (adapter != null) {
@@ -177,9 +177,9 @@ public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnL
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (!isAdded()) return;
-                LogUtil.e(TAG, "Unable to delete Album", error);
+                LogUtil.e(TAG, "Unable to delete Album", t);
                 SnackBar.show(getActivity(), R.string.error_generic);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }

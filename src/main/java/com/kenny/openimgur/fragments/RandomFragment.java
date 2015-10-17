@@ -59,6 +59,6 @@ public class RandomFragment extends BaseGridFragment {
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ApiClient.getService().getRandomGallery(mCurrentPage, this);
+        ApiClient.getService().getRandomGallery(mCurrentPage).enqueue(this);
     }
 }

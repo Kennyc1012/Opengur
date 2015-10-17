@@ -217,9 +217,9 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         ImgurService apiService = ApiClient.getService();
 
         if (mSort == GallerySort.HIGHEST_SCORING) {
-            apiService.getGalleryForTopSorted(mSection.getSection(), mTimeSort.getSort(), mCurrentPage, this);
+            apiService.getGalleryForTopSorted(mSection.getSection(), mTimeSort.getSort(), mCurrentPage).enqueue(this);
         } else {
-            apiService.getGallery(mSection.getSection(), mSort.getSort(), mCurrentPage, mShowViral, this);
+            apiService.getGallery(mSection.getSection(), mSort.getSort(), mCurrentPage, mShowViral).enqueue(this);
         }
     }
 

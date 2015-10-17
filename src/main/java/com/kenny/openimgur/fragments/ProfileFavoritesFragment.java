@@ -29,9 +29,10 @@ import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
 
+import retrofit.Call;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 12/20/14.
@@ -86,9 +87,9 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
         ImgurService apiService = ApiClient.getService();
 
         if (isSelf) {
-            apiService.getProfileFavorites(mSelectedUser.getUsername(), this);
+            apiService.getProfileFavorites(mSelectedUser.getUsername()).enqueue(this);
         } else {
-            apiService.getProfileGalleryFavorites(mSelectedUser.getUsername(), mCurrentPage, this);
+            apiService.getProfileGalleryFavorites(mSelectedUser.getUsername(), mCurrentPage).enqueue(this);
         }
     }
 
@@ -168,12 +169,20 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
 
     private void removeFavorite(final ImgurBaseObject object) {
         String id = object.getId();
-        Callback<BasicResponse> cb = new Callback<BasicResponse>() {
+        Call<BasicResponse> call;
+
+        if (object instanceof ImgurPhoto) {
+            call = ApiClient.getService().favoriteImage(id, id);
+        } else {
+            call = ApiClient.getService().favoriteAlbum(id, id);
+        }
+
+        call.enqueue(new Callback<BasicResponse>() {
             @Override
-            public void success(BasicResponse basicResponse, Response response) {
+            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
                 if (!isAdded()) return;
 
-                if (basicResponse != null && basicResponse.success) {
+                if (response != null && response.body() != null && response.body().success) {
                     GalleryAdapter2 adapter = getAdapter();
                     if (adapter != null) adapter.removeItem(object);
                     mMultiStateView.setViewState(adapter != null && adapter.isEmpty() ? MultiStateView.VIEW_STATE_EMPTY : MultiStateView.VIEW_STATE_CONTENT);
@@ -184,18 +193,12 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (!isAdded()) return;
-                LogUtil.e(TAG, "Unable to favorite item", error);
+                LogUtil.e(TAG, "Unable to favorite item", t);
                 SnackBar.show(getActivity(), R.string.error_generic);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
-        };
-
-        if (object instanceof ImgurPhoto) {
-            ApiClient.getService().favoriteImage(id, id, cb);
-        } else {
-            ApiClient.getService().favoriteAlbum(id, id, cb);
-        }
+        });
     }
 }

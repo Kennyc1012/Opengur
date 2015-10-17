@@ -66,9 +66,10 @@ import java.util.List;
 
 import butterknife.Bind;
 import pl.droidsonroids.gif.GifDrawable;
+import retrofit.Call;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 7/12/14.
@@ -584,7 +585,6 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     private void downloadAlbum() {
         if (mImgurObject instanceof ImgurAlbum) {
-            // TODO Check for permission for Marshmallow
             if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
                 ArrayList<String> urls = new ArrayList<>(mPhotoAdapter.getItemCount());
 
@@ -602,13 +602,13 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     }
 
     private void fetchAlbumImages() {
-        ApiClient.getService().getAlbumImages(mImgurObject.getId(), new Callback<AlbumResponse>() {
+        ApiClient.getService().getAlbumImages(mImgurObject.getId()).enqueue(new Callback<AlbumResponse>() {
             @Override
-            public void success(AlbumResponse albumResponse, Response response) {
+            public void onResponse(Response<AlbumResponse> response, Retrofit retrofit) {
                 if (!isAdded()) return;
 
-                if (albumResponse != null && !albumResponse.data.isEmpty()) {
-                    ((ImgurAlbum) mImgurObject).addPhotosToAlbum(albumResponse.data);
+                if (response != null && response.body() != null && !response.body().data.isEmpty()) {
+                    ((ImgurAlbum) mImgurObject).addPhotosToAlbum(response.body().data);
                     mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
                     mListView.setAdapter(mPhotoAdapter);
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
@@ -620,10 +620,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (!isAdded()) return;
-                LogUtil.e(TAG, "Unable to fetch album images", error);
-                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
+                LogUtil.e(TAG, "Unable to fetch album images", t);
+                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
@@ -632,10 +632,12 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void fetchTags() {
         // No need to request if the object already has tags, they will be set in the adapter
         if (mDisplayTags && mImgurObject.isListed() && (mImgurObject.getTags() == null || mImgurObject.getTags().isEmpty())) {
-            ApiClient.getService().getTags(mImgurObject.getId(), new Callback<TagResponse>() {
+            ApiClient.getService().getTags(mImgurObject.getId()).enqueue(new Callback<TagResponse>() {
                 @Override
-                public void success(TagResponse tagResponse, Response response) {
-                    if (!isAdded() || tagResponse == null) return;
+                public void onResponse(Response<TagResponse> response, Retrofit retrofit) {
+                    if (!isAdded() || response == null || response.body() == null) return;
+
+                    TagResponse tagResponse = response.body();
 
                     if (tagResponse.data != null && !tagResponse.data.tags.isEmpty()) {
                         mImgurObject.setTags(tagResponse.data.tags);
@@ -646,23 +648,21 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 }
 
                 @Override
-                public void failure(RetrofitError error) {
-                    if (!isAdded()) return;
-                    // Just ignore any bad tag responses
-                    LogUtil.e(TAG, "Received an error while fetching tags", error);
+                public void onFailure(Throwable t) {
+                    LogUtil.e(TAG, "Received an error while fetching tags", t);
                 }
             });
         }
     }
 
     private void fetchGalleryDetails() {
-        ApiClient.getService().getGalleryDetails(mImgurObject.getId(), new Callback<BasicObjectResponse>() {
+        ApiClient.getService().getGalleryDetails(mImgurObject.getId()).enqueue(new Callback<BasicObjectResponse>() {
             @Override
-            public void success(BasicObjectResponse basicObjectResponse, Response response) {
+            public void onResponse(Response<BasicObjectResponse> response, Retrofit retrofit) {
                 if (!isAdded()) return;
 
-                if (basicObjectResponse != null && basicObjectResponse.data != null) {
-                    setupFragmentWithObject(basicObjectResponse.data);
+                if (response != null && response.body() != null && response.body().data != null) {
+                    setupFragmentWithObject(response.body().data);
                 } else {
                     ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
@@ -670,10 +670,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (!isAdded()) return;
-                LogUtil.e(TAG, "Unable to fetch gallery details", error);
-                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
+                LogUtil.e(TAG, "Unable to fetch gallery details", t);
+                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
@@ -681,12 +681,20 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     private void favoriteItem() {
         String id = mImgurObject.getId();
-        Callback<BasicResponse> cb = new Callback<BasicResponse>() {
+        Call<BasicResponse> call;
+
+        if (mImgurObject instanceof ImgurPhoto) {
+            call = ApiClient.getService().favoriteImage(id, id);
+        } else {
+            call = ApiClient.getService().favoriteAlbum(id, id);
+        }
+
+        call.enqueue(new Callback<BasicResponse>() {
             @Override
-            public void success(BasicResponse basicResponse, Response response) {
+            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
                 if (!isAdded()) return;
 
-                if (basicResponse != null && basicResponse.success) {
+                if (response != null && response.body() != null && response.body().success) {
                     mImgurObject.setIsFavorite(!mImgurObject.isFavorited());
                     getActivity().invalidateOptionsMenu();
                 } else {
@@ -695,27 +703,21 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (!isAdded()) return;
-                LogUtil.e(TAG, "Unable to favorite item", error);
+                LogUtil.e(TAG, "Unable to favorite item", t);
                 SnackBar.show(getActivity(), R.string.error_generic);
             }
-        };
-
-        if (mImgurObject instanceof ImgurPhoto) {
-            ApiClient.getService().favoriteImage(id, id, cb);
-        } else {
-            ApiClient.getService().favoriteAlbum(id, id, cb);
-        }
+        });
     }
 
     private void reportItem(int reason) {
-        ApiClient.getService().reportPost(mImgurObject.getId(), reason, new Callback<BasicResponse>() {
+        ApiClient.getService().reportPost(mImgurObject.getId(), reason).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void success(BasicResponse basicResponse, Response response) {
+            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
                 if (!isAdded()) return;
 
-                if (basicResponse != null && basicResponse.data) {
+                if (response != null && response.body() != null && response.body().data) {
                     SnackBar.show(getActivity(), R.string.report_post_success);
                 } else {
                     SnackBar.show(getActivity(), R.string.report_post_failure);
@@ -723,8 +725,9 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (!isAdded()) return;
+                LogUtil.e(TAG, "Error reporting post", t);
                 SnackBar.show(getActivity(), R.string.report_post_failure);
             }
         });
