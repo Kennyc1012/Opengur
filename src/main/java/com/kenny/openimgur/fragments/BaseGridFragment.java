@@ -333,7 +333,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     protected void onEmptyResults() {
         mHasMore = false;
 
-        if (getAdapter() == null || getAdapter().isEmpty()) {
+        if (mMultiStateView.getView(MultiStateView.VIEW_STATE_EMPTY) != null && getAdapter() == null || getAdapter().isEmpty()) {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
 
