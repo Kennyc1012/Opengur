@@ -152,7 +152,11 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
         super.onPrepareOptionsMenu(menu);
         boolean hasPinned = !mPinnedSubs.isEmpty();
         menu.findItem(R.id.mySubreddits).setVisible(hasPinned);
-        mMySubredditsBtn.setVisibility(hasPinned ? View.VISIBLE : View.GONE);
+
+        if (mMySubredditsBtn != null) {
+            mMySubredditsBtn.setVisibility(hasPinned ? View.VISIBLE : View.GONE);
+        }
+
         MenuItem action = menu.findItem(R.id.mySubredditAction);
 
         if (TextUtils.isEmpty(mQuery)) {
@@ -325,7 +329,8 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
         if (mPinnedSubs.isEmpty()) {
             // Remove from shared preferences if saved
-            if (app.getPreferences().contains(KEY_PINNED_SUBREDDITS)) edit.remove(KEY_PINNED_SUBREDDITS);
+            if (app.getPreferences().contains(KEY_PINNED_SUBREDDITS))
+                edit.remove(KEY_PINNED_SUBREDDITS);
         } else {
             edit.putStringSet(KEY_PINNED_SUBREDDITS, mPinnedSubs);
         }
