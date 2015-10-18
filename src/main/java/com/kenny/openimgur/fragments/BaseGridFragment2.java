@@ -338,7 +338,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
     protected void onEmptyResults() {
         mHasMore = false;
 
-        if (mMultiStateView.getView(MultiStateView.VIEW_STATE_EMPTY) != null && getAdapter() == null || getAdapter().isEmpty()) {
+        if (mMultiStateView.getView(MultiStateView.VIEW_STATE_EMPTY) != null && (getAdapter() == null || getAdapter().isEmpty())) {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
 
