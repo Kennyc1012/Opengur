@@ -161,7 +161,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
             action.setVisible(true);
             boolean isPinned = mPinnedSubs.contains(mQuery);
             action.setTitle(isPinned ? R.string.my_subreddits_remove : R.string.my_subreddits_add);
-            action.setIcon(isPinned ? R.drawable.ic_remove_circle_outline_white_24dp : R.drawable.ic_add_circle_outline_white_24dp);
+            action.setIcon(isPinned ? R.drawable.ic_remove_circle_outline_24dp : R.drawable.ic_add_circle_outline_24dp);
         }
     }
 

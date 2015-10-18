@@ -197,7 +197,7 @@ public class NotificationService extends IntentService {
 
                     builder.setStyle(style);
                     // The large icon will be the message icon
-                    builder.setLargeIcon(createLargeIcon(R.drawable.ic_message_24dp, null));
+                    builder.setLargeIcon(createLargeIcon(R.drawable.ic_action_message_24dp, null));
                 }
             } else {
                 boolean hasOnlyOne = replyNotifications == 1;
@@ -265,7 +265,7 @@ public class NotificationService extends IntentService {
             Intent readIntent = NotificationReceiver.createReadNotificationsIntent(app, getNotificationId());
             PendingIntent readPIntent = PendingIntent.getBroadcast(app, RequestCodes.NOTIFICATIONS_READ, readIntent, PendingIntent.FLAG_ONE_SHOT);
             String msg = resources.getQuantityString(R.plurals.notification_mark_read, messageNotifications + replyNotifications);
-            builder.addAction(R.drawable.ic_done_white_24dp, msg, readPIntent);
+            builder.addAction(R.drawable.ic_done_24dp, msg, readPIntent);
         }
 
         @Override

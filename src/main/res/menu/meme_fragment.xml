@@ -6,7 +6,7 @@
         android:id="@+id/importPhoto"
         android:title="@string/meme_import"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_add_to_photos_white_24dp" />
+        android:icon="@drawable/ic_add_to_photos_24dp" />
 
     <item
         android:id="@+id/refresh"

@@ -257,7 +257,7 @@ public class DownloaderService extends IntentService {
 
             builder.setProgress(0, 0, false)
                     .setContentIntent(viewIntent)
-                    .addAction(R.drawable.ic_share_white_24dp, resources.getString(R.string.share), shareIntent)
+                    .addAction(R.drawable.ic_share_24dp, resources.getString(R.string.share), shareIntent)
                     .setContentTitle(title)
                     .setContentText(resources.getString(R.string.tap_to_view));
 

@@ -4,10 +4,10 @@
     android:id="@+id/emptyMessage"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:drawableTop="?emptyDrawableNotifications"
+    android:gravity="center"
+    android:text="@string/notification_empty"
     android:textAppearance="@style/TextAppearance.Regular"
     android:textSize="16sp"
-    android:text="@string/notification_empty"
-    android:gravity="center"
-    android:layout_gravity="center"
-    tools:drawableTop="@drawable/no_notifications_light"
-    android:drawableTop="?emptyDrawableNotifications" />
+    tools:drawableTop="@drawable/no_notifications_dark_140dp" />

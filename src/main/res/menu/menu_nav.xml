@@ -21,7 +21,7 @@
 
         <item
             android:id="@+id/nav_reddit"
-            android:icon="@drawable/ic_action_reddit"
+            android:icon="@drawable/ic_action_reddit_24dp"
             android:title="@string/nav_reddit" />
 
         <item

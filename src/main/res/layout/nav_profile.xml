@@ -22,7 +22,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_notifications" />
+            android:src="@drawable/ic_notifications_36dp" />
 
         <TextView
             android:id="@+id/badgeCount"
