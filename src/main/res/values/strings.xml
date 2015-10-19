@@ -347,4 +347,16 @@
     <string name="subreddit_added">Subreddit pinned</string>
     <string name="subreddit_removed">Subreddit removed</string>
 
+    <!-- Filters -->
+    <string name="filter_usersub_newest">User Submitted &#8226; Newest</string>
+    <string name="filter_usersub_rising">User Submitted &#8226; Rising</string>
+    <string name="filter_usersub_popularity">User Submitted &#8226; Popularity</string>
+    <string name="filter_viral_newest">Most Viral &#8226; Newest</string>
+    <string name="filter_viral_scoring_day">Most Viral &#8226; Highest Scoring &#8226; Day</string>
+    <string name="filter_viral_scoring_week">Most Viral &#8226; Highest Scoring &#8226; Week</string>
+    <string name="filter_viral_scoring_month">Most Viral &#8226; Highest Scoring &#8226; Month</string>
+    <string name="filter_viral_scoring_year">Most Viral &#8226; Highest Scoring &#8226; Year</string>
+    <string name="filter_viral_scoring_all">Most Viral &#8226; Highest Scoring &#8226; All</string>
+    <string name="filter_viral_popularity">Most Viral &#8226; Popularity</string>
+
 </resources>

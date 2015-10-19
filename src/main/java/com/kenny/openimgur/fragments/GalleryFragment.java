@@ -1,12 +1,13 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ import com.kennyc.view.MultiStateView;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class GalleryFragment extends BaseGridFragment implements GalleryFilterFragment.FilterListener {
+public class GalleryFragment extends BaseGridFragment {
     private static final String KEY_SECTION = "section";
 
     private static final String KEY_SORT = "sort";
@@ -151,14 +152,67 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                 return true;
 
             case R.id.filter:
-                if (mListener != null) mListener.onUpdateActionBar(false);
+                Activity activity = getActivity();
+                View anchor;
+                anchor = activity.findViewById(R.id.filter);
+                if (anchor == null) anchor = activity.findViewById(R.id.refresh);
+                if (anchor == null) anchor = activity.findViewById(R.id.search);
 
-                GalleryFilterFragment fragment = GalleryFilterFragment.createInstance(mSort, mSection, mTimeSort, mShowViral);
-                fragment.setFilterListener(this);
-                getFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .add(android.R.id.content, fragment, "filter")
-                        .commit();
+                PopupMenu m = new PopupMenu(getActivity(), anchor);
+                m.inflate(R.menu.filter_gallery);
+                m.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.userSubNew:
+                                // TODO Determine show popular
+                                onFilterChange(GallerySection.USER, GallerySort.TIME, null, false);
+                                return true;
+
+                            case R.id.userSubRising:
+                                // TODO Determine show popular
+                                onFilterChange(GallerySection.USER, GallerySort.RISING, null, false);
+                                return true;
+
+                            case R.id.userSubPopularity:
+                                // TODO Determine show popular
+                                onFilterChange(GallerySection.USER, GallerySort.VIRAL, null, false);
+                                return true;
+
+                            case R.id.viralNew:
+                                onFilterChange(GallerySection.HOT, GallerySort.TIME, null, false);
+                                return true;
+
+                            case R.id.viralPopularity:
+                                onFilterChange(GallerySection.HOT, GallerySort.VIRAL, null, false);
+                                return true;
+
+                            case R.id.viralDay:
+                                onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.DAY, false);
+                                return true;
+
+                            case R.id.viralWeek:
+                                onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.WEEK, false);
+                                return true;
+
+                            case R.id.viralMonth:
+                                onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.MONTH, false);
+                                return true;
+
+                            case R.id.viralYear:
+                                onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.YEAR, false);
+                                return true;
+
+                            case R.id.viralAll:
+                                onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.ALL, false);
+                                return true;
+                        }
+
+                        return false;
+                    }
+                });
+
+                m.show();
                 return true;
         }
 
@@ -178,15 +232,9 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         super.onDestroyView();
     }
 
-    @Override
-    public void onFilterChange(GallerySection section, GallerySort sort, TimeSort timeSort, boolean showViral) {
-        FragmentManager fm = getFragmentManager();
-        fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
-        if (mListener != null) mListener.onUpdateActionBar(true);
-
-        // Null values represent that the filter was canceled
-        if (section == null || sort == null || timeSort == null ||
-                (section == mSection && mSort == sort && mShowViral == showViral && timeSort == mTimeSort)) {
+    private void onFilterChange(@NonNull GallerySection section, @NonNull GallerySort sort, @Nullable TimeSort timeSort, boolean showViral) {
+        // Don't change if the same filter was selected
+        if (section == mSection && mSort == sort && mShowViral == showViral && timeSort == mTimeSort) {
             return;
         }
 
@@ -196,7 +244,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
 
         mSection = section;
         mSort = sort;
-        mTimeSort = timeSort;
+        mTimeSort = timeSort != null ? timeSort : TimeSort.DAY;
         mShowViral = showViral;
         mCurrentPage = 0;
         mIsLoading = true;
