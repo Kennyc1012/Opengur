@@ -92,6 +92,7 @@ public class ApiClient {
                 }
 
                 Request request = builder.method(original.method(), original.body()).build();
+                LogUtil.v(TAG, "Making request to " + request.urlString());
                 return chain.proceed(request);
             }
         };
