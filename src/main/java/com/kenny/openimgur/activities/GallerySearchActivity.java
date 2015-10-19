@@ -3,11 +3,15 @@ package com.kenny.openimgur.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.FragmentListener;
+import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.fragments.GallerySearchFragment;
+
+import java.util.List;
 
 import butterknife.Bind;
 
@@ -74,6 +78,11 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
 
     @Override
     public void onError() {
+        // NOOP
+    }
+
+    @Override
+    public void onUpdateActionBarSpinner(List<ImgurTopic> topics, @Nullable ImgurTopic currentTopic) {
         // NOOP
     }
 
