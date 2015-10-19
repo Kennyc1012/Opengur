@@ -358,5 +358,11 @@
     <string name="filter_viral_scoring_year">Most Viral &#8226; Highest Scoring &#8226; Year</string>
     <string name="filter_viral_scoring_all">Most Viral &#8226; Highest Scoring &#8226; All</string>
     <string name="filter_viral_popularity">Most Viral &#8226; Popularity</string>
+    <string name="filter_newest">Newest</string>
+    <string name="filter_top_day">Top &#8226; Day</string>
+    <string name="filter_top_week">Top &#8226; Week</string>
+    <string name="filter_top_month">Top &#8226; Month</string>
+    <string name="filter_top_year">Top &#8226; Year</string>
+    <string name="filter_top_all">Top &#8226; All</string>
 
 </resources>

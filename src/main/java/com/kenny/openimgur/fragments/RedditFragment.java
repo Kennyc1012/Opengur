@@ -1,7 +1,6 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -47,7 +47,7 @@ import butterknife.OnClick;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class RedditFragment extends BaseGridFragment implements RedditFilterFragment.FilterListener {
+public class RedditFragment extends BaseGridFragment {
     public static final String KEY_PINNED_SUBREDDITS = "pinnedSubreddits";
 
     private static final String KEY_QUERY = "query";
@@ -173,14 +173,48 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.filter:
-                if (mListener != null) mListener.onUpdateActionBar(false);
+                Activity activity = getActivity();
+                View anchor;
+                anchor = activity.findViewById(R.id.filter);
+                if (anchor == null) anchor = activity.findViewById(R.id.refresh);
+                if (anchor == null) anchor = activity.findViewById(R.id.search);
 
-                RedditFilterFragment fragment = RedditFilterFragment.createInstance(mSort, mTopSort);
-                fragment.setFilterListener(this);
-                getFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .add(android.R.id.content, fragment, "filter")
-                        .commit();
+                PopupMenu m = new PopupMenu(getActivity(), anchor);
+                m.inflate(R.menu.filter_reddit);
+                m.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.newest:
+                                onFilterChanged(RedditSort.TIME, ImgurFilters.TimeSort.DAY);
+                                return true;
+
+                            case R.id.topDay:
+                                onFilterChanged(RedditSort.TOP, ImgurFilters.TimeSort.DAY);
+                                return true;
+
+                            case R.id.topWeek:
+                                onFilterChanged(RedditSort.TOP, ImgurFilters.TimeSort.WEEK);
+                                return true;
+
+                            case R.id.topMonth:
+                                onFilterChanged(RedditSort.TOP, ImgurFilters.TimeSort.MONTH);
+                                return true;
+
+                            case R.id.topYear:
+                                onFilterChanged(RedditSort.TOP, ImgurFilters.TimeSort.YEAR);
+                                return true;
+
+                            case R.id.topAll:
+                                onFilterChanged(RedditSort.TOP, ImgurFilters.TimeSort.ALL);
+                                return true;
+                        }
+
+                        return false;
+                    }
+                });
+
+                m.show();
                 return true;
 
             case R.id.refresh:
@@ -259,17 +293,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
                 .show();
     }
 
-    @Override
-    public void onFilterChanged(RedditSort sort, ImgurFilters.TimeSort topSort) {
-        FragmentManager fm = getFragmentManager();
-        fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
-        if (mListener != null) mListener.onUpdateActionBar(true);
-
-        // Null values represent that the filter was canceled
-        if (sort == null || topSort == null) {
-            return;
-        }
-
+    private void onFilterChanged(RedditSort sort, ImgurFilters.TimeSort topSort) {
         if (sort == mSort && topSort == mTopSort) {
             // Don't fetch data if they haven't changed anything
             LogUtil.v(TAG, "Filters have not been updated");
@@ -305,7 +329,7 @@ public class RedditFragment extends BaseGridFragment implements RedditFilterFrag
 
         if (savedInstanceState == null) {
             mSort = RedditSort.getSortFromString(pref.getString(KEY_SORT, RedditSort.TIME.getSort()));
-            mTopSort = ImgurFilters.TimeSort.getSortFromString(pref.getString(KEY_TOP_SORT, RedditSort.TIME.getSort()));
+            mTopSort = ImgurFilters.TimeSort.getSortFromString(pref.getString(KEY_TOP_SORT, ImgurFilters.TimeSort.DAY.getSort()));
         } else {
             mQuery = savedInstanceState.getString(KEY_QUERY, null);
             mSort = RedditSort.getSortFromString(savedInstanceState.getString(KEY_SORT, RedditSort.TIME.getSort()));

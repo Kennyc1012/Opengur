@@ -31,7 +31,6 @@ import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.MemeFragment;
 import com.kenny.openimgur.fragments.RandomFragment;
-import com.kenny.openimgur.fragments.RedditFilterFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.fragments.TopicsFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
@@ -411,13 +410,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         } else if (getFragmentManager().findFragmentByTag("filter") != null) {
             FragmentManager fm = getFragmentManager();
             Fragment fragment = fm.findFragmentByTag("filter");
-
-            if (fragment instanceof RedditFilterFragment) {
-                ((RedditFilterFragment) fragment).dismiss(null, null);
-            } else {
-                fm.beginTransaction().remove(fragment).commit();
-            }
-
+            fm.beginTransaction().remove(fragment).commit();
             return;
         } else if (mNagOnExit) {
             showExitNag();

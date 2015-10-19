@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/newest"
+        android:title="@string/filter_newest" />
+
+    <item
+        android:id="@+id/topDay"
+        android:title="@string/filter_top_day" />
+
+    <item
+        android:id="@+id/topWeek"
+        android:title="@string/filter_top_week" />
+
+    <item
+        android:id="@+id/topMonth"
+        android:title="@string/filter_top_month" />
+
+    <item
+        android:id="@+id/topYear"
+        android:title="@string/filter_top_year" />
+
+    <item
+        android:id="@+id/topAll"
+        android:title="@string/filter_top_all" />
+
+</menu>
