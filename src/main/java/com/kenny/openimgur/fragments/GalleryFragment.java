@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
@@ -159,59 +160,8 @@ public class GalleryFragment extends BaseGridFragment {
                 if (anchor == null) anchor = activity.findViewById(R.id.search);
 
                 PopupMenu m = new PopupMenu(getActivity(), anchor);
-                m.inflate(R.menu.filter_gallery);
-                m.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.userSubNew:
-                                // TODO Determine show popular
-                                onFilterChange(GallerySection.USER, GallerySort.TIME, null, false);
-                                return true;
-
-                            case R.id.userSubRising:
-                                // TODO Determine show popular
-                                onFilterChange(GallerySection.USER, GallerySort.RISING, null, false);
-                                return true;
-
-                            case R.id.userSubPopularity:
-                                // TODO Determine show popular
-                                onFilterChange(GallerySection.USER, GallerySort.VIRAL, null, false);
-                                return true;
-
-                            case R.id.viralNew:
-                                onFilterChange(GallerySection.HOT, GallerySort.TIME, null, false);
-                                return true;
-
-                            case R.id.viralPopularity:
-                                onFilterChange(GallerySection.HOT, GallerySort.VIRAL, null, false);
-                                return true;
-
-                            case R.id.viralDay:
-                                onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.DAY, false);
-                                return true;
-
-                            case R.id.viralWeek:
-                                onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.WEEK, false);
-                                return true;
-
-                            case R.id.viralMonth:
-                                onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.MONTH, false);
-                                return true;
-
-                            case R.id.viralYear:
-                                onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.YEAR, false);
-                                return true;
-
-                            case R.id.viralAll:
-                                onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.ALL, false);
-                                return true;
-                        }
-
-                        return false;
-                    }
-                });
-
+                m.inflate(getFilterMenu());
+                m.setOnMenuItemClickListener(getMenuItemClickListener());
                 m.show();
                 return true;
         }
@@ -232,7 +182,7 @@ public class GalleryFragment extends BaseGridFragment {
         super.onDestroyView();
     }
 
-    private void onFilterChange(@NonNull GallerySection section, @NonNull GallerySort sort, @Nullable TimeSort timeSort, boolean showViral) {
+    protected void onFilterChange(@NonNull GallerySection section, @NonNull GallerySort sort, @NonNull TimeSort timeSort, boolean showViral) {
         // Don't change if the same filter was selected
         if (section == mSection && mSort == sort && mShowViral == showViral && timeSort == mTimeSort) {
             return;
@@ -244,7 +194,7 @@ public class GalleryFragment extends BaseGridFragment {
 
         mSection = section;
         mSort = sort;
-        mTimeSort = timeSort != null ? timeSort : TimeSort.DAY;
+        mTimeSort = timeSort;
         mShowViral = showViral;
         mCurrentPage = 0;
         mIsLoading = true;
@@ -308,5 +258,64 @@ public class GalleryFragment extends BaseGridFragment {
                 .putBoolean(KEY_SHOW_VIRAL, mShowViral)
                 .putString(KEY_TOP_SORT, mTimeSort.getSort())
                 .putString(KEY_SORT, mSort.getSort()).apply();
+    }
+
+    @MenuRes
+    protected int getFilterMenu() {
+        return R.menu.filter_gallery;
+    }
+
+    protected PopupMenu.OnMenuItemClickListener getMenuItemClickListener() {
+        return new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.userSubNew:
+                        // TODO Determine show popular
+                        onFilterChange(GallerySection.USER, GallerySort.TIME, TimeSort.DAY, false);
+                        return true;
+
+                    case R.id.userSubRising:
+                        // TODO Determine show popular
+                        onFilterChange(GallerySection.USER, GallerySort.RISING, TimeSort.DAY, false);
+                        return true;
+
+                    case R.id.userSubPopularity:
+                        // TODO Determine show popular
+                        onFilterChange(GallerySection.USER, GallerySort.VIRAL, TimeSort.DAY, false);
+                        return true;
+
+                    case R.id.viralNew:
+                        onFilterChange(GallerySection.HOT, GallerySort.TIME, TimeSort.DAY, false);
+                        return true;
+
+                    case R.id.viralPopularity:
+                        onFilterChange(GallerySection.HOT, GallerySort.VIRAL, TimeSort.DAY, false);
+                        return true;
+
+                    case R.id.viralDay:
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.DAY, false);
+                        return true;
+
+                    case R.id.viralWeek:
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.WEEK, false);
+                        return true;
+
+                    case R.id.viralMonth:
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.MONTH, false);
+                        return true;
+
+                    case R.id.viralYear:
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.YEAR, false);
+                        return true;
+
+                    case R.id.viralAll:
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.ALL, false);
+                        return true;
+                }
+
+                return false;
+            }
+        };
     }
 }

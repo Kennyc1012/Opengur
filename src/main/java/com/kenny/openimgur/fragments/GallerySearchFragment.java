@@ -1,9 +1,8 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -24,7 +23,7 @@ import com.kennyc.view.MultiStateView;
 /**
  * Created by kcampagna on 3/21/15.
  */
-public class GallerySearchFragment extends GalleryFragment implements GallerySearchFilterFragment.FilterListener {
+public class GallerySearchFragment extends GalleryFragment {
     private static final String KEY_QUERY = "query";
 
     private String mQuery;
@@ -46,24 +45,6 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
                 return false;
             }
         });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.filter:
-                if (mListener != null) mListener.onUpdateActionBar(false);
-
-                GallerySearchFilterFragment fragment = GallerySearchFilterFragment.createInstance(mSort, mTimeSort);
-                fragment.setListener(this);
-                getFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .add(android.R.id.content, fragment, "filter")
-                        .commit();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -104,21 +85,11 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
         return false;
     }
 
-    /**
-     * Called when a successful search has been completed by the API
-     */
-    public void onSuccessfulSearch() {
-
-    }
-
     @Override
-    public void onFilterChange(ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort) {
-        FragmentManager fm = getFragmentManager();
-        fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
-        if (mListener != null) mListener.onUpdateActionBar(true);
-
-        // Null values represent that the filter was canceled
-        if (sort == null || timeSort == null || (mSort == sort && timeSort == mTimeSort)) {
+    protected void onFilterChange(@NonNull ImgurFilters.GallerySection section, @NonNull ImgurFilters.GallerySort sort, @NonNull ImgurFilters.TimeSort timeSort, boolean showViral) {
+        // Don't care about section or showViral
+        if (mSort == sort && timeSort == mTimeSort) {
+            // Null values represent that the filter was canceled
             return;
         }
 
@@ -162,5 +133,50 @@ public class GallerySearchFragment extends GalleryFragment implements GallerySea
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             if (mListener != null) mListener.onUpdateActionBar(true);
         }
+    }
+
+    @Override
+    protected int getFilterMenu() {
+        return R.menu.filter_gallery_search;
+    }
+
+    @Override
+    protected PopupMenu.OnMenuItemClickListener getMenuItemClickListener() {
+        return new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.newest:
+                        onFilterChange(ImgurFilters.GallerySection.USER, ImgurFilters.GallerySort.TIME, ImgurFilters.TimeSort.DAY, false);
+                        return true;
+
+                    case R.id.popularity:
+                        onFilterChange(ImgurFilters.GallerySection.USER, ImgurFilters.GallerySort.VIRAL, ImgurFilters.TimeSort.DAY, false);
+                        return true;
+
+                    case R.id.scoringDay:
+                        onFilterChange(ImgurFilters.GallerySection.USER, ImgurFilters.GallerySort.HIGHEST_SCORING, ImgurFilters.TimeSort.DAY, false);
+                        return true;
+
+                    case R.id.scoringWeek:
+                        onFilterChange(ImgurFilters.GallerySection.USER, ImgurFilters.GallerySort.HIGHEST_SCORING, ImgurFilters.TimeSort.WEEK, false);
+                        return true;
+
+                    case R.id.scoringMonth:
+                        onFilterChange(ImgurFilters.GallerySection.USER, ImgurFilters.GallerySort.HIGHEST_SCORING, ImgurFilters.TimeSort.MONTH, false);
+                        return true;
+
+                    case R.id.scoringYear:
+                        onFilterChange(ImgurFilters.GallerySection.USER, ImgurFilters.GallerySort.HIGHEST_SCORING, ImgurFilters.TimeSort.YEAR, false);
+                        return true;
+
+                    case R.id.scoringAll:
+                        onFilterChange(ImgurFilters.GallerySection.USER, ImgurFilters.GallerySort.HIGHEST_SCORING, ImgurFilters.TimeSort.ALL, false);
+                        return true;
+                }
+
+                return false;
+            }
+        };
     }
 }
