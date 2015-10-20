@@ -102,7 +102,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         mGrid.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true, this));
         mGrid.setOnItemClickListener(this);
         mRefreshLayout.setColorSchemeColors(getResources().getColor(theme.accentColor));
-        int bgColor = theme.isDarkTheme ? R.color.background_material_dark : R.color.background_material_light;
+        int bgColor = theme.isDarkTheme ? R.color.bg_dark : R.color.bg_light;
         mRefreshLayout.setProgressBackgroundColorSchemeColor(getResources().getColor(bgColor));
         onRestoreSavedInstance(savedInstanceState);
     }

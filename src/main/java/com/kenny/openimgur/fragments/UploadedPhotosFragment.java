@@ -106,7 +106,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
         mGrid.setOnItemLongClickListener(this);
         mGrid.setOnScrollListener(this);
         mRefreshLayout.setColorSchemeColors(getResources().getColor(theme.accentColor));
-        int bgColor = theme.isDarkTheme ? R.color.background_material_dark : R.color.background_material_light;
+        int bgColor = theme.isDarkTheme ? R.color.bg_dark : R.color.bg_light;
         mRefreshLayout.setProgressBackgroundColorSchemeColor(getResources().getColor(bgColor));
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

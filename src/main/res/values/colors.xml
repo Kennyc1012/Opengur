@@ -8,6 +8,8 @@
     <color name="state_pressed">#b6b6b6</color>
     <color name="card_bg_dark">#ff424242</color>
     <color name="badge_color">#B71C1C</color>
+    <color name="bg_dark">#ff303030</color>
+    <color name="bg_light">#fffafafa</color>
 
     <!-- Theme Colors -->
     <color name="theme_blue_primary">#2196F3</color>
