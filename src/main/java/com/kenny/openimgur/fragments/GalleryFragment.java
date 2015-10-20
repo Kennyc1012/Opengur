@@ -146,6 +146,16 @@ public class GalleryFragment extends BaseGridFragment {
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem item = menu.findItem(R.id.showViral);
+        if (item != null) {
+            item.setChecked(mShowViral);
+            item.setVisible(mSection == GallerySection.USER);
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
@@ -163,6 +173,12 @@ public class GalleryFragment extends BaseGridFragment {
                 m.inflate(getFilterMenu());
                 m.setOnMenuItemClickListener(getMenuItemClickListener());
                 m.show();
+                return true;
+
+            case R.id.showViral:
+                boolean checked = !item.isChecked();
+                item.setChecked(checked);
+                onFilterChange(mSection, mSort, mTimeSort, checked);
                 return true;
         }
 
@@ -207,6 +223,7 @@ public class GalleryFragment extends BaseGridFragment {
         }
 
         fetchGallery();
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -271,46 +288,43 @@ public class GalleryFragment extends BaseGridFragment {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.userSubNew:
-                        // TODO Determine show popular
-                        onFilterChange(GallerySection.USER, GallerySort.TIME, TimeSort.DAY, false);
+                        onFilterChange(GallerySection.USER, GallerySort.TIME, TimeSort.DAY, mShowViral);
                         return true;
 
                     case R.id.userSubRising:
-                        // TODO Determine show popular
-                        onFilterChange(GallerySection.USER, GallerySort.RISING, TimeSort.DAY, false);
+                        onFilterChange(GallerySection.USER, GallerySort.RISING, TimeSort.DAY, mShowViral);
                         return true;
 
                     case R.id.userSubPopularity:
-                        // TODO Determine show popular
-                        onFilterChange(GallerySection.USER, GallerySort.VIRAL, TimeSort.DAY, false);
+                        onFilterChange(GallerySection.USER, GallerySort.VIRAL, TimeSort.DAY, mShowViral);
                         return true;
 
                     case R.id.viralNew:
-                        onFilterChange(GallerySection.HOT, GallerySort.TIME, TimeSort.DAY, false);
+                        onFilterChange(GallerySection.HOT, GallerySort.TIME, TimeSort.DAY, mShowViral);
                         return true;
 
                     case R.id.viralPopularity:
-                        onFilterChange(GallerySection.HOT, GallerySort.VIRAL, TimeSort.DAY, false);
+                        onFilterChange(GallerySection.HOT, GallerySort.VIRAL, TimeSort.DAY, mShowViral);
                         return true;
 
                     case R.id.viralDay:
-                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.DAY, false);
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.DAY, mShowViral);
                         return true;
 
                     case R.id.viralWeek:
-                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.WEEK, false);
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.WEEK, mShowViral);
                         return true;
 
                     case R.id.viralMonth:
-                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.MONTH, false);
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.MONTH, mShowViral);
                         return true;
 
                     case R.id.viralYear:
-                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.YEAR, false);
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.YEAR, mShowViral);
                         return true;
 
                     case R.id.viralAll:
-                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.ALL, false);
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.ALL, mShowViral);
                         return true;
                 }
 
