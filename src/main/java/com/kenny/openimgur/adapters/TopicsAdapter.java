@@ -2,6 +2,7 @@ package com.kenny.openimgur.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -28,7 +29,11 @@ public class TopicsAdapter extends ArrayAdapter<ImgurTopic> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        TextView label = (TextView) super.getView(position, convertView, parent);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.topics_tb_item, parent, false);
+        }
+
+        TextView label = (TextView) convertView;
         label.setText(this.getItem(position).getName());
         return label;
     }
