@@ -3,7 +3,6 @@ package com.kenny.openimgur.api;
 
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.text.TextUtils;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -14,13 +13,8 @@ import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
-import com.kenny.openimgur.util.LogUtil;
-import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -46,11 +40,6 @@ public class ApiClient {
 
     public static final String CLIENT_SECRET = BuildConfig.API_CLIENT_SECRET;
 
-    public static final String AUTHORIZATION_HEADER = "Authorization";
-
-    @Nullable
-    private static String sAccessToken = null;
-
     /**
      * Returns the service used for API requests
      *
@@ -58,51 +47,25 @@ public class ApiClient {
      */
     public static ImgurService getService() {
         if (sRestAdapter == null || sService == null) {
+            ImgurUser user = OpengurApp.getInstance().getUser();
+
             sRestAdapter = new Retrofit.Builder()
                     .baseUrl(API_URL)
-                    .client(getClient())
+                    .client(getClient(user))
                     .addConverterFactory(getConverter())
                     .build();
 
             sService = sRestAdapter.create(ImgurService.class);
-
-            ImgurUser user = OpengurApp.getInstance().getUser();
-            if (user != null) sAccessToken = user.getAccessToken();
         }
 
         return sService;
 
     }
 
-    private static Interceptor getRequestInterceptor() {
-        return new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request original = chain.request();
-
-                // Customize the request
-                Request.Builder builder = original.newBuilder();
-
-                if (!TextUtils.isEmpty(sAccessToken)) {
-                    LogUtil.v(TAG, "Access Token present");
-                    builder.addHeader(AUTHORIZATION_HEADER, "Bearer " + sAccessToken);
-                } else {
-                    LogUtil.v(TAG, "No access token present, using Client-ID");
-                    builder.addHeader(AUTHORIZATION_HEADER, "Client-ID " + CLIENT_ID);
-                }
-
-                Request request = builder.method(original.method(), original.body()).build();
-                LogUtil.v(TAG, "Making request to " + request.urlString());
-                return chain.proceed(request);
-            }
-        };
-    }
-
-    private static OkHttpClient getClient() {
+    private static OkHttpClient getClient(@Nullable ImgurUser user) {
         OkHttpClient client = new OkHttpClient();
         client.setConnectTimeout(15, TimeUnit.SECONDS);
-        client.interceptors().add(new OAuthInterceptor());
-        client.interceptors().add(getRequestInterceptor());
+        client.interceptors().add(new OAuthInterceptor(user != null ? user.getAccessToken() : null));
         return client;
     }
 
@@ -155,14 +118,5 @@ public class ApiClient {
             default:
                 return R.string.error_generic;
         }
-    }
-
-    public static void setAccessToken(String token) {
-        sAccessToken = token;
-    }
-
-    @Nullable
-    public static String getAccessToken() {
-        return sAccessToken;
     }
 }

@@ -22,6 +22,7 @@ import android.webkit.WebViewClient;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.OAuthInterceptor;
 import com.kenny.openimgur.api.responses.UserResponse;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.fragments.ProfileAlbumsFragment;
@@ -246,7 +247,7 @@ public class ProfileActivity extends BaseActivity {
                         app.setUser(newUser);
                         user = newUser;
                         mSelectedUser = newUser;
-                        ApiClient.setAccessToken(accessToken);
+                        OAuthInterceptor.setAccessToken(accessToken);
                         LogUtil.v(TAG, "User " + newUser.getUsername() + " logged in");
                         fetchProfile(mSelectedUser.getUsername());
                         CookieManager.getInstance().removeAllCookie();

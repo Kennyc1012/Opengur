@@ -23,30 +23,43 @@ public class OAuthInterceptor implements Interceptor {
 
     private static final Object sLock = new Object();
 
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+
+    @Nullable
+    private static String sAccessToken = null;
+
+    public OAuthInterceptor(@Nullable String token) {
+        sAccessToken = token;
+    }
+
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Request request = chain.request();
+        Request original = chain.request();
+        Request.Builder builder = original.newBuilder();
+        builder.addHeader(AUTHORIZATION_HEADER, getAuthorizationHeader());
+        Request request = builder.method(original.method(), original.body()).build();
+        LogUtil.v(TAG, "Making request to " + request.urlString());
         Response response = chain.proceed(request);
 
         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED || response.code() == HttpURLConnection.HTTP_FORBIDDEN) {
-            String token = ApiClient.getAccessToken();
+            String token = sAccessToken;
 
             if (!TextUtils.isEmpty(token)) {
                 LogUtil.v(TAG, "Token is no longer valid");
 
                 synchronized (sLock) {
-                    String currentToken = ApiClient.getAccessToken();
+                    String currentToken = sAccessToken;
 
                     // Check if our current token has been updated, if it hasn't fetch a new one.
                     if (!TextUtils.isEmpty(currentToken) && currentToken.equals(token)) {
-                        ApiClient.setAccessToken(refreshToken(OpengurApp.getInstance()));
+                        sAccessToken = refreshToken(OpengurApp.getInstance());
                     }
                 }
 
-                if (!TextUtils.isEmpty(ApiClient.getAccessToken())) {
+                if (!TextUtils.isEmpty(sAccessToken)) {
                     Request newRequest = request.newBuilder()
-                            .removeHeader(ApiClient.AUTHORIZATION_HEADER)
-                            .addHeader(ApiClient.AUTHORIZATION_HEADER, "Bearer " + ApiClient.getAccessToken())
+                            .removeHeader(AUTHORIZATION_HEADER)
+                            .addHeader(AUTHORIZATION_HEADER, "Bearer " + sAccessToken)
                             .build();
 
                     return chain.proceed(newRequest);
@@ -66,7 +79,7 @@ public class OAuthInterceptor implements Interceptor {
             retrofit.Response<OAuthResponse> response = call.execute();
 
             if (response == null || response.body() == null) {
-                LogUtil.e(TAG, "Respons came back as null");
+                LogUtil.e(TAG, "Response came back as null");
                 app.onLogout();
                 return null;
             }
@@ -87,5 +100,19 @@ public class OAuthInterceptor implements Interceptor {
         }
 
         return null;
+    }
+
+    private String getAuthorizationHeader() {
+        if (!TextUtils.isEmpty(sAccessToken)) {
+            LogUtil.v(TAG, "Access Token present");
+            return "Bearer " + sAccessToken;
+        } else {
+            LogUtil.v(TAG, "No access token present, using Client-ID");
+            return "Client-ID " + ApiClient.CLIENT_ID;
+        }
+    }
+
+    public static void setAccessToken(@Nullable String token) {
+        sAccessToken = token;
     }
 }

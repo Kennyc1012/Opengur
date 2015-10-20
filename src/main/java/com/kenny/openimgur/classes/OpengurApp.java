@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
 import com.crashlytics.android.Crashlytics;
 import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.activities.SettingsActivity;
-import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.OAuthInterceptor;
 import com.kenny.openimgur.services.AlarmReceiver;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
@@ -155,7 +155,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
     public void onLogout() {
         mUser = null;
         mSql.onUserLogout();
-        ApiClient.setAccessToken(null);
+        OAuthInterceptor.setAccessToken(null);
     }
 
     public ImgurTheme getImgurTheme() {
