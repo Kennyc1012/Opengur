@@ -119,7 +119,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.topics, menu);
+        inflater.inflate(R.menu.uploads, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

@@ -62,7 +62,7 @@ public class TopicsFragment extends BaseGridFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.gallery, menu);
+        inflater.inflate(R.menu.topics, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -121,15 +121,13 @@ public class TopicsFragment extends BaseGridFragment {
                 });
                 m.show();
                 return true;
+
+            case R.id.refreshTopics:
+                fetchTopics();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        menu.removeItem(R.id.search);
-        super.onPrepareOptionsMenu(menu);
     }
 
     private void onFilterChange(ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort) {
@@ -226,7 +224,7 @@ public class TopicsFragment extends BaseGridFragment {
     }
 
     public void onTopicChanged(@NonNull ImgurTopic topic) {
-        if (mTopic != topic) {
+        if (mTopic.getId() != topic.getId()) {
             mTopic = topic;
             GalleryAdapter adapter = getAdapter();
             if (adapter != null) adapter.clear();
@@ -247,9 +245,14 @@ public class TopicsFragment extends BaseGridFragment {
                     List<ImgurTopic> topics = response.body().data;
                     app.getSql().addTopics(topics);
                     // Auto fetch the first topic
-                    mTopic = topics.get(0);
+                    if (mTopic == null) mTopic = topics.get(0);
                     if (mListener != null) mListener.onUpdateActionBarSpinner(topics, mTopic);
-                    fetchGallery();
+
+                    if (getAdapter() == null || getAdapter().isEmpty()) {
+                        fetchGallery();
+                    } else {
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                    }
                 } else {
                     ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.error_generic);
                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
