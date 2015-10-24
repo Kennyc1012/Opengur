@@ -295,6 +295,7 @@ public class SqlHelper extends SQLiteOpenHelper {
      * @param newestFirst
      * @return
      */
+    @NonNull
     public List<UploadedPhoto> getUploadedPhotos(boolean newestFirst) {
         List<UploadedPhoto> photos = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
@@ -345,6 +346,7 @@ public class SqlHelper extends SQLiteOpenHelper {
      *
      * @return
      */
+    @NonNull
     public List<ImgurTopic> getTopics() {
         List<ImgurTopic> topics = new ArrayList<>();
 
@@ -468,6 +470,7 @@ public class SqlHelper extends SQLiteOpenHelper {
      *
      * @return
      */
+    @NonNull
     public List<ImgurBaseObject> getMemes() {
         List<ImgurBaseObject> memes = new ArrayList<>();
         Cursor cursor = getReadableDatabase().rawQuery(MemeContract.GET_MEMES_SQL, null);

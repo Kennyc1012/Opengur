@@ -208,9 +208,9 @@ public class TopicsFragment extends BaseGridFragment {
 
         List<ImgurTopic> topics = app.getSql().getTopics();
 
-        if (topics != null && mListener != null) {
-            mListener.onUpdateActionBarSpinner(topics, mTopic);
+        if (!topics.isEmpty()) {
             if (mTopic == null) mTopic = topics.get(0);
+            if (mListener != null) mListener.onUpdateActionBarSpinner(topics, mTopic);
             fetchGallery();
         } else {
             fetchTopics();
@@ -246,7 +246,6 @@ public class TopicsFragment extends BaseGridFragment {
                 if (response != null && response.body() != null && !response.body().data.isEmpty()) {
                     List<ImgurTopic> topics = response.body().data;
                     app.getSql().addTopics(topics);
-                    mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     // Auto fetch the first topic
                     mTopic = topics.get(0);
                     if (mListener != null) mListener.onUpdateActionBarSpinner(topics, mTopic);
