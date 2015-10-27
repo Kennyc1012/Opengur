@@ -614,12 +614,12 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                 ContentResolver resolver = activity.getContentResolver();
                 photoUris = params[0];
                 List<Upload> uploads = new ArrayList<>(photoUris.size());
-                boolean hasReadPermission = PermissionUtils.hasReadPermission(activity);
+                boolean hasReadPermission = PermissionUtils.hasPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
 
                 for (Uri uri : photoUris) {
                     try {
                         // Check if the URI is a file as we will need read permissions for it
-                        if (!hasReadPermission && uri.toString().contains("file:///")) {
+                        if (!hasReadPermission && "file".equals(uri.getScheme())) {
                             LogUtil.v("DecodeImageTask", "Received a File URI and don't have permissions");
                             needsPermission = true;
                             return null;
