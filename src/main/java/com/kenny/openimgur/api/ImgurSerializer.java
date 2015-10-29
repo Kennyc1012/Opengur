@@ -1,5 +1,6 @@
 package com.kenny.openimgur.api;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -16,11 +17,13 @@ import java.lang.reflect.Type;
  * Created by kcampagna on 7/11/15.
  */
 public class ImgurSerializer implements JsonDeserializer<ImgurBaseObject> {
+    private final Gson gson = new GsonBuilder().create();
+
     @Override
     public ImgurBaseObject deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject object = json.getAsJsonObject();
         boolean isAlbum = object.has("images_count") && object.get("images_count").getAsInt() > 0;
-        ImgurBaseObject obj = new GsonBuilder().create().fromJson(json, isAlbum ? ImgurAlbum.class : ImgurPhoto.class);
+        ImgurBaseObject obj = gson.fromJson(json, isAlbum ? ImgurAlbum.class : ImgurPhoto.class);
 
         // Need to manually check if the up/down votes are set to null as GSON will initialize it to 0
         if (object.has("ups") && object.has("downs")) {

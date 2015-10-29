@@ -28,8 +28,6 @@ import retrofit.Retrofit;
  */
 
 public class ApiClient {
-    private static final String TAG = ApiClient.class.getSimpleName();
-
     private static final String API_URL = "https://api.imgur.com";
 
     private static Retrofit sRestAdapter;
