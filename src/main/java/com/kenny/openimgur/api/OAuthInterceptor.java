@@ -2,7 +2,9 @@ package com.kenny.openimgur.api;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.kenny.openimgur.api.responses.OAuthResponse;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
@@ -28,6 +30,8 @@ public class OAuthInterceptor implements Interceptor {
     @Nullable
     private static String sAccessToken = null;
 
+    private int mRetryAttempts = 0;
+
     public OAuthInterceptor(@Nullable String token) {
         sAccessToken = token;
     }
@@ -52,9 +56,27 @@ public class OAuthInterceptor implements Interceptor {
 
                     // Check if our current token has been updated, if it hasn't fetch a new one.
                     if (!TextUtils.isEmpty(currentToken) && currentToken.equals(token)) {
-                        sAccessToken = refreshToken(OpengurApp.getInstance());
+                        // Try 5 times to get a refresh token
+                        while (mRetryAttempts < 5) {
+                            sAccessToken = refreshToken(OpengurApp.getInstance());
+
+                            if (!TextUtils.isEmpty(sAccessToken)) {
+                                break;
+                            }
+
+                            try {
+                                // Delay the next request by a second so we aren't bombarding the API
+                                Thread.sleep(DateUtils.SECOND_IN_MILLIS);
+                            } catch (Exception ex) {
+                                LogUtil.v(TAG, "Sleeping thread failed", ex);
+                            }
+
+                            mRetryAttempts++;
+                        }
                     }
                 }
+                
+                mRetryAttempts = 0;
 
                 if (!TextUtils.isEmpty(sAccessToken)) {
                     Request newRequest = request.newBuilder()
@@ -63,6 +85,8 @@ public class OAuthInterceptor implements Interceptor {
                             .build();
 
                     return chain.proceed(newRequest);
+                } else {
+                    OpengurApp.getInstance().onLogout();
                 }
             } else {
                 LogUtil.w(TAG, "Received unauthorized status from API but no access token present... wat?");
@@ -80,7 +104,6 @@ public class OAuthInterceptor implements Interceptor {
 
             if (response == null || response.body() == null) {
                 LogUtil.e(TAG, "Response came back as null");
-                app.onLogout();
                 return null;
             }
 
@@ -93,10 +116,9 @@ public class OAuthInterceptor implements Interceptor {
             }
 
             app.onLogout();
-            return null;
         } catch (Throwable error) {
             LogUtil.e(TAG, "Error while refreshing token, logging out user", error);
-            app.onLogout();
+            CrashlyticsCore.getInstance().logException(error);
         }
 
         return null;
