@@ -1,4 +1,18 @@
 #Open Imgur Changelog
+<b>4.1.0</b> November 2, 2015
+- Simplify filter menus
+- Add GIF indicator in grid view
+- Fix GSON parsing
+- Fix Read Storage permission
+- Convert drawables to vectors
+- Crash fixes
+- More user logout fixes
+- Update build tools to V1.4.0-beta6
+- Update OKHTTP to V2.5.0
+- Update Retrofit to V2.0.0-beta2
+- Update GSON to V2.4
+- Update Bottomsheet to V2.0.3
+
 <b>4.0.1</b> October 4, 2015
 - Handle retrofit crashes when fragment has been destroyed 
 - Catch any errors when decoding images for upload
