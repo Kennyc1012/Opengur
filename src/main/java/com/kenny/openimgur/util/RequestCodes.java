@@ -4,7 +4,9 @@ package com.kenny.openimgur.util;
  * Created by kcampagna on 8/6/15.
  */
 public final class RequestCodes {
-    public static final int REQUEST_PERMISSIONS = 1;
+    public static final int REQUEST_PERMISSION_WRITE = 1;
+
+    public static final int REQUEST_PERMISSION_READ = 2;
 
     public static final int PROFILE = 100;
 

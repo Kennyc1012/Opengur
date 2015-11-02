@@ -38,6 +38,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import retrofit.Response;
+
 /**
  * Created by kcampagna on 8/12/15.
  */
@@ -69,11 +71,13 @@ public class NotificationService extends IntentService {
             wakeLock.acquire();
 
             try {
-                NotificationResponse response = ApiClient.getService().getNotifications();
+                Response<NotificationResponse> response = ApiClient.getService().getNotifications().execute();
 
-                if (response != null && response.hasNotifications()) {
-                    app.getSql().insertNotifications(response);
-                    Notification notification = new Notification(getApplicationContext(), response.data);
+                if (response != null && response.body() != null && response.body().hasNotifications()) {
+                    NotificationResponse notificationResponse = response.body();
+
+                    app.getSql().insertNotifications(notificationResponse);
+                    Notification notification = new Notification(getApplicationContext(), notificationResponse.data);
                     notification.postNotification();
                 } else {
                     LogUtil.v(TAG, "No notifications found");
@@ -193,7 +197,7 @@ public class NotificationService extends IntentService {
 
                     builder.setStyle(style);
                     // The large icon will be the message icon
-                    builder.setLargeIcon(createLargeIcon(R.drawable.ic_message_24dp, null));
+                    builder.setLargeIcon(createLargeIcon(R.drawable.ic_action_message_24dp, null));
                 }
             } else {
                 boolean hasOnlyOne = replyNotifications == 1;
@@ -261,7 +265,7 @@ public class NotificationService extends IntentService {
             Intent readIntent = NotificationReceiver.createReadNotificationsIntent(app, getNotificationId());
             PendingIntent readPIntent = PendingIntent.getBroadcast(app, RequestCodes.NOTIFICATIONS_READ, readIntent, PendingIntent.FLAG_ONE_SHOT);
             String msg = resources.getQuantityString(R.plurals.notification_mark_read, messageNotifications + replyNotifications);
-            builder.addAction(R.drawable.ic_done_white_24dp, msg, readPIntent);
+            builder.addAction(R.drawable.ic_done_24dp, msg, readPIntent);
         }
 
         @Override

@@ -6,7 +6,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.4.0-beta3'
+        classpath 'com.android.tools.build:gradle:1.4.0-beta6'
         classpath 'io.fabric.tools:gradle:+'
     }
 }
@@ -23,8 +23,8 @@ repositories {
     jcenter()
 }
 
-def VERSION_NAME = '4.0.1'
-def VERSION_CODE = 55
+def VERSION_NAME = '4.1.0'
+def VERSION_CODE = 58
 
 android {
     compileSdkVersion 23
@@ -88,14 +88,15 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
     compile 'com.kennyc:snackbar:2.5'
     compile 'com.kennyc:multistateview:1.1'
-    compile 'com.github.Kennyc1012:BottomSheet:2.0.1'
+    compile 'com.github.Kennyc1012:BottomSheet:2.0.3'
     compile 'com.kennyc:text-drawable:1.0'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.4.0'
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.4.1'
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
+    compile 'com.google.code.gson:gson:2.4'
     compile(name: 'sliding_panel', ext: 'aar')
     compile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;

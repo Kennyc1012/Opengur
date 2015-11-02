@@ -113,6 +113,7 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
         // Get the appropriate photo to display
         if (obj.isNSFW() && !mAllowNSFWThumb) {
             galleryHolder.image.setImageResource(R.drawable.ic_nsfw);
+            galleryHolder.itemType.setVisibility(View.GONE);
         } else if (obj instanceof ImgurPhoto) {
             ImgurPhoto photoObject = ((ImgurPhoto) obj);
             String photoUrl;
@@ -125,12 +126,15 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
             }
 
             displayImage(galleryHolder.image, photoUrl);
-
+            int gifVisibility = photoObject.isAnimated() ? View.VISIBLE : View.GONE;
+            galleryHolder.itemType.setVisibility(gifVisibility);
         } else if (obj instanceof ImgurAlbum) {
             displayImage(galleryHolder.image, ((ImgurAlbum) obj).getCoverUrl(ImgurPhoto.THUMBNAIL_GALLERY));
+            galleryHolder.itemType.setVisibility(View.GONE);
         } else {
             String url = ImgurBaseObject.getThumbnail(obj.getId(), obj.getLink(), ImgurPhoto.THUMBNAIL_GALLERY);
             displayImage(galleryHolder.image, url);
+            galleryHolder.itemType.setVisibility(View.GONE);
         }
 
         if (mShowPoints) {
@@ -176,6 +180,9 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
 
         @Bind(R.id.score)
         TextView score;
+
+        @Bind(R.id.itemType)
+        ImageView itemType;
 
         public GalleryHolder(View view) {
             super(view);

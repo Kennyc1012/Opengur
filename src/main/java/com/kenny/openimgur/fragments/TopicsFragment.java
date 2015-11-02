@@ -1,10 +1,11 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,18 +14,26 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
+import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
+import java.util.List;
+
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
+
 /**
  * Created by kcampagna on 2/19/15.
  */
-public class TopicsFragment extends BaseGridFragment implements TopicsFilterFragment.FilterListener {
+public class TopicsFragment extends BaseGridFragment {
     private static final String KEY_TOPIC_ID = "topics_id";
 
     private static final String KEY_SORT = "topics_sort";
@@ -53,7 +62,7 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.gallery, menu);
+        inflater.inflate(R.menu.topics, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -67,40 +76,66 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
                 return true;
 
             case R.id.filter:
-                if (mListener != null) mListener.onUpdateActionBar(false);
+                Activity activity = getActivity();
+                View anchor;
+                anchor = activity.findViewById(R.id.filter);
+                if (anchor == null) anchor = activity.findViewById(R.id.refresh);
 
-                TopicsFilterFragment fragment = TopicsFilterFragment.createInstance(mTopic, mSort, mTimeSort);
-                fragment.setListener(this);
-                getFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .add(android.R.id.content, fragment, "filter")
-                        .commit();
+                PopupMenu m = new PopupMenu(getActivity(), anchor);
+                m.inflate(R.menu.filter_gallery_search);
+                m.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.newest:
+                                onFilterChange(ImgurFilters.GallerySort.TIME, ImgurFilters.TimeSort.DAY);
+                                return true;
+
+                            case R.id.popularity:
+                                onFilterChange(ImgurFilters.GallerySort.VIRAL, ImgurFilters.TimeSort.DAY);
+                                return true;
+
+                            case R.id.scoringDay:
+                                onFilterChange(ImgurFilters.GallerySort.HIGHEST_SCORING, ImgurFilters.TimeSort.DAY);
+                                return true;
+
+                            case R.id.scoringWeek:
+                                onFilterChange(ImgurFilters.GallerySort.HIGHEST_SCORING, ImgurFilters.TimeSort.WEEK);
+                                return true;
+
+                            case R.id.scoringMonth:
+                                onFilterChange(ImgurFilters.GallerySort.HIGHEST_SCORING, ImgurFilters.TimeSort.MONTH);
+                                return true;
+
+                            case R.id.scoringYear:
+                                onFilterChange(ImgurFilters.GallerySort.HIGHEST_SCORING, ImgurFilters.TimeSort.YEAR);
+                                return true;
+
+                            case R.id.scoringAll:
+                                onFilterChange(ImgurFilters.GallerySort.HIGHEST_SCORING, ImgurFilters.TimeSort.ALL);
+                                return true;
+                        }
+
+                        return false;
+                    }
+                });
+                m.show();
+                return true;
+
+            case R.id.refreshTopics:
+                fetchTopics();
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        menu.removeItem(R.id.search);
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public void onFilterChange(ImgurTopic topic, ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort) {
-        FragmentManager fm = getFragmentManager();
-        fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
-        if (mListener != null) mListener.onUpdateActionBar(true);
-
-        if (topic == null || sort == null || timeSort == null ||
-                (topic.equals(mTopic) && sort == mSort && mTimeSort == timeSort)) {
+    private void onFilterChange(ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort) {
+        if (sort == mSort && mTimeSort == timeSort) {
             LogUtil.v(TAG, "Filters have not been updated");
             return;
         }
 
-        LogUtil.v(TAG, "Filters updated, Topic: " + topic.getName() + " Sort: " + sort.getSort() + " TimeSort: " + timeSort.getSort());
-        mTopic = topic;
         mSort = sort;
         mTimeSort = timeSort;
         mCurrentPage = 0;
@@ -109,9 +144,8 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
         if (getAdapter() != null) getAdapter().clear();
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
-        if (mListener != null) {
+        if (mListener != null && mTopic != null) {
             mListener.onLoadingStarted();
-            mListener.onUpdateActionBarTitle(mTopic.getName());
         }
 
         fetchGallery();
@@ -133,9 +167,9 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
         ImgurService apiService = ApiClient.getService();
 
         if (mSort == ImgurFilters.GallerySort.HIGHEST_SCORING) {
-            apiService.getTopicForTopSorted(mTopic.getId(), mTimeSort.getSort(), mCurrentPage, this);
+            apiService.getTopicForTopSorted(mTopic.getId(), mTimeSort.getSort(), mCurrentPage).enqueue(this);
         } else {
-            apiService.getTopic(mTopic.getId(), mSort.getSort(), mCurrentPage, this);
+            apiService.getTopic(mTopic.getId(), mSort.getSort(), mCurrentPage).enqueue(this);
         }
     }
 
@@ -170,20 +204,14 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
             mTopic = savedInstanceState.getParcelable(KEY_TOPIC);
         }
 
-        if (mTopic == null) {
-            if (mListener != null) mListener.onUpdateActionBarTitle(getString(R.string.topics));
+        List<ImgurTopic> topics = app.getSql().getTopics();
 
-            mMultiStateView.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (isAdded() && mMultiStateView != null) {
-                        ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.topics_empty_message);
-                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-                    }
-                }
-            });
-        } else if (mListener != null) {
-            mListener.onUpdateActionBarTitle(mTopic.getName());
+        if (!topics.isEmpty()) {
+            if (mTopic == null) mTopic = topics.get(0);
+            if (mListener != null) mListener.onUpdateActionBarSpinner(topics, mTopic);
+            fetchGallery();
+        } else {
+            fetchTopics();
         }
     }
 
@@ -193,5 +221,51 @@ public class TopicsFragment extends BaseGridFragment implements TopicsFilterFrag
         outState.putParcelable(KEY_TOPIC, mTopic);
         outState.putString(KEY_SORT, mSort.getSort());
         outState.putString(KEY_TOP_SORT, mTimeSort.getSort());
+    }
+
+    public void onTopicChanged(@NonNull ImgurTopic topic) {
+        if (mTopic.getId() != topic.getId()) {
+            mTopic = topic;
+            GalleryAdapter adapter = getAdapter();
+            if (adapter != null) adapter.clear();
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
+            fetchGallery();
+        }
+    }
+
+    private void fetchTopics() {
+        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
+
+        ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
+            @Override
+            public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
+                if (!isAdded()) return;
+
+                if (response != null && response.body() != null && !response.body().data.isEmpty()) {
+                    List<ImgurTopic> topics = response.body().data;
+                    app.getSql().addTopics(topics);
+                    // Auto fetch the first topic
+                    if (mTopic == null) mTopic = topics.get(0);
+                    if (mListener != null) mListener.onUpdateActionBarSpinner(topics, mTopic);
+
+                    if (getAdapter() == null || getAdapter().isEmpty()) {
+                        fetchGallery();
+                    } else {
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                    }
+                } else {
+                    ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.error_generic);
+                    mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                if (!isAdded()) return;
+                LogUtil.e(TAG, "Unable to fetch topics", t);
+                ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(t));
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+            }
+        });
     }
 }

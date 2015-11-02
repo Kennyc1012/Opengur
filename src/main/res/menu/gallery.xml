@@ -6,20 +6,27 @@
     <item
         android:id="@+id/search"
         android:title="@string/search"
-        android:icon="@drawable/ic_action_search"
+        android:icon="@drawable/ic_action_search_24dp"
         app:showAsAction="always|collapseActionView"
         app:actionViewClass="android.support.v7.widget.SearchView" />
-
-    <item
-        android:id="@+id/refresh"
-        android:title="@string/refresh"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_navigation_refresh" />
 
     <item
         android:id="@+id/filter"
         android:title="@string/filter"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_filter" />
+        android:icon="@drawable/ic_action_filter_24dp" />
+
+    <item
+        android:id="@+id/refresh"
+        android:title="@string/refresh"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_refresh_24dp" />
+
+    <item
+        android:id="@+id/showViral"
+        android:title="@string/filter_show_viral"
+        android:checkable="true"
+        android:checked="false"
+        app:showAsAction="never" />
 
 </menu>

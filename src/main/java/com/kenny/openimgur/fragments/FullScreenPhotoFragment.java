@@ -370,7 +370,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
                                     @Override
                                     public void onSnackBarFinished(Object o, boolean actionClicked) {
                                         if (actionClicked) {
-                                            FragmentCompat.requestPermissions(FullScreenPhotoFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                                            FragmentCompat.requestPermissions(FullScreenPhotoFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                                         } else {
                                             SnackBar.show(getActivity(), R.string.permission_denied);
                                         }
@@ -380,7 +380,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
                     case PermissionUtils.PERMISSION_NEVER_ASKED:
                     default:
-                        FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                        FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                         break;
                 }
                 return true;
@@ -449,7 +449,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case RequestCodes.REQUEST_PERMISSIONS:
+            case RequestCodes.REQUEST_PERMISSION_WRITE:
                 boolean granted = PermissionUtils.verifyPermissions(grantResults);
 
                 if (granted) {

@@ -140,7 +140,6 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         int scoreTextLength = points.length();
 
         if (isOp) {
-            // TODO Other languages for OP?
             sb.append(" OP");
             spanLength += 3;
         }

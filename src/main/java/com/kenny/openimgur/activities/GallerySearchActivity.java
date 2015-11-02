@@ -1,16 +1,17 @@
 package com.kenny.openimgur.activities;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.FragmentListener;
-import com.kenny.openimgur.fragments.GallerySearchFilterFragment;
+import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.fragments.GallerySearchFragment;
+
+import java.util.List;
 
 import butterknife.Bind;
 
@@ -81,21 +82,8 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
     }
 
     @Override
-    public void onBackPressed() {
-        if (getFragmentManager().findFragmentByTag("filter") != null) {
-            FragmentManager fm = getFragmentManager();
-            Fragment fragment = fm.findFragmentByTag("filter");
-
-            if (fragment instanceof GallerySearchFilterFragment) {
-                ((GallerySearchFilterFragment) fragment).dismiss(null, null);
-            } else {
-                fm.beginTransaction().remove(fragment).commit();
-            }
-
-            return;
-        }
-
-        super.onBackPressed();
+    public void onUpdateActionBarSpinner(List<ImgurTopic> topics, @Nullable ImgurTopic currentTopic) {
+        // NOOP
     }
 
     @Override

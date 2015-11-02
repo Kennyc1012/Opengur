@@ -32,7 +32,7 @@ import butterknife.Bind;
 public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
     public static final int MAX_ITEMS = 200;
 
-    private int mUpvoteColor;
+    private int mUpVoteColor;
 
     private int mDownVoteColor;
 
@@ -44,7 +44,7 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
 
     public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects) {
         super(context, objects, true);
-        mUpvoteColor = mResources.getColor(R.color.notoriety_positive);
+        mUpVoteColor = mResources.getColor(R.color.notoriety_positive);
         mDownVoteColor = mResources.getColor(R.color.notoriety_negative);
         SharedPreferences pref = OpengurApp.getInstance(context).getPreferences();
         mAllowNSFWThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
@@ -132,6 +132,7 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
         // Get the appropriate photo to display
         if (obj.isNSFW() && !mAllowNSFWThumb) {
             holder.image.setImageResource(R.drawable.ic_nsfw);
+            holder.itemType.setVisibility(View.GONE);
         } else if (obj instanceof ImgurPhoto) {
             ImgurPhoto photoObject = ((ImgurPhoto) obj);
             String photoUrl;
@@ -144,12 +145,15 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
             }
 
             displayImage(holder.image, photoUrl);
-
+            int gifVisibility = photoObject.isAnimated() ? View.VISIBLE : View.GONE;
+            holder.itemType.setVisibility(gifVisibility);
         } else if (obj instanceof ImgurAlbum) {
             displayImage(holder.image, ((ImgurAlbum) obj).getCoverUrl(mThumbnailQuality));
+            holder.itemType.setVisibility(View.GONE);
         } else {
             String url = ImgurBaseObject.getThumbnail(obj.getId(), obj.getLink(), mThumbnailQuality);
             displayImage(holder.image, url);
+            holder.itemType.setVisibility(View.GONE);
         }
 
         if (mShowPoints) {
@@ -161,7 +165,7 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
         }
 
         if (obj.isFavorited() || ImgurBaseObject.VOTE_UP.equals(obj.getVote())) {
-            holder.score.setTextColor(mUpvoteColor);
+            holder.score.setTextColor(mUpVoteColor);
         } else if (ImgurBaseObject.VOTE_DOWN.equals(obj.getVote())) {
             holder.score.setTextColor(mDownVoteColor);
         } else {
@@ -177,6 +181,9 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
 
         @Bind(R.id.score)
         TextView score;
+
+        @Bind(R.id.itemType)
+        ImageView itemType;
 
         public GalleryHolder(View view) {
             super(view);

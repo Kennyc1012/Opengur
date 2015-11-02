@@ -55,8 +55,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.OnClick;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by Kenny-PC on 6/20/2015.
@@ -68,8 +68,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
     private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
 
-    private static final String[] PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
     @Bind(R.id.multiView)
     MultiStateView mMultiView;
 
@@ -79,6 +77,8 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     private UploadPhotoAdapter mAdapter;
 
     private File mTempFile;
+
+    private List<Uri> mPhotoUris = null;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, UploadActivity.class);
@@ -171,6 +171,39 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         }
 
         supportInvalidateOptionsMenu();
+        mPhotoUris = null;
+    }
+
+    private void onNeedsReadPermission(List<Uri> photoUris) {
+        mMultiView.setViewState(mAdapter != null && !mAdapter.isEmpty() ? MultiStateView.VIEW_STATE_CONTENT : MultiStateView.VIEW_STATE_EMPTY);
+        mPhotoUris = photoUris;
+        int level = PermissionUtils.getPermissionLevel(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        switch (level) {
+            // Should never have gotten here if its available
+            case PermissionUtils.PERMISSION_AVAILABLE:
+                new DecodeImagesTask(this).doInBackground(mPhotoUris);
+                break;
+
+            case PermissionUtils.PERMISSION_DENIED:
+                int uriSize = photoUris != null ? photoUris.size() : 0;
+                new AlertDialog.Builder(this, theme.getAlertDialogTheme())
+                        .setTitle(R.string.permission_title)
+                        .setMessage(getResources().getQuantityString(R.plurals.permission_rational_file_access, uriSize, uriSize))
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(UploadActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_READ);
+                            }
+                        })
+                        .show();
+                break;
+
+            case PermissionUtils.PERMISSION_NEVER_ASKED:
+                ActivityCompat.requestPermissions(UploadActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_READ);
+                break;
+        }
     }
 
     @Override
@@ -208,7 +241,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.cameraBtn:
-                if (checkPermissions()) startCamera();
+                if (checkWritePermissions()) startCamera();
                 break;
 
             case R.id.galleryBtn:
@@ -236,7 +269,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-
             case RequestCodes.TAKE_PHOTO:
                 if (resultCode == Activity.RESULT_OK && FileUtil.isFileValid(mTempFile)) {
                     FileUtil.scanFile(Uri.fromFile(mTempFile), getApplicationContext());
@@ -374,16 +406,15 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
         if (topics == null || topics.isEmpty()) {
             LogUtil.v(TAG, "No topics found, fetching");
-            ApiClient.getService().getDefaultTopics(new Callback<TopicResponse>() {
+            ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
                 @Override
-                public void success(TopicResponse topicResponse, Response response) {
-                    if (topicResponse != null) app.getSql().addTopics(topicResponse.data);
+                public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
+                    if (response != null && response.body() != null) app.getSql().addTopics(response.body().data);
                 }
 
                 @Override
-                public void failure(RetrofitError error) {
-                    LogUtil.e(TAG, "Failed to receive topics", error);
-                    // TODO Some error?
+                public void onFailure(Throwable t) {
+                    LogUtil.e(TAG, "Failed to receive topics", t);
                 }
             });
         } else {
@@ -432,8 +463,8 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
      *
      * @return If the permissions are available. If false is returned, the necessary prompts will be shown
      */
-    private boolean checkPermissions() {
-        @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionLevel(this, PERMISSIONS);
+    private boolean checkWritePermissions() {
+        @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionLevel(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         switch (permissionLevel) {
             case PermissionUtils.PERMISSION_AVAILABLE:
@@ -452,7 +483,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                         }).setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        ActivityCompat.requestPermissions(UploadActivity.this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
+                        ActivityCompat.requestPermissions(UploadActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                     }
                 }).setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
@@ -465,7 +496,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
             case PermissionUtils.PERMISSION_NEVER_ASKED:
             default:
                 LogUtil.v(TAG, "Prompting for permissions");
-                ActivityCompat.requestPermissions(this, PERMISSIONS, RequestCodes.REQUEST_PERMISSIONS);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                 break;
         }
 
@@ -491,13 +522,20 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case RequestCodes.REQUEST_PERMISSIONS:
+            case RequestCodes.REQUEST_PERMISSION_WRITE:
                 if (PermissionUtils.verifyPermissions(grantResults)) {
                     startCamera();
                 } else {
                     SnackBar.show(this, R.string.permission_denied);
                 }
                 break;
+
+            case RequestCodes.REQUEST_PERMISSION_READ:
+                if (PermissionUtils.verifyPermissions(grantResults)) {
+                    if (mPhotoUris != null) new DecodeImagesTask(this).execute(mPhotoUris);
+                } else {
+                    SnackBar.show(this, R.string.permission_denied);
+                }
         }
     }
 
@@ -561,6 +599,10 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     private static class DecodeImagesTask extends AsyncTask<List<Uri>, Void, List<Upload>> {
         WeakReference<UploadActivity> mActivity;
 
+        boolean needsPermission = false;
+
+        List<Uri> photoUris = null;
+
         public DecodeImagesTask(@NonNull UploadActivity activity) {
             mActivity = new WeakReference<>(activity);
         }
@@ -568,13 +610,21 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         @Override
         protected List<Upload> doInBackground(List<Uri>... params) {
             if (params != null && params[0] != null && !params[0].isEmpty()) {
-                ContentResolver resolver = mActivity.get().getContentResolver();
-                List<Uri> photoUris = params[0];
-
+                Activity activity = mActivity.get();
+                ContentResolver resolver = activity.getContentResolver();
+                photoUris = params[0];
                 List<Upload> uploads = new ArrayList<>(photoUris.size());
+                boolean hasReadPermission = PermissionUtils.hasPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
 
                 for (Uri uri : photoUris) {
                     try {
+                        // Check if the URI is a file as we will need read permissions for it
+                        if (!hasReadPermission && "file".equals(uri.getScheme())) {
+                            LogUtil.v("DecodeImageTask", "Received a File URI and don't have permissions");
+                            needsPermission = true;
+                            return null;
+                        }
+
                         File file = FileUtil.createFile(uri, resolver);
                         if (FileUtil.isFileValid(file)) uploads.add(new Upload(file.getAbsolutePath()));
                     } catch (Exception ex) {
@@ -591,7 +641,14 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         @Override
         protected void onPostExecute(List<Upload> uploads) {
             if (mActivity != null && mActivity.get() != null) {
-                mActivity.get().onUrisDecoded(uploads);
+                UploadActivity activity = mActivity.get();
+
+                if (needsPermission) {
+                    activity.onNeedsReadPermission(photoUris);
+                } else {
+                    activity.onUrisDecoded(uploads);
+                }
+
                 mActivity.clear();
                 mActivity = null;
             }

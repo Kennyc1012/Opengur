@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
@@ -25,8 +24,8 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by Kenny-PC on 3/22/2015.
@@ -115,15 +114,19 @@ public class NotificationReceiver extends BroadcastReceiver {
                     sql.markNotificationRead(content);
 
                     if (!TextUtils.isEmpty(ids)) {
-                        ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {
+                        ApiClient.getService().markNotificationsRead(ids).enqueue(new Callback<BasicResponse>() {
                             @Override
-                            public void success(BasicResponse basicResponse, Response response) {
-                                // Don't care about response
+                            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                                if (response != null && response.body() != null) {
+                                    LogUtil.v(TAG, "Result of marking notifications read " + response.body().data);
+                                } else {
+                                    LogUtil.w(TAG, "Did not receive a response while marking notifications read");
+                                }
                             }
 
                             @Override
-                            public void failure(RetrofitError error) {
-                                LogUtil.e(TAG, "Failure marking notifications read, error", error);
+                            public void onFailure(Throwable t) {
+                                LogUtil.e(TAG, "Failure marking notifications read, error", t);
                             }
                         });
                     }
@@ -139,15 +142,19 @@ public class NotificationReceiver extends BroadcastReceiver {
                 sql.markNotificationsRead();
 
                 if (!TextUtils.isEmpty(ids)) {
-                    ApiClient.getService().markNotificationsRead(ids, new Callback<BasicResponse>() {
+                    ApiClient.getService().markNotificationsRead(ids).enqueue(new Callback<BasicResponse>() {
                         @Override
-                        public void success(BasicResponse basicResponse, Response response) {
-                            // Don't care about response
+                        public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                            if (response != null && response.body() != null) {
+                                LogUtil.v(TAG, "Result of marking notifications read " + response.body().data);
+                            } else {
+                                LogUtil.w(TAG, "Did not receive a response while marking notifications read");
+                            }
                         }
 
                         @Override
-                        public void failure(RetrofitError error) {
-                            LogUtil.e(TAG, "Failure marking notifications read, error", error);
+                        public void onFailure(Throwable t) {
+                            LogUtil.e(TAG, "Failure marking notifications read, error", t);
                         }
                     });
                 }

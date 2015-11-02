@@ -5,13 +5,13 @@
     <item
         android:id="@+id/fontSize"
         android:title="@string/meme_font_size"
-        android:icon="@drawable/ic_action_format_size"
+        android:icon="@drawable/ic_action_format_size_24dp"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/save"
         android:title="@string/save"
-        android:icon="@drawable/ic_action_content_save"
+        android:icon="@drawable/ic_action_content_save_24dp"
         app:showAsAction="ifRoom" />
 
 </menu>

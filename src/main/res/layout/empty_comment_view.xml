@@ -3,9 +3,9 @@
     android:id="@+id/emptyMessage"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textAppearance="@style/TextAppearance.Regular"
-    android:textSize="16sp"
-    android:text="@string/empty_comment_message"
-    android:gravity="center"
     android:layout_gravity="center"
-    android:drawableTop="?emptyDrawableMessages" />
+    android:drawableTop="?emptyDrawableMessages"
+    android:gravity="center"
+    android:text="@string/empty_comment_message"
+    android:textAppearance="@style/TextAppearance.Regular"
+    android:textSize="16sp" />

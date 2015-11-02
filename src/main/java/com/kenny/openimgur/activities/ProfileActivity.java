@@ -10,20 +10,19 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.OAuthInterceptor;
 import com.kenny.openimgur.api.responses.UserResponse;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.fragments.ProfileAlbumsFragment;
@@ -41,8 +40,8 @@ import com.kennyc.view.MultiStateView;
 
 import butterknife.Bind;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 12/14/14.
@@ -89,19 +88,6 @@ public class ProfileActivity extends BaseActivity {
         setStatusBarColorResource(theme.darkColor);
         setupToolBar();
         handleData(savedInstanceState, getIntent());
-
-        // TODO remove when bug has been fixed in support library
-        if (ViewCompat.isLaidOut(mSlidingTabs)) {
-            mSlidingTabs.setupWithViewPager(mPager);
-        } else {
-            mSlidingTabs.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    mSlidingTabs.setupWithViewPager(mPager);
-                    mSlidingTabs.removeOnLayoutChangeListener(this);
-                }
-            });
-        }
     }
 
     /**
@@ -261,7 +247,7 @@ public class ProfileActivity extends BaseActivity {
                         app.setUser(newUser);
                         user = newUser;
                         mSelectedUser = newUser;
-                        ApiClient.setAccessToken(accessToken);
+                        OAuthInterceptor.setAccessToken(accessToken);
                         LogUtil.v(TAG, "User " + newUser.getUsername() + " logged in");
                         fetchProfile(mSelectedUser.getUsername());
                         CookieManager.getInstance().removeAllCookie();
@@ -286,12 +272,14 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void fetchProfile(String username) {
-        ApiClient.getService().getProfile(username, new Callback<UserResponse>() {
+        ApiClient.getService().getProfile(username).enqueue(new Callback<UserResponse>() {
             @Override
-            public void success(UserResponse userResponse, Response response) {
+            public void onResponse(Response<UserResponse> response, Retrofit retrofit) {
                 if (isDestroyed() || isFinishing()) return;
 
-                if (userResponse != null && userResponse.data != null) {
+                if (response != null && response.body() != null) {
+                    UserResponse userResponse = response.body();
+
                     if (mSelectedUser != null) {
                         mSelectedUser.copy(userResponse.data);
                     } else {
@@ -316,8 +304,8 @@ public class ProfileActivity extends BaseActivity {
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(error));
+            public void onFailure(Throwable t) {
+                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });

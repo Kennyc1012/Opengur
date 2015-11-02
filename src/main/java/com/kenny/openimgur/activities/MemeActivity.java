@@ -120,7 +120,7 @@ public class MemeActivity extends BaseActivity {
                         break;
 
                     case PermissionUtils.PERMISSION_NEVER_ASKED:
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                         break;
 
                     case PermissionUtils.PERMISSION_DENIED:
@@ -131,7 +131,7 @@ public class MemeActivity extends BaseActivity {
                                 .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        ActivityCompat.requestPermissions(MemeActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                                        ActivityCompat.requestPermissions(MemeActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                                     }
                                 }).show();
                         break;
@@ -289,7 +289,7 @@ public class MemeActivity extends BaseActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case RequestCodes.REQUEST_PERMISSIONS:
+            case RequestCodes.REQUEST_PERMISSION_WRITE:
                 boolean hasPermission = PermissionUtils.verifyPermissions(grantResults);
 
                 if (hasPermission) {

@@ -38,7 +38,7 @@
             android:layout_centerVertical="true"
             android:layout_marginBottom="4dp"
             android:layout_marginRight="4dp"
-            android:src="@drawable/ic_action_send" />
+            android:src="@drawable/ic_action_send_24dp" />
 
         <EditText
             android:id="@+id/messageInput"

@@ -94,7 +94,7 @@ public class MemeFragment extends BaseGridFragment {
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ApiClient.getService().getDefaultMemes(this);
+        ApiClient.getService().getDefaultMemes().enqueue(this);
     }
 
     @Override

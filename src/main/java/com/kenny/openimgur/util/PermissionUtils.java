@@ -126,4 +126,15 @@ public class PermissionUtils {
 
         return PERMISSION_NEVER_ASKED;
     }
+
+    /**
+     * Returns if the user has granted the given permission
+     *
+     * @param activity
+     * @param permission
+     * @return
+     */
+    public static boolean hasPermission(Activity activity, @NonNull String permission) {
+        return getPermissionLevel(activity, permission) == PERMISSION_AVAILABLE;
+    }
 }

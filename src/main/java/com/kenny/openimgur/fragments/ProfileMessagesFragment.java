@@ -28,8 +28,8 @@ import java.util.List;
 
 import butterknife.Bind;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 12/24/14.
@@ -109,15 +109,22 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
     }
 
     private void fetchConvos() {
-        ApiClient.getService().getConversations(new Callback<ConvoResponse>() {
+        ApiClient.getService().getConversations().enqueue(new Callback<ConvoResponse>() {
             @Override
-            public void success(ConvoResponse convoResponse, Response response) {
+            public void onResponse(Response<ConvoResponse> response, Retrofit retrofit) {
                 if (!isAdded()) return;
 
-                if (convoResponse != null && convoResponse.data != null && !convoResponse.data.isEmpty()) {
-                    mAdapter = new ConvoAdapter(getActivity(), convoResponse.data, ProfileMessagesFragment.this, ProfileMessagesFragment.this);
-                    mMessageList.setAdapter(mAdapter);
-                    mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                if (response != null && response.body() != null) {
+                    ConvoResponse convoResponse = response.body();
+
+                    if (convoResponse.data != null && !convoResponse.data.isEmpty()) {
+                        mAdapter = new ConvoAdapter(getActivity(), convoResponse.data, ProfileMessagesFragment.this, ProfileMessagesFragment.this);
+                        mMessageList.setAdapter(mAdapter);
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                    } else {
+                        ViewUtils.setEmptyText(mMultiStateView, R.id.emptyMessage, getString(R.string.profile_no_convos));
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+                    }
                 } else {
                     ViewUtils.setEmptyText(mMultiStateView, R.id.emptyMessage, getString(R.string.profile_no_convos));
                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
@@ -125,10 +132,10 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (!isAdded()) return;
-                LogUtil.e(TAG, "Unable to fetch convos", error);
-                ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(error));
+                LogUtil.e(TAG, "Unable to fetch convos", t);
+                ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(t));
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
         });
@@ -142,15 +149,19 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
 
-        ApiClient.getService().deleteConversation(id, new Callback<BasicResponse>() {
+        ApiClient.getService().deleteConversation(id).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void success(BasicResponse basicResponse, Response response) {
-                // Don't care about response
+            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                if (response != null && response.body() != null) {
+                    LogUtil.v(TAG, "Result of convo deletion " + response);
+                } else {
+                    LogUtil.v(TAG, "Received an empty response when deleting convo");
+                }
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                LogUtil.e(TAG, "Error deleting conversation", error);
+            public void onFailure(Throwable t) {
+                LogUtil.e(TAG, "Error deleting conversation", t);
             }
         });
     }

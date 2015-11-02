@@ -5,31 +5,31 @@
 
     <item
         android:id="@+id/share"
-        android:icon="@drawable/ic_share_white_24dp"
+        android:icon="@drawable/ic_share_24dp"
         android:title="@string/share"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/favorite"
-        android:icon="@drawable/ic_action_favorite"
+        android:icon="@drawable/ic_action_favorite_24dp"
         android:title="@string/favorite"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/profile"
-        android:icon="@drawable/ic_action_user"
+        android:icon="@drawable/ic_action_user_24dp"
         android:title="@string/profile"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/reddit"
-        android:icon="@drawable/ic_action_reddit"
+        android:icon="@drawable/ic_action_reddit_24dp"
         android:title="@string/view_reddit"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/refresh"
-        android:icon="@drawable/ic_action_navigation_refresh"
+        android:icon="@drawable/ic_action_refresh_24dp"
         android:title="@string/refresh"
         app:showAsAction="ifRoom" />
 

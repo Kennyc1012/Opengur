@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:background="?colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:navigationIcon="@drawable/ic_clear_white_24dp"
+        app:navigationIcon="@drawable/ic_action_close_24dp"
         app:popupTheme="?toolBarPopupTheme" />
 
     <android.support.design.widget.TextInputLayout

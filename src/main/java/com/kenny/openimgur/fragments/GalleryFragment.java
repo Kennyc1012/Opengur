@@ -1,12 +1,14 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.MenuRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -32,7 +34,7 @@ import com.kennyc.view.MultiStateView;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class GalleryFragment extends BaseGridFragment implements GalleryFilterFragment.FilterListener {
+public class GalleryFragment extends BaseGridFragment {
     private static final String KEY_SECTION = "section";
 
     private static final String KEY_SORT = "sort";
@@ -144,6 +146,16 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem item = menu.findItem(R.id.showViral);
+        if (item != null) {
+            item.setChecked(mShowViral);
+            item.setVisible(mSection == GallerySection.USER);
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
@@ -151,14 +163,22 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                 return true;
 
             case R.id.filter:
-                if (mListener != null) mListener.onUpdateActionBar(false);
+                Activity activity = getActivity();
+                View anchor;
+                anchor = activity.findViewById(R.id.filter);
+                if (anchor == null) anchor = activity.findViewById(R.id.refresh);
+                if (anchor == null) anchor = activity.findViewById(R.id.search);
 
-                GalleryFilterFragment fragment = GalleryFilterFragment.createInstance(mSort, mSection, mTimeSort, mShowViral);
-                fragment.setFilterListener(this);
-                getFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .add(android.R.id.content, fragment, "filter")
-                        .commit();
+                PopupMenu m = new PopupMenu(getActivity(), anchor);
+                m.inflate(getFilterMenu());
+                m.setOnMenuItemClickListener(getMenuItemClickListener());
+                m.show();
+                return true;
+
+            case R.id.showViral:
+                boolean checked = !item.isChecked();
+                item.setChecked(checked);
+                onFilterChange(mSection, mSort, mTimeSort, checked);
                 return true;
         }
 
@@ -178,15 +198,9 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         super.onDestroyView();
     }
 
-    @Override
-    public void onFilterChange(GallerySection section, GallerySort sort, TimeSort timeSort, boolean showViral) {
-        FragmentManager fm = getFragmentManager();
-        fm.beginTransaction().remove(fm.findFragmentByTag("filter")).commit();
-        if (mListener != null) mListener.onUpdateActionBar(true);
-
-        // Null values represent that the filter was canceled
-        if (section == null || sort == null || timeSort == null ||
-                (section == mSection && mSort == sort && mShowViral == showViral && timeSort == mTimeSort)) {
+    protected void onFilterChange(@NonNull GallerySection section, @NonNull GallerySort sort, @NonNull TimeSort timeSort, boolean showViral) {
+        // Don't change if the same filter was selected
+        if (section == mSection && mSort == sort && mShowViral == showViral && timeSort == mTimeSort) {
             return;
         }
 
@@ -209,6 +223,7 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         }
 
         fetchGallery();
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -217,9 +232,9 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
         ImgurService apiService = ApiClient.getService();
 
         if (mSort == GallerySort.HIGHEST_SCORING) {
-            apiService.getGalleryForTopSorted(mSection.getSection(), mTimeSort.getSort(), mCurrentPage, this);
+            apiService.getGalleryForTopSorted(mSection.getSection(), mTimeSort.getSort(), mCurrentPage).enqueue(this);
         } else {
-            apiService.getGallery(mSection.getSection(), mSort.getSort(), mCurrentPage, mShowViral, this);
+            apiService.getGallery(mSection.getSection(), mSort.getSort(), mCurrentPage, mShowViral).enqueue(this);
         }
     }
 
@@ -260,5 +275,61 @@ public class GalleryFragment extends BaseGridFragment implements GalleryFilterFr
                 .putBoolean(KEY_SHOW_VIRAL, mShowViral)
                 .putString(KEY_TOP_SORT, mTimeSort.getSort())
                 .putString(KEY_SORT, mSort.getSort()).apply();
+    }
+
+    @MenuRes
+    protected int getFilterMenu() {
+        return R.menu.filter_gallery;
+    }
+
+    protected PopupMenu.OnMenuItemClickListener getMenuItemClickListener() {
+        return new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.userSubNew:
+                        onFilterChange(GallerySection.USER, GallerySort.TIME, TimeSort.DAY, mShowViral);
+                        return true;
+
+                    case R.id.userSubRising:
+                        onFilterChange(GallerySection.USER, GallerySort.RISING, TimeSort.DAY, mShowViral);
+                        return true;
+
+                    case R.id.userSubPopularity:
+                        onFilterChange(GallerySection.USER, GallerySort.VIRAL, TimeSort.DAY, mShowViral);
+                        return true;
+
+                    case R.id.viralNew:
+                        onFilterChange(GallerySection.HOT, GallerySort.TIME, TimeSort.DAY, mShowViral);
+                        return true;
+
+                    case R.id.viralPopularity:
+                        onFilterChange(GallerySection.HOT, GallerySort.VIRAL, TimeSort.DAY, mShowViral);
+                        return true;
+
+                    case R.id.viralDay:
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.DAY, mShowViral);
+                        return true;
+
+                    case R.id.viralWeek:
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.WEEK, mShowViral);
+                        return true;
+
+                    case R.id.viralMonth:
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.MONTH, mShowViral);
+                        return true;
+
+                    case R.id.viralYear:
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.YEAR, mShowViral);
+                        return true;
+
+                    case R.id.viralAll:
+                        onFilterChange(GallerySection.HOT, GallerySort.HIGHEST_SCORING, TimeSort.ALL, mShowViral);
+                        return true;
+                }
+
+                return false;
+            }
+        };
     }
 }

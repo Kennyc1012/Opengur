@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import retrofit.RetrofitError;
+import retrofit.Call;
+import retrofit.Response;
 
 /**
  * Created by Kenny-PC on 6/21/2015.
@@ -151,29 +152,32 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
 
     @Nullable
     private List<ImgurPhoto> fetchImages(String source, SharedPreferences pref, boolean allowNSFW) {
-        GalleryResponse response = null;
+        Response<GalleryResponse> response = null;
+        Call<GalleryResponse> call;
 
         try {
             if (MuzeiSettingsActivity.SOURCE_REDDIT.equals(source)) {
                 String query = pref.getString(MuzeiSettingsActivity.KEY_INPUT, FALLBACK_SUBREDDIT).replaceAll("\\s", "");
-                response = ApiClient.getService().getSubReddit(query, ImgurFilters.RedditSort.TIME.getSort(), 0);
+                call = ApiClient.getService().getSubReddit(query, ImgurFilters.RedditSort.TIME.getSort(), 0);
             } else if (MuzeiSettingsActivity.SOURCE_USER_SUB.equals(source)) {
-                response = ApiClient.getService().getGallery(ImgurFilters.GallerySection.USER.getSection(), ImgurFilters.GallerySort.VIRAL.getSort(), 0, false);
+                call = ApiClient.getService().getGallery(ImgurFilters.GallerySection.USER.getSection(), ImgurFilters.GallerySort.VIRAL.getSort(), 0, false);
             } else if (MuzeiSettingsActivity.SOURCE_TOPICS.equals(source)) {
                 int topicId = Integer.valueOf(pref.getString(MuzeiSettingsActivity.KEY_TOPIC, FALLBACK_TOPIC_ID));
-                response = ApiClient.getService().getTopic(topicId, ImgurFilters.GallerySort.VIRAL.getSort(), 0);
+                call = ApiClient.getService().getTopic(topicId, ImgurFilters.GallerySort.VIRAL.getSort(), 0);
             } else {
-                response = ApiClient.getService().getGallery(ImgurFilters.GallerySection.HOT.getSection(), ImgurFilters.GallerySort.TIME.getSort(), 0, false);
+                call = ApiClient.getService().getGallery(ImgurFilters.GallerySection.HOT.getSection(), ImgurFilters.GallerySort.TIME.getSort(), 0, false);
             }
-        } catch (RetrofitError ex) {
+
+            response = call.execute();
+        } catch (Exception ex) {
             Log.e(TAG, "Error fetching images for muzei", ex);
         }
 
-        if (response != null && !response.data.isEmpty()) {
+        if (response != null && response.body() != null && !response.body().data.isEmpty()) {
             // Go through the responses and exclude albums, gifs, and check NSFW status
             List<ImgurPhoto> photos = new ArrayList<>();
 
-            for (ImgurBaseObject obj : response.data) {
+            for (ImgurBaseObject obj : response.body().data) {
                 if (obj instanceof ImgurPhoto && !((ImgurPhoto) obj).isAnimated() && (allowNSFW || !obj.isNSFW())) {
                     photos.add((ImgurPhoto) obj);
                 }

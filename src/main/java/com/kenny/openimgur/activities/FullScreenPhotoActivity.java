@@ -147,7 +147,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
                                     @Override
                                     public void onSnackBarFinished(Object o, boolean actionClicked) {
                                         if (actionClicked) {
-                                            ActivityCompat.requestPermissions(FullScreenPhotoActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                                            ActivityCompat.requestPermissions(FullScreenPhotoActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                                         } else {
                                             Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
                                             finish();
@@ -158,7 +158,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
                     case PermissionUtils.PERMISSION_NEVER_ASKED:
                     default:
-                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSIONS);
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                         break;
                 }
 
@@ -234,7 +234,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case RequestCodes.REQUEST_PERMISSIONS:
+            case RequestCodes.REQUEST_PERMISSION_WRITE:
                 if (PermissionUtils.verifyPermissions(grantResults)) {
                     downloadAlbum();
                 } else {

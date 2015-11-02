@@ -62,12 +62,8 @@ public class PointsBar extends View {
         invalidate();
     }
 
-    public void setTotalPoints(float total) {
-        mTotalPoints = total;
-        invalidate();
-    }
-
-    public void setUpVotes(float upVotes) {
+    public void setPoints(float upVotes, float totalPoints) {
+        mTotalPoints = totalPoints;
         mUpVotes = upVotes;
         invalidate();
     }

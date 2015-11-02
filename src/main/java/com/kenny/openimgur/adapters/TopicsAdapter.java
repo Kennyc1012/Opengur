@@ -2,6 +2,7 @@ package com.kenny.openimgur.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -23,12 +24,16 @@ public class TopicsAdapter extends ArrayAdapter<ImgurTopic> {
         super(context, R.layout.support_simple_spinner_dropdown_item, topics);
         Resources res = context.getResources();
         boolean isDark = OpengurApp.getInstance(context).getImgurTheme().isDarkTheme;
-        mColor = isDark ? res.getColor(R.color.background_material_dark) : res.getColor(R.color.background_material_light);
+        mColor = isDark ? res.getColor(R.color.bg_dark) : res.getColor(R.color.bg_light);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        TextView label = (TextView) super.getView(position, convertView, parent);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.topics_tb_item, parent, false);
+        }
+
+        TextView label = (TextView) convertView;
         label.setText(this.getItem(position).getName());
         return label;
     }

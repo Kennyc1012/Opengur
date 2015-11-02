@@ -27,14 +27,14 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.RequestBody;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.RetrofitError;
-import retrofit.mime.TypedFile;
-import retrofit.mime.TypedString;
+import retrofit.Response;
 
 /**
  * Created by kcampagna on 6/30/15.
@@ -115,13 +115,13 @@ public class UploadService extends IntentService {
             for (int i = 0; i < totalUploads; i++) {
                 Upload u = uploads.get(i);
                 mNotification.onPhotoUploading(totalUploads, i + 1);
-                PhotoResponse response = null;
+                Response<PhotoResponse> response = null;
 
                 try {
                     LogUtil.v(TAG, "Uploading photo " + (i + 1) + " of " + totalUploads);
 
                     if (u.isLink()) {
-                        response = ApiClient.getService().uploadLink(u.getLocation(), u.getTitle(), u.getDescription(), "URL");
+                        response = ApiClient.getService().uploadLink(u.getLocation(), u.getTitle(), u.getDescription(), "URL").execute();
                     } else {
                         File file = new File(u.getLocation());
 
@@ -136,23 +136,27 @@ public class UploadService extends IntentService {
                                 type = "image/jpeg";
                             }
 
-                            TypedFile uploadFile = new TypedFile(type, file);
-                            TypedString uploadTitle = !TextUtils.isEmpty(u.getTitle()) ? new TypedString(u.getTitle()) : null;
-                            TypedString uploadDesc = !TextUtils.isEmpty(u.getDescription()) ? new TypedString(u.getDescription()) : null;
-                            TypedString uploadType = new TypedString("file");
-                            response = ApiClient.getService().uploadPhoto(uploadFile, uploadTitle, uploadDesc, uploadType);
+                            RequestBody uploadFile = RequestBody.create(MediaType.parse(type), file);
+                            RequestBody uploadTitle = null;
+                            RequestBody uploadDesc = null;
+                            RequestBody uploadType = RequestBody.create(MediaType.parse("text/plain"), "file");
+                            if (!TextUtils.isEmpty(u.getTitle()))
+                                uploadTitle = RequestBody.create(MediaType.parse("text/plain"), u.getTitle());
+                            if (!TextUtils.isEmpty(u.getDescription()))
+                                uploadDesc = RequestBody.create(MediaType.parse("text/plain"), u.getDescription());
+                            response = ApiClient.getService().uploadPhoto(uploadFile, uploadTitle, uploadDesc, uploadType).execute();
                         } else {
                             LogUtil.w(TAG, "Unable to find file at location " + u.getLocation());
                         }
                     }
-                } catch (RetrofitError ex) {
+                } catch (Exception ex) {
                     LogUtil.e(TAG, "Error uploading image", ex);
                     response = null;
                 }
 
-                if (response != null && response.data != null) {
-                    sql.insertUploadedPhoto(response.data);
-                    uploadedPhotos.add(response.data);
+                if (response != null && response.body() != null && response.body().data != null) {
+                    sql.insertUploadedPhoto(response.body().data);
+                    uploadedPhotos.add(response.body().data);
                 }
             }
 
@@ -237,12 +241,14 @@ public class UploadService extends IntentService {
                 if (i != uploadedPhotos.size() - 1) sb.append(",");
             }
 
-            BasicObjectResponse response = ApiClient.getService().createAlbum(sb.toString(), coverId, title, desc);
+            Response<BasicObjectResponse> response = ApiClient.getService().createAlbum(sb.toString(), coverId, title, desc).execute();
 
-            if (response != null && response.data != null) {
+            if (response != null && response.body() != null && response.body().data != null) {
+                ImgurBaseObject object = response.body().data;
+
                 // The response only contains the id and the delete hash, we need to construct the object from them
-                String link = "https://imgur.com/a/" + response.data.getId();
-                ImgurAlbum album = new ImgurAlbum(response.data.getId(), title, link, response.data.getDeleteHash());
+                String link = "https://imgur.com/a/" + object.getId();
+                ImgurAlbum album = new ImgurAlbum(object.getId(), title, link, object.getDeleteHash());
                 album.setCoverId(coverId);
                 OpengurApp.getInstance(getApplicationContext()).getSql().insertUploadedAlbum(album);
 
@@ -257,7 +263,7 @@ public class UploadService extends IntentService {
                 LogUtil.w(TAG, "Response did not receive an object");
                 mNotification.onAlbumCreationFailed();
             }
-        } catch (RetrofitError ex) {
+        } catch (Exception ex) {
             LogUtil.e(TAG, "Error while creating album", ex);
             mNotification.onAlbumCreationFailed();
         }
@@ -274,14 +280,14 @@ public class UploadService extends IntentService {
         mNotification.onSubmitToGallery();
 
         try {
-            BasicResponse response = ApiClient.getService().submitToGallery(upload.getId(), title, topicId, "1");
+            Response<BasicResponse> response = ApiClient.getService().submitToGallery(upload.getId(), title, topicId, "1").execute();
 
-            if (response != null && response.data) {
+            if (response != null && response.body() != null && response.body().data) {
                 mNotification.onSuccessfulUpload(upload);
             } else {
                 mNotification.onGallerySubmitFailed(upload);
             }
-        } catch (RetrofitError ex) {
+        } catch (Exception ex) {
             LogUtil.e(TAG, "Error while submitting to gallery", ex);
             mNotification.onGallerySubmitFailed(upload);
         }
@@ -337,7 +343,7 @@ public class UploadService extends IntentService {
 
             builder.setContentTitle(app.getString(R.string.upload_complete))
                     .setContentText(app.getString(R.string.upload_success, url))
-                    .addAction(R.drawable.ic_action_copy, app.getString(R.string.copy_link), pIntent)
+                    .addAction(R.drawable.ic_action_copy_24dp, app.getString(R.string.copy_link), pIntent)
                     .setProgress(0, 0, false)
                     .setContentInfo(null);
 
@@ -356,7 +362,7 @@ public class UploadService extends IntentService {
 
             builder.setContentTitle(app.getString(R.string.error))
                     .setContentText(app.getString(R.string.upload_gallery_failed))
-                    .addAction(R.drawable.ic_action_copy, app.getString(R.string.copy_link), pIntent)
+                    .addAction(R.drawable.ic_action_copy_24dp, app.getString(R.string.copy_link), pIntent)
                     .setProgress(0, 0, false)
                     .setContentInfo(null)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(app.getString(R.string.upload_gallery_failed_long)));
@@ -417,7 +423,7 @@ public class UploadService extends IntentService {
                     .setContentText(app.getString(R.string.upload_notif_error_upload_incomplete_short))
                     .setProgress(0, 0, false)
                     .setAutoCancel(true)
-                    .addAction(R.drawable.ic_action_copy, app.getString(R.string.copy_link), pIntent)
+                    .addAction(R.drawable.ic_action_copy_24dp, app.getString(R.string.copy_link), pIntent)
                     .setStyle(new NotificationCompat
                             .BigTextStyle()
                             .bigText(msg));

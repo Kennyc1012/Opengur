@@ -26,4 +26,15 @@
         android:textAppearance="@style/TextAppearance.Regular"
         tools:text="160 Points" />
 
+    <ImageView
+        android:id="@+id/itemType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top"
+        android:background="@color/black_55"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_gif_24dp" />
+
 </FrameLayout>

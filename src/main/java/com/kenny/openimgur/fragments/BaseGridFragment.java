@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.AbsListView;
@@ -32,8 +34,8 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.OnClick;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Base class for fragments that display images in a grid like style
@@ -100,7 +102,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         mGrid.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true, this));
         mGrid.setOnItemClickListener(this);
         mRefreshLayout.setColorSchemeColors(getResources().getColor(theme.accentColor));
-        int bgColor = theme.isDarkTheme ? R.color.background_material_dark : R.color.background_material_light;
+        int bgColor = theme.isDarkTheme ? R.color.bg_dark : R.color.bg_light;
         mRefreshLayout.setProgressBackgroundColorSchemeColor(getResources().getColor(bgColor));
         onRestoreSavedInstance(savedInstanceState);
     }
@@ -308,42 +310,37 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     }
 
     @Override
-    public void success(GalleryResponse galleryResponse, Response response) {
+    public void onResponse(Response<GalleryResponse> response, Retrofit retrofit) {
         if (!isAdded()) return;
-        onApiResult(galleryResponse);
+
+        if (response != null) {
+            if (response.body() != null) {
+                onApiResult(response.body());
+            } else {
+                onApiFailure(ApiClient.getErrorCode(response.code()));
+            }
+        } else {
+            onApiFailure(R.string.error_generic);
+        }
     }
 
     @Override
-    public void failure(RetrofitError error) {
+    public void onFailure(Throwable t) {
         if (!isAdded()) return;
-
-        if (getAdapter() == null || getAdapter().isEmpty()) {
-            if (mListener != null) mListener.onError();
-            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(error));
-            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-        }
-
-        mIsLoading = false;
-        if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
+        onApiFailure(ApiClient.getErrorCode(t));
     }
 
     protected void onEmptyResults() {
         mHasMore = false;
 
-        if (getAdapter() == null || getAdapter().isEmpty()) {
+        if (mMultiStateView.getView(MultiStateView.VIEW_STATE_EMPTY) != null && (getAdapter() == null || getAdapter().isEmpty())) {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
 
         if (mListener != null) mListener.onUpdateActionBar(true);
     }
 
-    protected void onApiResult(GalleryResponse galleryResponse) {
-        if (galleryResponse == null) {
-            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, R.string.error_generic);
-            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-            return;
-        }
-
+    protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
         if (!galleryResponse.data.isEmpty()) {
             if (getAdapter() == null) {
                 setUpGridTop();
@@ -367,6 +364,17 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
             }
         } else {
             onEmptyResults();
+        }
+
+        mIsLoading = false;
+        if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
+    }
+
+    protected void onApiFailure(@StringRes int errorString) {
+        if (getAdapter() == null || getAdapter().isEmpty()) {
+            if (mListener != null) mListener.onError();
+            ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, errorString);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
 
         mIsLoading = false;

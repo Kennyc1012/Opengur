@@ -18,21 +18,23 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.adapters.TopicsAdapter;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurTheme;
+import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
-import com.kenny.openimgur.fragments.GalleryFilterFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.MemeFragment;
 import com.kenny.openimgur.fragments.RandomFragment;
-import com.kenny.openimgur.fragments.RedditFilterFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.fragments.TopicsFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
@@ -40,6 +42,8 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -97,6 +101,9 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     @Bind(R.id.badgeContainer)
     View mBadgeContainer;
 
+    @Bind(R.id.topicsSpinner)
+    Spinner mTopicsSpinner;
+
     private int mCurrentPage = -1;
 
     private ImgurTheme mSavedTheme;
@@ -117,6 +124,24 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         mNavigationView.setItemIconTintList(selector);
         setupToolBar();
         mNagOnExit = app.getPreferences().getBoolean(SettingsActivity.KEY_CONFIRM_EXIT, true);
+
+        mTopicsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Fragment fragment = getFragmentManager().findFragmentById(R.id.container);
+
+                // Should always be the case if the spinner is visible
+                if (fragment instanceof TopicsFragment) {
+                    ImgurTopic topic = (ImgurTopic) mTopicsSpinner.getAdapter().getItem(mTopicsSpinner.getSelectedItemPosition());
+                    ((TopicsFragment) fragment).onTopicChanged(topic);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // NOOP
+            }
+        });
     }
 
     /**
@@ -126,7 +151,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         setSupportActionBar(mToolBar);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-        ab.setHomeAsUpIndicator(R.drawable.ic_action_navigation_menu);
+        ab.setHomeAsUpIndicator(R.drawable.ic_action_navigation_menu_24dp);
         ab.setHomeButtonEnabled(true);
     }
 
@@ -224,7 +249,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             int notificationCount = app.getSql().getNotifications(true).size();
             updateNotificationBadge(notificationCount);
         } else {
-            mAvatar.setImageResource(R.drawable.ic_account_circle);
+            mAvatar.setImageResource(R.drawable.ic_account_circle_24dp);
             mName.setText(R.string.profile);
             mRep.setText(R.string.login_msg);
             mBadge.setVisibility(View.GONE);
@@ -330,6 +355,9 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         if (fragment != null) {
             getFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
             onUpdateActionBar(true);
+            boolean hasSpinner = fragment instanceof TopicsFragment;
+            mTopicsSpinner.setVisibility(hasSpinner ? View.VISIBLE : View.GONE);
+            getSupportActionBar().setDisplayShowTitleEnabled(!hasSpinner);
         }
     }
 
@@ -371,6 +399,23 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         getSupportActionBar().setTitle(title);
     }
 
+    @Override
+    public void onUpdateActionBarSpinner(List<ImgurTopic> topics, @Nullable ImgurTopic currentTopic) {
+        int selectedPosition = 0;
+
+        if (currentTopic != null) {
+            for (int i = 0; i < topics.size(); i++) {
+                if (topics.get(i).equals(currentTopic)) {
+                    selectedPosition = i;
+                    break;
+                }
+            }
+        }
+
+        mTopicsSpinner.setAdapter(new TopicsAdapter(this, topics));
+        mTopicsSpinner.setSelection(selectedPosition);
+    }
+
     private void toggleFAB(boolean shouldShow) {
         if (shouldShow) {
             if (mIsFABShowing) {
@@ -408,19 +453,6 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     public void onBackPressed() {
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawers();
-            return;
-        } else if (getFragmentManager().findFragmentByTag("filter") != null) {
-            FragmentManager fm = getFragmentManager();
-            Fragment fragment = fm.findFragmentByTag("filter");
-
-            if (fragment instanceof GalleryFilterFragment) {
-                ((GalleryFilterFragment) fragment).dismiss(null, null, null);
-            } else if (fragment instanceof RedditFilterFragment) {
-                ((RedditFilterFragment) fragment).dismiss(null, null);
-            } else {
-                fm.beginTransaction().remove(fragment).commit();
-            }
-
             return;
         } else if (mNagOnExit) {
             showExitNag();

@@ -2,7 +2,9 @@ package com.kenny.openimgur.api;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.kenny.openimgur.api.responses.OAuthResponse;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
@@ -13,7 +15,7 @@ import com.squareup.okhttp.Response;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-import retrofit.RetrofitError;
+import retrofit.Call;
 
 /**
  * Created by kcampagna on 7/15/15.
@@ -23,33 +25,68 @@ public class OAuthInterceptor implements Interceptor {
 
     private static final Object sLock = new Object();
 
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+
+    @Nullable
+    private static String sAccessToken = null;
+
+    private int mRetryAttempts = 0;
+
+    public OAuthInterceptor(@Nullable String token) {
+        sAccessToken = token;
+    }
+
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Request request = chain.request();
+        Request original = chain.request();
+        Request.Builder builder = original.newBuilder();
+        builder.addHeader(AUTHORIZATION_HEADER, getAuthorizationHeader());
+        Request request = builder.method(original.method(), original.body()).build();
+        LogUtil.v(TAG, "Making request to " + request.urlString());
         Response response = chain.proceed(request);
 
         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED || response.code() == HttpURLConnection.HTTP_FORBIDDEN) {
-            String token = ApiClient.getAccessToken();
+            String token = sAccessToken;
 
             if (!TextUtils.isEmpty(token)) {
                 LogUtil.v(TAG, "Token is no longer valid");
 
                 synchronized (sLock) {
-                    String currentToken = ApiClient.getAccessToken();
+                    String currentToken = sAccessToken;
 
                     // Check if our current token has been updated, if it hasn't fetch a new one.
                     if (!TextUtils.isEmpty(currentToken) && currentToken.equals(token)) {
-                        ApiClient.setAccessToken(refreshToken(OpengurApp.getInstance()));
+                        // Try 5 times to get a refresh token
+                        while (mRetryAttempts < 5) {
+                            sAccessToken = refreshToken(OpengurApp.getInstance());
+
+                            if (!TextUtils.isEmpty(sAccessToken)) {
+                                break;
+                            }
+
+                            try {
+                                // Delay the next request by a second so we aren't bombarding the API
+                                Thread.sleep(DateUtils.SECOND_IN_MILLIS);
+                            } catch (Exception ex) {
+                                LogUtil.v(TAG, "Sleeping thread failed", ex);
+                            }
+
+                            mRetryAttempts++;
+                        }
                     }
                 }
+                
+                mRetryAttempts = 0;
 
-                if (!TextUtils.isEmpty(ApiClient.getAccessToken())) {
+                if (!TextUtils.isEmpty(sAccessToken)) {
                     Request newRequest = request.newBuilder()
-                            .removeHeader(ApiClient.AUTHORIZATION_HEADER)
-                            .addHeader(ApiClient.AUTHORIZATION_HEADER, "Bearer " + ApiClient.getAccessToken())
+                            .removeHeader(AUTHORIZATION_HEADER)
+                            .addHeader(AUTHORIZATION_HEADER, "Bearer " + sAccessToken)
                             .build();
 
                     return chain.proceed(newRequest);
+                } else {
+                    OpengurApp.getInstance().onLogout();
                 }
             } else {
                 LogUtil.w(TAG, "Received unauthorized status from API but no access token present... wat?");
@@ -62,21 +99,42 @@ public class OAuthInterceptor implements Interceptor {
     @Nullable
     private String refreshToken(OpengurApp app) {
         try {
-            OAuthResponse response = ApiClient.getService().refreshToken(ApiClient.CLIENT_ID, ApiClient.CLIENT_SECRET, app.getUser().getRefreshToken(), "refresh_token");
+            Call<OAuthResponse> call = ApiClient.getService().refreshToken(ApiClient.CLIENT_ID, ApiClient.CLIENT_SECRET, app.getUser().getRefreshToken(), "refresh_token");
+            retrofit.Response<OAuthResponse> response = call.execute();
 
-            if (!TextUtils.isEmpty(response.access_token) && !TextUtils.isEmpty(response.refresh_token)) {
-                app.getUser().setTokens(response.access_token, response.refresh_token, response.expires_in);
-                app.getSql().updateUserTokens(response.access_token, response.refresh_token, response.expires_in);
-                return response.access_token;
+            if (response == null || response.body() == null) {
+                LogUtil.e(TAG, "Response came back as null");
+                return null;
+            }
+
+            OAuthResponse oAuthResponse = response.body();
+
+            if (!TextUtils.isEmpty(oAuthResponse.access_token) && !TextUtils.isEmpty(oAuthResponse.refresh_token)) {
+                app.getUser().setTokens(oAuthResponse.access_token, oAuthResponse.refresh_token, oAuthResponse.expires_in);
+                app.getSql().updateUserTokens(oAuthResponse.access_token, oAuthResponse.refresh_token, oAuthResponse.expires_in);
+                return oAuthResponse.access_token;
             }
 
             app.onLogout();
-            return null;
-        } catch (RetrofitError error) {
+        } catch (Throwable error) {
             LogUtil.e(TAG, "Error while refreshing token, logging out user", error);
-            app.onLogout();
+            CrashlyticsCore.getInstance().logException(error);
         }
 
         return null;
+    }
+
+    private String getAuthorizationHeader() {
+        if (!TextUtils.isEmpty(sAccessToken)) {
+            LogUtil.v(TAG, "Access Token present");
+            return "Bearer " + sAccessToken;
+        } else {
+            LogUtil.v(TAG, "No access token present, using Client-ID");
+            return "Client-ID " + ApiClient.CLIENT_ID;
+        }
+    }
+
+    public static void setAccessToken(@Nullable String token) {
+        sAccessToken = token;
     }
 }

@@ -78,7 +78,7 @@ public class LoadingDialogFragment extends DialogFragment {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         CardView cardView = (CardView) view;
         ImgurTheme theme = OpengurApp.getInstance(getActivity()).getImgurTheme();
-        cardView.setCardBackgroundColor(getResources().getColor(theme.isDarkTheme ? R.color.background_material_dark : R.color.background_material_light));
+        cardView.setCardBackgroundColor(getResources().getColor(theme.isDarkTheme ? R.color.bg_dark : R.color.bg_light));
         setCancelable(getArguments().getBoolean(KEY_CANCELABLE, true));
         mMessage.setText(getArguments().getInt(KEY_MESSAGE));
         set = new AnimatorSet();

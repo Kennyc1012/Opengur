@@ -21,14 +21,14 @@
     <style name="Theme_Light">
         <item name="android:textColorLink">?colorAccent</item>
         <item name="cardBG">@color/cardview_light_background</item>
-        <item name="emptyDrawableUploads">@drawable/empty_uploads_light</item>
-        <item name="emptyDrawableMessages">@drawable/no_comments_light</item>
-        <item name="emptyDrawableNotifications">@drawable/no_notifications_light</item>
-        <item name="errorDrawable">@drawable/error_light</item>
+        <item name="emptyDrawableUploads">@drawable/empty_uploads_light_140dp</item>
+        <item name="emptyDrawableMessages">@drawable/no_comments_light_140dp</item>
+        <item name="emptyDrawableNotifications">@drawable/no_notifications_light_140dp</item>
+        <item name="errorDrawable">@drawable/error_light_140dp</item>
         <item name="repliesDrawable">@drawable/ic_add_black_18dp</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
         <item name="toolBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
-        <item name="dividerColor">@color/background_material_dark</item>
+        <item name="dividerColor">@color/bg_dark</item>
         <item name="snack_bar_text_action_color">?colorAccent</item>
     </style>
 
@@ -123,17 +123,17 @@
     <style name="Theme_Dark">
         <item name="android:textColorLink">?colorAccent</item>
         <item name="cardBG">@color/card_bg_dark</item>
-        <item name="emptyDrawableUploads">@drawable/empty_uploads_dark</item>
-        <item name="emptyDrawableMessages">@drawable/no_comments_dark</item>
-        <item name="emptyDrawableNotifications">@drawable/no_notifications_dark</item>
-        <item name="errorDrawable">@drawable/error_dark</item>
+        <item name="emptyDrawableUploads">@drawable/empty_uploads_dark_140dp</item>
+        <item name="emptyDrawableMessages">@drawable/no_comments_dark_140dp</item>
+        <item name="emptyDrawableNotifications">@drawable/no_notifications_dark_140dp</item>
+        <item name="errorDrawable">@drawable/error_dark_140dp</item>
         <item name="repliesDrawable">@drawable/ic_add_white_18dp</item>
-        <item name="snack_bar_background_color">@color/background_floating_material_light</item>
+        <item name="snack_bar_background_color">@android:color/white</item>
         <item name="snack_bar_text_color">@android:color/black</item>
         <item name="snack_bar_text_action_color">?colorAccent</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
         <item name="toolBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
-        <item name="dividerColor">@color/background_material_light</item>
+        <item name="dividerColor">@color/bg_light</item>
     </style>
 
     <style name="Theme_Dark.Blue">

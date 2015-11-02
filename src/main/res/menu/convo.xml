@@ -6,7 +6,7 @@
     <item
         android:id="@+id/profile"
         android:title="@string/view_user"
-        android:icon="@drawable/ic_action_user"
+        android:icon="@drawable/ic_action_user_24dp"
         app:showAsAction="ifRoom" />
 
     <item

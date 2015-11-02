@@ -24,7 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                tools:src="@drawable/error_dark" />
+                tools:src="@drawable/error_dark_140dp" />
 
             <TextView
                 android:id="@+id/topText"

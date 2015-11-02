@@ -27,8 +27,8 @@ import com.kennyc.view.MultiStateView;
 import java.util.ArrayList;
 
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 12/27/14.
@@ -59,7 +59,7 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
     @Override
     protected void fetchGallery() {
         super.fetchGallery();
-        ApiClient.getService().getProfileUploads(user.getUsername(), mCurrentPage, this);
+        ApiClient.getService().getProfileUploads(user.getUsername(), mCurrentPage).enqueue(this);
     }
 
     @Override
@@ -136,12 +136,12 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
     private void deletePhoto(final ImgurBaseObject photo) {
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
-        ApiClient.getService().deletePhoto(photo.getDeleteHash(), new Callback<BasicResponse>() {
+        ApiClient.getService().deletePhoto(photo.getDeleteHash()).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void success(BasicResponse basicResponse, Response response) {
+            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
                 if (!isAdded()) return;
 
-                if (basicResponse != null && basicResponse.data) {
+                if (response != null && response.body() != null && response.body().data) {
                     GalleryAdapter2 adapter = getAdapter();
 
                     if (adapter != null) {
@@ -161,9 +161,9 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Throwable t) {
                 if (!isAdded()) return;
-                LogUtil.e(TAG, "Unable to delete photo", error);
+                LogUtil.e(TAG, "Unable to delete photo", t);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 SnackBar.show(getActivity(), R.string.error_generic);
             }

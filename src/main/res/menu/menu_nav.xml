@@ -6,12 +6,12 @@
 
         <item
             android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_action_gallery"
+            android:icon="@drawable/ic_action_gallery_24dp"
             android:title="@string/nav_gallery" />
 
         <item
             android:id="@+id/nav_topics"
-            android:icon="@drawable/ic_action_quotes"
+            android:icon="@drawable/ic_action_quotes_24dp"
             android:title="@string/nav_topics" />
 
         <item
@@ -21,16 +21,16 @@
 
         <item
             android:id="@+id/nav_reddit"
-            android:icon="@drawable/ic_action_reddit"
+            android:icon="@drawable/ic_action_reddit_24dp"
             android:title="@string/nav_reddit" />
 
         <item
             android:id="@+id/nav_random"
-            android:icon="@drawable/ic_action_shuffle"
+            android:icon="@drawable/ic_action_shuffle_24dp"
             android:title="@string/nav_random" />
         <item
             android:id="@+id/nav_uploads"
-            android:icon="@drawable/ic_action_upload"
+            android:icon="@drawable/ic_action_upload_24dp"
             android:title="@string/nav_uploads" />
     </group>
 
@@ -40,23 +40,18 @@
 
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_action_settings"
+            android:icon="@drawable/ic_action_settings_24dp"
             android:title="@string/nav_settings" />
 
         <item
             android:id="@+id/nav_beta"
-            android:icon="@drawable/ic_action_social_people"
+            android:icon="@drawable/ic_action_social_people_24dp"
             android:title="@string/nav_beta" />
 
         <item
             android:id="@+id/nav_feedback"
-            android:icon="@drawable/ic_action_email"
+            android:icon="@drawable/ic_action_email_24dp"
             android:title="@string/nav_feedback" />
-
-        <!-- This item is so the list isn't underneath the transparent nav bar -->
-        <item
-            android:enabled="false"
-            android:title="@null" />
     </group>
 
 </menu>

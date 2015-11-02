@@ -3,7 +3,6 @@ package com.kenny.openimgur.api;
 
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.text.TextUtils;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -14,17 +13,14 @@ import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
-import com.kenny.openimgur.util.LogUtil;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.net.HttpURLConnection;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.OkClient;
-import retrofit.converter.GsonConverter;
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
 
 
 /**
@@ -32,22 +28,15 @@ import retrofit.converter.GsonConverter;
  */
 
 public class ApiClient {
-    private static final String TAG = ApiClient.class.getSimpleName();
-
     private static final String API_URL = "https://api.imgur.com";
 
-    private static RestAdapter sRestAdapter;
+    private static Retrofit sRestAdapter;
 
     private static ImgurService sService;
 
     public static final String CLIENT_ID = BuildConfig.API_CLIENT_ID;
 
     public static final String CLIENT_SECRET = BuildConfig.API_CLIENT_SECRET;
-
-    public static final String AUTHORIZATION_HEADER = "Authorization";
-
-    @Nullable
-    private static String sAccessToken = null;
 
     /**
      * Returns the service used for API requests
@@ -56,55 +45,36 @@ public class ApiClient {
      */
     public static ImgurService getService() {
         if (sRestAdapter == null || sService == null) {
-            sRestAdapter = new RestAdapter.Builder()
-                    .setEndpoint(API_URL)
-                    .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.BASIC : RestAdapter.LogLevel.NONE)
-                    .setRequestInterceptor(getRequestInterceptor())
-                    .setClient(getClient())
-                    .setConverter(getConverter())
+            ImgurUser user = OpengurApp.getInstance().getUser();
+
+            sRestAdapter = new Retrofit.Builder()
+                    .baseUrl(API_URL)
+                    .client(getClient(user))
+                    .addConverterFactory(getConverter())
                     .build();
 
             sService = sRestAdapter.create(ImgurService.class);
-
-            ImgurUser user = OpengurApp.getInstance().getUser();
-            if (user != null) sAccessToken = user.getAccessToken();
         }
 
         return sService;
 
     }
 
-    private static RequestInterceptor getRequestInterceptor() {
-        return new RequestInterceptor() {
-            @Override
-            public void intercept(RequestFacade request) {
-
-                if (!TextUtils.isEmpty(sAccessToken)) {
-                    LogUtil.v(TAG, "Access Token present");
-                    request.addHeader(AUTHORIZATION_HEADER, "Bearer " + sAccessToken);
-                } else {
-                    LogUtil.v(TAG, "No access token present, using Client-ID");
-                    request.addHeader(AUTHORIZATION_HEADER, "Client-ID " + CLIENT_ID);
-                }
-            }
-        };
-    }
-
-    private static OkClient getClient() {
+    private static OkHttpClient getClient(@Nullable ImgurUser user) {
         OkHttpClient client = new OkHttpClient();
         client.setConnectTimeout(15, TimeUnit.SECONDS);
-        client.interceptors().add(new OAuthInterceptor());
-        return new OkClient(client);
+        client.interceptors().add(new OAuthInterceptor(user != null ? user.getAccessToken() : null));
+        return client;
     }
 
-    private static GsonConverter getConverter() {
+    private static GsonConverterFactory getConverter() {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(ImgurBaseObject.class, new ImgurSerializer())
                 .registerTypeAdapter(ConvoResponse.class, new ConvoResponse())
                 .create();
 
-        return new GsonConverter(gson);
+        return GsonConverterFactory.create(gson);
     }
 
     /**
@@ -114,27 +84,16 @@ public class ApiClient {
      * @return
      */
     @StringRes
-    public static int getErrorCode(RetrofitError error) {
-        switch (error.getKind()) {
-            case NETWORK:
-                return R.string.error_network;
-
-            case HTTP:
-                if (error.getResponse() != null) {
-                    return getErrorCode(error.getResponse().getStatus());
-                } else {
-                    return R.string.error_generic;
-                }
-
-            case CONVERSION:
-            case UNEXPECTED:
-            default:
-                return R.string.error_generic;
+    public static int getErrorCode(Throwable error) {
+        if (error instanceof UnknownHostException) {
+            return R.string.error_network;
         }
+
+        return R.string.error_generic;
     }
 
     /**
-     * Returns the string resource for the HTTP status thrown in an error
+     * Returns the string resource for the HTTP status returned by the API
      *
      * @param httpStatus
      * @return
@@ -157,14 +116,5 @@ public class ApiClient {
             default:
                 return R.string.error_generic;
         }
-    }
-
-    public static void setAccessToken(String token) {
-        sAccessToken = token;
-    }
-
-    @Nullable
-    public static String getAccessToken() {
-        return sAccessToken;
     }
 }
