@@ -64,18 +64,18 @@ public class OAuthInterceptor implements Interceptor {
                                 break;
                             }
 
+                            mRetryAttempts++;
+
                             try {
-                                // Delay the next request by a second so we aren't bombarding the API
-                                Thread.sleep(DateUtils.SECOND_IN_MILLIS);
+                                // Delay the next request by several seconds so we aren't bombarding the API
+                                Thread.sleep(DateUtils.SECOND_IN_MILLIS * mRetryAttempts);
                             } catch (Exception ex) {
                                 LogUtil.v(TAG, "Sleeping thread failed", ex);
                             }
-
-                            mRetryAttempts++;
                         }
                     }
                 }
-                
+
                 mRetryAttempts = 0;
 
                 if (!TextUtils.isEmpty(sAccessToken)) {
