@@ -89,7 +89,7 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
     compile 'com.kennyc:snackbar:2.5'
     compile 'com.kennyc:multistateview:1.1'
-    compile 'com.github.Kennyc1012:BottomSheet:2.0.3'
+    compile 'com.github.Kennyc1012:BottomSheet:2.0.4'
     compile 'com.kennyc:text-drawable:1.0'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.jakewharton:butterknife:7.0.1'
