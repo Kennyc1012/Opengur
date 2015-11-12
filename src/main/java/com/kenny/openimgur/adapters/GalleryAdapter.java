@@ -145,11 +145,64 @@ public class GalleryAdapter extends ImgurBaseAdapter<ImgurBaseObject> {
             }
 
             displayImage(holder.image, photoUrl);
-            int gifVisibility = photoObject.isAnimated() ? View.VISIBLE : View.GONE;
-            holder.itemType.setVisibility(gifVisibility);
+
+            if(photoObject.isAnimated()) {
+                holder.itemType.setVisibility(View.VISIBLE);
+                holder.itemType.setImageResource(R.drawable.ic_gif_24dp);
+                holder.itemType.setBackgroundColor(mResources.getColor(R.color.black_55));
+            }else{
+                holder.itemType.setVisibility(View.GONE);
+            }
         } else if (obj instanceof ImgurAlbum) {
-            displayImage(holder.image, ((ImgurAlbum) obj).getCoverUrl(mThumbnailQuality));
-            holder.itemType.setVisibility(View.GONE);
+            ImgurAlbum album = ((ImgurAlbum) obj);
+            displayImage(holder.image, album.getCoverUrl(mThumbnailQuality));
+            int albumImageId;
+
+            switch (album.getAlbumImageCount()) {
+                case 1:
+                    albumImageId = R.drawable.numeric_1_box_24dp;
+                    break;
+
+                case 2:
+                    albumImageId = R.drawable.numeric_2_box_24dp;
+                    break;
+
+                case 3:
+                    albumImageId = R.drawable.numeric_3_box_24dp;
+                    break;
+
+                case 4:
+                    albumImageId = R.drawable.numeric_4_box_24dp;
+                    break;
+
+                case 5:
+                    albumImageId = R.drawable.numeric_5_box_24dp;
+                    break;
+
+                case 6:
+                    albumImageId = R.drawable.numeric_6_box_24dp;
+                    break;
+
+                case 7:
+                    albumImageId = R.drawable.numeric_7_box_24dp;
+                    break;
+
+                case 8:
+                    albumImageId = R.drawable.numeric_8_box_24dp;
+                    break;
+
+                case 9:
+                    albumImageId = R.drawable.numeric_9_box_24dp;
+                    break;
+
+                default:
+                    albumImageId = R.drawable.numeric_9_plus_box_24dp;
+                    break;
+            }
+
+            holder.itemType.setImageResource(albumImageId);
+            holder.itemType.setVisibility(View.VISIBLE);
+            holder.itemType.setBackground(null);
         } else {
             String url = ImgurBaseObject.getThumbnail(obj.getId(), obj.getLink(), mThumbnailQuality);
             displayImage(holder.image, url);

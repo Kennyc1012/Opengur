@@ -19,13 +19,8 @@ public class ImgurAlbum extends ImgurBaseObject {
     @SerializedName("cover")
     private String mCoverId;
 
-    private String mCoverUrl;
-
-    @SerializedName("cover_width")
-    private int mCoverWidth;
-
-    @SerializedName("cover_height")
-    private int mCoverHeight;
+    @SerializedName("images_count")
+    private int mAlbumImageCount;
 
     private List<ImgurPhoto> mAlbumPhotos;
 
@@ -39,10 +34,8 @@ public class ImgurAlbum extends ImgurBaseObject {
 
     private ImgurAlbum(Parcel in) {
         super(in);
+        mAlbumImageCount = in.readInt();
         mCoverId = in.readString();
-        mCoverUrl = in.readString();
-        mCoverWidth = in.readInt();
-        mCoverHeight = in.readInt();
         mAlbumPhotos = new ArrayList<>();
         in.readTypedList(mAlbumPhotos, ImgurPhoto.CREATOR);
     }
@@ -53,14 +46,6 @@ public class ImgurAlbum extends ImgurBaseObject {
 
     public String getCoverId() {
         return mCoverId;
-    }
-
-    public int getCoverWidth() {
-        return mCoverWidth;
-    }
-
-    public int getCoverHeight() {
-        return mCoverHeight;
     }
 
     /**
@@ -77,19 +62,6 @@ public class ImgurAlbum extends ImgurBaseObject {
         }
     }
 
-    /**
-     * Adds a photo to the album
-     *
-     * @param photo
-     */
-    public void addPhotoToAlbum(ImgurPhoto photo) {
-        if (mAlbumPhotos == null) {
-            mAlbumPhotos = new ArrayList<>();
-        }
-
-        mAlbumPhotos.add(photo);
-    }
-
     public void addPhotosToAlbum(List<ImgurPhoto> photos) {
         if (mAlbumPhotos == null) {
             mAlbumPhotos = photos;
@@ -102,21 +74,14 @@ public class ImgurAlbum extends ImgurBaseObject {
         return mAlbumPhotos;
     }
 
-    /**
-     * Clears the Album of all its photos
-     */
-    public void clearAlbum() {
-        if (mAlbumPhotos != null) {
-            mAlbumPhotos.clear();
-        }
+    public int getAlbumImageCount() {
+        return mAlbumPhotos != null && !mAlbumPhotos.isEmpty() ? mAlbumPhotos.size() : mAlbumImageCount;
     }
 
     public void writeToParcel(Parcel out, int flags) {
         super.writeToParcel(out, flags);
+        out.writeInt(mAlbumImageCount);
         out.writeString(mCoverId);
-        out.writeString(mCoverUrl);
-        out.writeInt(mCoverWidth);
-        out.writeInt(mCoverHeight);
         out.writeTypedList(mAlbumPhotos);
     }
 
