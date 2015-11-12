@@ -34,9 +34,6 @@ import java.util.List;
  */
 public class MemeFragment extends BaseGridFragment {
 
-    @Nullable
-    private ImgurBaseObject mSelectedItem;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,12 +50,6 @@ public class MemeFragment extends BaseGridFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (mListener != null) mListener.onUpdateActionBarTitle(getString(R.string.meme_gen));
-    }
-
-    @Override
-    public void onDestroyView() {
-        mSelectedItem = null;
-        super.onDestroyView();
     }
 
     @Override
@@ -99,8 +90,7 @@ public class MemeFragment extends BaseGridFragment {
 
     @Override
     protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        mSelectedItem = items.get(position);
-        startActivity(MemeActivity.createIntent(getActivity(), mSelectedItem));
+        startActivity(MemeActivity.createIntent(getActivity(), items.get(position)));
     }
 
     @Override
@@ -125,7 +115,7 @@ public class MemeFragment extends BaseGridFragment {
         super.onApiResult(galleryResponse);
         mHasMore = false;
 
-        if (galleryResponse != null && !galleryResponse.data.isEmpty()) {
+        if (!galleryResponse.data.isEmpty()) {
             app.getSql().deleteMemes();
             app.getSql().addMemes(galleryResponse.data);
         }
