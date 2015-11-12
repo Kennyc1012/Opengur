@@ -615,6 +615,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             if (!shouldClose) {
                 final ImgurComment comment = mCommentAdapter.getItem(position);
+                if (TextUtils.isEmpty(comment.getAuthor()) || comment.getAuthor().equals("[deleted]")) {
+                    mCommentAdapter.setSelectedIndex(-1);
+                    return;
+                }
+
                 new BottomSheet.Builder(this)
                         .setSheet(R.menu.comment_menu)
                         .setStyle(theme.getBottomSheetTheme())
