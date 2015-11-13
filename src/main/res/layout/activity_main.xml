@@ -49,7 +49,7 @@
             android:src="@drawable/ic_add_white_24dp"
             app:fabSize="normal"
             app:elevation="4dp"
-            android:elevation="4dp" />
+            app:layout_behavior="com.kenny.openimgur.ui.FabBehavior" />
 
     </android.support.design.widget.CoordinatorLayout>
 
