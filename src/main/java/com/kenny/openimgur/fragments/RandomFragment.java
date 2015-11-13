@@ -15,7 +15,7 @@ import com.kenny.openimgur.api.ApiClient;
 /**
  * Created by kcampagna on 1/27/15.
  */
-public class RandomFragment extends BaseGridFragment2 {
+public class RandomFragment extends BaseGridFragment {
 
     public static RandomFragment newInstance() {
         return new RandomFragment();
@@ -30,7 +30,7 @@ public class RandomFragment extends BaseGridFragment2 {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery2, container, false);
+        return inflater.inflate(R.layout.fragment_gallery, container, false);
     }
 
     @Override

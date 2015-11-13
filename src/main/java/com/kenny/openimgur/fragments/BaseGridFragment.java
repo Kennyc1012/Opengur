@@ -39,7 +39,7 @@ import retrofit.Retrofit;
  * Base class for fragments that display images in a grid like style
  * Created by Kenny Campagna on 12/13/2014.
  */
-public abstract class BaseGridFragment2 extends BaseFragment implements Callback<GalleryResponse>, View.OnClickListener {
+public abstract class BaseGridFragment extends BaseFragment implements Callback<GalleryResponse>, View.OnClickListener {
     private static final String KEY_CURRENT_POSITION = "position";
 
     private static final String KEY_ITEMS = "items";

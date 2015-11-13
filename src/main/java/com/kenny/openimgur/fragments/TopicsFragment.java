@@ -33,7 +33,7 @@ import retrofit.Retrofit;
 /**
  * Created by kcampagna on 2/19/15.
  */
-public class TopicsFragment extends BaseGridFragment2 {
+public class TopicsFragment extends BaseGridFragment {
     private static final String KEY_TOPIC_ID = "topics_id";
 
     private static final String KEY_SORT = "topics_sort";
@@ -57,7 +57,7 @@ public class TopicsFragment extends BaseGridFragment2 {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery2, container, false);
+        return inflater.inflate(R.layout.fragment_gallery, container, false);
     }
 
     @Override

@@ -47,7 +47,7 @@ import butterknife.OnClick;
 /**
  * Created by kcampagna on 8/14/14.
  */
-public class RedditFragment extends BaseGridFragment2 {
+public class RedditFragment extends BaseGridFragment {
     public static final String KEY_PINNED_SUBREDDITS = "pinnedSubreddits";
 
     private static final String KEY_QUERY = "query";

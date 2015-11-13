@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Created by Kenny-PC on 3/7/2015.
  */
-public class MemeFragment extends BaseGridFragment2 {
+public class MemeFragment extends BaseGridFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,7 @@ public class MemeFragment extends BaseGridFragment2 {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery2, container, false);
+        return inflater.inflate(R.layout.fragment_gallery, container, false);
     }
 
     @Override

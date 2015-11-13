@@ -37,7 +37,7 @@ import retrofit.Retrofit;
 /**
  * Created by kcampagna on 12/20/14.
  */
-public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.OnLongClickListener {
+public class ProfileFavoritesFragment extends BaseGridFragment implements View.OnLongClickListener {
     private static final String KEY_USER = "user";
 
     private ImgurUser mSelectedUser;
@@ -53,7 +53,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment2 implements View.
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery2, container, false);
+        return inflater.inflate(R.layout.fragment_gallery, container, false);
     }
 
     @Override
