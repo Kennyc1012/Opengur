@@ -51,7 +51,7 @@ import butterknife.OnClick;
 /**
  * Created by kcampagna on 10/19/14.
  */
-public class MainActivity extends BaseActivity implements FragmentListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements FragmentListener, NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     private static final String KEY_CURRENT_PAGE = "current_page";
 
     public static final int PAGE_PROFILE = 0;
@@ -86,23 +86,18 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     @Bind(R.id.navigationView)
     NavigationView mNavigationView;
 
-    @Bind(R.id.profileImg)
-    ImageView mAvatar;
-
-    @Bind(R.id.profileName)
-    TextView mName;
-
-    @Bind(R.id.reputation)
-    TextView mRep;
-
-    @Bind(R.id.badgeCount)
-    TextView mBadge;
-
-    @Bind(R.id.badgeContainer)
-    View mBadgeContainer;
-
     @Bind(R.id.topicsSpinner)
     Spinner mTopicsSpinner;
+
+    ImageView mAvatar;
+
+    TextView mName;
+
+    TextView mRep;
+
+    TextView mBadge;
+
+    View mBadgeContainer;
 
     private int mCurrentPage = -1;
 
@@ -118,6 +113,14 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        View headerView = mNavigationView.getHeaderView(0);
+        mAvatar = (ImageView) headerView.findViewById(R.id.profileImg);
+        mName = (TextView) headerView.findViewById(R.id.profileName);
+        mRep = (TextView) headerView.findViewById(R.id.reputation);
+        mBadge = (TextView) headerView.findViewById(R.id.badgeCount);
+        mBadgeContainer = headerView.findViewById(R.id.badgeContainer);
+        mBadgeContainer.setOnClickListener(this);
+        headerView.setOnClickListener(this);
         mNavigationView.setNavigationItemSelectedListener(this);
         ColorStateList selector = theme.getNavigationColors(getResources());
         mNavigationView.setItemTextColor(selector);
@@ -430,7 +433,8 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         }
     }
 
-    @OnClick({R.id.fab, R.id.header, R.id.badgeContainer})
+    @OnClick(R.id.fab)
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab:

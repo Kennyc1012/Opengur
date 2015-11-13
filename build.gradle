@@ -17,7 +17,7 @@ apply plugin: 'io.fabric'
 project.ext {
     version_name = '4.1.0'
     version_code = 58
-    support_version = '23.0.1'
+    support_version = '23.1.1'
 }
 
 repositories {
