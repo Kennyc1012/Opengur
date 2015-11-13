@@ -27,7 +27,6 @@
     <string name="down_vote">Down Vote</string>
     <string name="reply">Reply</string>
     <string name="view_user">View Profile</string>
-    <string name="accept">Accept</string>
     <string name="sort_by">Sort By</string>
     <string name="developer">Developer</string>
     <string name="version">Version</string>
@@ -88,9 +87,6 @@
 
     <!-- Filters -->
     <string name="filter">Filter</string>
-    <string name="filter_popular">Popularity</string>
-    <string name="filter_time">Newest</string>
-    <string name="filter_highest_scoring">Highest Scoring</string>
     <string name="filter_viral">Most Viral</string>
     <string name="filter_user_sub">User Submitted</string>
     <string name="reddit_top_filter_day">Day</string>
