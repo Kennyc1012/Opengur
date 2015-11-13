@@ -298,15 +298,8 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
             if (mMultiStateView != null)
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
 
-            if (mCurrentPage == 0) {
-                if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
-
-                mGrid.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mGrid != null) mGrid.scrollToPosition(0);
-                    }
-                });
+            if (mCurrentPage == 0 && mListener != null) {
+                mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
             }
         } else {
             onEmptyResults();
