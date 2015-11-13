@@ -43,7 +43,6 @@
     <string name="gallery">Gallery</string>
     <string name="send_feedback">Send Feedback</string>
     <string name="search">Search</string>
-    <string name="date_range">Date Range</string>
     <string name="options">Options</string>
     <string name="login_msg">Tap to login</string>
     <string name="dont_ask_again">Don\'t ask me again.</string>
@@ -89,11 +88,6 @@
     <string name="filter">Filter</string>
     <string name="filter_viral">Most Viral</string>
     <string name="filter_user_sub">User Submitted</string>
-    <string name="reddit_top_filter_day">Day</string>
-    <string name="reddit_top_filter_week">Week</string>
-    <string name="reddit_top_filter_month">Month</string>
-    <string name="reddit_top_filter_year">Year</string>
-    <string name="reddit_top_filter_all">All</string>
     <string name="filter_show_viral">Show Viral</string>
     <string name="sort_new">New</string>
     <string name="sort_best">Best</string>
