@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.GalleryAdapter2;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -27,7 +27,7 @@ public class SideGalleryFragment extends BaseFragment implements AdapterView.OnI
     @Bind(R.id.list)
     RecyclerView mList;
 
-    private GalleryAdapter2 mAdapter;
+    private GalleryAdapter mAdapter;
 
     private SideGalleryListener mListener;
 
@@ -82,7 +82,7 @@ public class SideGalleryFragment extends BaseFragment implements AdapterView.OnI
 
     public void addGalleryItems(ArrayList<ImgurBaseObject> galleryItems) {
         if (isAdded()) {
-            mAdapter = new GalleryAdapter2(getActivity(), SetUniqueList.decorate(galleryItems), this, false);
+            mAdapter = new GalleryAdapter(getActivity(), SetUniqueList.decorate(galleryItems), this, false);
             mList.setAdapter(mAdapter);
         }
     }

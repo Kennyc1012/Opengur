@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.GalleryAdapter2;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
@@ -59,7 +59,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements View.OnLo
     }
 
     @Override
-    protected void setAdapter(GalleryAdapter2 adapter) {
+    protected void setAdapter(GalleryAdapter adapter) {
         super.setAdapter(adapter);
         adapter.setOnLongClickPressListener(this);
     }
@@ -158,7 +158,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements View.OnLo
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data) {
-                    GalleryAdapter2 adapter = getAdapter();
+                    GalleryAdapter adapter = getAdapter();
 
                     if (adapter != null) {
                         adapter.removeItem(album);

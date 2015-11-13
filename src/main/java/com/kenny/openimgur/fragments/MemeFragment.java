@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.MemeActivity;
-import com.kenny.openimgur.adapters.GalleryAdapter2;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
@@ -104,7 +104,7 @@ public class MemeFragment extends BaseGridFragment {
 
             if (!memes.isEmpty()) {
                 LogUtil.v(TAG, "Memes found in database");
-                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(memes), this, showPoints()));
+                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(memes), this, showPoints()));
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 mHasMore = false;
             }

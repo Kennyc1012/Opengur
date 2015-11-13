@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.GalleryAdapter2;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.TopicResponse;
@@ -225,7 +225,7 @@ public class TopicsFragment extends BaseGridFragment {
     public void onTopicChanged(@NonNull ImgurTopic topic) {
         if (mTopic.getId() != topic.getId()) {
             mTopic = topic;
-            GalleryAdapter2 adapter = getAdapter();
+            GalleryAdapter adapter = getAdapter();
             if (adapter != null) adapter.clear();
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             fetchGallery();

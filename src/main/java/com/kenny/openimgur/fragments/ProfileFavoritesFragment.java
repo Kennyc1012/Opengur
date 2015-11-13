@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.adapters.GalleryAdapter2;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.BasicResponse;
@@ -94,7 +94,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
     }
 
     @Override
-    protected void setAdapter(GalleryAdapter2 adapter) {
+    protected void setAdapter(GalleryAdapter adapter) {
         super.setAdapter(adapter);
         if (mSelectedUser != null && mSelectedUser.isSelf(app))
             adapter.setOnLongClickPressListener(this);
@@ -183,7 +183,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().success) {
-                    GalleryAdapter2 adapter = getAdapter();
+                    GalleryAdapter adapter = getAdapter();
                     if (adapter != null) adapter.removeItem(object);
                     mMultiStateView.setViewState(adapter != null && adapter.isEmpty() ? MultiStateView.VIEW_STATE_EMPTY : MultiStateView.VIEW_STATE_CONTENT);
                 } else {

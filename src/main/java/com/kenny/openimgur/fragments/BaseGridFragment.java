@@ -15,7 +15,7 @@ import android.view.View;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.adapters.GalleryAdapter2;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.FragmentListener;
@@ -72,7 +72,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
 
     protected GridLayoutManager mManager;
 
-    private GalleryAdapter2 mAdapter;
+    private GalleryAdapter mAdapter;
 
     @Override
     public void onAttach(Activity activity) {
@@ -139,7 +139,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     @Override
     public void onResume() {
         super.onResume();
-        GalleryAdapter2 adapter = getAdapter();
+        GalleryAdapter adapter = getAdapter();
         SharedPreferences pref = app.getPreferences();
         boolean nsfwThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
         mAllowNSFW = pref.getBoolean(SettingsActivity.NSFW_KEY, false);
@@ -157,7 +157,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         }
     }
 
-    protected void setAdapter(GalleryAdapter2 adapter) {
+    protected void setAdapter(GalleryAdapter adapter) {
         mAdapter = adapter;
         mGrid.setAdapter(mAdapter);
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -168,7 +168,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         });
     }
 
-    protected GalleryAdapter2 getAdapter() {
+    protected GalleryAdapter getAdapter() {
         return mAdapter;
     }
 
@@ -179,9 +179,9 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         int itemPosition = adapterPosition;
 
         // Get the correct array index of the selected item
-        if (itemPosition > GalleryAdapter2.MAX_ITEMS / 2) {
-            itemPosition = items.size() == GalleryAdapter2.MAX_ITEMS
-                    ? GalleryAdapter2.MAX_ITEMS / 2
+        if (itemPosition > GalleryAdapter.MAX_ITEMS / 2) {
+            itemPosition = items.size() == GalleryAdapter.MAX_ITEMS
+                    ? GalleryAdapter.MAX_ITEMS / 2
                     : items.size() - (getAdapter().getItemCount() - itemPosition);
         }
 
@@ -218,7 +218,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(items), this, showPoints()));
+                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items), this, showPoints()));
                 mGrid.scrollToPosition(currentPosition);
                 if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
@@ -242,7 +242,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
 
     @Override
     public void onDestroyView() {
-        GalleryAdapter2 adapter = getAdapter();
+        GalleryAdapter adapter = getAdapter();
         if (adapter != null) adapter.onDestroy();
         saveFilterSettings();
         super.onDestroyView();
@@ -290,7 +290,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
         if (!galleryResponse.data.isEmpty()) {
             if (getAdapter() == null) {
-                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(galleryResponse.data), this, showPoints()));
+                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(galleryResponse.data), this, showPoints()));
             } else {
                 getAdapter().addItems(galleryResponse.data);
             }

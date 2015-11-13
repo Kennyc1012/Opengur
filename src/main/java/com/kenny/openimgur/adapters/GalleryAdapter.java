@@ -26,7 +26,7 @@ import java.util.List;
 
 import butterknife.Bind;
 
-public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
+public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
     public static final int MAX_ITEMS = 200;
 
     private int mUpvoteColor;
@@ -43,7 +43,7 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
 
     private String mThumbnailQuality;
 
-    public GalleryAdapter2(Context context, SetUniqueList<ImgurBaseObject> objects, View.OnClickListener listener) {
+    public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects, View.OnClickListener listener) {
         super(context, objects, true);
         mUpvoteColor = mResources.getColor(R.color.notoriety_positive);
         mDownVoteColor = mResources.getColor(R.color.notoriety_negative);
@@ -53,7 +53,7 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
         mClickListener = listener;
     }
 
-    public GalleryAdapter2(Context context, SetUniqueList<ImgurBaseObject> objects, View.OnClickListener listener, boolean showPoints) {
+    public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects, View.OnClickListener listener, boolean showPoints) {
         this(context, objects, listener);
         mShowPoints = showPoints;
     }
