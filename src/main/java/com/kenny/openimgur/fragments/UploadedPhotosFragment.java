@@ -197,8 +197,6 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
 
                                                 if (mAdapter.isEmpty()) {
                                                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-                                                    if (mListener != null)
-                                                        mListener.onUpdateActionBar(true);
                                                 }
                                             }
                                         })
@@ -253,7 +251,6 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         } else {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-            if (mListener != null) mListener.onUpdateActionBar(true);
         }
 
         mRefreshLayout.setRefreshing(false);

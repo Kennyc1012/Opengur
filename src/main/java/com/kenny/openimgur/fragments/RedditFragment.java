@@ -27,6 +27,7 @@ import com.kenny.openimgur.adapters.SearchAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;
+import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
 import com.kenny.openimgur.util.DBContracts;
@@ -96,7 +97,7 @@ public class RedditFragment extends BaseGridFragment {
         if (getAdapter() == null || getAdapter().isEmpty()) {
             mIsLoading = false;
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-            if (mListener != null) mListener.onLoadingComplete();
+            if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
         }
     }
 
@@ -257,7 +258,7 @@ public class RedditFragment extends BaseGridFragment {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
             if (mListener != null) {
-                mListener.onLoadingStarted();
+                mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
                 mListener.onUpdateActionBarTitle(mQuery);
             }
 

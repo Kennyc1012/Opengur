@@ -14,6 +14,7 @@ import com.kenny.openimgur.adapters.SearchAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;
+import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
@@ -103,7 +104,7 @@ public class GallerySearchFragment extends GalleryFragment {
         mIsLoading = true;
         mHasMore = true;
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
-        if (mListener != null) mListener.onLoadingStarted();
+        if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
         fetchGallery();
     }
 
@@ -131,7 +132,6 @@ public class GallerySearchFragment extends GalleryFragment {
         if (getAdapter() == null || getAdapter().isEmpty()) {
             ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, getString(R.string.reddit_empty, mQuery));
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-            if (mListener != null) mListener.onUpdateActionBar(true);
         }
     }
 

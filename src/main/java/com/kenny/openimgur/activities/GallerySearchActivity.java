@@ -62,22 +62,7 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
     }
 
     @Override
-    public void onUpdateActionBar(boolean shouldShow) {
-        setActionBarVisibility(mToolBar, shouldShow);
-    }
-
-    @Override
-    public void onLoadingStarted() {
-        // NOOP
-    }
-
-    @Override
-    public void onLoadingComplete() {
-        // NOOP
-    }
-
-    @Override
-    public void onError() {
+    public void onFragmentStateChange(@FragmentState int state) {
         // NOOP
     }
 

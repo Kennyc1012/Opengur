@@ -107,8 +107,6 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     private boolean mNagOnExit;
 
-    private boolean mIsFABShowing = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -357,7 +355,6 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
         if (fragment != null) {
             getFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
-            onUpdateActionBar(true);
             boolean hasSpinner = fragment instanceof TopicsFragment;
             mTopicsSpinner.setVisibility(hasSpinner ? View.VISIBLE : View.GONE);
             getSupportActionBar().setDisplayShowTitleEnabled(!hasSpinner);
@@ -377,29 +374,23 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     }
 
     @Override
-    public void onUpdateActionBar(boolean shouldShow) {
-        setActionBarVisibility(mToolBar, shouldShow);
-        toggleFAB(shouldShow);
-    }
+    public void onFragmentStateChange(@FragmentState int state) {
+        switch (state) {
+            case FragmentListener.STATE_LOADING_COMPLETE:
+                mUploadButton.show();
+                break;
 
-    @Override
-    public void onLoadingComplete() {
-        toggleFAB(true);
-    }
-
-    @Override
-    public void onLoadingStarted() {
-        toggleFAB(false);
-    }
-
-    @Override
-    public void onError() {
-        toggleFAB(false);
+            case FragmentListener.STATE_LOADING_STARTED:
+            case FragmentListener.STATE_ERROR:
+                mUploadButton.hide();
+                break;
+        }
     }
 
     @Override
     public void onUpdateActionBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) ab.setTitle(title);
     }
 
     @Override
@@ -417,20 +408,6 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
         mTopicsSpinner.setAdapter(new TopicsAdapter(this, topics));
         mTopicsSpinner.setSelection(selectedPosition);
-    }
-
-    private void toggleFAB(boolean shouldShow) {
-        if (shouldShow) {
-            if (mIsFABShowing) {
-                mIsFABShowing = false;
-                mUploadButton.animate().translationY(0);
-            }
-        } else {
-            if (!mIsFABShowing) {
-                mIsFABShowing = true;
-                mUploadButton.animate().translationY(mUploadButton.getHeight() * 2);
-            }
-        }
     }
 
     @OnClick(R.id.fab)

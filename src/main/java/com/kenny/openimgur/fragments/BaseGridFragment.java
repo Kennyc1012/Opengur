@@ -153,11 +153,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         if (adapter == null || adapter.isEmpty()) {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             mIsLoading = true;
-
-            if (mListener != null) {
-                mListener.onLoadingStarted();
-            }
-
+            if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
             fetchGallery();
         }
     }
@@ -202,7 +198,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         mCurrentPage = 0;
         mIsLoading = true;
         if (getAdapter() != null) getAdapter().clear();
-        if (mListener != null) mListener.onLoadingStarted();
+        if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
         fetchGallery();
     }
@@ -225,11 +221,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
                 setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(items), this, showPoints()));
                 mGrid.scrollToPosition(currentPosition);
-
-                if (mListener != null) {
-                    mListener.onLoadingComplete();
-                }
-
+                if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
         }
@@ -308,7 +300,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
 
             if (mCurrentPage == 0) {
-                if (mListener != null) mListener.onLoadingComplete();
+                if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
 
                 mGrid.post(new Runnable() {
                     @Override
@@ -327,7 +319,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
 
     protected void onApiFailure(@StringRes int errorString) {
         if (getAdapter() == null || getAdapter().isEmpty()) {
-            if (mListener != null) mListener.onError();
+            if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_ERROR);
             ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, errorString);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
@@ -342,8 +334,6 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         if (mMultiStateView.getView(MultiStateView.VIEW_STATE_EMPTY) != null && (getAdapter() == null || getAdapter().isEmpty())) {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
-
-        if (mListener != null) mListener.onUpdateActionBar(true);
     }
 
     /**

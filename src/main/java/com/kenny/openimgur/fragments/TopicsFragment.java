@@ -18,6 +18,7 @@ import com.kenny.openimgur.adapters.GalleryAdapter2;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.TopicResponse;
+import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.util.LogUtil;
@@ -145,7 +146,7 @@ public class TopicsFragment extends BaseGridFragment {
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
         if (mListener != null && mTopic != null) {
-            mListener.onLoadingStarted();
+            mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
         }
 
         fetchGallery();
@@ -185,8 +186,6 @@ public class TopicsFragment extends BaseGridFragment {
             ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, message);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
-
-        if (mListener != null) mListener.onUpdateActionBar(true);
     }
 
     @Override
