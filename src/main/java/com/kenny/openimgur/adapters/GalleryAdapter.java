@@ -93,7 +93,7 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.gallery_item2, parent, false);
+        View view = mInflater.inflate(R.layout.gallery_item, parent, false);
         view.setOnClickListener(mClickListener);
         view.setOnLongClickListener(mLongClickListener);
         return new GalleryHolder(view);
