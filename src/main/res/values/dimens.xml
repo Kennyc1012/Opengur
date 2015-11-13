@@ -8,7 +8,6 @@
     <dimen name="grid_padding">4dp</dimen>
     <dimen name="view_activity_margin">16dp</dimen>
     <dimen name="loading_circle_size">40dp</dimen>
-    <dimen name="refresh_pull_amount">32dp</dimen>
     <dimen name="badge_margin_top">0dp</dimen>
     <dimen name="notification_icon">64dp</dimen>
 

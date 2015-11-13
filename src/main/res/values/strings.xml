@@ -44,7 +44,6 @@
     <string name="gallery">Gallery</string>
     <string name="send_feedback">Send Feedback</string>
     <string name="search">Search</string>
-    <string name="section">Section</string>
     <string name="date_range">Date Range</string>
     <string name="options">Options</string>
     <string name="login_msg">Tap to login</string>
@@ -91,8 +90,6 @@
     <string name="filter">Filter</string>
     <string name="filter_popular">Popularity</string>
     <string name="filter_time">Newest</string>
-    <string name="filter_rising">Rising</string>
-    <string name="filter_top">Top</string>
     <string name="filter_highest_scoring">Highest Scoring</string>
     <string name="filter_viral">Most Viral</string>
     <string name="filter_user_sub">User Submitted</string>
@@ -102,9 +99,6 @@
     <string name="reddit_top_filter_year">Year</string>
     <string name="reddit_top_filter_all">All</string>
     <string name="filter_show_viral">Show Viral</string>
-    <string name="gallery_filter">Gallery Filter</string>
-    <string name="reddit_filter">Subreddit Filter</string>
-    <string name="topics_filter">Topics Filter</string>
     <string name="sort_new">New</string>
     <string name="sort_best">Best</string>
     <string name="sort_top">Top</string>
@@ -205,8 +199,6 @@
 
     <!-- Topics -->
     <string name="topic">Topic</string>
-    <string name="topics">Topics</string>
-    <string name="topics_empty_message">Select a topic from the filter to begin browsing</string>
     <string name="topics_empty_result">Did not find any results for %s. Select a different filter and try again.</string>
     <string name="topics_refresh">Refresh topics</string>
 
