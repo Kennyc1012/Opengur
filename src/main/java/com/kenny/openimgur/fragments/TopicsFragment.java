@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.GalleryAdapter;
+import com.kenny.openimgur.adapters.GalleryAdapter2;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.TopicResponse;
@@ -33,7 +33,7 @@ import retrofit.Retrofit;
 /**
  * Created by kcampagna on 2/19/15.
  */
-public class TopicsFragment extends BaseGridFragment {
+public class TopicsFragment extends BaseGridFragment2 {
     private static final String KEY_TOPIC_ID = "topics_id";
 
     private static final String KEY_SORT = "topics_sort";
@@ -57,7 +57,7 @@ public class TopicsFragment extends BaseGridFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery, container, false);
+        return inflater.inflate(R.layout.fragment_gallery2, container, false);
     }
 
     @Override
@@ -226,7 +226,7 @@ public class TopicsFragment extends BaseGridFragment {
     public void onTopicChanged(@NonNull ImgurTopic topic) {
         if (mTopic.getId() != topic.getId()) {
             mTopic = topic;
-            GalleryAdapter adapter = getAdapter();
+            GalleryAdapter2 adapter = getAdapter();
             if (adapter != null) adapter.clear();
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             fetchGallery();
