@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.MemeActivity;
-import com.kenny.openimgur.adapters.GalleryAdapter;
+import com.kenny.openimgur.adapters.GalleryAdapter2;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Created by Kenny-PC on 3/7/2015.
  */
-public class MemeFragment extends BaseGridFragment {
+public class MemeFragment extends BaseGridFragment2 {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,7 @@ public class MemeFragment extends BaseGridFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery, container, false);
+        return inflater.inflate(R.layout.fragment_gallery2, container, false);
     }
 
     @Override
@@ -102,8 +102,7 @@ public class MemeFragment extends BaseGridFragment {
 
             if (memes != null && !memes.isEmpty()) {
                 LogUtil.v(TAG, "Memes found in database");
-                setUpGridTop();
-                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(memes), showPoints()));
+                setAdapter(new GalleryAdapter2(getActivity(), mGrid, SetUniqueList.decorate(memes), this, showPoints()));
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 mHasMore = false;
             }
