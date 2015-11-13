@@ -3,7 +3,6 @@
 
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="gallery_column_height">160dp</dimen>
-    <dimen name="dialog_content_margin">24dp</dimen>
     <dimen name="grid_padding">4dp</dimen>
     <dimen name="view_activity_margin">16dp</dimen>
     <dimen name="loading_circle_size">40dp</dimen>
