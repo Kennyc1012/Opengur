@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -88,6 +89,9 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     @Bind(R.id.topicsSpinner)
     Spinner mTopicsSpinner;
+
+    @Bind(R.id.appbar)
+    AppBarLayout mAppBar;
 
     ImageView mAvatar;
 
@@ -358,6 +362,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             boolean hasSpinner = fragment instanceof TopicsFragment;
             mTopicsSpinner.setVisibility(hasSpinner ? View.VISIBLE : View.GONE);
             getSupportActionBar().setDisplayShowTitleEnabled(!hasSpinner);
+            mAppBar.setExpanded(true);
         }
     }
 
