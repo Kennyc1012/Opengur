@@ -111,6 +111,12 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
     }
 
     @Override
+    public void onDestroyView() {
+        if (mAdapter != null) mAdapter.onDestroy();
+        super.onDestroyView();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.uploads, menu);
         super.onCreateOptionsMenu(menu, inflater);

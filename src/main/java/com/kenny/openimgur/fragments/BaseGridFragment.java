@@ -15,7 +15,6 @@ import android.view.View;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.adapters.GalleryAdapter2;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
@@ -180,9 +179,9 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         int itemPosition = adapterPosition;
 
         // Get the correct array index of the selected item
-        if (itemPosition > GalleryAdapter.MAX_ITEMS / 2) {
-            itemPosition = items.size() == GalleryAdapter.MAX_ITEMS
-                    ? GalleryAdapter.MAX_ITEMS / 2
+        if (itemPosition > GalleryAdapter2.MAX_ITEMS / 2) {
+            itemPosition = items.size() == GalleryAdapter2.MAX_ITEMS
+                    ? GalleryAdapter2.MAX_ITEMS / 2
                     : items.size() - (getAdapter().getItemCount() - itemPosition);
         }
 
