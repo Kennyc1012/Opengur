@@ -20,6 +20,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
 
@@ -50,6 +51,7 @@ public class MemeFragment extends BaseGridFragment2 {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (mListener != null) mListener.onUpdateActionBarTitle(getString(R.string.meme_gen));
+        ViewUtils.setRecyclerViewGridDefaults(getActivity(), mGrid);
     }
 
     @Override
@@ -100,9 +102,9 @@ public class MemeFragment extends BaseGridFragment2 {
         if (getAdapter() == null || getAdapter().isEmpty()) {
             List<ImgurBaseObject> memes = app.getSql().getMemes();
 
-            if (memes != null && !memes.isEmpty()) {
+            if (!memes.isEmpty()) {
                 LogUtil.v(TAG, "Memes found in database");
-                setAdapter(new GalleryAdapter2(getActivity(), mGrid, SetUniqueList.decorate(memes), this, showPoints()));
+                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(memes), this, showPoints()));
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 mHasMore = false;
             }

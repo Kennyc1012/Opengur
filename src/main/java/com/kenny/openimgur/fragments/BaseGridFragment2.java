@@ -96,6 +96,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ViewUtils.setRecyclerViewGridDefaults(getActivity(), mGrid);
         mGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -222,7 +223,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                setAdapter(new GalleryAdapter2(getActivity(), mGrid, SetUniqueList.decorate(items), this, showPoints()));
+                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(items), this, showPoints()));
                 mGrid.scrollToPosition(currentPosition);
 
                 if (mListener != null) {
@@ -298,7 +299,7 @@ public abstract class BaseGridFragment2 extends BaseFragment implements Callback
     protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
         if (!galleryResponse.data.isEmpty()) {
             if (getAdapter() == null) {
-                setAdapter(new GalleryAdapter2(getActivity(), mGrid, SetUniqueList.decorate(galleryResponse.data), this, showPoints()));
+                setAdapter(new GalleryAdapter2(getActivity(), SetUniqueList.decorate(galleryResponse.data), this, showPoints()));
             } else {
                 getAdapter().addItems(galleryResponse.data);
             }

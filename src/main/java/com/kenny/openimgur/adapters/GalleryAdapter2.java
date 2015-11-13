@@ -3,8 +3,6 @@ package com.kenny.openimgur.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,7 +14,6 @@ import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
-import com.kenny.openimgur.ui.GridItemDecoration;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -46,11 +43,8 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
 
     private String mThumbnailQuality;
 
-    public GalleryAdapter2(Context context, RecyclerView view, SetUniqueList<ImgurBaseObject> objects, View.OnClickListener listener) {
+    public GalleryAdapter2(Context context, SetUniqueList<ImgurBaseObject> objects, View.OnClickListener listener) {
         super(context, objects, true);
-        int gridSize = mResources.getInteger(R.integer.gallery_num_columns);
-        view.setLayoutManager(new GridLayoutManager(context, gridSize));
-        view.addItemDecoration(new GridItemDecoration(mResources.getDimensionPixelSize(R.dimen.grid_padding), gridSize));
         mUpvoteColor = mResources.getColor(R.color.notoriety_positive);
         mDownVoteColor = mResources.getColor(R.color.notoriety_negative);
         SharedPreferences pref = OpengurApp.getInstance(context).getPreferences();
@@ -59,8 +53,8 @@ public class GalleryAdapter2 extends BaseRecyclerAdapter<ImgurBaseObject> {
         mClickListener = listener;
     }
 
-    public GalleryAdapter2(Context context, RecyclerView view, SetUniqueList<ImgurBaseObject> objects, View.OnClickListener listener, boolean showPoints) {
-        this(context, view, objects, listener);
+    public GalleryAdapter2(Context context, SetUniqueList<ImgurBaseObject> objects, View.OnClickListener listener, boolean showPoints) {
+        this(context, objects, listener);
         mShowPoints = showPoints;
     }
 
