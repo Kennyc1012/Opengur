@@ -58,6 +58,10 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     @Bind(R.id.refreshLayout)
     protected SwipeRefreshLayout mRefreshLayout;
 
+    @Nullable
+    @Bind(R.id.loadingFooter)
+    View mLoadingFooter;
+
     protected FragmentListener mListener;
 
     protected boolean mIsLoading = false;
@@ -262,6 +266,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
      * Configured the ApiClient to make the api request
      */
     protected void fetchGallery() {
+        if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.VISIBLE);
         mIsLoading = true;
     }
 
@@ -284,7 +289,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     public void onFailure(Throwable t) {
         if (!isAdded()) return;
         onApiFailure(ApiClient.getErrorCode(t));
-
+        if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.GONE);
     }
 
     protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
@@ -307,6 +312,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
 
         mIsLoading = false;
         if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
+        if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.GONE);
     }
 
     protected void onApiFailure(@StringRes int errorString) {
@@ -318,9 +324,11 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
 
         mIsLoading = false;
         if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
+        if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.GONE);
     }
 
     protected void onEmptyResults() {
+        if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.GONE);
         mHasMore = false;
 
         if (mMultiStateView.getView(MultiStateView.VIEW_STATE_EMPTY) != null && (getAdapter() == null || getAdapter().isEmpty())) {

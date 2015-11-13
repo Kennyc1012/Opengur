@@ -29,4 +29,6 @@
     <dimen name="upload_photo_size">96dp</dimen>
     <dimen name="upload_content_margin">100dp</dimen>
 
+    <dimen name="loading_footer_height">48dp</dimen>
+
 </resources>
