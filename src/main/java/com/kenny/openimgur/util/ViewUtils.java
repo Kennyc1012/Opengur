@@ -5,7 +5,10 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import android.widget.AbsListView;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.ui.GridItemDecoration;
 import com.kennyc.view.MultiStateView;
 
 /**
@@ -209,5 +213,18 @@ public class ViewUtils {
 
         TextView emptyTextView = (TextView) emptyView.findViewById(textViewId);
         if (emptyTextView != null) emptyTextView.setText(emptyMessage);
+    }
+
+    /**
+     * Sets up a {@link RecyclerView} for a Grid style
+     *
+     * @param context
+     * @param recyclerView
+     */
+    public static void setRecyclerViewGridDefaults(@NonNull Context context, @NonNull RecyclerView recyclerView) {
+        Resources res = context.getResources();
+        int gridSize = res.getInteger(R.integer.gallery_num_columns);
+        recyclerView.setLayoutManager(new GridLayoutManager(context, gridSize));
+        recyclerView.addItemDecoration(new GridItemDecoration(res.getDimensionPixelSize(R.dimen.grid_padding), gridSize));
     }
 }
