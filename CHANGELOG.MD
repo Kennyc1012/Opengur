@@ -1,4 +1,14 @@
 #Open Imgur Changelog
+<b>4.2.0</b> November 14, 2015
+- Add album count to thumbnails
+- Fully convert over to RecyclerViews
+- Add Loading footer to grids
+- Update Share Intent
+- Remove OAuth Crashlytics Logging
+- Tweak the wait time before trying to request a new token
+- Update BottomSheet to V2.0.4
+- Update Support Library to V23.1.1
+
 <b>4.1.0</b> November 2, 2015
 - Simplify filter menus
 - Add GIF indicator in grid view
