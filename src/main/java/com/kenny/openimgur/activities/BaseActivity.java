@@ -14,7 +14,6 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.StyleRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
@@ -107,40 +106,6 @@ abstract public class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         LogUtil.v(TAG, "onDestroy");
         super.onDestroy();
-    }
-
-    /**
-     * Shows or hides the actionbar
-     *
-     * @param shouldShow If the actionbar should be shown
-     */
-    public void setActionBarVisibility(boolean shouldShow) {
-        if (shouldShow && !mIsActionBarShowing) {
-            mIsActionBarShowing = true;
-            getSupportActionBar().show();
-        } else if (!shouldShow && mIsActionBarShowing) {
-            mIsActionBarShowing = false;
-            getSupportActionBar().hide();
-        }
-    }
-
-    /**
-     * Shows or hides the actionbar
-     *
-     * @param toolbar    The toolbar that is taking the place of the actionbar
-     * @param shouldShow If the actionbar should be shown
-     * @return The visibility of the action Bar
-     */
-    protected boolean setActionBarVisibility(Toolbar toolbar, boolean shouldShow) {
-        if (shouldShow && !mIsActionBarShowing) {
-            mIsActionBarShowing = true;
-            toolbar.animate().translationY(0);
-        } else if (!shouldShow && mIsActionBarShowing) {
-            mIsActionBarShowing = false;
-            toolbar.animate().translationY(-toolbar.getHeight());
-        }
-
-        return mIsActionBarShowing;
     }
 
     /**

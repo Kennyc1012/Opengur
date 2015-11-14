@@ -9,6 +9,26 @@
     app:msv_errorView="@layout/error_view"
     app:msv_viewState="empty">
 
-    <include layout="@layout/grid_view" />
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/loading_footer_height"
+            android:clipToPadding="false"
+            android:scrollbars="vertical" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <include
+        android:id="@+id/loadingFooter"
+        layout="@layout/loading_footer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/loading_footer_height"
+        android:layout_gravity="bottom" />
 
 </com.kennyc.view.MultiStateView>

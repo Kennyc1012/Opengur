@@ -4,15 +4,15 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -23,9 +23,9 @@ import butterknife.Bind;
 /**
  * Created by kcampagna on 9/27/14.
  */
-public class SideGalleryFragment extends BaseFragment implements AdapterView.OnItemClickListener {
+public class SideGalleryFragment extends BaseFragment implements View.OnClickListener {
     @Bind(R.id.list)
-    ListView mListView;
+    RecyclerView mList;
 
     private GalleryAdapter mAdapter;
 
@@ -34,24 +34,19 @@ public class SideGalleryFragment extends BaseFragment implements AdapterView.OnI
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.list_view, container, false);
+        return inflater.inflate(R.layout.fragment_side_gallery, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        int padding = (int) getResources().getDimension(R.dimen.content_padding);
-        view.setPadding(padding, 0, padding, 0);
-        view.setBackgroundColor(Color.TRANSPARENT);
-        mListView = (ListView) view.findViewById(R.id.list);
-        mListView.setOnItemClickListener(this);
+        ViewUtils.setRecyclerViewGridDefaults(getActivity(), mList, 1, getResources().getDimensionPixelOffset(R.dimen.content_padding));
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (mListener != null) {
-            mListener.onItemSelected(position);
-        }
+    public void onClick(View v) {
+        int position = mList.getChildAdapterPosition(v);
+        if (mListener != null) mListener.onItemSelected(position);
     }
 
     @Override
@@ -70,14 +65,18 @@ public class SideGalleryFragment extends BaseFragment implements AdapterView.OnI
 
     @Override
     public void onDestroyView() {
-        mAdapter = null;
+        if (mAdapter != null) {
+            mAdapter.onDestroy();
+            mAdapter = null;
+        }
+
         super.onDestroyView();
     }
 
     public void addGalleryItems(ArrayList<ImgurBaseObject> galleryItems) {
         if (isAdded()) {
-            mAdapter = new GalleryAdapter(getActivity(), SetUniqueList.decorate(galleryItems));
-            mListView.setAdapter(mAdapter);
+            mAdapter = new GalleryAdapter(getActivity(), SetUniqueList.decorate(galleryItems), this, false);
+            mList.setAdapter(mAdapter);
         }
     }
 
@@ -88,7 +87,7 @@ public class SideGalleryFragment extends BaseFragment implements AdapterView.OnI
      */
     public void onPositionChanged(int position) {
         if (isAdded()) {
-            mListView.setSelection(position);
+            mList.scrollToPosition(position);
         }
     }
 

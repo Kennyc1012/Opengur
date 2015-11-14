@@ -12,14 +12,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -32,7 +31,6 @@ import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.UploadedPhoto;
-import com.kenny.openimgur.ui.HeaderGridView;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
@@ -50,12 +48,12 @@ import retrofit.Retrofit;
 /**
  * Created by Kenny-PC on 1/14/2015.
  */
-public class UploadedPhotosFragment extends BaseFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, AbsListView.OnScrollListener {
+public class UploadedPhotosFragment extends BaseFragment implements View.OnClickListener, View.OnLongClickListener {
     @Bind(R.id.multiView)
     public MultiStateView mMultiStateView;
 
     @Bind(R.id.grid)
-    public HeaderGridView mGrid;
+    public RecyclerView mGrid;
 
     @Bind(R.id.refreshLayout)
     protected SwipeRefreshLayout mRefreshLayout;
@@ -63,8 +61,6 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
     private FragmentListener mListener;
 
     private UploadAdapter mAdapter;
-
-    private int mPreviousItem = 0;
 
     public static Fragment createInstance() {
         return new UploadedPhotosFragment();
@@ -100,11 +96,8 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (mListener != null)
-            mListener.onUpdateActionBarTitle(getString(R.string.uploaded_photos_title));
-        mGrid.setOnItemClickListener(this);
-        mGrid.setOnItemLongClickListener(this);
-        mGrid.setOnScrollListener(this);
+        ViewUtils.setRecyclerViewGridDefaults(getActivity(), mGrid);
+        if (mListener != null) mListener.onUpdateActionBarTitle(getString(R.string.uploaded_photos_title));
         mRefreshLayout.setColorSchemeColors(getResources().getColor(theme.accentColor));
         int bgColor = theme.isDarkTheme ? R.color.bg_dark : R.color.bg_light;
         mRefreshLayout.setProgressBackgroundColorSchemeColor(getResources().getColor(bgColor));
@@ -115,6 +108,12 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
                 refresh();
             }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mAdapter != null) mAdapter.onDestroy();
+        super.onDestroyView();
     }
 
     @Override
@@ -144,103 +143,75 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        int headerSize = mGrid.getNumColumns() * mGrid.getHeaderViewCount();
-        int adapterPosition = position - headerSize;
+    public void onClick(View v) {
+        int adapterPosition = mGrid.getChildAdapterPosition(v);
+        UploadedPhoto photo = mAdapter.getItem(adapterPosition);
 
-        if (adapterPosition >= 0) {
-            UploadedPhoto photo = mAdapter.getItem(adapterPosition);
-
-            if (photo.isAlbum()) {
-                startActivity(ViewActivity.createIntent(getActivity(), photo.getUrl(), true));
-            } else {
-                startActivity(FullScreenPhotoActivity.createIntent(getActivity(), photo.getUrl()));
-            }
+        if (photo.isAlbum()) {
+            startActivity(ViewActivity.createIntent(getActivity(), photo.getUrl(), true));
+        } else {
+            startActivity(FullScreenPhotoActivity.createIntent(getActivity(), photo.getUrl()));
         }
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        int headerSize = mGrid.getNumColumns() * mGrid.getHeaderViewCount();
-        int adapterPosition = position - headerSize;
+    public boolean onLongClick(View v) {
+        int adapterPosition = mGrid.getChildAdapterPosition(v);
+        final UploadedPhoto photo = mAdapter.getItem(adapterPosition);
 
-        if (adapterPosition >= 0) {
-            final UploadedPhoto photo = mAdapter.getItem(adapterPosition);
+        new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                .setItems(R.array.uploaded_photos_options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // 0. Share 1. Copy Link 2. Delete
 
-            new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
-                    .setItems(R.array.uploaded_photos_options, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // 0. Share 1. Copy Link 2. Delete
+                        switch (which) {
+                            case 0:
+                                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                shareIntent.setType("text/plain");
+                                shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, photo.getUrl());
+                                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share);
 
-                            switch (which) {
-                                case 0:
-                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                    shareIntent.setType("text/plain");
-                                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
-                                    shareIntent.putExtra(Intent.EXTRA_TEXT, photo.getUrl());
-                                    BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share);
+                                if (shareDialog != null) {
+                                    shareDialog.show();
+                                } else {
+                                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                                }
+                                break;
 
-                                    if (shareDialog != null) {
-                                        shareDialog.show();
-                                    } else {
-                                        SnackBar.show(getActivity(), R.string.cant_launch_intent);
-                                    }
-                                    break;
+                            case 1:
+                                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                                clipboard.setPrimaryClip(ClipData.newPlainText("link", photo.getUrl()));
+                                SnackBar.show(getActivity(), R.string.link_copied);
+                                break;
 
-                                case 1:
-                                    ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                                    clipboard.setPrimaryClip(ClipData.newPlainText("link", photo.getUrl()));
-                                    SnackBar.show(getActivity(), R.string.link_copied);
-                                    break;
+                            case 2:
+                                View deleteView = LayoutInflater.from(getActivity()).inflate(R.layout.upload_delete_confirm, null);
+                                final CheckBox cb = (CheckBox) deleteView.findViewById(R.id.imgurDelete);
+                                ((TextView) deleteView.findViewById(R.id.message)).setText(photo.isAlbum()
+                                        ? R.string.uploaded_remove_album_message : R.string.uploaded_remove_photo_message);
 
-                                case 2:
-                                    View deleteView = LayoutInflater.from(getActivity()).inflate(R.layout.upload_delete_confirm, null);
-                                    final CheckBox cb = (CheckBox) deleteView.findViewById(R.id.imgurDelete);
-                                    ((TextView) deleteView.findViewById(R.id.message)).setText(photo.isAlbum()
-                                            ? R.string.uploaded_remove_album_message : R.string.uploaded_remove_photo_message);
+                                new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                                        .setNegativeButton(R.string.cancel, null)
+                                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (cb.isChecked()) deleteItem(photo);
+                                                app.getSql().deleteUploadedPhoto(photo);
+                                                mAdapter.removeItem(photo);
 
-                                    new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
-                                            .setNegativeButton(R.string.cancel, null)
-                                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    if (cb.isChecked()) deleteItem(photo);
-                                                    app.getSql().deleteUploadedPhoto(photo);
-                                                    mAdapter.removeItem(photo);
-
-                                                    if (mAdapter.isEmpty()) {
-                                                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-                                                        if (mListener != null)
-                                                            mListener.onUpdateActionBar(true);
-                                                    }
+                                                if (mAdapter.isEmpty()) {
+                                                    mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                                                 }
-                                            })
-                                            .setView(deleteView)
-                                            .show();
-                            }
+                                            }
+                                        })
+                                        .setView(deleteView)
+                                        .show();
                         }
-                    }).show();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-        // NOOP
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        // Hide the actionbar when scrolling down, show when scrolling up
-        if (firstVisibleItem > mPreviousItem && mListener != null) {
-            mListener.onUpdateActionBar(false);
-        } else if (firstVisibleItem < mPreviousItem && mListener != null) {
-            mListener.onUpdateActionBar(true);
-        }
-
-        mPreviousItem = firstVisibleItem;
+                    }
+                }).show();
+        return true;
     }
 
     private void deleteItem(@NonNull UploadedPhoto photo) {
@@ -277,8 +248,7 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
 
         if (!photos.isEmpty()) {
             if (mAdapter == null) {
-                mAdapter = new UploadAdapter(getActivity(), photos);
-                mGrid.addHeaderView(ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), 0));
+                mAdapter = new UploadAdapter(getActivity(), photos, this, this);
                 mGrid.setAdapter(mAdapter);
             } else {
                 mAdapter.addItems(photos);
@@ -287,7 +257,6 @@ public class UploadedPhotosFragment extends BaseFragment implements AdapterView.
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         } else {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-            if (mListener != null) mListener.onUpdateActionBar(true);
         }
 
         mRefreshLayout.setRefreshing(false);

@@ -19,9 +19,15 @@ import butterknife.Bind;
 /**
  * Created by Kenny-PC on 1/14/2015.
  */
-public class UploadAdapter extends ImgurBaseAdapter<UploadedPhoto> {
-    public UploadAdapter(Context context, List<UploadedPhoto> photos) {
+public class UploadAdapter extends BaseRecyclerAdapter<UploadedPhoto> {
+    private View.OnClickListener mClickListener;
+
+    private View.OnLongClickListener mLongClickListener;
+
+    public UploadAdapter(Context context, List<UploadedPhoto> photos, View.OnClickListener listener, View.OnLongClickListener longClickListener) {
         super(context, photos, true);
+        mClickListener = listener;
+        mLongClickListener = longClickListener;
     }
 
     @Override
@@ -30,32 +36,39 @@ public class UploadAdapter extends ImgurBaseAdapter<UploadedPhoto> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        UploadHolder holder;
-        UploadedPhoto photo = getItem(position);
+    public void onDestroy() {
+        mClickListener = null;
+        mLongClickListener = null;
+    }
 
-        if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.upload_item, parent, false);
-            holder = new UploadHolder(convertView);
-        } else {
-            holder = (UploadHolder) convertView.getTag();
-        }
+    @Override
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        UploadHolder holder = new UploadHolder(mInflater.inflate(R.layout.upload_item, parent, false));
+        holder.itemView.setOnClickListener(mClickListener);
+        holder.itemView.setOnLongClickListener(mLongClickListener);
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
+        UploadHolder uploadHolder = (UploadHolder) holder;
+        UploadedPhoto photo = getItem(position);
 
         String url;
 
         if (photo.isAlbum()) {
             url = String.format(ImgurAlbum.ALBUM_COVER_URL, photo.getCoverId() + ImgurPhoto.THUMBNAIL_GALLERY);
-            holder.albumIndicator.setVisibility(View.VISIBLE);
+            uploadHolder.albumIndicator.setVisibility(View.VISIBLE);
         } else {
             url = ImageUtil.getThumbnail(photo.getUrl(), ImgurPhoto.THUMBNAIL_GALLERY);
-            holder.albumIndicator.setVisibility(View.GONE);
+            uploadHolder.albumIndicator.setVisibility(View.GONE);
         }
 
-        displayImage(holder.image, url);
-        return convertView;
+        displayImage(uploadHolder.image, url);
+        // TODO Album count
     }
 
-    static class UploadHolder extends ImgurBaseAdapter.ImgurViewHolder {
+    static class UploadHolder extends BaseRecyclerAdapter.BaseViewHolder {
         @Bind(R.id.image)
         ImageView image;
 

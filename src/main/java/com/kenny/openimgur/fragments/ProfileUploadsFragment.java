@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
-import com.kenny.openimgur.adapters.GalleryAdapter2;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
@@ -33,7 +33,7 @@ import retrofit.Retrofit;
 /**
  * Created by kcampagna on 12/27/14.
  */
-public class ProfileUploadsFragment extends BaseGridFragment2 implements View.OnLongClickListener {
+public class ProfileUploadsFragment extends BaseGridFragment implements View.OnLongClickListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,11 +47,11 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery2, container, false);
+        return inflater.inflate(R.layout.fragment_gallery, container, false);
     }
 
     @Override
-    protected void setAdapter(GalleryAdapter2 adapter) {
+    protected void setAdapter(GalleryAdapter adapter) {
         super.setAdapter(adapter);
         adapter.setOnLongClickPressListener(this);
     }
@@ -142,7 +142,7 @@ public class ProfileUploadsFragment extends BaseGridFragment2 implements View.On
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data) {
-                    GalleryAdapter2 adapter = getAdapter();
+                    GalleryAdapter adapter = getAdapter();
 
                     if (adapter != null) {
                         adapter.removeItem(photo);

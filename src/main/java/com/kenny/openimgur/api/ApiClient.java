@@ -62,7 +62,7 @@ public class ApiClient {
 
     private static OkHttpClient getClient(@Nullable ImgurUser user) {
         OkHttpClient client = new OkHttpClient();
-        client.setConnectTimeout(15, TimeUnit.SECONDS);
+        client.setConnectTimeout(20, TimeUnit.SECONDS);
         client.interceptors().add(new OAuthInterceptor(user != null ? user.getAccessToken() : null));
         return client;
     }

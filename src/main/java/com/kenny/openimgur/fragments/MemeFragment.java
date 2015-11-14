@@ -20,6 +20,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
 
@@ -33,9 +34,6 @@ import java.util.List;
  * Created by Kenny-PC on 3/7/2015.
  */
 public class MemeFragment extends BaseGridFragment {
-
-    @Nullable
-    private ImgurBaseObject mSelectedItem;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,12 +51,7 @@ public class MemeFragment extends BaseGridFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (mListener != null) mListener.onUpdateActionBarTitle(getString(R.string.meme_gen));
-    }
-
-    @Override
-    public void onDestroyView() {
-        mSelectedItem = null;
-        super.onDestroyView();
+        ViewUtils.setRecyclerViewGridDefaults(getActivity(), mGrid);
     }
 
     @Override
@@ -99,8 +92,7 @@ public class MemeFragment extends BaseGridFragment {
 
     @Override
     protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        mSelectedItem = items.get(position);
-        startActivity(MemeActivity.createIntent(getActivity(), mSelectedItem));
+        startActivity(MemeActivity.createIntent(getActivity(), items.get(position)));
     }
 
     @Override
@@ -110,10 +102,9 @@ public class MemeFragment extends BaseGridFragment {
         if (getAdapter() == null || getAdapter().isEmpty()) {
             List<ImgurBaseObject> memes = app.getSql().getMemes();
 
-            if (memes != null && !memes.isEmpty()) {
+            if (!memes.isEmpty()) {
                 LogUtil.v(TAG, "Memes found in database");
-                setUpGridTop();
-                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(memes), showPoints()));
+                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(memes), this, showPoints()));
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 mHasMore = false;
             }
@@ -125,7 +116,7 @@ public class MemeFragment extends BaseGridFragment {
         super.onApiResult(galleryResponse);
         mHasMore = false;
 
-        if (galleryResponse != null && !galleryResponse.data.isEmpty()) {
+        if (!galleryResponse.data.isEmpty()) {
             app.getSql().deleteMemes();
             app.getSql().addMemes(galleryResponse.data);
         }

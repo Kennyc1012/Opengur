@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -51,7 +52,7 @@ import butterknife.OnClick;
 /**
  * Created by kcampagna on 10/19/14.
  */
-public class MainActivity extends BaseActivity implements FragmentListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements FragmentListener, NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     private static final String KEY_CURRENT_PAGE = "current_page";
 
     public static final int PAGE_PROFILE = 0;
@@ -86,23 +87,21 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     @Bind(R.id.navigationView)
     NavigationView mNavigationView;
 
-    @Bind(R.id.profileImg)
-    ImageView mAvatar;
-
-    @Bind(R.id.profileName)
-    TextView mName;
-
-    @Bind(R.id.reputation)
-    TextView mRep;
-
-    @Bind(R.id.badgeCount)
-    TextView mBadge;
-
-    @Bind(R.id.badgeContainer)
-    View mBadgeContainer;
-
     @Bind(R.id.topicsSpinner)
     Spinner mTopicsSpinner;
+
+    @Bind(R.id.appbar)
+    AppBarLayout mAppBar;
+
+    ImageView mAvatar;
+
+    TextView mName;
+
+    TextView mRep;
+
+    TextView mBadge;
+
+    View mBadgeContainer;
 
     private int mCurrentPage = -1;
 
@@ -112,12 +111,18 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     private boolean mNagOnExit;
 
-    private boolean mIsFABShowing = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        View headerView = mNavigationView.getHeaderView(0);
+        mAvatar = (ImageView) headerView.findViewById(R.id.profileImg);
+        mName = (TextView) headerView.findViewById(R.id.profileName);
+        mRep = (TextView) headerView.findViewById(R.id.reputation);
+        mBadge = (TextView) headerView.findViewById(R.id.badgeCount);
+        mBadgeContainer = headerView.findViewById(R.id.badgeContainer);
+        mBadgeContainer.setOnClickListener(this);
+        headerView.setOnClickListener(this);
         mNavigationView.setNavigationItemSelectedListener(this);
         ColorStateList selector = theme.getNavigationColors(getResources());
         mNavigationView.setItemTextColor(selector);
@@ -157,7 +162,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
-        menuItem.setChecked(true);
+        if (menuItem.getGroupId() != R.id.nonCheckableGroup) menuItem.setChecked(true);
         changePage(menuItem.getItemId());
         mDrawer.closeDrawers();
         return true;
@@ -354,10 +359,10 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
         if (fragment != null) {
             getFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
-            onUpdateActionBar(true);
             boolean hasSpinner = fragment instanceof TopicsFragment;
             mTopicsSpinner.setVisibility(hasSpinner ? View.VISIBLE : View.GONE);
             getSupportActionBar().setDisplayShowTitleEnabled(!hasSpinner);
+            mAppBar.setExpanded(true);
         }
     }
 
@@ -374,29 +379,23 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     }
 
     @Override
-    public void onUpdateActionBar(boolean shouldShow) {
-        setActionBarVisibility(mToolBar, shouldShow);
-        toggleFAB(shouldShow);
-    }
+    public void onFragmentStateChange(@FragmentState int state) {
+        switch (state) {
+            case FragmentListener.STATE_LOADING_COMPLETE:
+                mUploadButton.show();
+                break;
 
-    @Override
-    public void onLoadingComplete() {
-        toggleFAB(true);
-    }
-
-    @Override
-    public void onLoadingStarted() {
-        toggleFAB(false);
-    }
-
-    @Override
-    public void onError() {
-        toggleFAB(false);
+            case FragmentListener.STATE_LOADING_STARTED:
+            case FragmentListener.STATE_ERROR:
+                mUploadButton.hide();
+                break;
+        }
     }
 
     @Override
     public void onUpdateActionBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) ab.setTitle(title);
     }
 
     @Override
@@ -416,21 +415,8 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         mTopicsSpinner.setSelection(selectedPosition);
     }
 
-    private void toggleFAB(boolean shouldShow) {
-        if (shouldShow) {
-            if (mIsFABShowing) {
-                mIsFABShowing = false;
-                mUploadButton.animate().translationY(0);
-            }
-        } else {
-            if (!mIsFABShowing) {
-                mIsFABShowing = true;
-                mUploadButton.animate().translationY(mUploadButton.getHeight() * 2);
-            }
-        }
-    }
-
-    @OnClick({R.id.fab, R.id.header, R.id.badgeContainer})
+    @OnClick(R.id.fab)
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab:

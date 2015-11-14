@@ -343,15 +343,16 @@ public class ImgurBaseObject implements Parcelable {
     public Intent getShareIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
+        String link;
 
-        String link = getTitle() + " ";
         if (TextUtils.isEmpty(getRedditLink())) {
-            link += getGalleryLink();
+            link = getGalleryLink();
         } else {
-            link += String.format("https://reddit.com%s", getRedditLink());
+            link = String.format("https://reddit.com%s", getRedditLink());
         }
 
         shareIntent.putExtra(Intent.EXTRA_TEXT, link);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getTitle());
         return shareIntent;
     }
 

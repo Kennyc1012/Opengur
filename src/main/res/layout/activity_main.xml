@@ -5,30 +5,40 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <FrameLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <FrameLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolBar"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="?toolBarPopupTheme">
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <Spinner
-                android:id="@+id/topicsSpinner"
-                android:layout_width="wrap_content"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolBar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:background="?colorPrimary"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="?toolBarPopupTheme">
 
-        </android.support.v7.widget.Toolbar>
+                <Spinner
+                    android:id="@+id/topicsSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.AppBarLayout>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
@@ -36,12 +46,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_add_white_18dp"
+            android:src="@drawable/ic_add_white_24dp"
             app:fabSize="normal"
             app:elevation="4dp"
-            android:elevation="4dp" />
+            app:layout_behavior="com.kenny.openimgur.ui.FabBehavior" />
 
-    </FrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigationView"

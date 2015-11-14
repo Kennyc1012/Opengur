@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.GalleryAdapter2;
+import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
@@ -33,7 +33,7 @@ import retrofit.Retrofit;
 /**
  * Created by Kenny-PC on 7/4/2015.
  */
-public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnLongClickListener {
+public class ProfileAlbumsFragment extends BaseGridFragment implements View.OnLongClickListener {
     private static final String KEY_USER = "user";
 
     private ImgurUser mSelectedUser;
@@ -49,7 +49,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnL
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery2, container, false);
+        return inflater.inflate(R.layout.fragment_gallery, container, false);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnL
     }
 
     @Override
-    protected void setAdapter(GalleryAdapter2 adapter) {
+    protected void setAdapter(GalleryAdapter adapter) {
         super.setAdapter(adapter);
         adapter.setOnLongClickPressListener(this);
     }
@@ -158,7 +158,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment2 implements View.OnL
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data) {
-                    GalleryAdapter2 adapter = getAdapter();
+                    GalleryAdapter adapter = getAdapter();
 
                     if (adapter != null) {
                         adapter.removeItem(album);

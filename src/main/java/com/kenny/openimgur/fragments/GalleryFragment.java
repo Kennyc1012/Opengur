@@ -24,6 +24,7 @@ import com.kenny.openimgur.activities.GallerySearchActivity;
 import com.kenny.openimgur.adapters.SearchAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
+import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySection;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
 import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
@@ -218,7 +219,7 @@ public class GalleryFragment extends BaseGridFragment {
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
         if (mListener != null) {
-            mListener.onLoadingStarted();
+            mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
             mListener.onUpdateActionBarTitle(getString(mSection.getResourceId()));
         }
 

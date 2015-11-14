@@ -8,9 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
@@ -21,11 +21,8 @@ import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.ui.HeaderGridView;
-import com.kenny.openimgur.util.ScrollHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
-import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -41,8 +38,7 @@ import retrofit.Retrofit;
  * Base class for fragments that display images in a grid like style
  * Created by Kenny Campagna on 12/13/2014.
  */
-public abstract class BaseGridFragment extends BaseFragment implements AbsListView.OnScrollListener, AdapterView.OnItemClickListener,
-        Callback<GalleryResponse> {
+public abstract class BaseGridFragment extends BaseFragment implements Callback<GalleryResponse>, View.OnClickListener {
     private static final String KEY_CURRENT_POSITION = "position";
 
     private static final String KEY_ITEMS = "items";
@@ -57,10 +53,14 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     protected MultiStateView mMultiStateView;
 
     @Bind(R.id.grid)
-    protected HeaderGridView mGrid;
+    protected RecyclerView mGrid;
 
     @Bind(R.id.refreshLayout)
     protected SwipeRefreshLayout mRefreshLayout;
+
+    @Nullable
+    @Bind(R.id.loadingFooter)
+    View mLoadingFooter;
 
     protected FragmentListener mListener;
 
@@ -74,9 +74,9 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
     protected boolean mHasMore = true;
 
-    private GalleryAdapter mAdapter;
+    protected GridLayoutManager mManager;
 
-    private ScrollHelper mScrollHelper = new ScrollHelper();
+    private GalleryAdapter mAdapter;
 
     @Override
     public void onAttach(Activity activity) {
@@ -99,8 +99,41 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mGrid.setOnScrollListener(new PauseOnScrollListener(app.getImageLoader(), false, true, this));
-        mGrid.setOnItemClickListener(this);
+        ViewUtils.setRecyclerViewGridDefaults(getActivity(), mGrid);
+        mGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (mManager == null) {
+                    mManager = (GridLayoutManager) recyclerView.getLayoutManager();
+                }
+
+                int visibleItemCount = mManager.getChildCount();
+                int totalItemCount = mManager.getItemCount();
+                int firstVisibleItemPosition = mManager.findFirstVisibleItemPosition();
+
+                // Load more items when hey get to the end of the list
+                if (mHasMore && totalItemCount > 0 && firstVisibleItemPosition + visibleItemCount >= totalItemCount && !mIsLoading) {
+                    mIsLoading = true;
+                    mCurrentPage++;
+                    fetchGallery();
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                switch (newState) {
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                    case RecyclerView.SCROLL_STATE_DRAGGING:
+                        app.getImageLoader().resume();
+                        break;
+
+                    case RecyclerView.SCROLL_STATE_SETTLING:
+                        app.getImageLoader().pause();
+                        break;
+                }
+            }
+        });
+
         mRefreshLayout.setColorSchemeColors(getResources().getColor(theme.accentColor));
         int bgColor = theme.isDarkTheme ? R.color.bg_dark : R.color.bg_light;
         mRefreshLayout.setProgressBackgroundColorSchemeColor(getResources().getColor(bgColor));
@@ -123,11 +156,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         if (adapter == null || adapter.isEmpty()) {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             mIsLoading = true;
-
-            if (mListener != null) {
-                mListener.onLoadingStarted();
-            }
-
+            if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
             fetchGallery();
         }
     }
@@ -148,49 +177,19 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     }
 
     @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-        // NOOP
-    }
+    public void onClick(View v) {
+        int adapterPosition = mGrid.getChildAdapterPosition(v);
+        ArrayList<ImgurBaseObject> items = getAdapter().getItems(adapterPosition);
+        int itemPosition = adapterPosition;
 
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        // Hide the actionbar when scrolling down, show when scrolling up
-        switch (mScrollHelper.getScrollDirection(view, firstVisibleItem, totalItemCount)) {
-            case ScrollHelper.DIRECTION_DOWN:
-                if (mListener != null) mListener.onUpdateActionBar(false);
-                break;
-
-            case ScrollHelper.DIRECTION_UP:
-                if (mListener != null) mListener.onUpdateActionBar(true);
-                break;
+        // Get the correct array index of the selected item
+        if (itemPosition > GalleryAdapter.MAX_ITEMS / 2) {
+            itemPosition = items.size() == GalleryAdapter.MAX_ITEMS
+                    ? GalleryAdapter.MAX_ITEMS / 2
+                    : items.size() - (getAdapter().getItemCount() - itemPosition);
         }
 
-        // Load more items when hey get to the end of the list
-        if (mHasMore && totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount && !mIsLoading) {
-            mIsLoading = true;
-            mCurrentPage++;
-            fetchGallery();
-        }
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        int headerSize = mGrid.getNumColumns() * mGrid.getHeaderViewCount();
-        int adapterPosition = position - headerSize;
-        // Don't respond to the header being clicked
-
-        if (adapterPosition >= 0) {
-            ArrayList<ImgurBaseObject> items = getAdapter().getItems(adapterPosition);
-            int itemPosition = adapterPosition;
-
-            // Get the correct array index of the selected item
-            if (itemPosition > GalleryAdapter.MAX_ITEMS / 2) {
-                itemPosition = items.size() == GalleryAdapter.MAX_ITEMS ? GalleryAdapter.MAX_ITEMS / 2 :
-                        items.size() - (getAdapter().getCount() - itemPosition);
-            }
-
-            onItemSelected(itemPosition, items);
-        }
+        onItemSelected(itemPosition, items);
     }
 
     public boolean allowNSFW() {
@@ -202,7 +201,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
         mCurrentPage = 0;
         mIsLoading = true;
         if (getAdapter() != null) getAdapter().clear();
-        if (mListener != null) mListener.onLoadingStarted();
+        if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
         fetchGallery();
     }
@@ -223,14 +222,9 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
             if (savedInstanceState.containsKey(KEY_ITEMS)) {
                 ArrayList<ImgurBaseObject> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-                setUpGridTop();
-                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items), showPoints()));
-                mGrid.setSelection(currentPosition);
-
-                if (mListener != null) {
-                    mListener.onLoadingComplete();
-                }
-
+                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items), this, showPoints()));
+                mGrid.scrollToPosition(currentPosition);
+                if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
         }
@@ -245,51 +239,17 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
         if (getAdapter() != null && !getAdapter().isEmpty()) {
             outState.putParcelableArrayList(KEY_ITEMS, getAdapter().retainItems());
-            outState.putInt(KEY_CURRENT_POSITION, mGrid.getFirstVisiblePosition());
+            GridLayoutManager manager = (GridLayoutManager) mGrid.getLayoutManager();
+            outState.putInt(KEY_CURRENT_POSITION, manager.findFirstVisibleItemPosition());
         }
     }
 
     @Override
     public void onDestroyView() {
-        if (getAdapter() != null) {
-            getAdapter().clear();
-            setAdapter(null);
-        }
-
+        GalleryAdapter adapter = getAdapter();
+        if (adapter != null) adapter.onDestroy();
         saveFilterSettings();
         super.onDestroyView();
-    }
-
-    /**
-     * Handles setting the header of the grid to an empty view and padding the refresh
-     * layout to appear below that same header
-     */
-    protected void setUpGridTop() {
-        View emptyView = ViewUtils.getHeaderViewForTranslucentStyle(getActivity(), getAdditionalHeaderSpace());
-        mGrid.addHeaderView(emptyView);
-        padRefreshBelowView(emptyView);
-    }
-
-    private void padRefreshBelowView(final View headerView) {
-        ViewUtils.onPreDraw(headerView, new Runnable() {
-            @Override
-            public void run() {
-                if (isAdded()) {
-                    mRefreshLayout.setProgressViewOffset(false, headerView.getBottom(),
-                            headerView.getBottom() + getResources().getDimensionPixelSize(R.dimen.refresh_pull_amount));
-                }
-            }
-        });
-    }
-
-    /**
-     * Returns any additional space needed for the header view for the grid.
-     * Only should be overridden when the value is > than 0
-     *
-     * @return
-     */
-    protected int getAdditionalHeaderSpace() {
-        return 0;
     }
 
     /**
@@ -306,6 +266,7 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
      * Configured the ApiClient to make the api request
      */
     protected void fetchGallery() {
+        if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.VISIBLE);
         mIsLoading = true;
     }
 
@@ -328,23 +289,13 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
     public void onFailure(Throwable t) {
         if (!isAdded()) return;
         onApiFailure(ApiClient.getErrorCode(t));
-    }
-
-    protected void onEmptyResults() {
-        mHasMore = false;
-
-        if (mMultiStateView.getView(MultiStateView.VIEW_STATE_EMPTY) != null && (getAdapter() == null || getAdapter().isEmpty())) {
-            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-        }
-
-        if (mListener != null) mListener.onUpdateActionBar(true);
+        if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.GONE);
     }
 
     protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
         if (!galleryResponse.data.isEmpty()) {
             if (getAdapter() == null) {
-                setUpGridTop();
-                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(galleryResponse.data), showPoints()));
+                setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(galleryResponse.data), this, showPoints()));
             } else {
                 getAdapter().addItems(galleryResponse.data);
             }
@@ -352,15 +303,8 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
             if (mMultiStateView != null)
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
 
-            if (mCurrentPage == 0) {
-                if (mListener != null) mListener.onLoadingComplete();
-
-                mGrid.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mGrid != null) mGrid.setSelection(0);
-                    }
-                });
+            if (mCurrentPage == 0 && mListener != null) {
+                mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
             }
         } else {
             onEmptyResults();
@@ -368,17 +312,28 @@ public abstract class BaseGridFragment extends BaseFragment implements AbsListVi
 
         mIsLoading = false;
         if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
+        if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.GONE);
     }
 
     protected void onApiFailure(@StringRes int errorString) {
         if (getAdapter() == null || getAdapter().isEmpty()) {
-            if (mListener != null) mListener.onError();
+            if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_ERROR);
             ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, errorString);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
 
         mIsLoading = false;
         if (mRefreshLayout != null) mRefreshLayout.setRefreshing(false);
+        if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.GONE);
+    }
+
+    protected void onEmptyResults() {
+        if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.GONE);
+        mHasMore = false;
+
+        if (mMultiStateView.getView(MultiStateView.VIEW_STATE_EMPTY) != null && (getAdapter() == null || getAdapter().isEmpty())) {
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+        }
     }
 
     /**

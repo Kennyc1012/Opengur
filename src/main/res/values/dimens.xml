@@ -3,12 +3,9 @@
 
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="gallery_column_height">160dp</dimen>
-    <dimen name="dialog_content_margin">24dp</dimen>
-    <dimen name="dialog_button_margin">16dp</dimen>
     <dimen name="grid_padding">4dp</dimen>
     <dimen name="view_activity_margin">16dp</dimen>
     <dimen name="loading_circle_size">40dp</dimen>
-    <dimen name="refresh_pull_amount">32dp</dimen>
     <dimen name="badge_margin_top">0dp</dimen>
     <dimen name="notification_icon">64dp</dimen>
 
@@ -31,5 +28,7 @@
     <!-- Uploads -->
     <dimen name="upload_photo_size">96dp</dimen>
     <dimen name="upload_content_margin">100dp</dimen>
+
+    <dimen name="loading_footer_height">48dp</dimen>
 
 </resources>

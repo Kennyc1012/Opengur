@@ -16,7 +16,7 @@ import com.kennyc.view.MultiStateView;
 /**
  * Created by kcampagna on 12/23/14.
  */
-public class ProfileSubmissionsFragment extends BaseGridFragment2 {
+public class ProfileSubmissionsFragment extends BaseGridFragment {
     private static final String KEY_USER = "user";
 
     private ImgurUser mSelectedUser;
@@ -32,7 +32,7 @@ public class ProfileSubmissionsFragment extends BaseGridFragment2 {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery2, container, false);
+        return inflater.inflate(R.layout.fragment_gallery, container, false);
     }
 
     @Override
