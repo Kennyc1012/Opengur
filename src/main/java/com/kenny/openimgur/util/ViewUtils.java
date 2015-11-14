@@ -118,13 +118,26 @@ public class ViewUtils {
     /**
      * Sets up a {@link RecyclerView} for a Grid style
      *
-     * @param context
-     * @param recyclerView
+     * @param context      App context
+     * @param recyclerView The {@link RecyclerView} to setup
      */
     public static void setRecyclerViewGridDefaults(@NonNull Context context, @NonNull RecyclerView recyclerView) {
         Resources res = context.getResources();
-        int gridSize = res.getInteger(R.integer.gallery_num_columns);
-        recyclerView.setLayoutManager(new GridLayoutManager(context, gridSize));
-        recyclerView.addItemDecoration(new GridItemDecoration(res.getDimensionPixelSize(R.dimen.grid_padding), gridSize));
+        int numColumns = res.getInteger(R.integer.gallery_num_columns);
+        int gridSpacing = res.getDimensionPixelSize(R.dimen.grid_padding);
+        setRecyclerViewGridDefaults(context, recyclerView, numColumns, gridSpacing);
+    }
+
+    /**
+     * Sets up a {@link RecyclerView} for a Grid style
+     *
+     * @param context      App context
+     * @param recyclerView The {@link RecyclerView} to setup
+     * @param numColumns   Number of columns the {@link RecyclerView} grid has
+     * @param gridSpacing  The spacing between the grid items
+     */
+    public static void setRecyclerViewGridDefaults(@NonNull Context context, @NonNull RecyclerView recyclerView, int numColumns, int gridSpacing) {
+        recyclerView.setLayoutManager(new GridLayoutManager(context, numColumns));
+        recyclerView.addItemDecoration(new GridItemDecoration(gridSpacing, numColumns));
     }
 }

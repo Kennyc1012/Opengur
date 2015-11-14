@@ -8,11 +8,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.util.ViewUtils;
 
 import org.apache.commons.collections15.list.SetUniqueList;
 
@@ -23,7 +23,7 @@ import butterknife.Bind;
 /**
  * Created by kcampagna on 9/27/14.
  */
-public class SideGalleryFragment extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class SideGalleryFragment extends BaseFragment implements View.OnClickListener {
     @Bind(R.id.list)
     RecyclerView mList;
 
@@ -40,14 +40,7 @@ public class SideGalleryFragment extends BaseFragment implements AdapterView.OnI
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        int padding = (int) getResources().getDimension(R.dimen.content_padding);
-        view.setPadding(padding, 0, padding, 0);
-        view.setBackgroundColor(Color.TRANSPARENT);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        ViewUtils.setRecyclerViewGridDefaults(getActivity(), mList, 1, getResources().getDimensionPixelOffset(R.dimen.content_padding));
     }
 
     @Override
