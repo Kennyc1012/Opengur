@@ -162,7 +162,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
-        menuItem.setChecked(true);
+        if (menuItem.getGroupId() != R.id.nonCheckableGroup) menuItem.setChecked(true);
         changePage(menuItem.getItemId());
         mDrawer.closeDrawers();
         return true;
