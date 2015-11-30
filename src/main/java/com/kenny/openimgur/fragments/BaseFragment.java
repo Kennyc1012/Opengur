@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.view.View;
 
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.BaseActivity;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
@@ -72,6 +73,14 @@ abstract public class BaseFragment extends Fragment {
         LogUtil.v(TAG, "onDestroyView");
         ButterKnife.unbind(this);
         super.onDestroyView();
+    }
+
+    protected boolean isTablet() {
+        if (getActivity() instanceof BaseActivity) {
+            return ((BaseActivity) getActivity()).isTablet();
+        }
+
+        return getResources().getBoolean(R.bool.is_tablet);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

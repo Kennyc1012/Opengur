@@ -174,7 +174,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
 
             case R.id.share:
-                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), mImgurObject.getShareIntent(), R.string.share);
+                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), mImgurObject.getShareIntent(), R.string.share, isTablet());
                 if (shareDialog != null) {
                     shareDialog.show();
                 } else {
@@ -381,7 +381,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                                     shareIntent.setType("text/plain");
                                     shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-                                    BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share);
+                                    BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, isTablet());
 
                                     if (shareDialog != null) {
                                         shareDialog.show();
