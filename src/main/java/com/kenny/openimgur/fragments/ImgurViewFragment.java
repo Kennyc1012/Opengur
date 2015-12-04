@@ -295,7 +295,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         if (mPhotoAdapter != null) {
             LinearLayoutManager manager = ((LinearLayoutManager) mListView.getLayoutManager());
-            int firstVisible = manager.findFirstCompletelyVisibleItemPosition();
+            int firstVisible = manager.findFirstVisibleItemPosition();
 
             if (firstVisible == 0) {
                 // The header is visible, update it without triggering a list redraw
