@@ -97,7 +97,7 @@ dependencies {
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
-    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.google.code.gson:gson:2.5'
     compile(name: 'sliding_panel', ext: 'aar')
     compile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;
