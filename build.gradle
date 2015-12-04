@@ -85,7 +85,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:${project.ext.support_version}"
     compile "com.android.support:recyclerview-v7:${project.ext.support_version}"
     compile "com.android.support:design:${project.ext.support_version}"
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.10'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.11'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.kennyc:snackbar:2.5'
     compile 'com.kennyc:multistateview:1.1'
