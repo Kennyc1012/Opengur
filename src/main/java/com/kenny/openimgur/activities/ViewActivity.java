@@ -615,6 +615,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             if (!shouldClose) {
                 final ImgurComment comment = mCommentAdapter.getItem(position);
+
                 if (TextUtils.isEmpty(comment.getAuthor()) || comment.getAuthor().equals("[deleted]")) {
                     mCommentAdapter.setSelectedIndex(-1);
                     return;
@@ -841,14 +842,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         ApiClient.getService().voteOnComment(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
-                int stringId = response != null && response.body() != null && response.body().data ? R.string.vote_cast : R.string.error_generic;
-                SnackBar.show(ViewActivity.this, stringId);
+                if (response.body() != null) LogUtil.v(TAG, "Result of comment voting " + response.body().data);
             }
 
             @Override
             public void onFailure(Throwable t) {
                 LogUtil.e(TAG, "Unable to vote on comment", t);
-                SnackBar.show(ViewActivity.this, R.string.error_generic);
             }
         });
     }

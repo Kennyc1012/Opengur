@@ -23,9 +23,12 @@
             android:id="@+id/author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
             android:textAppearance="@style/TextAppearance.Medium"
             android:textSize="12sp"
-            tools:text="DRButtersMD: 20 Points 9 Hours ago" />
+            tools:text="DRButtersMD: 20 Points 9 Hours ago"
+            tools:drawableRight="@drawable/ic_upvote_green_12dp" />
 
         <TextView
             android:id="@+id/comment"
