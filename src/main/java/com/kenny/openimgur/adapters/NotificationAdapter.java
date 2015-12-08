@@ -47,8 +47,8 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
         mCircleSize = mResources.getDimensionPixelSize(R.dimen.avatar_size);
         mClickListener = clickListener;
         mLongClickListener = longClickListener;
-        mDividerColor = mIsDarkTheme ? mResources.getColor(R.color.primary_dark_material_light) : mResources.getColor(R.color.primary_dark_material_dark);
-        mSelectedColor = mResources.getColor(R.color.comment_bg_selected);
+        mDividerColor = mIsDarkTheme ? getColor(R.color.primary_dark_light) : Color.BLACK;
+        mSelectedColor = getColor(R.color.comment_bg_selected);
     }
 
     @Override

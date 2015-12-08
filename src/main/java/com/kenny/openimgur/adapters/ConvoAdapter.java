@@ -1,6 +1,7 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -32,7 +33,7 @@ public class ConvoAdapter extends BaseRecyclerAdapter<ImgurConvo> {
         mCircleSize = mResources.getDimensionPixelSize(R.dimen.avatar_size);
         mClickListener = clickListener;
         mLongClickListener = longClickListener;
-        mDividerColor = mIsDarkTheme ? mResources.getColor(R.color.primary_dark_material_light) : mResources.getColor(R.color.primary_dark_material_dark);
+        mDividerColor = mIsDarkTheme ? getColor(R.color.primary_dark_light) : Color.BLACK;
     }
 
     @Override

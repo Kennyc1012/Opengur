@@ -2,6 +2,9 @@ package com.kenny.openimgur.adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Build;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -241,6 +244,15 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
      */
     public void onDestroy() {
         LogUtil.v(TAG, "onDestroy");
+    }
+
+    @ColorInt
+    public int getColor(@ColorRes int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return mResources.getColor(color, null);
+        } else {
+            return mResources.getColor(color);
+        }
     }
 
     public abstract static class BaseViewHolder extends RecyclerView.ViewHolder {

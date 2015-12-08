@@ -57,8 +57,8 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
         super(context, comments);
         mListener = listener;
-        mGreenTextColor = mResources.getColor(R.color.notoriety_positive);
-        mRedTextColor = mResources.getColor(R.color.notoriety_negative);
+        mGreenTextColor = getColor(R.color.notoriety_positive);
+        mRedTextColor = getColor(R.color.notoriety_negative);
         mCommentIndent = mResources.getDimensionPixelSize(R.dimen.comment_padding);
     }
 
