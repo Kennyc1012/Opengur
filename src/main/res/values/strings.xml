@@ -61,6 +61,7 @@
     <string name="delete">Delete</string>
     <string name="hide_comment_bar">Hide bottom bar</string>
     <string name="download_album">Download Album</string>
+    <string name="search_opengur">Search Opengur</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
