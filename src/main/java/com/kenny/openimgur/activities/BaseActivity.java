@@ -226,4 +226,14 @@ abstract public class BaseActivity extends AppCompatActivity {
      */
     @StyleRes
     protected abstract int getStyleRes();
+
+    /**
+     * Returns if the current API level is at least the supplied level
+     *
+     * @param apiLevel
+     * @return
+     */
+    protected boolean isApiLevel(int apiLevel) {
+        return Build.VERSION.SDK_INT >= apiLevel;
+    }
 }
