@@ -130,6 +130,12 @@ public class FullScreenPhotoActivity extends BaseActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
+    @Override
+    protected void onDestroy() {
+        if (mHandler != null) mHandler.removeMessages(0);
+        super.onDestroy();
+    }
+
     private void downloadAlbum() {
         if (NetworkUtils.isConnectedToWiFi(getApplicationContext())) {
             ArrayList<String> urls = new ArrayList<>(mAdapter.getCount());
