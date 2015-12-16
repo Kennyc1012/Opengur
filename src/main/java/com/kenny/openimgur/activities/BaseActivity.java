@@ -167,7 +167,7 @@ abstract public class BaseActivity extends AppCompatActivity {
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setStatusBarColor(int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
             getWindow().setStatusBarColor(color);
         }
     }
@@ -178,7 +178,7 @@ abstract public class BaseActivity extends AppCompatActivity {
      * @param color
      */
     public void setStatusBarColorResource(@ColorRes int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
             setStatusBarColor(getResources().getColor(color));
         }
     }
@@ -190,7 +190,7 @@ abstract public class BaseActivity extends AppCompatActivity {
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     protected void updateTaskDescription(String title) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
             Resources res = getResources();
             if (TextUtils.isEmpty(title)) title = res.getString(R.string.app_name);
             Bitmap icon = BitmapFactory.decodeResource(res, R.drawable.ic_launcher);

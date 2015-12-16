@@ -248,7 +248,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 // Allow multiple selection for API 18+
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                if (isApiLevel(Build.VERSION_CODES.JELLY_BEAN_MR2)) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
 
                 if (intent.resolveActivity(getPackageManager()) != null) {
