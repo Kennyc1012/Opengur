@@ -52,7 +52,7 @@ public class RoutingActivity extends BaseActivity {
 
             case IMAGE_URL_QUERY:
                 int index = link.indexOf("?");
-                link = link.substring(0,index);
+                link = link.substring(0, index);
                 // Intentional fallthrough
             case DIRECT_LINK:
                 routingIntent = FullScreenPhotoActivity.createIntent(getApplicationContext(), link);
@@ -72,6 +72,6 @@ public class RoutingActivity extends BaseActivity {
     @Override
     protected int getStyleRes() {
         // Routing activity is barely visible so the theme won't matter
-        return R.style.Theme_Not_Translucent_Light;
+        return R.style.Theme_Opengur_Light_DarkActionBar;
     }
 }

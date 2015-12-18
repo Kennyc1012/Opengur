@@ -1,24 +1,5 @@
 <resources>
 
-    <style name="Theme_Translucent_Light" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:windowTranslucentNavigation">@bool/translucent_nav_bar</item>
-        <item name="android:windowTranslucentStatus">false</item>
-    </style>
-
-    <style name="Theme_Not_Translucent_Light" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="windowActionBarOverlay">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-    </style>
-
-    <style name="Theme_Translucent_Main_Light" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowTranslucentNavigation">@bool/translucent_nav_bar</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-    </style>
-
     <style name="Theme_Translucent_Dark" parent="Theme.AppCompat">
         <item name="android:windowTranslucentNavigation">@bool/translucent_nav_bar</item>
         <item name="android:windowTranslucentStatus">false</item>

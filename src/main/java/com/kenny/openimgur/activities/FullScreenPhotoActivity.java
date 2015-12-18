@@ -270,11 +270,6 @@ public class FullScreenPhotoActivity extends BaseActivity {
     }
 
     @Override
-    protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case RequestCodes.REQUEST_PERMISSION_WRITE:
@@ -288,6 +283,11 @@ public class FullScreenPhotoActivity extends BaseActivity {
         }
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
     }
 
     private static class FullScreenPagerAdapter extends FragmentStatePagerAdapter {

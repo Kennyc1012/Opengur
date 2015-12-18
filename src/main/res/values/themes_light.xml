@@ -1,104 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Override styles (Dark) -->
-    <style name="Theme.Opengur.Settings.Dark" parent="Theme.AppCompat" />
-
-    <style name="Theme_Not_Translucent_Dark" parent="Theme.AppCompat">
-        <item name="windowActionBarOverlay">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-    </style>
-
-    <style name="Theme_Translucent_Main_Dark" parent="Theme.AppCompat.NoActionBar">
-        <item name="windowActionBarOverlay">true</item>
-        <item name="android:windowContentOverlay">@null</item>
+    <style name="Theme.Opengur.Main" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
-    <style name="Theme_Dark">
-        <item name="android:textColorLink">?colorAccent</item>
-        <item name="cardBG">@color/card_bg_dark</item>
-        <item name="emptyDrawableUploads">@drawable/empty_uploads_dark_140dp</item>
-        <item name="emptyDrawableMessages">@drawable/no_comments_dark_140dp</item>
-        <item name="emptyDrawableNotifications">@drawable/no_notifications_dark_140dp</item>
-        <item name="errorDrawable">@drawable/error_dark_140dp</item>
-        <item name="repliesDrawable">@drawable/ic_add_white_18dp</item>
-        <item name="snack_bar_background_color">@android:color/white</item>
-        <item name="snack_bar_text_color">@android:color/black</item>
-        <item name="snack_bar_text_action_color">?colorAccent</item>
-        <item name="searchViewStyle">@style/SearchViewStyle</item>
-        <item name="toolBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
-        <item name="dividerColor">@color/bg_light</item>
+    <style name="Theme.Opengur.Main.Light" parent="Theme.Opengur.Main" />
+
+    <style name="Theme.Opengur.Light.DarkActionBar" parent="Theme.AppCompat.Light.DarkActionBar" />
+
+    <style name="Theme.Opengur.View.Light" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="Theme_Dark.Blue">
+    <style name="Theme_Opengur_Light">
+        <item name="android:textColorLink">?colorAccent</item>
+        <item name="cardBG">@color/cardview_light_background</item>
+        <item name="emptyDrawableUploads">@drawable/empty_uploads_light_140dp</item>
+        <item name="emptyDrawableMessages">@drawable/no_comments_light_140dp</item>
+        <item name="emptyDrawableNotifications">@drawable/no_notifications_light_140dp</item>
+        <item name="errorDrawable">@drawable/error_light_140dp</item>
+        <item name="repliesDrawable">@drawable/ic_add_black_18dp</item>
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+        <item name="toolBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="dividerColor">@color/bg_dark</item>
+        <item name="snack_bar_text_action_color">?colorAccent</item>
+    </style>
+
+    <style name="Theme_Opengur_Light.Blue">
         <item name="colorPrimary">@color/theme_blue_primary</item>
         <item name="colorPrimaryDark">@color/theme_blue_dark</item>
         <item name="colorAccent">@color/theme_blue_accent</item>
         <item name="actionModeStyle">@style/ActionMode.Blue</item>
     </style>
 
-    <style name="Theme_Dark.Orange">
+    <style name="Theme_Opengur_Light.Orange">
         <item name="colorPrimary">@color/theme_orange_primary</item>
         <item name="colorPrimaryDark">@color/theme_orange_dark</item>
         <item name="colorAccent">@color/theme_light_blue_accent</item>
         <item name="actionModeStyle">@style/ActionMode.Orange</item>
     </style>
 
-    <style name="Theme_Dark.Cyan">
+    <style name="Theme_Opengur_Light.Cyan">
         <item name="colorPrimary">@color/theme_cyan_primary</item>
         <item name="colorPrimaryDark">@color/theme_cyan_dark</item>
         <item name="colorAccent">@color/theme_cyan_accent</item>
         <item name="actionModeStyle">@style/ActionMode.Cyan</item>
     </style>
 
-    <style name="Theme_Dark.Green">
+    <style name="Theme_Opengur_Light.Green">
         <item name="colorPrimary">@color/theme_green_primary</item>
         <item name="colorPrimaryDark">@color/theme_green_dark</item>
         <item name="colorAccent">@color/theme_green_accent</item>
         <item name="actionModeStyle">@style/ActionMode.Green</item>
     </style>
 
-    <style name="Theme_Dark.Teal">
+    <style name="Theme_Opengur_Light.Teal">
         <item name="colorPrimary">@color/theme_teal_primary</item>
         <item name="colorPrimaryDark">@color/theme_teal_dark</item>
         <item name="colorAccent">@color/theme_teal_accent</item>
         <item name="actionModeStyle">@style/ActionMode.Teal</item>
     </style>
 
-    <style name="Theme_Dark.Red">
+    <style name="Theme_Opengur_Light.Red">
         <item name="colorPrimary">@color/theme_red_primary</item>
         <item name="colorPrimaryDark">@color/theme_red_dark</item>
         <item name="colorAccent">@color/theme_red_accent</item>
         <item name="actionModeStyle">@style/ActionMode.Red</item>
     </style>
 
-    <style name="Theme_Dark.Pink">
+    <style name="Theme_Opengur_Light.Pink">
         <item name="colorPrimary">@color/theme_pink_primary</item>
         <item name="colorPrimaryDark">@color/theme_pink_dark</item>
         <item name="colorAccent">@color/theme_pink_accent</item>
         <item name="actionModeStyle">@style/ActionMode.Pink</item>
     </style>
 
-    <style name="Theme_Dark.Purple">
+    <style name="Theme_Opengur_Light.Purple">
         <item name="colorPrimary">@color/theme_purple_primary</item>
         <item name="colorPrimaryDark">@color/theme_purple_dark</item>
         <item name="colorAccent">@color/theme_purple_accent</item>
         <item name="actionModeStyle">@style/ActionMode.Purple</item>
     </style>
 
-    <style name="Theme_Dark.Grey">
+    <style name="Theme_Opengur_Light.Grey">
         <item name="colorPrimary">@color/theme_grey_primary</item>
         <item name="colorPrimaryDark">@color/theme_grey_dark</item>
         <item name="colorAccent">@color/theme_grey_accent</item>
         <item name="actionModeStyle">@style/ActionMode.Grey</item>
     </style>
 
-    <style name="Theme_Dark.Black">
+    <style name="Theme_Opengur_Light.Black">
         <item name="colorPrimary">@color/theme_black_primary</item>
         <item name="colorPrimaryDark">@color/theme_black_dark</item>
         <item name="colorAccent">@color/theme_black_accent</item>
         <item name="actionModeStyle">@style/ActionMode.Black</item>
     </style>
-
 </resources>
-

@@ -896,11 +896,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         });
     }
 
-    @Override
-    protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
-    }
-
     private static class ZoomOutPageTransformer implements ViewPager.PageTransformer {
         private static final float MIN_SCALE = 0.5f;
 
@@ -982,5 +977,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         public ArrayList<ImgurBaseObject> retainItems() {
             return new ArrayList<>(objects);
         }
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Opengur_View_Light;
     }
 }

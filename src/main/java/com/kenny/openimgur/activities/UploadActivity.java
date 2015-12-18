@@ -323,11 +323,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     }
 
     @Override
-    protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
-    }
-
-    @Override
     public void onLinkAdded(String link) {
         Upload upload = new Upload(link, true);
 
@@ -552,6 +547,11 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     protected void onDestroy() {
         if (mAdapter != null) mAdapter.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
     }
 
     private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
