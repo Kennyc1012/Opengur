@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Opengur.Main" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.Opengur.Light.Main" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
-    <style name="Theme.Opengur.Main.Light" parent="Theme.Opengur.Main" />
+    <!-- Needed for v21 Override -->
+    <style name="Theme.Opengur.Light.Main.Light" />
 
     <style name="Theme.Opengur.Light.DarkActionBar" parent="Theme.AppCompat.Light.DarkActionBar" />
 
-    <style name="Theme.Opengur.View.Light" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Theme.Opengur.Light.View.Light" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>

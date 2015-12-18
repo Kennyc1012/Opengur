@@ -1,17 +1,17 @@
 <resources>
 
-    <!-- Override styles (Dark) -->
-    <style name="Theme.Opengur.Settings.Dark" parent="Theme.AppCompat" />
-
-    <style name="Theme_Not_Translucent_Dark" parent="Theme.AppCompat">
-        <item name="windowActionBarOverlay">true</item>
-        <item name="android:windowContentOverlay">@null</item>
+    <style name="Theme.Opengur.Dark.Main" parent="Theme.AppCompat.NoActionBar">
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
-    <style name="Theme_Translucent_Main_Dark" parent="Theme.AppCompat.NoActionBar">
+    <!-- Needed for v21 Override -->
+    <style name="Theme.Opengur.Dark.Main.Dark" />
+
+    <style name="Theme.Opengur.Dark" parent="Theme.AppCompat" />
+
+    <style name="Theme.Opengur.Dark.View.Dark" parent="Theme.AppCompat">
         <item name="windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
     <style name="Theme_Dark">

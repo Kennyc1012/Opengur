@@ -521,6 +521,6 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     @Override
     protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Translucent_Main_Dark : R.style.Theme_Opengur_Main_Light;
+        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark_Main_Dark : R.style.Theme_Opengur_Light_Main_Light;
     }
 }

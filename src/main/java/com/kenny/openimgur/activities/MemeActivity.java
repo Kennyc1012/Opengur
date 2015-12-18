@@ -302,7 +302,7 @@ public class MemeActivity extends BaseActivity {
 
     @Override
     protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
+        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
     }
 
     private static class SaveMemeTask extends AsyncTask<MemeActivity, Void, File> {
