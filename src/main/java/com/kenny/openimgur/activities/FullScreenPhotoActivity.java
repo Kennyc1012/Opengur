@@ -86,8 +86,6 @@ public class FullScreenPhotoActivity extends BaseActivity {
         }
 
         setContentView(R.layout.activity_full_screen);
-        setStatusBarColor(Color.BLACK);
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         handleArguments(savedInstanceState, intent);
 
         if (isApiLevel(Build.VERSION_CODES.KITKAT)) {
@@ -115,6 +113,10 @@ public class FullScreenPhotoActivity extends BaseActivity {
             Message msg = mHandler.obtainMessage(0, mDecorView);
             mHandler.sendMessageDelayed(msg, VisibilityHandler.HIDE_DELAY);
         }
+
+        setStatusBarColor(Color.BLACK);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION| View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
     @Override
@@ -285,11 +287,6 @@ public class FullScreenPhotoActivity extends BaseActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    @Override
-    protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
-    }
-
     private static class FullScreenPagerAdapter extends FragmentStatePagerAdapter {
         private List<ImgurPhoto> mPhotos;
 
@@ -330,5 +327,10 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
             super.handleMessage(msg);
         }
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
     }
 }
