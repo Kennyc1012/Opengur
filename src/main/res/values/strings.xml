@@ -61,6 +61,7 @@
     <string name="delete">Delete</string>
     <string name="hide_comment_bar">Hide bottom bar</string>
     <string name="download_album">Download Album</string>
+    <string name="search_opengur">Search Opengur</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -92,6 +93,7 @@
     <string name="sort_new">New</string>
     <string name="sort_best">Best</string>
     <string name="sort_top">Top</string>
+    <string name="sort_worst">Worst</string>
 
     <!-- Uploaded Photos-->
     <string name="uploaded_photos_empty">You have not uploaded any photos from this device</string>

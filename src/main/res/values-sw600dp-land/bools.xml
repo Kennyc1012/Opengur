@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <!-- Was true until issue is fixed -->
-    <bool name="translucent_nav_bar">false</bool>
-
-</resources>

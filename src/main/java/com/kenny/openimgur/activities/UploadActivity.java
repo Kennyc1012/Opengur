@@ -248,7 +248,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 // Allow multiple selection for API 18+
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                if (isApiLevel(Build.VERSION_CODES.JELLY_BEAN_MR2)) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
 
                 if (intent.resolveActivity(getPackageManager()) != null) {
@@ -320,11 +320,6 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         }
 
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
     }
 
     @Override
@@ -552,6 +547,11 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     protected void onDestroy() {
         if (mAdapter != null) mAdapter.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
     }
 
     private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {

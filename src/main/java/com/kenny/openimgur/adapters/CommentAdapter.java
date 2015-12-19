@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.CustomLinkMovement;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurListener;
 
@@ -56,8 +57,8 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     public CommentAdapter(Context context, List<ImgurComment> comments, ImgurListener listener) {
         super(context, comments);
         mListener = listener;
-        mGreenTextColor = mResources.getColor(R.color.notoriety_positive);
-        mRedTextColor = mResources.getColor(R.color.notoriety_negative);
+        mGreenTextColor = getColor(R.color.notoriety_positive);
+        mRedTextColor = getColor(R.color.notoriety_negative);
         mCommentIndent = mResources.getDimensionPixelSize(R.dimen.comment_padding);
     }
 
@@ -118,6 +119,14 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
             lp.setMargins(multiple * mCommentIndent, 0, 0, 0);
         } else {
             lp.setMargins(0, 0, 0, 0);
+        }
+
+        if (ImgurBaseObject.VOTE_UP.equals(comment.getVote())) {
+            commentHolder.author.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_upvote_green_12dp, 0);
+        } else if (ImgurBaseObject.VOTE_DOWN.equals(comment.getVote())) {
+            commentHolder.author.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_downvote_red_12dp, 0);
+        } else {
+            commentHolder.author.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
         }
 
         int bgColor = position == mSelectedIndex ? mResources.getColor(R.color.comment_bg_selected) : mResources.getColor(android.R.color.transparent);

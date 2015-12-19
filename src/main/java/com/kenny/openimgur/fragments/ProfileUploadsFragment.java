@@ -83,7 +83,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements View.OnL
                                 shareIntent.setType("text/plain");
                                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
                                 shareIntent.putExtra(Intent.EXTRA_TEXT, photo.getLink());
-                                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share);
+                                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, isTablet());
 
                                 if (shareDialog != null) {
                                     shareDialog.show();

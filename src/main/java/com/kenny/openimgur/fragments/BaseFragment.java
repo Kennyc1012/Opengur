@@ -1,12 +1,10 @@
 package com.kenny.openimgur.fragments;
 
-import android.annotation.TargetApi;
 import android.app.Fragment;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
 import android.view.View;
 
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.BaseActivity;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
@@ -74,22 +72,11 @@ abstract public class BaseFragment extends Fragment {
         super.onDestroyView();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    protected void setStatusBarColor(int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getActivity() instanceof BaseActivity) {
-            ((BaseActivity) getActivity()).setStatusBarColor(color);
+    protected boolean isTablet() {
+        if (getActivity() instanceof BaseActivity) {
+            return ((BaseActivity) getActivity()).isTablet();
         }
-    }
 
-    /**
-     * Sets the color of the status bar, only for SDK 21+ devices
-     *
-     * @param color
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void setStatusBarColorResource(@ColorRes int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getActivity() instanceof BaseActivity) {
-            setStatusBarColor(getResources().getColor(color));
-        }
+        return getResources().getBoolean(R.bool.is_tablet);
     }
 }

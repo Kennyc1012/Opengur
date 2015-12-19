@@ -45,8 +45,8 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
 
     public GalleryAdapter(Context context, SetUniqueList<ImgurBaseObject> objects, View.OnClickListener listener) {
         super(context, objects, true);
-        mUpvoteColor = mResources.getColor(R.color.notoriety_positive);
-        mDownVoteColor = mResources.getColor(R.color.notoriety_negative);
+        mUpvoteColor = getColor(R.color.notoriety_positive);
+        mDownVoteColor = getColor(R.color.notoriety_negative);
         SharedPreferences pref = OpengurApp.getInstance(context).getPreferences();
         mAllowNSFWThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
         mThumbnailQuality = pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY);

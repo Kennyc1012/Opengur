@@ -1,7 +1,6 @@
 package com.kenny.openimgur.api;
 
 
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import com.google.gson.FieldNamingPolicy;
@@ -13,8 +12,11 @@ import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
+import com.kenny.openimgur.util.FileUtil;
+import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 
+import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +36,9 @@ public class ApiClient {
 
     private static ImgurService sService;
 
+    // 10MB
+    private static final long CACHE_SIZE = 10 * 1024 * 1024;
+
     public static final String CLIENT_ID = BuildConfig.API_CLIENT_ID;
 
     public static final String CLIENT_SECRET = BuildConfig.API_CLIENT_SECRET;
@@ -45,11 +50,10 @@ public class ApiClient {
      */
     public static ImgurService getService() {
         if (sRestAdapter == null || sService == null) {
-            ImgurUser user = OpengurApp.getInstance().getUser();
 
             sRestAdapter = new Retrofit.Builder()
                     .baseUrl(API_URL)
-                    .client(getClient(user))
+                    .client(getClient())
                     .addConverterFactory(getConverter())
                     .build();
 
@@ -60,10 +64,21 @@ public class ApiClient {
 
     }
 
-    private static OkHttpClient getClient(@Nullable ImgurUser user) {
+    private static OkHttpClient getClient() {
+        OpengurApp app = OpengurApp.getInstance();
+        ImgurUser user = app.getUser();
+
         OkHttpClient client = new OkHttpClient();
         client.setConnectTimeout(20, TimeUnit.SECONDS);
         client.interceptors().add(new OAuthInterceptor(user != null ? user.getAccessToken() : null));
+
+        File cacheDir = app.getCacheDir();
+
+        if (FileUtil.isFileValid(cacheDir)) {
+            File cache = new File(cacheDir, "http_cache");
+            client.setCache(new Cache(cache, CACHE_SIZE));
+        }
+
         return client;
     }
 

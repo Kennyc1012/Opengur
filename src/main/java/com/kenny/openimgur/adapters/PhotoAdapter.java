@@ -1,7 +1,6 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -121,9 +120,9 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
             titleHolder.pointsBar.setPoints(mImgurObject.getUpVotes(), totalPoints);
 
             if (mImgurObject.isFavorited() || ImgurBaseObject.VOTE_UP.equals(mImgurObject.getVote())) {
-                titleHolder.points.setTextColor(mResources.getColor(R.color.notoriety_positive));
+                titleHolder.points.setTextColor(getColor(R.color.notoriety_positive));
             } else if (ImgurBaseObject.VOTE_DOWN.equals(mImgurObject.getVote())) {
-                titleHolder.points.setTextColor(mResources.getColor(R.color.notoriety_negative));
+                titleHolder.points.setTextColor(getColor(R.color.notoriety_negative));
             }
 
             if (mImgurObject.getTags() != null && !mImgurObject.getTags().isEmpty()) {
@@ -187,16 +186,15 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
     public void updateHeader(RecyclerView.ViewHolder holder) {
         if (holder instanceof PhotoTitleHolder) {
             PhotoTitleHolder titleHolder = (PhotoTitleHolder) holder;
-            Resources res = titleHolder.author.getResources();
             int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
             int votePoints = mImgurObject.getUpVotes() - mImgurObject.getDownVotes();
             titleHolder.points.setText(mResources.getQuantityString(R.plurals.points, votePoints, votePoints));
             titleHolder.pointsBar.setPoints(mImgurObject.getUpVotes(), totalPoints);
 
             if (mImgurObject.isFavorited() || ImgurBaseObject.VOTE_UP.equals(mImgurObject.getVote())) {
-                titleHolder.points.setTextColor(res.getColor(R.color.notoriety_positive));
+                titleHolder.points.setTextColor(getColor(R.color.notoriety_positive));
             } else if (ImgurBaseObject.VOTE_DOWN.equals(mImgurObject.getVote())) {
-                titleHolder.points.setTextColor(res.getColor(R.color.notoriety_negative));
+                titleHolder.points.setTextColor(getColor(R.color.notoriety_negative));
             }
         } else {
             LogUtil.v(TAG, "ViewHolder not instance of PhotoTitleHolder");

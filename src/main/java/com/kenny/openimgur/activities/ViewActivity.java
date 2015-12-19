@@ -59,7 +59,9 @@ import com.kennyc.view.MultiStateView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -71,21 +73,24 @@ import retrofit.Retrofit;
 /**
  * Created by kcampagna on 7/12/14.
  */
-public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener,
-        SideGalleryFragment.SideGalleryListener, CommentPopupFragment.CommentListener {
+public class ViewActivity extends BaseActivity implements View.OnClickListener, ImgurListener, SideGalleryFragment.SideGalleryListener, CommentPopupFragment.CommentListener {
+
     private enum CommentSort {
-        BEST("best"),
-        NEW("new"),
-        TOP("top");
+        BEST, NEW, TOP, WORST;
 
-        private final String mSort;
+        public String getApiValue() {
+            switch (this) {
+                case BEST:
+                case NEW:
+                case TOP:
+                    return name().toLowerCase(Locale.ENGLISH);
 
-        CommentSort(String sort) {
-            mSort = sort;
-        }
+                case WORST:
+                    return "top";
 
-        public String getSort() {
-            return mSort;
+                default:
+                    return "best";
+            }
         }
 
         public static CommentSort getSortFromPosition(int position) {
@@ -109,6 +114,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     case NEW:
                         values[i] = context.getString(R.string.sort_new);
                         break;
+
+                    case WORST:
+                        values[i] = context.getString(R.string.sort_worst);
                 }
             }
 
@@ -117,7 +125,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
         public static CommentSort getSortFromString(String item) {
             for (CommentSort s : CommentSort.values()) {
-                if (s.getSort().equals(item)) {
+                if (s.name().equalsIgnoreCase(item)) {
                     return s;
                 }
             }
@@ -361,7 +369,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
         } else {
-            mCommentSort = CommentSort.getSortFromString(savedInstanceState.getString(KEY_SORT, CommentSort.NEW.getSort()));
+            mCommentSort = CommentSort.getSortFromString(savedInstanceState.getString(KEY_SORT, CommentSort.NEW.name()));
             mLoadComments = savedInstanceState.getBoolean(KEY_LOAD_COMMENTS, true);
             mIsResuming = true;
             mCurrentPosition = savedInstanceState.getInt(KEY_POSITION, 0);
@@ -422,7 +430,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             mPagerAdapter = null;
         }
 
-        app.getPreferences().edit().putString(KEY_SORT, mCommentSort.getSort()).apply();
+        app.getPreferences().edit().putString(KEY_SORT, mCommentSort.name()).apply();
         super.onDestroy();
     }
 
@@ -596,7 +604,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         outState.putBoolean(KEY_LOAD_COMMENTS, mLoadComments);
-        outState.putString(KEY_SORT, mCommentSort.getSort());
+        outState.putString(KEY_SORT, mCommentSort.name());
 
         if (mPagerAdapter != null && !mPagerAdapter.isEmpty()) {
             outState.putInt(KEY_POSITION, mViewPager.getCurrentItem());
@@ -615,6 +623,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             if (!shouldClose) {
                 final ImgurComment comment = mCommentAdapter.getItem(position);
+
                 if (TextUtils.isEmpty(comment.getAuthor()) || comment.getAuthor().equals("[deleted]")) {
                     mCommentAdapter.setSelectedIndex(-1);
                     return;
@@ -691,7 +700,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             if (imgurBaseObject.isListed()) {
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
-                ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getSort()).enqueue(new Callback<CommentResponse>() {
+                ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getApiValue()).enqueue(new Callback<CommentResponse>() {
                     @Override
                     public void onResponse(Response<CommentResponse> response, Retrofit retrofit) {
                         if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
@@ -711,6 +720,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             ImgurComment comment = commentResponse.data.get(0);
 
                             if (comment.getImageId().equals(imgurBaseObject.getId())) {
+                                // Reverse the list for worst sorting as it will be loading the Top comments
+                                if (mCommentSort == CommentSort.WORST) Collections.reverse(commentResponse.data);
+
                                 // We only show the comments for the correct gallery item
                                 if (mCommentAdapter == null) {
                                     mCommentAdapter = new CommentAdapter(ViewActivity.this, commentResponse.data, ViewActivity.this);
@@ -841,14 +853,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         ApiClient.getService().voteOnComment(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
-                int stringId = response != null && response.body() != null && response.body().data ? R.string.vote_cast : R.string.error_generic;
-                SnackBar.show(ViewActivity.this, stringId);
+                if (response.body() != null) LogUtil.v(TAG, "Result of comment voting " + response.body().data);
             }
 
             @Override
             public void onFailure(Throwable t) {
                 LogUtil.e(TAG, "Unable to vote on comment", t);
-                SnackBar.show(ViewActivity.this, R.string.error_generic);
             }
         });
     }
@@ -884,11 +894,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mMultiView.setViewState(viewState);
             }
         });
-    }
-
-    @Override
-    protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
     }
 
     private static class ZoomOutPageTransformer implements ViewPager.PageTransformer {
@@ -972,5 +977,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         public ArrayList<ImgurBaseObject> retainItems() {
             return new ArrayList<>(objects);
         }
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark_View_Dark : R.style.Theme_Opengur_Light_View_Light;
     }
 }

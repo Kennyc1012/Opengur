@@ -1,6 +1,7 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -33,7 +34,7 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     public ProfileCommentAdapter(Context context, List<ImgurComment> comments, View.OnClickListener listener) {
         super(context, comments, true);
         mClickListener = listener;
-        mDividerColor = mIsDarkTheme ? mResources.getColor(R.color.primary_dark_material_light) : mResources.getColor(R.color.primary_dark_material_dark);
+        mDividerColor = mIsDarkTheme ? getColor(R.color.primary_dark_light) : Color.BLACK;
     }
 
     @Override
@@ -94,7 +95,7 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
 
         Spannable span = new SpannableString(sb.toString());
 
-        int color = comment.getPoints() < 0 ? mResources.getColor(R.color.notoriety_negative) : mResources.getColor(R.color.notoriety_positive);
+        int color = comment.getPoints() < 0 ? getColor(R.color.notoriety_negative) : getColor(R.color.notoriety_positive);
 
         span.setSpan(new ForegroundColorSpan(color), spanLength, sb.length() - date.length() - 2,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

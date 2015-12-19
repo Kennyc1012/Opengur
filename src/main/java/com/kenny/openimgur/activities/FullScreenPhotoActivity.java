@@ -8,13 +8,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
@@ -49,7 +55,12 @@ public class FullScreenPhotoActivity extends BaseActivity {
     @Bind(R.id.pager)
     ViewPager mPager;
 
+    private View mDecorView;
+
     private FullScreenPagerAdapter mAdapter;
+
+    @Nullable
+    private VisibilityHandler mHandler;
 
     public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {
         return new Intent(context, FullScreenPhotoActivity.class).putExtra(KEY_IMAGE, photo);
@@ -75,9 +86,37 @@ public class FullScreenPhotoActivity extends BaseActivity {
         }
 
         setContentView(R.layout.activity_full_screen);
+        handleArguments(savedInstanceState, intent);
+
+        if (isApiLevel(Build.VERSION_CODES.KITKAT)) {
+            mDecorView = getWindow().getDecorView();
+            mDecorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+                @Override
+                public void onSystemUiVisibilityChange(int flags) {
+                    boolean isVisible = (flags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+
+                    if (isVisible && mHandler != null) {
+                        mHandler.removeMessages(0);
+                        Message msg = mHandler.obtainMessage(0, mDecorView);
+                        mHandler.sendMessageDelayed(msg, VisibilityHandler.HIDE_DELAY);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        if (isApiLevel(Build.VERSION_CODES.KITKAT)) {
+            mHandler = new VisibilityHandler();
+            Message msg = mHandler.obtainMessage(0, mDecorView);
+            mHandler.sendMessageDelayed(msg, VisibilityHandler.HIDE_DELAY);
+        }
+
         setStatusBarColor(Color.BLACK);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        handleArguments(savedInstanceState, intent);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION| View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
     @Override
@@ -91,6 +130,12 @@ public class FullScreenPhotoActivity extends BaseActivity {
         boolean isAlbumDownloadable = mAdapter != null && mAdapter.getCount() > 1;
         menu.findItem(R.id.download_album).setVisible(isAlbumDownloadable);
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mHandler != null) mHandler.removeMessages(0);
+        super.onDestroy();
     }
 
     private void downloadAlbum() {
@@ -227,11 +272,6 @@ public class FullScreenPhotoActivity extends BaseActivity {
     }
 
     @Override
-    protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Not_Translucent_Dark : R.style.Theme_Not_Translucent_Light;
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case RequestCodes.REQUEST_PERMISSION_WRITE:
@@ -268,5 +308,29 @@ public class FullScreenPhotoActivity extends BaseActivity {
         public ArrayList<ImgurPhoto> retainItems() {
             return new ArrayList<>(mPhotos);
         }
+    }
+
+    private static class VisibilityHandler extends Handler {
+        public static final long HIDE_DELAY = DateUtils.SECOND_IN_MILLIS * 3;
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.obj instanceof View) {
+                ((View) msg.obj).setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+            }
+
+            super.handleMessage(msg);
+        }
+    }
+
+    @Override
+    protected int getStyleRes() {
+        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
     }
 }

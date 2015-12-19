@@ -1,7 +1,6 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;

@@ -174,7 +174,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
 
             case R.id.share:
-                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), mImgurObject.getShareIntent(), R.string.share);
+                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), mImgurObject.getShareIntent(), R.string.share, isTablet());
                 if (shareDialog != null) {
                     shareDialog.show();
                 } else {
@@ -295,7 +295,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         if (mPhotoAdapter != null) {
             LinearLayoutManager manager = ((LinearLayoutManager) mListView.getLayoutManager());
-            int firstVisible = manager.findFirstCompletelyVisibleItemPosition();
+            int firstVisible = manager.findFirstVisibleItemPosition();
 
             if (firstVisible == 0) {
                 // The header is visible, update it without triggering a list redraw
@@ -381,7 +381,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                                     shareIntent.setType("text/plain");
                                     shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-                                    BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share);
+                                    BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, isTablet());
 
                                     if (shareDialog != null) {
                                         shareDialog.show();

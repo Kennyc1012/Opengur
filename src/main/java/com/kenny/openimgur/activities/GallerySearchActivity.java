@@ -2,9 +2,11 @@ package com.kenny.openimgur.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.FragmentListener;
@@ -39,7 +41,14 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
         if (savedInstanceState != null) {
             query = savedInstanceState.getString(KEY_QUERY, null);
         } else {
-            query = getIntent().getStringExtra(KEY_QUERY);
+            Intent intent = getIntent();
+
+            if (isApiLevel(Build.VERSION_CODES.M) && intent.getAction() == Intent.ACTION_PROCESS_TEXT) {
+                query = intent.getStringExtra(Intent.EXTRA_PROCESS_TEXT);
+                if (TextUtils.isEmpty(query)) query = intent.getStringExtra(Intent.EXTRA_PROCESS_TEXT_READONLY);
+            } else {
+                query = intent.getStringExtra(KEY_QUERY);
+            }
         }
 
         setupToolBar(query);
@@ -73,6 +82,6 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
 
     @Override
     protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Translucent_Main_Dark : R.style.Theme_Translucent_Main_Light;
+        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark_Main_Dark : R.style.Theme_Opengur_Light_Main_Light;
     }
 }

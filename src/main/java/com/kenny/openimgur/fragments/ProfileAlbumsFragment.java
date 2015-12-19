@@ -81,7 +81,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements View.OnLo
                                 shareIntent.setType("text/plain");
                                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
                                 shareIntent.putExtra(Intent.EXTRA_TEXT, album.getLink());
-                                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share);
+                                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, isTablet());
 
                                 if (shareDialog != null) {
                                     shareDialog.show();
