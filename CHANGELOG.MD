@@ -1,4 +1,18 @@
 #Open Imgur Changelog
+<b>4.2.1</b> December 19, 2015
+- Add "Worst" comment sorting 
+- Add Immersive mode to fullscreen photos
+- Add vote status to comments
+- Tablet will use a grid style for share intents
+- Add External Searching for Marshmallow devices
+- Refactor styles
+- Update OKHTTP V2.7.0
+- Update GSON V2.5
+- Update GifDrawable V1.1.11
+- Update Universal Image Loader V1.9.5
+- Update Gradle V2.8
+- Update Gradle plugin V2.0.0-alpha3
+
 <b>4.2.0</b> November 14, 2015
 - Add album count to thumbnails
 - Fully convert over to RecyclerViews
