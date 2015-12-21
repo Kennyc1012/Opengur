@@ -292,7 +292,8 @@ public class ImageUtil {
     public static DisplayImageOptions.Builder getDisplayOptionsForPhotoPicker() {
         return getDisplayOptionsForGallery()
                 .cacheOnDisk(false)
-                .considerExifParams(true);
+                .considerExifParams(true)
+                .imageScaleType(ImageScaleType.EXACTLY_STRETCHED);
     }
 
     /**

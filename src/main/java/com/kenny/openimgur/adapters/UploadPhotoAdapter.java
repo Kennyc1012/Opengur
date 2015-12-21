@@ -1,11 +1,9 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.PhotoUploadListener;
@@ -68,29 +66,11 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
         UploadPhotoHolder uploadHolder = (UploadPhotoHolder) holder;
         Upload upload = getItem(position);
 
-        if (TextUtils.isEmpty(upload.getDescription())) {
-            uploadHolder.description.setText(R.string.upload_empty_desc);
-        } else {
-            uploadHolder.description.setText(upload.getDescription());
-        }
-
-        if (TextUtils.isEmpty(upload.getTitle())) {
-            uploadHolder.title.setText(R.string.upload_empty_title);
-        } else {
-            uploadHolder.title.setText(upload.getTitle());
-        }
-
         String photoLocation = upload.isLink() ? upload.getLocation() : "file://" + upload.getLocation();
         displayImage(uploadHolder.image, photoLocation);
     }
 
     static class UploadPhotoHolder extends BaseViewHolder {
-        @Bind(R.id.title)
-        TextView title;
-
-        @Bind(R.id.desc)
-        TextView description;
-
         @Bind(R.id.image)
         ImageView image;
 

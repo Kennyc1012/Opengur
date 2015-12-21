@@ -8,6 +8,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -17,7 +18,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
@@ -33,7 +33,6 @@ import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
-import com.kenny.openimgur.fragments.UploadEditDialogFragment;
 import com.kenny.openimgur.fragments.UploadInfoFragment;
 import com.kenny.openimgur.fragments.UploadLinkDialogFragment;
 import com.kenny.openimgur.services.UploadService;
@@ -43,8 +42,6 @@ import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
-import com.kenny.snackbar.SnackBarItem;
-import com.kenny.snackbar.SnackBarListener;
 import com.kennyc.view.MultiStateView;
 
 import java.io.File;
@@ -92,7 +89,8 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        Resources res = getResources();
+        ViewUtils.setRecyclerViewGridDefaults(getApplicationContext(), mRecyclerView, res.getInteger(R.integer.upload_num_columns), res.getDimensionPixelSize(R.dimen.grid_padding));
         ViewUtils.setEmptyText(mMultiView, R.id.emptyMessage, R.string.upload_empty_message);
         new ItemTouchHelper(mSimpleItemTouchCallback).attachToRecyclerView(mRecyclerView);
         getSupportActionBar().setTitle(R.string.upload);
@@ -339,11 +337,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
     @Override
     public void onItemClicked(int position) {
-        Upload upload = mAdapter.getItem(position);
-
-        getFragmentManager().beginTransaction()
-                .add(UploadEditDialogFragment.createInstance(upload), UploadEditDialogFragment.TAG)
-                .commit();
+        // TODO
     }
 
     @Override
@@ -554,7 +548,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
         return theme.isDarkTheme ? R.style.Theme_Opengur_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
     }
 
-    private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+    private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT, 0) {
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
             mAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
@@ -563,36 +557,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-            int adapterPosition = viewHolder.getAdapterPosition();
-            Upload upload = mAdapter.removeItem(adapterPosition);
-            if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-
-            SnackBar.cancelSnackBars(UploadActivity.this);
-            new SnackBarItem.Builder(UploadActivity.this)
-                    .setMessageResource(R.string.upload_photo_removed)
-                    .setActionMessageResource(R.string.undo)
-                    .setObject(new Object[]{adapterPosition, upload})
-                    .setSnackBarListener(new SnackBarListener() {
-                        @Override
-                        public void onSnackBarStarted(Object o) {
-
-                        }
-
-                        @Override
-                        public void onSnackBarFinished(Object object, boolean actionPressed) {
-                            if (actionPressed && object instanceof Object[]) {
-                                Object[] objects = (Object[]) object;
-                                int position = (int) objects[0];
-                                Upload upload = (Upload) objects[1];
-                                mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-                                mAdapter.addItem(upload, position);
-                                supportInvalidateOptionsMenu();
-                            }
-                        }
-                    })
-                    .show();
-
-            supportInvalidateOptionsMenu();
+            //NOOP
         }
     };
 
