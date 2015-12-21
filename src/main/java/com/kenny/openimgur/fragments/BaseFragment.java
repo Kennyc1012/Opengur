@@ -1,6 +1,7 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Fragment;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
@@ -78,5 +79,15 @@ abstract public class BaseFragment extends Fragment {
         }
 
         return getResources().getBoolean(R.bool.is_tablet);
+    }
+
+    /**
+     * Returns if the current API level is at least the supplied level
+     *
+     * @param apiLevel
+     * @return
+     */
+    protected boolean isApiLevel(int apiLevel) {
+        return Build.VERSION.SDK_INT >= apiLevel;
     }
 }
