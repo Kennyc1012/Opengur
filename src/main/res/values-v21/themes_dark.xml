@@ -6,4 +6,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
+    <style name="Theme.Opengur.Light.DarkActionBar.Upload">
+        <item name="android:windowContentTransitions">true</item>
+    </style>
+
 </resources>

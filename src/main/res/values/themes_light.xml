@@ -8,6 +8,8 @@
     <!-- Needed for v21 Override -->
     <style name="Theme.Opengur.Light.Main.Light" />
 
+    <style name="Theme.Opengur.Light.DarkActionBar.Upload" />
+
     <style name="Theme.Opengur.Light.DarkActionBar" parent="Theme.AppCompat.Light.DarkActionBar" />
 
     <style name="Theme.Opengur.Light.View.Light" parent="Theme.AppCompat.Light.DarkActionBar">

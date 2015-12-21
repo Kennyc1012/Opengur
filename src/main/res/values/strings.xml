@@ -237,8 +237,8 @@
     <string name="upload_invalid_link">The link you entered is not a valid image link.</string>
     <string name="upload_valid_link">The link you entered is valid!</string>
     <string name="upload_link_dialog_title">Photo Link</string>
-    <string name="upload_edit_title_hint">Enter title</string>
-    <string name="upload_edit_desc_hint">Enter description</string>
+    <string name="upload_edit_title_hint">Title (optional)</string>
+    <string name="upload_edit_desc_hint">Description (optional)</string>
     <string name="upload_notif_starting">Starting upload</string>
     <string name="upload_notif_starting_content">Your upload will begin shortly</string>
     <string name="upload_notif_in_progress">Upload in Progress</string>
@@ -355,5 +355,8 @@
     <string name="filter_scoring_month">Highest Scoring &#8226; Month</string>
     <string name="filter_scoring_year">Highest Scoring &#8226; Year</string>
     <string name="filter_scoring_all">Highest Scoring &#8226; All</string>
+
+    <!-- UI transition names, should not be translated -->
+    <string name="transition_upload_photo" translatable="false">uploadPhoto</string>
 
 </resources>

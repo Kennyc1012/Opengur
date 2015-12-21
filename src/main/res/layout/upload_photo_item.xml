@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/gallery_column_height"
         android:scaleType="centerCrop"
+        android:transitionName="@string/transition_upload_photo"
         tools:src="@drawable/ic_launcher" />
 
 </FrameLayout>

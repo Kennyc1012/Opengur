@@ -17,6 +17,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -336,8 +337,17 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
     }
 
     @Override
-    public void onItemClicked(int position) {
-        // TODO
+    public void onItemClicked(View view) {
+        int position = mRecyclerView.getChildAdapterPosition(view);
+
+        if (position != RecyclerView.NO_POSITION) {
+            Upload upload = mAdapter.getItem(position);
+            View v = view.findViewById(R.id.image);
+
+            ActivityOptionsCompat options = ActivityOptionsCompat.
+                    makeSceneTransitionAnimation(this, v, getString(R.string.transition_upload_photo));
+            startActivity(UploadEditActivity.createIntent(getApplicationContext(), upload), options.toBundle());
+        }
     }
 
     @Override
@@ -545,7 +555,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
     @Override
     protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
+        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark_Upload : R.style.Theme_Opengur_Light_DarkActionBar_Upload;
     }
 
     private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT, 0) {

@@ -55,7 +55,7 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mListener != null) mListener.onItemClicked(holder.getAdapterPosition());
+                if (mListener != null) mListener.onItemClicked(v);
             }
         });
         return holder;

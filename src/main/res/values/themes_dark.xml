@@ -7,6 +7,8 @@
     <!-- Needed for v21 Override -->
     <style name="Theme.Opengur.Dark.Main.Dark" />
 
+    <style name="Theme.Opengur.Dark.Upload" />
+
     <style name="Theme.Opengur.Dark" parent="Theme.AppCompat" />
 
     <style name="Theme.Opengur.Dark.View.Dark" parent="Theme.AppCompat">
