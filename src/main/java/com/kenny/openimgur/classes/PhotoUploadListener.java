@@ -11,7 +11,5 @@ public interface PhotoUploadListener {
 
     void onItemClicked(View view);
 
-    void onItemEdited(Upload upload);
-
     void onUpload(boolean submitToGallery, String title, String description, ImgurTopic topic);
 }

@@ -316,6 +316,16 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
                     }
                 }
                 break;
+
+            case RequestCodes.UPLOAD_EDIT:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    Upload upload = data.getParcelableExtra(UploadEditActivity.KEY_UPDATED_UPLOAD);
+
+                    if (upload != null) {
+                        mAdapter.updateItem(upload);
+                    }
+                }
+                break;
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -342,18 +352,17 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
 
         if (position != RecyclerView.NO_POSITION) {
             Upload upload = mAdapter.getItem(position);
-            View v = view.findViewById(R.id.image);
+            Intent intent = UploadEditActivity.createIntent(getApplicationContext(), upload);
 
-            ActivityOptionsCompat options = ActivityOptionsCompat.
-                    makeSceneTransitionAnimation(this, v, getString(R.string.transition_upload_photo));
-            startActivity(UploadEditActivity.createIntent(getApplicationContext(), upload), options.toBundle());
+            if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
+                View v = view.findViewById(R.id.image);
+
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, v, getString(R.string.transition_upload_photo));
+                startActivityForResult(intent, RequestCodes.UPLOAD_EDIT, options.toBundle());
+            } else {
+                startActivityForResult(intent, RequestCodes.UPLOAD_EDIT);
+            }
         }
-    }
-
-    @Override
-    public void onItemEdited(Upload upload) {
-        mAdapter.notifyDataSetChanged();
-        supportInvalidateOptionsMenu();
     }
 
     @Override

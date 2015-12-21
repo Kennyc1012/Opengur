@@ -1,6 +1,7 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -42,6 +43,24 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
     public void onItemMove(int from, int to) {
         Collections.swap(getAllItems(), from, to);
         notifyItemMoved(from, to);
+    }
+
+    public void updateItem(@NonNull Upload upload) {
+        int position = -1;
+        int size = getItemCount();
+
+        for (int i = 0; i < size; i++) {
+            if (getItem(i).equals(upload)) {
+                position = i;
+                break;
+            }
+        }
+
+        if (position > -1) {
+            removeItem(position);
+            addItem(upload, position);
+            notifyItemChanged(position);
+        }
     }
 
     @Override

@@ -240,7 +240,9 @@
         <activity
             android:name=".activities.MuzeiSettingsActivity"
             android:exported="true" />
-        <activity android:name=".activities.UploadEditActivity" />
+        <activity
+            android:name=".activities.UploadEditActivity"
+            android:windowSoftInputMode="stateHidden" />
 
         <service android:name=".services.DownloaderService" />
         <service android:name=".services.UploadService" />

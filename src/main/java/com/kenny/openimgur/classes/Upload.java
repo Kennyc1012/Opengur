@@ -9,9 +9,13 @@ import android.os.Parcelable;
 public class Upload implements Parcelable {
 
     private String mLocation;
+
     private String mUploadedLink;
+
     private String mTitle;
+
     private String mDesc;
+
     private boolean mIsLink;
 
     private Upload(Parcel in) {
@@ -61,6 +65,13 @@ public class Upload implements Parcelable {
 
     public void setDescription(String description) {
         mDesc = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Upload)) return false;
+
+        return ((Upload) o).getLocation().equals(getLocation());
     }
 
     public static final Parcelable.Creator<Upload> CREATOR = new Parcelable.Creator<Upload>() {
