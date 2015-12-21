@@ -1,4 +1,8 @@
 #Open Imgur Changelog
+<b>4.2.2</b> December 21, 2015
+- Make Immersive mode a setting
+- Update Share Bottom sheets to be grid style
+
 <b>4.2.1</b> December 19, 2015
 - Add "Worst" comment sorting 
 - Add Immersive mode to fullscreen photos
