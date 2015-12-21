@@ -88,7 +88,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
         setContentView(R.layout.activity_full_screen);
         handleArguments(savedInstanceState, intent);
 
-        if (isApiLevel(Build.VERSION_CODES.KITKAT)) {
+        if (hasImmersiveMode()) {
             mDecorView = getWindow().getDecorView();
             mDecorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
                 @Override
@@ -108,7 +108,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if (isApiLevel(Build.VERSION_CODES.KITKAT)) {
+        if (hasImmersiveMode()) {
             mHandler = new VisibilityHandler();
             Message msg = mHandler.obtainMessage(0, mDecorView);
             mHandler.sendMessageDelayed(msg, VisibilityHandler.HIDE_DELAY);
@@ -116,7 +116,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
         setStatusBarColor(Color.BLACK);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION| View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
     @Override
@@ -262,6 +262,10 @@ public class FullScreenPhotoActivity extends BaseActivity {
         }
 
         supportInvalidateOptionsMenu();
+    }
+
+    private boolean hasImmersiveMode() {
+        return isApiLevel(Build.VERSION_CODES.KITKAT) && app.getPreferences().getBoolean(SettingsActivity.KEY_IMMERSIVE_MODE, false);
     }
 
     @Override
