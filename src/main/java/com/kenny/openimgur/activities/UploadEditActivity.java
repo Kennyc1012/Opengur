@@ -3,6 +3,8 @@ package com.kenny.openimgur.activities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,6 +42,7 @@ public class UploadEditActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_edit);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mUpload = getIntent().getParcelableExtra(KEY_UPLOAD);
         String url = mUpload.isLink() ? mUpload.getLocation() : "file://" + mUpload.getLocation();
         app.getImageLoader().displayImage(url, mImage);
@@ -95,6 +98,6 @@ public class UploadEditActivity extends BaseActivity {
 
     @Override
     protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark_Upload : R.style.Theme_Opengur_Light_DarkActionBar_Upload;
+        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark_Upload_Edit : R.style.Theme_Opengur_Light_DarkActionBar_Upload_Edit;
     }
 }
