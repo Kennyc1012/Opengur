@@ -117,7 +117,7 @@ public class UploadActivity extends BaseActivity {
     private void checkForTopics() {
         List<ImgurTopic> topics = app.getSql().getTopics();
 
-        if (topics == null || topics.isEmpty()) {
+        if (topics.isEmpty()) {
             LogUtil.v(TAG, "No topics found, fetching");
             ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
                 @Override

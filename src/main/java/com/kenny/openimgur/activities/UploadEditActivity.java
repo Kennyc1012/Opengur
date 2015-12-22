@@ -9,14 +9,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.Upload;
+import com.kenny.openimgur.util.ImageUtil;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 
 public class UploadEditActivity extends BaseActivity {
     private static final String KEY_UPLOAD = "upload";
@@ -45,32 +46,19 @@ public class UploadEditActivity extends BaseActivity {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mUpload = getIntent().getParcelableExtra(KEY_UPLOAD);
         String url = mUpload.isLink() ? mUpload.getLocation() : "file://" + mUpload.getLocation();
-        app.getImageLoader().displayImage(url, mImage);
+        app.getImageLoader().displayImage(url, mImage, ImageUtil.getDisplayOptionsForPhotoPicker().build());
         mTitle.setText(mUpload.getTitle());
         mDescription.setText(mUpload.getDescription());
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            Intent intent = processUpdates();
-            if (intent != null) {
-                setResult(Activity.RESULT_OK, intent);
-            }
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
+    @OnClick(R.id.fab)
+    public void onFabClick() {
         Intent intent = processUpdates();
-
         if (intent != null) {
             setResult(Activity.RESULT_OK, intent);
         }
 
-        super.onBackPressed();
+        supportFinishAfterTransition();
     }
 
     @Nullable
