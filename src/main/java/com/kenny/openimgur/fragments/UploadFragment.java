@@ -31,6 +31,7 @@ import com.kenny.openimgur.adapters.UploadPhotoAdapter;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
+import com.kenny.openimgur.classes.UploadListener;
 import com.kenny.openimgur.services.UploadService;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -69,6 +70,8 @@ public class UploadFragment extends BaseFragment implements PhotoUploadListener 
 
     private List<Uri> mPhotoUris = null;
 
+    private UploadListener mListener;
+
     public static UploadFragment newInstance(@Nullable Bundle args) {
         UploadFragment fragment = new UploadFragment();
         fragment.setArguments(args);
@@ -95,6 +98,12 @@ public class UploadFragment extends BaseFragment implements PhotoUploadListener 
         }
 
         return args;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof UploadListener) mListener = (UploadListener) activity;
     }
 
     @Nullable
@@ -170,8 +179,16 @@ public class UploadFragment extends BaseFragment implements PhotoUploadListener 
 
             mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         }
-        // TODO Allow Swipe
+
         mPhotoUris = null;
+
+        if (mListener != null) {
+            if (mAdapter == null || mAdapter.isEmpty()) {
+                mListener.onPhotoRemoved(0);
+            } else {
+                mListener.onPhotoAdded();
+            }
+        }
     }
 
     private void onNeedsReadPermission(List<Uri> photoUris) {

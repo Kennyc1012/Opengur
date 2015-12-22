@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,6 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.activities.BaseActivity;
 import com.kenny.openimgur.adapters.TopicsAdapter;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.OpengurApp;
@@ -86,20 +84,6 @@ public class UploadInfoFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         List<ImgurTopic> topics = OpengurApp.getInstance(getActivity()).getSql().getTopics();
         mTopicSpinner.setAdapter(new TopicsAdapter(getActivity(), topics));
-
-        Toolbar tb = (Toolbar) view.findViewById(R.id.toolBar);
-        tb.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentManager().beginTransaction()
-                        .remove(UploadInfoFragment.this)
-                        .commit();
-
-                ((BaseActivity) getActivity()).getSupportActionBar().show();
-            }
-        });
-
-        tb.setTitle(R.string.upload_info);
     }
 
     @OnCheckedChanged(R.id.gallerySwitch)

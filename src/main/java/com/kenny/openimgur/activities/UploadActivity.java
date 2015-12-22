@@ -19,7 +19,9 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
+import com.kenny.openimgur.classes.UploadListener;
 import com.kenny.openimgur.fragments.UploadFragment;
+import com.kenny.openimgur.fragments.UploadInfoFragment;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LogUtil;
 
@@ -35,7 +37,7 @@ import retrofit.Retrofit;
 /**
  * Created by Kenny-PC on 6/20/2015.
  */
-public class UploadActivity extends BaseActivity {
+public class UploadActivity extends BaseActivity implements UploadListener {
     private static final String KEY_PASSED_FILE = "passed_file";
 
     private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
@@ -172,6 +174,19 @@ public class UploadActivity extends BaseActivity {
     }
 
     @Override
+    public void onPhotoAdded() {
+        mPager.setSwiping(true);
+    }
+
+    @Override
+    public void onPhotoRemoved(int remaining) {
+        if (remaining <= 0) {
+            mPager.setCurrentItem(0, true);
+            mPager.setSwiping(false);
+        }
+    }
+
+    @Override
     protected int getStyleRes() {
         return theme.isDarkTheme ? R.style.Theme_Opengur_Dark_Upload : R.style.Theme_Opengur_Light_DarkActionBar_Upload;
     }
@@ -196,8 +211,7 @@ public class UploadActivity extends BaseActivity {
                     return UploadFragment.newInstance(mUploadArgs);
 
                 case 1:
-                    // TODO
-                    return null;
+                    return UploadInfoFragment.newInstance();
 
                 default:
                     throw new IndexOutOfBoundsException();
@@ -206,7 +220,7 @@ public class UploadActivity extends BaseActivity {
 
         @Override
         public int getCount() {
-            return 1;
+            return 2;
         }
     }
 }

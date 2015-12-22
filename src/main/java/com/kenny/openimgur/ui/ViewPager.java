@@ -26,7 +26,7 @@ public class ViewPager extends android.support.v4.view.ViewPager {
 
     private void init(AttributeSet attrs) {
         if (attrs != null) {
-            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MultiStateView);
+            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.ViewPager);
             mIsSwipingEnabled = a.getBoolean(R.styleable.ViewPager_swipingEnabled, true);
             a.recycle();
         }
