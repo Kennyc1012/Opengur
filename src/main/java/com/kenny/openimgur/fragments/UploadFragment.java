@@ -28,11 +28,8 @@ import android.view.ViewGroup;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.UploadEditActivity;
 import com.kenny.openimgur.adapters.UploadPhotoAdapter;
-import com.kenny.openimgur.classes.ImgurTopic;
-import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.classes.UploadListener;
-import com.kenny.openimgur.services.UploadService;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
@@ -49,7 +46,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.OnClick;
 
-public class UploadFragment extends BaseFragment implements PhotoUploadListener {
+public class UploadFragment extends BaseFragment implements View.OnClickListener {
     private static final String KEY_PASSED_FILE = "passed_file";
 
     private static final String KEY_PASSED_LINK = "passed_link";
@@ -282,46 +279,23 @@ public class UploadFragment extends BaseFragment implements PhotoUploadListener 
         }
     }
 
-    @Override
-    public void onLinkAdded(String link) {
-        Upload upload = new Upload(link, true);
-
-        if (mAdapter == null) {
-            mAdapter = new UploadPhotoAdapter(getActivity(), upload, this);
-            mRecyclerView.setAdapter(mAdapter);
-        } else {
-            mAdapter.addItem(upload);
+    @Nullable
+    public ArrayList<Upload> getPhotosForUpload() {
+        if (mAdapter != null && !mAdapter.isEmpty()) {
+            return mAdapter.retainItems();
         }
 
-        mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+        return null;
+    }
+
+    public boolean hasPhotosForUpload() {
+        return getPhotosForUpload() != null;
     }
 
     @Override
-    public void onItemClicked(View view) {
-        int position = mRecyclerView.getChildAdapterPosition(view);
-
-        if (position != RecyclerView.NO_POSITION) {
-            Upload upload = mAdapter.getItem(position);
-            Intent intent = UploadEditActivity.createIntent(getActivity(), upload);
-
-            if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
-                View v = view.findViewById(R.id.image);
-
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), v, getString(R.string.transition_upload_photo));
-                startActivityForResult(intent, RequestCodes.UPLOAD_EDIT, options.toBundle());
-            } else {
-                startActivityForResult(intent, RequestCodes.UPLOAD_EDIT);
-            }
-        }
-    }
-
-    @Override
-    public void onUpload(boolean submitToGallery, String title, String description, ImgurTopic topic) {
-        Activity activity = getActivity();
-        ArrayList<Upload> uploads = mAdapter.retainItems();
-        Intent uploadSerivce = UploadService.createIntent(activity, uploads, submitToGallery, title, description, topic);
-        activity.startService(uploadSerivce);
-        activity.finish();
+    public void onDestroyView() {
+        if (mAdapter != null) mAdapter.onDestroy();
+        super.onDestroyView();
     }
 
     @OnClick({R.id.cameraBtn, R.id.linkBtn, R.id.galleryBtn})
@@ -346,11 +320,42 @@ public class UploadFragment extends BaseFragment implements PhotoUploadListener 
                 break;
 
             case R.id.linkBtn:
-                getFragmentManager().beginTransaction()
+                getChildFragmentManager().beginTransaction()
                         .add(UploadLinkDialogFragment.newInstance(null), UploadLinkDialogFragment.TAG)
                         .commit();
                 break;
+
+            default:
+                int position = mRecyclerView.getChildAdapterPosition(view);
+
+                if (position != RecyclerView.NO_POSITION) {
+                    Upload upload = mAdapter.getItem(position);
+                    Intent editIntent = UploadEditActivity.createIntent(getActivity(), upload);
+
+                    if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
+                        View v = view.findViewById(R.id.image);
+
+                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), v, getString(R.string.transition_upload_photo));
+                        startActivityForResult(editIntent, RequestCodes.UPLOAD_EDIT, options.toBundle());
+                    } else {
+                        startActivityForResult(editIntent, RequestCodes.UPLOAD_EDIT);
+                    }
+                }
+                break;
         }
+    }
+
+    public void onLinkAdded(String link) {
+        Upload upload = new Upload(link, true);
+
+        if (mAdapter == null) {
+            mAdapter = new UploadPhotoAdapter(getActivity(), upload, this);
+            mRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.addItem(upload);
+        }
+
+        mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
     }
 
     @Override

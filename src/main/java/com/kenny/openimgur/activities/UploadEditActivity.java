@@ -62,6 +62,13 @@ public class UploadEditActivity extends BaseActivity {
     }
 
     @Override
+    public void onPause() {
+        mTitle.setCursorVisible(false);
+        mDescription.setCursorVisible(false);
+        super.onPause();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete:

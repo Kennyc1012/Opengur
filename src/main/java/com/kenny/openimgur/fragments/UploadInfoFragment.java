@@ -15,9 +15,11 @@ import android.widget.SpinnerAdapter;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.TopicsAdapter;
+import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
-import com.kenny.openimgur.classes.OpengurApp;
-import com.kenny.openimgur.classes.PhotoUploadListener;
+import com.kenny.openimgur.classes.UploadListener;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.snackbar.SnackBar;
 
 import java.util.List;
@@ -25,6 +27,9 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by Kenny-PC on 7/4/2015.
@@ -48,7 +53,7 @@ public class UploadInfoFragment extends BaseFragment {
     @Bind(R.id.topicHeader)
     View mTopicHeader;
 
-    private PhotoUploadListener mListener;
+    private UploadListener mListener;
 
     public static UploadInfoFragment newInstance() {
         return new UploadInfoFragment();
@@ -57,7 +62,7 @@ public class UploadInfoFragment extends BaseFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        if (activity instanceof PhotoUploadListener) mListener = (PhotoUploadListener) activity;
+        if (activity instanceof UploadListener) mListener = (UploadListener) activity;
     }
 
     @Override
@@ -82,8 +87,7 @@ public class UploadInfoFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        List<ImgurTopic> topics = OpengurApp.getInstance(getActivity()).getSql().getTopics();
-        mTopicSpinner.setAdapter(new TopicsAdapter(getActivity(), topics));
+        checkForTopics();
     }
 
     @OnCheckedChanged(R.id.gallerySwitch)
@@ -119,6 +123,35 @@ public class UploadInfoFragment extends BaseFragment {
             }
         } else {
             if (mListener != null) mListener.onUpload(false, title, desc, topic);
+        }
+    }
+
+    /**
+     * Checks if we have cached topics to display for the info fragment
+     */
+    private void checkForTopics() {
+        List<ImgurTopic> topics = app.getSql().getTopics();
+
+        if (topics.isEmpty()) {
+            LogUtil.v(TAG, "No topics found, fetching");
+            ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
+                @Override
+                public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
+                    if (response != null && response.body() != null) {
+                        app.getSql().addTopics(response.body().data);
+                        List<ImgurTopic> topics = app.getSql().getTopics();
+                        mTopicSpinner.setAdapter(new TopicsAdapter(getActivity(), topics));
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    LogUtil.e(TAG, "Failed to receive topics", t);
+                }
+            });
+        } else {
+            LogUtil.v(TAG, "Topics in database");
+            mTopicSpinner.setAdapter(new TopicsAdapter(getActivity(), topics));
         }
     }
 }

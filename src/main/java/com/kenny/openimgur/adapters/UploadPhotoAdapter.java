@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -23,14 +22,14 @@ import butterknife.Bind;
  * Created by Kenny-PC on 6/21/2015.
  */
 public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
-    private PhotoUploadListener mListener;
+    private View.OnClickListener mListener;
 
-    public UploadPhotoAdapter(Context context, List<Upload> uploads, PhotoUploadListener listener) {
+    public UploadPhotoAdapter(Context context, List<Upload> uploads, View.OnClickListener listener) {
         super(context, uploads, true);
         mListener = listener;
     }
 
-    public UploadPhotoAdapter(Context context, Upload upload, PhotoUploadListener listener) {
+    public UploadPhotoAdapter(Context context, Upload upload, View.OnClickListener listener) {
         this(context, new ArrayList<Upload>(1), listener);
         addItem(upload);
     }
@@ -72,12 +71,7 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final UploadPhotoHolder holder = new UploadPhotoHolder(mInflater.inflate(R.layout.upload_photo_item, parent, false));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mListener != null) mListener.onItemClicked(v);
-            }
-        });
+        if (mListener != null) holder.itemView.setOnClickListener(mListener);
         return holder;
     }
 

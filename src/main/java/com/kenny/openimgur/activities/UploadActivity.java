@@ -9,30 +9,26 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.api.ApiClient;
-import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.UploadListener;
 import com.kenny.openimgur.fragments.UploadFragment;
 import com.kenny.openimgur.fragments.UploadInfoFragment;
+import com.kenny.openimgur.services.UploadService;
+import com.kenny.openimgur.ui.FragmentPagerAdapter;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LogUtil;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 /**
  * Created by Kenny-PC on 6/20/2015.
@@ -44,6 +40,8 @@ public class UploadActivity extends BaseActivity implements UploadListener {
 
     @Bind(R.id.pager)
     ViewPager mPager;
+
+    private UploadPagerAdapter mAdapter;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, UploadActivity.class);
@@ -58,9 +56,24 @@ public class UploadActivity extends BaseActivity implements UploadListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
         getSupportActionBar().setTitle(R.string.upload);
-        checkForTopics();
         checkForNag();
         checkIntent(getIntent());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                UploadFragment fragment = (UploadFragment) mAdapter.getFragmentForPosition(mPager, getFragmentManager(), 0);
+
+                if (fragment != null && fragment.hasPhotosForUpload()) {
+                    showCancelDialog();
+                    return true;
+                }
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void checkIntent(@Nullable Intent intent) {
@@ -92,9 +105,9 @@ public class UploadActivity extends BaseActivity implements UploadListener {
                 }
             }
 
-            mPager.setAdapter(new UploadPagerAdapter(getFragmentManager(), path, isLink, photoUris));
+            mPager.setAdapter(mAdapter = new UploadPagerAdapter(getFragmentManager(), path, isLink, photoUris));
         } else {
-            mPager.setAdapter(new UploadPagerAdapter(getFragmentManager()));
+            mPager.setAdapter(mAdapter = new UploadPagerAdapter(getFragmentManager()));
         }
     }
 
@@ -111,30 +124,6 @@ public class UploadActivity extends BaseActivity implements UploadListener {
                 }).show();
 
         return true;
-    }
-
-    /**
-     * Checks if we have cached topics to display for the info fragment
-     */
-    private void checkForTopics() {
-        List<ImgurTopic> topics = app.getSql().getTopics();
-
-        if (topics.isEmpty()) {
-            LogUtil.v(TAG, "No topics found, fetching");
-            ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
-                @Override
-                public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
-                    if (response != null && response.body() != null) app.getSql().addTopics(response.body().data);
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    LogUtil.e(TAG, "Failed to receive topics", t);
-                }
-            });
-        } else {
-            LogUtil.v(TAG, "Topics in database");
-        }
     }
 
     /**
@@ -187,6 +176,29 @@ public class UploadActivity extends BaseActivity implements UploadListener {
     }
 
     @Override
+    public void onUpload(boolean submitToGallery, String title, String description, ImgurTopic topic) {
+        UploadFragment fragment = (UploadFragment) mAdapter.getFragmentForPosition(mPager, getFragmentManager(), 0);
+
+        if (fragment != null && fragment.hasPhotosForUpload()) {
+            Intent service = UploadService.createIntent(getApplicationContext(), fragment.getPhotosForUpload(), submitToGallery, title, description, topic);
+            startService(service);
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        UploadFragment fragment = (UploadFragment) mAdapter.getFragmentForPosition(mPager, getFragmentManager(), 0);
+
+        if (fragment != null && fragment.hasPhotosForUpload()) {
+            showCancelDialog();
+            return;
+        }
+
+        super.onBackPressed();
+    }
+
+    @Override
     protected int getStyleRes() {
         return theme.isDarkTheme ? R.style.Theme_Opengur_Dark_Upload : R.style.Theme_Opengur_Light_DarkActionBar_Upload;
     }
@@ -202,7 +214,6 @@ public class UploadActivity extends BaseActivity implements UploadListener {
             this(manager);
             mUploadArgs = UploadFragment.createArguments(path, isLink, photoUris);
         }
-
 
         @Override
         public Fragment getItem(int position) {
