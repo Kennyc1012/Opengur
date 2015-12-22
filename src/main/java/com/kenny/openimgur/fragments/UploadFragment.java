@@ -428,10 +428,22 @@ public class UploadFragment extends BaseFragment implements PhotoUploadListener 
 
             case RequestCodes.UPLOAD_EDIT:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    Upload upload = data.getParcelableExtra(UploadEditActivity.KEY_UPDATED_UPLOAD);
+                    Upload upload;
 
-                    if (upload != null) {
-                        mAdapter.updateItem(upload);
+                    if (data.hasExtra(UploadEditActivity.KEY_UPDATED_UPLOAD)) {
+                        upload = data.getParcelableExtra(UploadEditActivity.KEY_UPDATED_UPLOAD);
+
+                        if (upload != null) {
+                            mAdapter.updateItem(upload);
+                        }
+                    } else if (data.hasExtra(UploadEditActivity.KEY_UPDATED_DELETED)) {
+                        upload = data.getParcelableExtra(UploadEditActivity.KEY_UPDATED_DELETED);
+
+                        if (upload != null) {
+                            mAdapter.removeItem(upload);
+                            if (mListener != null) mListener.onPhotoRemoved(mAdapter.getItemCount());
+                            if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+                        }
                     }
                 }
                 break;

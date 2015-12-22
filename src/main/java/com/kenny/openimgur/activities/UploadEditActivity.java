@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -23,6 +25,8 @@ public class UploadEditActivity extends BaseActivity {
     private static final String KEY_UPLOAD = "upload";
 
     public static final String KEY_UPDATED_UPLOAD = "updated_upload";
+
+    public static final String KEY_UPDATED_DELETED = "updated_deleted";
 
     @Bind(R.id.image)
     ImageView mImage;
@@ -49,6 +53,26 @@ public class UploadEditActivity extends BaseActivity {
         app.getImageLoader().displayImage(url, mImage, ImageUtil.getDisplayOptionsForPhotoPicker().build());
         mTitle.setText(mUpload.getTitle());
         mDescription.setText(mUpload.getDescription());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.upload_edit, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.delete:
+                Intent intent = new Intent();
+                intent.putExtra(KEY_UPDATED_DELETED, mUpload);
+                setResult(Activity.RESULT_OK, intent);
+                supportFinishAfterTransition();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @OnClick(R.id.fab)
