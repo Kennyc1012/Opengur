@@ -64,6 +64,8 @@
     <string name="search_opengur">Search Opengur</string>
     <string name="title">Title</string>
     <string name="description">Description</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>

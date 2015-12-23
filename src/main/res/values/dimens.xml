@@ -31,4 +31,8 @@
 
     <dimen name="loading_footer_height">48dp</dimen>
 
+    <!-- Stepper -->
+    <dimen name="stepper_size">8dp</dimen>
+    <dimen name="stepper_spacing">4dp</dimen>
+
 </resources>

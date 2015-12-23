@@ -1,7 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.kenny.openimgur.ui.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:swipingEnabled="false" />
+    android:orientation="vertical">
+
+    <com.kenny.openimgur.ui.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:swipingEnabled="false" />
+
+    <FrameLayout
+        android:id="@+id/indicatorContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <Button
+            style="?borderlessButtonStyle"
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/back"
+            android:layout_gravity="left|center_vertical"
+            android:drawableLeft="@drawable/ic_left_24dp" />
+
+        <com.davidpacioianu.inkpageindicator.InkPageIndicator
+            android:id="@+id/indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:dotDiameter="8dp"
+            app:dotGap="8dp"
+            app:animationDuration="320"
+            app:pageIndicatorColor="@color/primary_dark_light"
+            app:currentPageIndicatorColor="?colorAccent" />
+
+        <Button
+            style="?borderlessButtonStyle"
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/next"
+            android:layout_gravity="right|center_vertical"
+            android:drawableRight="@drawable/ic_right_24dp" />
+
+    </FrameLayout>
+
+</LinearLayout>

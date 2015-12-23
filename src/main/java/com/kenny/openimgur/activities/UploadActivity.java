@@ -13,8 +13,10 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 
+import com.davidpacioianu.inkpageindicator.InkPageIndicator;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.UploadListener;
@@ -29,17 +31,34 @@ import java.io.File;
 import java.util.ArrayList;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 
 /**
  * Created by Kenny-PC on 6/20/2015.
  */
-public class UploadActivity extends BaseActivity implements UploadListener {
+public class UploadActivity extends BaseActivity implements UploadListener, ViewPager.OnPageChangeListener {
+    private static final int PAGE_PHOTOS = 0;
+
+    private static final int PAGE_INFO = 1;
+
     private static final String KEY_PASSED_FILE = "passed_file";
 
     private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
 
     @Bind(R.id.pager)
     ViewPager mPager;
+
+    @Bind(R.id.indicator)
+    InkPageIndicator mIndicator;
+
+    @Bind(R.id.indicatorContainer)
+    View mIndicatorContainer;
+
+    @Bind(R.id.back)
+    Button mBackButton;
+
+    @Bind(R.id.next)
+    Button mNextButton;
 
     private UploadPagerAdapter mAdapter;
 
@@ -58,6 +77,8 @@ public class UploadActivity extends BaseActivity implements UploadListener {
         getSupportActionBar().setTitle(R.string.upload);
         checkForNag();
         checkIntent(getIntent());
+        mIndicator.setViewPager(mPager);
+        mPager.addOnPageChangeListener(this);
     }
 
     @Override
@@ -165,6 +186,12 @@ public class UploadActivity extends BaseActivity implements UploadListener {
     @Override
     public void onPhotoAdded() {
         mPager.setSwiping(true);
+
+        if (mIndicatorContainer.getVisibility() == View.GONE) {
+            mIndicatorContainer.setVisibility(View.VISIBLE);
+            mBackButton.setVisibility(View.GONE);
+            mNextButton.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -172,6 +199,7 @@ public class UploadActivity extends BaseActivity implements UploadListener {
         if (remaining <= 0) {
             mPager.setCurrentItem(0, true);
             mPager.setSwiping(false);
+            mIndicatorContainer.setVisibility(View.GONE);
         }
     }
 
@@ -186,6 +214,19 @@ public class UploadActivity extends BaseActivity implements UploadListener {
         }
     }
 
+    @OnClick({R.id.back, R.id.next})
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.back:
+                mPager.setCurrentItem(PAGE_PHOTOS);
+                break;
+
+            case R.id.next:
+                mPager.setCurrentItem(PAGE_INFO);
+                break;
+        }
+    }
+
     @Override
     public void onBackPressed() {
         UploadFragment fragment = (UploadFragment) mAdapter.getFragmentForPosition(mPager, getFragmentManager(), 0);
@@ -196,6 +237,22 @@ public class UploadActivity extends BaseActivity implements UploadListener {
         }
 
         super.onBackPressed();
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        // NOOP
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        mNextButton.setVisibility(position == PAGE_PHOTOS ? View.VISIBLE : View.GONE);
+        mBackButton.setVisibility(position == PAGE_INFO ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        // NOOP
     }
 
     @Override
@@ -218,10 +275,10 @@ public class UploadActivity extends BaseActivity implements UploadListener {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:
+                case PAGE_PHOTOS:
                     return UploadFragment.newInstance(mUploadArgs);
 
-                case 1:
+                case PAGE_INFO:
                     return UploadInfoFragment.newInstance();
 
                 default:
