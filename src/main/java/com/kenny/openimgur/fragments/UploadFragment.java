@@ -22,6 +22,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,7 +47,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
-import butterknife.OnClick;
 
 public class UploadFragment extends BaseFragment implements View.OnClickListener {
     private static final String KEY_PASSED_FILE = "passed_file";
@@ -103,6 +105,12 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
         if (activity instanceof UploadListener) mListener = (UploadListener) activity;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -125,6 +133,43 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
         } else {
             handleArgs(getArguments());
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.upload, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.camera:
+                if (checkWritePermissions()) startCamera();
+                return true;
+
+            case R.id.gallery:
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                // Allow multiple selection for API 18+
+                if (isApiLevel(Build.VERSION_CODES.JELLY_BEAN_MR2)) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivityForResult(intent, RequestCodes.SELECT_PHOTO);
+                } else {
+                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                }
+                return true;
+
+            case R.id.link:
+                getChildFragmentManager().beginTransaction()
+                        .add(UploadLinkDialogFragment.newInstance(null), UploadLinkDialogFragment.TAG)
+                        .commit();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void handleArgs(@Nullable Bundle args) {
@@ -298,50 +343,21 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
         super.onDestroyView();
     }
 
-    @OnClick({R.id.cameraBtn, R.id.linkBtn, R.id.galleryBtn})
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.cameraBtn:
-                if (checkWritePermissions()) startCamera();
-                break;
+        int position = mRecyclerView.getChildAdapterPosition(view);
 
-            case R.id.galleryBtn:
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                // Allow multiple selection for API 18+
-                if (isApiLevel(Build.VERSION_CODES.JELLY_BEAN_MR2)) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                intent.setAction(Intent.ACTION_GET_CONTENT);
+        if (position != RecyclerView.NO_POSITION) {
+            Upload upload = mAdapter.getItem(position);
+            Intent editIntent = UploadEditActivity.createIntent(getActivity(), upload);
 
-                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivityForResult(intent, RequestCodes.SELECT_PHOTO);
-                } else {
-                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
-                }
-                break;
+            if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
+                View v = view.findViewById(R.id.image);
 
-            case R.id.linkBtn:
-                getChildFragmentManager().beginTransaction()
-                        .add(UploadLinkDialogFragment.newInstance(null), UploadLinkDialogFragment.TAG)
-                        .commit();
-                break;
-
-            default:
-                int position = mRecyclerView.getChildAdapterPosition(view);
-
-                if (position != RecyclerView.NO_POSITION) {
-                    Upload upload = mAdapter.getItem(position);
-                    Intent editIntent = UploadEditActivity.createIntent(getActivity(), upload);
-
-                    if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
-                        View v = view.findViewById(R.id.image);
-
-                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), v, getString(R.string.transition_upload_photo));
-                        startActivityForResult(editIntent, RequestCodes.UPLOAD_EDIT, options.toBundle());
-                    } else {
-                        startActivityForResult(editIntent, RequestCodes.UPLOAD_EDIT);
-                    }
-                }
-                break;
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), v, getString(R.string.transition_upload_photo));
+                startActivityForResult(editIntent, RequestCodes.UPLOAD_EDIT, options.toBundle());
+            } else {
+                startActivityForResult(editIntent, RequestCodes.UPLOAD_EDIT);
+            }
         }
     }
 
