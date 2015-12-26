@@ -402,7 +402,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
                 }
 
                 shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, isTablet());
+                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, true);
 
                 if (shareDialog != null) {
                     shareDialog.show();

@@ -184,6 +184,9 @@
     <string name="pref_notification_vibrate">Vibrate</string>
     <string name="pref_notification_vibrate_on">Vibrate when notifications are received</string>
     <string name="pref_notification_vibrate_off">Don\'t vibrate when notifications are received</string>
+    <string name="pref_immersive_mode_title">Fullscreen Immersive Mode</string>
+    <string name="pref_immersive_mode_on">Enable Immersive mode</string>
+    <string name="pref_immersive_mode_off">Disable Immersive Mode</string>
 
     <!-- Experimental Settings -->
     <string name="pref_experimental_settings">Experimental Settings</string>

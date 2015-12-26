@@ -47,6 +47,8 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String KEY_NOTIFICATION_VIBRATE = "notificationVibrate";
 
+    public static final String KEY_IMMERSIVE_MODE = "immersiveMode";
+
     // Values
     public static final String CACHE_SIZE_UNLIMITED = "unlimited";
 
