@@ -22,11 +22,13 @@
                 android:transitionName="@string/transition_upload_photo" />
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/titleWrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin">
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:visibility="gone">
 
                 <EditText
                     android:id="@+id/title"
@@ -39,10 +41,12 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/descWrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin">
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:visibility="gone">
 
                 <EditText
                     android:id="@+id/desc"
@@ -64,7 +68,8 @@
             android:elevation="4dp"
             app:layout_anchor="@id/image"
             android:layout_margin="16dp"
-            app:layout_anchorGravity="bottom|right|end" />
+            app:layout_anchorGravity="bottom|right|end"
+            android:visibility="gone"/>
 
     </android.support.design.widget.CoordinatorLayout>
 

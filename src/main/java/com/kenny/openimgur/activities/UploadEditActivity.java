@@ -1,16 +1,23 @@
 package com.kenny.openimgur.activities;
 
+import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
+import android.transition.Transition;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -22,6 +29,8 @@ import butterknife.Bind;
 import butterknife.OnClick;
 
 public class UploadEditActivity extends BaseActivity {
+    private static final long FADE_DURATION = 200L;
+
     private static final String KEY_UPLOAD = "upload";
 
     public static final String KEY_UPDATED_UPLOAD = "updated_upload";
@@ -37,12 +46,22 @@ public class UploadEditActivity extends BaseActivity {
     @Bind(R.id.desc)
     EditText mDescription;
 
+    @Bind(R.id.titleWrapper)
+    TextInputLayout mTitleWrapper;
+
+    @Bind(R.id.descWrapper)
+    TextInputLayout mDescWrapper;
+
+    @Bind(R.id.fab)
+    FloatingActionButton mFab;
+
     private Upload mUpload;
 
     public static Intent createIntent(Context context, @NonNull Upload upload) {
         return new Intent(context, UploadEditActivity.class).putExtra(KEY_UPLOAD, upload);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +72,45 @@ public class UploadEditActivity extends BaseActivity {
         app.getImageLoader().displayImage(url, mImage, ImageUtil.getDisplayOptionsForPhotoPicker().build());
         mTitle.setText(mUpload.getTitle());
         mDescription.setText(mUpload.getDescription());
+
+        if (isApiLevel(Build.VERSION_CODES.LOLLIPOP) && savedInstanceState == null) {
+            getWindow().getEnterTransition().addListener(new Transition.TransitionListener() {
+                @Override
+                public void onTransitionStart(Transition transition) {
+                    // NOOP
+                }
+
+                @Override
+                public void onTransitionEnd(Transition transition) {
+                    mTitleWrapper.setVisibility(View.VISIBLE);
+                    mDescWrapper.setVisibility(View.VISIBLE);
+                    mFab.setVisibility(View.VISIBLE);
+                    ObjectAnimator.ofFloat(mTitleWrapper, "alpha", 0.0f, 1.0f).setDuration(FADE_DURATION).start();
+                    ObjectAnimator.ofFloat(mDescWrapper, "alpha", 0.0f, 1.0f).setDuration(FADE_DURATION).start();
+                    ObjectAnimator.ofFloat(mFab, "alpha", 0.0f, 1.0f).setDuration(FADE_DURATION).start();
+                    getWindow().getEnterTransition().removeListener(this);
+                }
+
+                @Override
+                public void onTransitionCancel(Transition transition) {
+                    // NOOP
+                }
+
+                @Override
+                public void onTransitionPause(Transition transition) {
+                    // NOOP
+                }
+
+                @Override
+                public void onTransitionResume(Transition transition) {
+                    // NOOP
+                }
+            });
+        } else {
+            mTitleWrapper.setVisibility(View.VISIBLE);
+            mDescWrapper.setVisibility(View.VISIBLE);
+            mFab.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -75,7 +133,11 @@ public class UploadEditActivity extends BaseActivity {
                 Intent intent = new Intent();
                 intent.putExtra(KEY_UPDATED_DELETED, mUpload);
                 setResult(Activity.RESULT_OK, intent);
-                supportFinishAfterTransition();
+                finishActivity();
+                return true;
+
+            case android.R.id.home:
+                finishActivity();
                 return true;
         }
 
@@ -89,7 +151,7 @@ public class UploadEditActivity extends BaseActivity {
             setResult(Activity.RESULT_OK, intent);
         }
 
-        supportFinishAfterTransition();
+        finishActivity();
     }
 
     @Nullable
@@ -113,6 +175,30 @@ public class UploadEditActivity extends BaseActivity {
         }
 
         return null;
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishActivity();
+    }
+
+    private void finishActivity(){
+        // Set these views to gone so the transitions look smooth
+        if(isApiLevel(Build.VERSION_CODES.LOLLIPOP)){
+            mTitleWrapper.animate().alpha(0.0f).setDuration(FADE_DURATION);
+            mDescWrapper.animate().alpha(0.0f).setDuration(FADE_DURATION);
+
+            mFab.animate().alpha(0.0f).setDuration(FADE_DURATION).withEndAction(new Runnable() {
+                @Override
+                public void run() {
+                    supportFinishAfterTransition();
+                }
+            });
+
+            return;
+        }
+
+        supportFinishAfterTransition();
     }
 
     @Override
