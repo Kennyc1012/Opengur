@@ -84,10 +84,9 @@ public class UploadEditActivity extends BaseActivity {
                 public void onTransitionEnd(Transition transition) {
                     mTitleWrapper.setVisibility(View.VISIBLE);
                     mDescWrapper.setVisibility(View.VISIBLE);
-                    mFab.setVisibility(View.VISIBLE);
                     ObjectAnimator.ofFloat(mTitleWrapper, "alpha", 0.0f, 1.0f).setDuration(FADE_DURATION).start();
                     ObjectAnimator.ofFloat(mDescWrapper, "alpha", 0.0f, 1.0f).setDuration(FADE_DURATION).start();
-                    ObjectAnimator.ofFloat(mFab, "alpha", 0.0f, 1.0f).setDuration(FADE_DURATION).start();
+                    mFab.show();
                     getWindow().getEnterTransition().removeListener(this);
                 }
 
@@ -182,13 +181,12 @@ public class UploadEditActivity extends BaseActivity {
         finishActivity();
     }
 
-    private void finishActivity(){
+    private void finishActivity() {
         // Set these views to gone so the transitions look smooth
-        if(isApiLevel(Build.VERSION_CODES.LOLLIPOP)){
+        if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
+            mFab.hide();
             mTitleWrapper.animate().alpha(0.0f).setDuration(FADE_DURATION);
-            mDescWrapper.animate().alpha(0.0f).setDuration(FADE_DURATION);
-
-            mFab.animate().alpha(0.0f).setDuration(FADE_DURATION).withEndAction(new Runnable() {
+            mDescWrapper.animate().alpha(0.0f).setDuration(FADE_DURATION).withEndAction(new Runnable() {
                 @Override
                 public void run() {
                     supportFinishAfterTransition();
