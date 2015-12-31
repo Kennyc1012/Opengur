@@ -130,6 +130,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
             mAdapter = new UploadPhotoAdapter(getActivity(), uploads, this);
             mRecyclerView.setAdapter(mAdapter);
             mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+            if (mListener != null) mListener.onPhotoAdded();
         } else {
             handleArgs(getArguments());
         }
@@ -152,7 +153,8 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 // Allow multiple selection for API 18+
-                if (isApiLevel(Build.VERSION_CODES.JELLY_BEAN_MR2)) intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                if (isApiLevel(Build.VERSION_CODES.JELLY_BEAN_MR2))
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 intent.setAction(Intent.ACTION_GET_CONTENT);
 
                 if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
@@ -462,8 +464,10 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
 
                         if (upload != null) {
                             mAdapter.removeItem(upload);
-                            if (mListener != null) mListener.onPhotoRemoved(mAdapter.getItemCount());
-                            if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+                            if (mListener != null)
+                                mListener.onPhotoRemoved(mAdapter.getItemCount());
+                            if (mAdapter.isEmpty())
+                                mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                         }
                     }
                 }
@@ -525,7 +529,8 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                         }
 
                         File file = FileUtil.createFile(uri, resolver);
-                        if (FileUtil.isFileValid(file)) uploads.add(new Upload(file.getAbsolutePath()));
+                        if (FileUtil.isFileValid(file))
+                            uploads.add(new Upload(file.getAbsolutePath()));
                     } catch (Exception ex) {
                         LogUtil.e("DecodeImageTask", "Unable to decode image", ex);
                     }

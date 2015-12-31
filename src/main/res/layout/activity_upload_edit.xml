@@ -4,20 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/image"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:layout_marginLeft="@dimen/upload_edit_picture_margins"
+                android:layout_marginRight="@dimen/upload_edit_picture_margins"
                 android:scaleType="centerCrop"
                 android:transitionName="@string/transition_upload_photo" />
 
@@ -25,9 +26,9 @@
                 android:id="@+id/titleWrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="16dp"
                 android:visibility="gone">
 
                 <EditText
@@ -35,8 +36,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:inputType="textCapWords"
-                    android:hint="@string/upload_edit_title_hint" />
+                    android:hint="@string/upload_edit_title_hint"
+                    android:inputType="textCapWords" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -44,8 +45,8 @@
                 android:id="@+id/descWrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:visibility="gone">
 
                 <EditText
@@ -53,8 +54,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:inputType="textCapSentences"
-                    android:hint="@string/upload_edit_desc_hint" />
+                    android:hint="@string/upload_edit_desc_hint"
+                    android:inputType="textCapSentences" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -64,12 +65,12 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_done_24dp"
-            android:elevation="4dp"
-            app:layout_anchor="@id/image"
             android:layout_margin="16dp"
-            app:layout_anchorGravity="bottom|right|end"
-            android:visibility="gone"/>
+            android:elevation="4dp"
+            android:src="@drawable/ic_done_24dp"
+            android:visibility="gone"
+            app:layout_anchor="@id/image"
+            app:layout_anchorGravity="bottom|right|end" />
 
     </android.support.design.widget.CoordinatorLayout>
 

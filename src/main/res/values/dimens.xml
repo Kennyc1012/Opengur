@@ -26,8 +26,7 @@
     <dimen name="comment_indicator_size">4dp</dimen>
 
     <!-- Uploads -->
-    <dimen name="upload_photo_size">96dp</dimen>
-    <dimen name="upload_content_margin">100dp</dimen>
+    <dimen name="upload_edit_picture_margins">0dp</dimen>
 
     <dimen name="loading_footer_height">48dp</dimen>
 
