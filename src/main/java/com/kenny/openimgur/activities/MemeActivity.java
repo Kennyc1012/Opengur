@@ -1,17 +1,21 @@
 package com.kenny.openimgur.activities;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.transition.Transition;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -74,6 +78,7 @@ public class MemeActivity extends BaseActivity {
         return new Intent(context, MemeActivity.class).putExtra(KEY_FILE_PATH, file.getAbsolutePath());
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +101,42 @@ public class MemeActivity extends BaseActivity {
         getSupportActionBar().setTitle(mObject.getTitle());
         loadImage();
         mView.setDrawingCacheEnabled(true);
+
+        if (isApiLevel(Build.VERSION_CODES.LOLLIPOP) && savedInstanceState == null) {
+            mTopText.setVisibility(View.GONE);
+            mBottomText.setVisibility(View.GONE);
+
+            getWindow().getEnterTransition().addListener(new Transition.TransitionListener() {
+                @Override
+                public void onTransitionStart(Transition transition) {
+                    // NOOP
+                }
+
+                @Override
+                public void onTransitionEnd(Transition transition) {
+                    mTopText.setVisibility(View.VISIBLE);
+                    mBottomText.setVisibility(View.VISIBLE);
+                    ObjectAnimator.ofFloat(mTopText, "alpha", 0.0f, 1.0f).setDuration(200).start();
+                    ObjectAnimator.ofFloat(mBottomText, "alpha", 0.0f, 1.0f).setDuration(200).start();
+                    getWindow().getEnterTransition().removeListener(this);
+                }
+
+                @Override
+                public void onTransitionCancel(Transition transition) {
+                    // NOOP
+                }
+
+                @Override
+                public void onTransitionPause(Transition transition) {
+                    // NOOP
+                }
+
+                @Override
+                public void onTransitionResume(Transition transition) {
+                    // NOOP
+                }
+            });
+        }
     }
 
     @Override

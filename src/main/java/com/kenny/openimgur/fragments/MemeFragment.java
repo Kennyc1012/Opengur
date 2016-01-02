@@ -2,8 +2,10 @@ package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -91,8 +93,16 @@ public class MemeFragment extends BaseGridFragment {
     }
 
     @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        startActivity(MemeActivity.createIntent(getActivity(), items.get(position)));
+    protected void onItemSelected(View view, int position, ArrayList<ImgurBaseObject> items) {
+        if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
+
+            View v = view.findViewById(R.id.image);
+
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), v, getString(R.string.gallery_item_transition));
+            startActivity(MemeActivity.createIntent(getActivity(), items.get(position)), options.toBundle());
+        } else {
+            startActivity(MemeActivity.createIntent(getActivity(), items.get(position)));
+        }
     }
 
     @Override

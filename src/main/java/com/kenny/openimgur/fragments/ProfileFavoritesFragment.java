@@ -101,11 +101,6 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
     }
 
     @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        super.onItemSelected(position, items);
-    }
-
-    @Override
     public void onClick(View v) {
         int position = mGrid.getChildAdapterPosition(v);
 
