@@ -173,6 +173,16 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
     }
 
     /**
+     * Returns the index of the given item
+     *
+     * @param object
+     * @return
+     */
+    public int indexOf(T object) {
+        return mItems != null ? mItems.indexOf(object) : -1;
+    }
+
+    /**
      * Returns the entire list. This is <b><i>not</i></b> a copy of the list. If a copy of the list is
      * needed, see {@link #retainItems()}
      *

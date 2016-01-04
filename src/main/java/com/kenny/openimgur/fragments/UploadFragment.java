@@ -39,6 +39,8 @@ import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
+import com.kenny.snackbar.SnackBarItem;
+import com.kenny.snackbar.SnackBarListener;
 import com.kennyc.view.MultiStateView;
 
 import java.io.File;
@@ -463,11 +465,37 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                         upload = data.getParcelableExtra(UploadEditActivity.KEY_UPDATED_DELETED);
 
                         if (upload != null) {
-                            mAdapter.removeItem(upload);
-                            if (mListener != null)
-                                mListener.onPhotoRemoved(mAdapter.getItemCount());
-                            if (mAdapter.isEmpty())
-                                mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+                            int itemIndex = mAdapter.indexOf(upload);
+
+                            if (itemIndex > -1) {
+                                mAdapter.removeItem(itemIndex);
+                                if (mListener != null) mListener.onPhotoRemoved(mAdapter.getItemCount());
+                                if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+
+                                new SnackBarItem.Builder(getActivity())
+                                        .setMessageResource(R.string.upload_photo_removed)
+                                        .setActionMessageResource(R.string.undo)
+                                        .setObject(new Object[]{itemIndex, upload})
+                                        .setSnackBarListener(new SnackBarListener() {
+                                            @Override
+                                            public void onSnackBarStarted(Object o) {
+                                                // NOOP
+                                            }
+
+                                            @Override
+                                            public void onSnackBarFinished(Object object, boolean actionPressed) {
+                                                if (actionPressed && object instanceof Object[]) {
+                                                    Object[] objects = (Object[]) object;
+                                                    int position = (int) objects[0];
+                                                    Upload upload = (Upload) objects[1];
+                                                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                                                    mAdapter.addItem(upload, position);
+                                                }
+                                            }
+                                        })
+                                        .show();
+                            }
+
                         }
                     }
                 }
