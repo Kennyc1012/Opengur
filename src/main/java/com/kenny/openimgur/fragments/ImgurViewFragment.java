@@ -121,6 +121,15 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         super.onViewCreated(view, savedInstanceState);
         handleArguments(getArguments(), savedInstanceState);
         mListView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        mMultiView.findViewById(R.id.errorButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mPhotoAdapter != null) mPhotoAdapter.clear();
+                mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
+                fetchGalleryDetails();
+            }
+        });
     }
 
     @Override

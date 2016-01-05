@@ -63,7 +63,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements View.OnL
     }
 
     @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
+    protected void onItemSelected(View view, int position, ArrayList<ImgurBaseObject> items) {
         startActivity(FullScreenPhotoActivity.createIntent(getActivity(), items.get(position).getLink()));
     }
 

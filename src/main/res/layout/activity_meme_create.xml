@@ -23,37 +23,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
+                android:transitionName="@string/gallery_item_transition"
                 tools:src="@drawable/error_dark_140dp" />
 
             <TextView
                 android:id="@+id/topText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/meme_text_medium"
-                android:gravity="center"
                 android:layout_gravity="top"
-                android:text="@string/meme_top_text"
-                android:textAllCaps="true"
+                android:gravity="center"
                 android:shadowColor="#000000"
                 android:shadowDx="1"
                 android:shadowDy="1"
-                android:shadowRadius="1" />
+                android:shadowRadius="1"
+                android:text="@string/meme_top_text"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/meme_text_medium" />
 
             <TextView
                 android:id="@+id/bottomText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/meme_text_medium"
-                android:gravity="center"
                 android:layout_gravity="bottom"
-                android:text="@string/meme_bottom_text"
-                android:textAllCaps="true"
+                android:gravity="center"
                 android:shadowColor="#000000"
                 android:shadowDx="1"
                 android:shadowDy="1"
-                android:shadowRadius="1" />
+                android:shadowRadius="1"
+                android:text="@string/meme_bottom_text"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/meme_text_medium" />
 
         </FrameLayout>
 

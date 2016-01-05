@@ -365,5 +365,6 @@
 
     <!-- UI transition names, should not be translated -->
     <string name="transition_upload_photo" translatable="false">uploadPhoto</string>
+    <string name="gallery_item_transition" translatable="false">gallery_transition</string>
 
 </resources>
