@@ -404,7 +404,12 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case RequestCodes.TAKE_PHOTO:
-                if (resultCode == Activity.RESULT_OK && FileUtil.isFileValid(mTempFile)) {
+                if (resultCode == Activity.RESULT_OK) {
+                    if (!FileUtil.isFileValid(mTempFile)) {
+                        SnackBar.show(getActivity(), R.string.upload_camera_error);
+                        return;
+                    }
+
                     FileUtil.scanFile(Uri.fromFile(mTempFile), getActivity());
                     String fileLocation = mTempFile.getAbsolutePath();
                     Upload upload = new Upload(fileLocation);
@@ -418,8 +423,6 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
 
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     mTempFile = null;
-                } else {
-                    SnackBar.show(getActivity(), R.string.upload_camera_error);
                 }
                 break;
 
