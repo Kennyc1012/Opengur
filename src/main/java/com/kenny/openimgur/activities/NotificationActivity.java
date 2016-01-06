@@ -31,9 +31,8 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Kenny-PC on 8/9/2015.
@@ -230,7 +229,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
     private void fetchNotifications() {
         ApiClient.getService().getNotifications().enqueue(new Callback<NotificationResponse>() {
             @Override
-            public void onResponse(Response<NotificationResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<NotificationResponse> response) {
                 if (response == null || response.body() == null) {
                     if (mAdapter == null || mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                     return;
@@ -296,7 +295,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
             app.getSql().markNotificationsRead();
             ApiClient.getService().markNotificationsRead(ids).enqueue(new Callback<BasicResponse>() {
                 @Override
-                public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                public void onResponse(Response<BasicResponse> response) {
                     if (response != null && response.body() != null) {
                         LogUtil.v(TAG, "Marking Notifications Read Response " + response.body().data);
                     } else {

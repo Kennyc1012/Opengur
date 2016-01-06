@@ -39,9 +39,8 @@ import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
 import butterknife.Bind;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 12/14/14.
@@ -274,7 +273,7 @@ public class ProfileActivity extends BaseActivity {
     private void fetchProfile(String username) {
         ApiClient.getService().getProfile(username).enqueue(new Callback<UserResponse>() {
             @Override
-            public void onResponse(Response<UserResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<UserResponse> response) {
                 if (isDestroyed() || isFinishing()) return;
 
                 if (response != null && response.body() != null) {

@@ -65,10 +65,9 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 7/12/14.
@@ -702,7 +701,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                 ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getApiValue()).enqueue(new Callback<CommentResponse>() {
                     @Override
-                    public void onResponse(Response<CommentResponse> response, Retrofit retrofit) {
+                    public void onResponse(Response<CommentResponse> response) {
                         if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
                             return;
                         }
@@ -769,7 +768,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         if (isAlbum) {
             ApiClient.getService().getAlbumImages(id).enqueue(new Callback<AlbumResponse>() {
                 @Override
-                public void onResponse(Response<AlbumResponse> response, Retrofit retrofit) {
+                public void onResponse(Response<AlbumResponse> response) {
                     if (response == null || response.body() == null) {
                         ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
@@ -798,7 +797,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         } else {
             ApiClient.getService().getGalleryDetails(id).enqueue(new Callback<BasicObjectResponse>() {
                 @Override
-                public void onResponse(Response<BasicObjectResponse> response, Retrofit retrofit) {
+                public void onResponse(Response<BasicObjectResponse> response) {
                     if (response != null && response.body() != null && response.body().data != null) {
                         final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
                         objects.add(response.body().data);
@@ -825,7 +824,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private void voteOnGallery(String id, final String vote) {
         ApiClient.getService().voteOnGallery(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<BasicResponse> response) {
                 if (response != null && response.body() != null && response.body().data) {
                     View animateView = ImgurBaseObject.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
                     AnimatorSet set = new AnimatorSet();
@@ -852,7 +851,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private void voteOnComment(String id, final String vote) {
         ApiClient.getService().voteOnComment(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<BasicResponse> response) {
                 if (response.body() != null) LogUtil.v(TAG, "Result of comment voting " + response.body().data);
             }
 
@@ -877,7 +876,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
         call.enqueue(new Callback<CommentPostResponse>() {
             @Override
-            public void onResponse(Response<CommentPostResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<CommentPostResponse> response) {
                 if (response != null && response.body() != null && response.body().data != null && !TextUtils.isEmpty(response.body().data.id)) {
                     SnackBar.show(ViewActivity.this, R.string.comment_post_successful);
                     fetchComments();

@@ -13,16 +13,16 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.FileUtil;
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.OkHttpClient;
 
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
+import retrofit2.GsonConverterFactory;
+import retrofit2.Retrofit;
 
 
 /**
@@ -50,7 +50,6 @@ public class ApiClient {
      */
     public static ImgurService getService() {
         if (sRestAdapter == null || sService == null) {
-
             sRestAdapter = new Retrofit.Builder()
                     .baseUrl(API_URL)
                     .client(getClient())
@@ -61,25 +60,24 @@ public class ApiClient {
         }
 
         return sService;
-
     }
 
     private static OkHttpClient getClient() {
         OpengurApp app = OpengurApp.getInstance();
         ImgurUser user = app.getUser();
 
-        OkHttpClient client = new OkHttpClient();
-        client.setConnectTimeout(20, TimeUnit.SECONDS);
-        client.interceptors().add(new OAuthInterceptor(user != null ? user.getAccessToken() : null));
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .addInterceptor(new OAuthInterceptor(user != null ? user.getAccessToken() : null));
 
         File cacheDir = app.getCacheDir();
 
         if (FileUtil.isFileValid(cacheDir)) {
             File cache = new File(cacheDir, "http_cache");
-            client.setCache(new Cache(cache, CACHE_SIZE));
+            builder.cache(new Cache(cache, CACHE_SIZE));
         }
 
-        return client;
+        return builder.build();
     }
 
     private static GsonConverterFactory getConverter() {

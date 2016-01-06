@@ -30,9 +30,8 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Base class for fragments that display images in a grid like style
@@ -278,7 +277,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     }
 
     @Override
-    public void onResponse(Response<GalleryResponse> response, Retrofit retrofit) {
+    public void onResponse(Response<GalleryResponse> response) {
         if (!isAdded()) return;
 
         if (response != null) {

@@ -66,10 +66,9 @@ import java.util.List;
 
 import butterknife.Bind;
 import pl.droidsonroids.gif.GifDrawable;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 7/12/14.
@@ -613,7 +612,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void fetchAlbumImages() {
         ApiClient.getService().getAlbumImages(mImgurObject.getId()).enqueue(new Callback<AlbumResponse>() {
             @Override
-            public void onResponse(Response<AlbumResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<AlbumResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && !response.body().data.isEmpty()) {
@@ -643,7 +642,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         if (mDisplayTags && mImgurObject.isListed() && (mImgurObject.getTags() == null || mImgurObject.getTags().isEmpty())) {
             ApiClient.getService().getTags(mImgurObject.getId()).enqueue(new Callback<TagResponse>() {
                 @Override
-                public void onResponse(Response<TagResponse> response, Retrofit retrofit) {
+                public void onResponse(Response<TagResponse> response) {
                     if (!isAdded() || response == null || response.body() == null) return;
 
                     TagResponse tagResponse = response.body();
@@ -667,7 +666,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void fetchGalleryDetails() {
         ApiClient.getService().getGalleryDetails(mImgurObject.getId()).enqueue(new Callback<BasicObjectResponse>() {
             @Override
-            public void onResponse(Response<BasicObjectResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<BasicObjectResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data != null) {
@@ -700,7 +699,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         call.enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<BasicResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().success) {
@@ -723,7 +722,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void reportItem(int reason) {
         ApiClient.getService().reportPost(mImgurObject.getId(), reason).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<BasicResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data) {

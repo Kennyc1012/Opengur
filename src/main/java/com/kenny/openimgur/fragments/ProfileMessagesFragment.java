@@ -27,9 +27,8 @@ import com.kennyc.view.MultiStateView;
 import java.util.List;
 
 import butterknife.Bind;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 12/24/14.
@@ -111,7 +110,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
     private void fetchConvos() {
         ApiClient.getService().getConversations().enqueue(new Callback<ConvoResponse>() {
             @Override
-            public void onResponse(Response<ConvoResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<ConvoResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null) {
@@ -151,7 +150,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
 
         ApiClient.getService().deleteConversation(id).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<BasicResponse> response) {
                 if (response != null && response.body() != null) {
                     LogUtil.v(TAG, "Result of convo deletion " + response);
                 } else {

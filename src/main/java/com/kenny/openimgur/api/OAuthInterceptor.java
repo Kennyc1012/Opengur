@@ -7,14 +7,14 @@ import android.text.format.DateUtils;
 import com.kenny.openimgur.api.responses.OAuthResponse;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-import retrofit.Call;
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit2.Call;
 
 /**
  * Created by kcampagna on 7/15/15.
@@ -41,7 +41,7 @@ public class OAuthInterceptor implements Interceptor {
         Request.Builder builder = original.newBuilder();
         builder.addHeader(AUTHORIZATION_HEADER, getAuthorizationHeader());
         Request request = builder.method(original.method(), original.body()).build();
-        LogUtil.v(TAG, "Making request to " + request.urlString());
+        LogUtil.v(TAG, "Making request to " + request.url().toString());
         Response response = chain.proceed(request);
 
         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED || response.code() == HttpURLConnection.HTTP_FORBIDDEN) {
@@ -99,7 +99,7 @@ public class OAuthInterceptor implements Interceptor {
     private String refreshToken(OpengurApp app) {
         try {
             Call<OAuthResponse> call = ApiClient.getService().refreshToken(ApiClient.CLIENT_ID, ApiClient.CLIENT_SECRET, app.getUser().getRefreshToken(), "refresh_token");
-            retrofit.Response<OAuthResponse> response = call.execute();
+            retrofit2.Response<OAuthResponse> response = call.execute();
 
             if (response == null || response.body() == null) {
                 LogUtil.e(TAG, "Response came back as null");

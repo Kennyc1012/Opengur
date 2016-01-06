@@ -27,14 +27,14 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.Response;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 6/30/15.

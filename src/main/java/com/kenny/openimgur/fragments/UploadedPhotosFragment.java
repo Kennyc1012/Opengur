@@ -40,10 +40,9 @@ import com.kennyc.view.MultiStateView;
 import java.util.List;
 
 import butterknife.Bind;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Kenny-PC on 1/14/2015.
@@ -226,7 +225,7 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
 
         call.enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<BasicResponse> response) {
                 if (response != null && response.body() != null) {
                     LogUtil.v(TAG, "Response from deletion " + response.body().data);
                 } else {

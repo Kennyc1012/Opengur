@@ -54,9 +54,8 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Kenny-PC on 6/20/2015.
@@ -403,7 +402,7 @@ public class UploadActivity extends BaseActivity implements PhotoUploadListener 
             LogUtil.v(TAG, "No topics found, fetching");
             ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
                 @Override
-                public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
+                public void onResponse(Response<TopicResponse> response) {
                     if (response != null && response.body() != null) app.getSql().addTopics(response.body().data);
                 }
 

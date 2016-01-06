@@ -43,9 +43,8 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 12/25/14.
@@ -198,7 +197,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         mIsLoading = true;
         ApiClient.getService().getMessages(mConvo.getId(), mCurrentPage).enqueue(new Callback<ConversationResponse>() {
             @Override
-            public void onResponse(Response<ConversationResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<ConversationResponse> response) {
                 mIsLoading = false;
 
                 if (response == null || response.body() == null) {
@@ -272,7 +271,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
 
         ApiClient.getService().sendMessage(mConvo.getWithAccount(), message.getBody()).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Response<BasicResponse> response) {
                 boolean success = response != null && response.body() != null && response.body().data;
                 if (mAdapter != null) mAdapter.onMessageSendComplete(success, message.getId());
             }
@@ -296,7 +295,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                         ApiClient.getService().blockUser(mConvo.getWithAccount(), mConvo.getWithAccount()).enqueue(new Callback<BasicResponse>() {
 
                             @Override
-                            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                            public void onResponse(Response<BasicResponse> response) {
                                 if (response != null && response.body() != null && response.body().data) {
                                     setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_BLOCKED_CONVO, mConvo));
                                     finish();
@@ -325,7 +324,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                     public void onClick(DialogInterface dialog, int which) {
                         ApiClient.getService().reportUser(mConvo.getWithAccount(), mConvo.getWithAccount()).enqueue(new Callback<BasicResponse>() {
                             @Override
-                            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                            public void onResponse(Response<BasicResponse> response) {
                                 if (response != null && response.body() != null && response.body().data) {
                                     SnackBar.show(ConvoThreadActivity.this, getString(R.string.convo_user_reported, mConvo.getWithAccount()));
                                 } else {

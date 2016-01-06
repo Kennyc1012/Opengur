@@ -14,18 +14,18 @@ import com.kenny.openimgur.api.responses.PhotoResponse;
 import com.kenny.openimgur.api.responses.TagResponse;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.api.responses.UserResponse;
-import com.squareup.okhttp.RequestBody;
 
-import retrofit.Call;
-import retrofit.http.DELETE;
-import retrofit.http.Field;
-import retrofit.http.FormUrlEncoded;
-import retrofit.http.GET;
-import retrofit.http.Multipart;
-import retrofit.http.POST;
-import retrofit.http.Part;
-import retrofit.http.Path;
-import retrofit.http.Query;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.http.DELETE;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by kcampagna on 7/10/15.
