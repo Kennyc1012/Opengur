@@ -50,6 +50,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         super.onCreate();
         sInstance = this;
         stopUserManagerLeak();
+        ImageUtil.initImageLoader(getApplicationContext());
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mPref.registerOnSharedPreferenceChangeListener(this);
         mSql = new SqlHelper(getApplicationContext());
