@@ -141,7 +141,7 @@ public class FileUtil {
 
         long size = 0;
         for (File file : directory.listFiles()) {
-            size += file.length();
+            if (!file.isDirectory()) size += file.length();
         }
 
         return size;

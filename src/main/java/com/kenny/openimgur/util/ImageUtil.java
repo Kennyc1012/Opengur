@@ -418,4 +418,16 @@ public class ImageUtil {
         BitmapFactory.decodeFile(file.getAbsolutePath(), options);
         return new int[]{options.outWidth, options.outHeight};
     }
+
+    /**
+     * Returns the entire size of the image cache, including videos
+     *
+     * @param app
+     * @return
+     */
+    public static long getTotalImageCacheSize(OpengurApp app) {
+        long cacheSize = FileUtil.getDirectorySize(app.getImageLoader().getDiskCache().getDirectory());
+        cacheSize += VideoCache.getInstance().getCacheSize();
+        return cacheSize;
+    }
 }
