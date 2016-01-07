@@ -50,7 +50,6 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         super.onCreate();
         sInstance = this;
         stopUserManagerLeak();
-        ImageUtil.initImageLoader(getApplicationContext());
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mPref.registerOnSharedPreferenceChangeListener(this);
         mSql = new SqlHelper(getApplicationContext());
@@ -58,7 +57,8 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         if (mUser != null) AlarmReceiver.createNotificationAlarm(this);
         mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.KEY_THEME, ImgurTheme.GREY.themeName));
         mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, true);
-
+        ImageUtil.initImageLoader(getApplicationContext());
+        
         // Start crashlytics if enabled
         if (!BuildConfig.DEBUG && mPref.getBoolean(SettingsActivity.KEY_CRASHLYTICS, true)) {
             Fabric.with(this, new Crashlytics());
