@@ -438,7 +438,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onClick(View view) {
         if (!canDoFragmentTransaction()) return;
-        
+
         switch (view.getId()) {
             case R.id.panelUpBtn:
                 if (mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
@@ -568,14 +568,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
         } else {
             if (view.getLayoutParams() instanceof RecyclerView.LayoutParams) {
-                onListItemClick(mCommentList.getLayoutManager().getPosition(view));
+                onListItemClick(mCommentList.getChildAdapterPosition(view));
             } else {
-                // This is super ugly, in order to the get position from the layout manager, we need the root view
+                // This is super ugly, in order to the get position from the RecyclerView, we need the root view
                 View parent = (View) view.getParent();
                 if (parent != null) parent = (View) parent.getParent();
 
                 if (parent != null && parent.getLayoutParams() instanceof RecyclerView.LayoutParams) {
-                    onListItemClick(mCommentList.getLayoutManager().getPosition(parent));
+                    onListItemClick(mCommentList.getChildAdapterPosition(parent));
                 }
             }
         }
@@ -620,7 +620,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private void onListItemClick(int position) {
         if (mCommentAdapter == null) return;
 
-        if (position >= 0) {
+        if (position != RecyclerView.NO_POSITION) {
             boolean shouldClose = mCommentAdapter.setSelectedIndex(position);
 
             if (!shouldClose) {
