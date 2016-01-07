@@ -87,6 +87,8 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
         setContentView(R.layout.activity_full_screen);
         handleArguments(savedInstanceState, intent);
+        setStatusBarColor(Color.BLACK);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         if (hasImmersiveMode()) {
             mDecorView = getWindow().getDecorView();
@@ -108,15 +110,13 @@ public class FullScreenPhotoActivity extends BaseActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+
         if (hasImmersiveMode()) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             mHandler = new VisibilityHandler();
             Message msg = mHandler.obtainMessage(0, mDecorView);
             mHandler.sendMessageDelayed(msg, VisibilityHandler.HIDE_DELAY);
         }
-
-        setStatusBarColor(Color.BLACK);
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
     @Override
@@ -335,6 +335,6 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
     @Override
     protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
+        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark_View_Dark : R.style.Theme_Opengur_Light_View_Light;
     }
 }
