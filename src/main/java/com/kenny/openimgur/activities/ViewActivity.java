@@ -437,6 +437,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @OnClick({R.id.panelUpBtn, R.id.upVoteBtn, R.id.downVoteBtn, R.id.commentBtn, R.id.sortComments, R.id.errorButton})
     @Override
     public void onClick(View view) {
+        if (!canDoFragmentTransaction()) return;
+        
         switch (view.getId()) {
             case R.id.panelUpBtn:
                 if (mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
