@@ -84,6 +84,7 @@ public class MemeActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meme_create);
         Intent intent = getIntent();
+        boolean hasTransition;
 
         if (intent == null) {
             LogUtil.w(TAG, "No object was found in the intent");
@@ -93,16 +94,19 @@ public class MemeActivity extends BaseActivity {
 
         if (intent.hasExtra(KEY_OBJECT)) {
             mObject = intent.getParcelableExtra(KEY_OBJECT);
+            hasTransition = isApiLevel(Build.VERSION_CODES.LOLLIPOP) && savedInstanceState == null;
         } else {
             String path = intent.getStringExtra(KEY_FILE_PATH);
             mObject = new ImgurBaseObject("-1", null, "file:///" + path);
+            // Locally imported images will not have an activity transition
+            hasTransition = false;
         }
 
         getSupportActionBar().setTitle(mObject.getTitle());
         loadImage();
         mView.setDrawingCacheEnabled(true);
 
-        if (isApiLevel(Build.VERSION_CODES.LOLLIPOP) && savedInstanceState == null) {
+        if (hasTransition) {
             mTopText.setVisibility(View.GONE);
             mBottomText.setVisibility(View.GONE);
 
