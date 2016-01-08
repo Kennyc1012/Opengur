@@ -290,10 +290,11 @@ public class FileUtil {
     public static void deleteDirectory(File dir) {
         if (isFileValid(dir) && dir.isDirectory()) {
             File[] files = dir.listFiles();
+            if (files != null && files.length > 0)
 
-            for (File f : files) {
-                f.delete();
-            }
+                for (File f : files) {
+                    f.delete();
+                }
         }
     }
 }
