@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -16,36 +17,40 @@
         android:id="@+id/indicatorContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone">
+        android:background="?colorPrimary"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <Button
-            style="?borderlessButtonStyle"
             android:id="@+id/back"
+            style="?borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/back"
             android:layout_gravity="left|center_vertical"
-            android:drawableLeft="@drawable/ic_left_24dp" />
+            android:drawableLeft="@drawable/ic_left_24dp"
+            android:text="@string/back"
+            android:textColor="@android:color/white" />
 
         <com.davidpacioianu.inkpageindicator.InkPageIndicator
             android:id="@+id/indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            app:animationDuration="320"
+            app:currentPageIndicatorColor="?colorAccent"
             app:dotDiameter="8dp"
             app:dotGap="8dp"
-            app:animationDuration="320"
-            app:pageIndicatorColor="@color/primary_dark_light"
-            app:currentPageIndicatorColor="?colorAccent" />
+            app:pageIndicatorColor="@color/primary_dark_light" />
 
         <Button
-            style="?borderlessButtonStyle"
             android:id="@+id/next"
+            style="?borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/next"
             android:layout_gravity="right|center_vertical"
-            android:drawableRight="@drawable/ic_right_24dp" />
+            android:drawableRight="@drawable/ic_right_24dp"
+            android:text="@string/next"
+            android:textColor="@android:color/white" />
 
     </FrameLayout>
 
