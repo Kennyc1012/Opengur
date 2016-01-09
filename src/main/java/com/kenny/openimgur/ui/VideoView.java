@@ -373,6 +373,8 @@ public class VideoView extends SurfaceView implements MediaPlayerControl {
                         if (mOnErrorListener.onError(mMediaPlayer, framework_err, impl_err)) {
                             return true;
                         }
+
+                        mOnErrorListener = null;
                     }
 
             /* Otherwise, pop up an error dialog so the user knows that
