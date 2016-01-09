@@ -521,8 +521,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
     private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT, 0) {
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-            mAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-            return true;
+            return mAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
         }
 
         @Override

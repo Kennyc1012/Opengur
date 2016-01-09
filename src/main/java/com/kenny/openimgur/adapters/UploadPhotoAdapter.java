@@ -2,6 +2,7 @@ package com.kenny.openimgur.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,9 +41,25 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
         mListener = null;
     }
 
-    public void onItemMove(int from, int to) {
-        Collections.swap(getAllItems(), from, to);
-        notifyItemMoved(from, to);
+    public boolean onItemMove(int from, int to) {
+        if (from != RecyclerView.NO_POSITION && to != RecyclerView.NO_POSITION) {
+            int movement = Math.abs(from - to);
+            if (movement == 1) {
+                // Item moved only 1 space over, simple swap
+                Collections.swap(getAllItems(), from, to);
+                notifyItemMoved(from, to);
+                return true;
+            } else {
+                // Shift the items so they get rendered correctly.
+                List<Upload> backingList = getAllItems();
+                Upload item = backingList.remove(from);
+                backingList.add(to, item);
+                notifyItemMoved(from, to);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void updateItem(@NonNull Upload upload) {
