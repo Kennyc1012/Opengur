@@ -381,6 +381,7 @@ public class VideoView extends SurfaceView implements MediaPlayerControl {
              * longer have a window, don't bother showing the user an error.
              */
                     if (getWindowToken() != null) {
+                        mMediaPlayer.setOnErrorListener(null);
 
                         new AlertDialog.Builder(getContext())
                                 .setTitle(R.string.error_generic)
