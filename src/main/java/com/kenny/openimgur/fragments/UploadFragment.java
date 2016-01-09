@@ -493,6 +493,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                                                     Upload upload = (Upload) objects[1];
                                                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                                                     mAdapter.addItem(upload, position);
+                                                    if(mListener!=null) mListener.onPhotoAdded();
                                                 }
                                             }
                                         })
