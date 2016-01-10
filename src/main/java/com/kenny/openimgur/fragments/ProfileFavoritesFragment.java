@@ -179,7 +179,14 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
                 if (response != null && response.body() != null && response.body().success) {
                     GalleryAdapter adapter = getAdapter();
                     if (adapter != null) adapter.removeItem(object);
-                    mMultiStateView.setViewState(adapter != null && adapter.isEmpty() ? MultiStateView.VIEW_STATE_EMPTY : MultiStateView.VIEW_STATE_CONTENT);
+
+                    if (adapter != null && adapter.isEmpty()) {
+                        ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, getString(R.string.profile_no_favorites, mSelectedUser.getUsername()));
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                    } else {
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                    }
+
                 } else {
                     SnackBar.show(getActivity(), R.string.error_generic);
                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);

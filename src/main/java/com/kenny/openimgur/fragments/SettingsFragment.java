@@ -69,7 +69,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
     @Override
     public void onResume() {
         super.onResume();
-        long cacheSize = FileUtil.getDirectorySize(mApp.getImageLoader().getDiskCache().getDirectory());
+        long cacheSize = ImageUtil.getTotalImageCacheSize(mApp);
         findPreference(SettingsActivity.KEY_CURRENT_CACHE_SIZE).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
 
         try {

@@ -135,7 +135,11 @@ abstract public class BaseActivity extends AppCompatActivity {
      * @param title    The title for the Dialog Fragment
      */
     public void showDialogFragment(DialogFragment fragment, String title) {
-        getFragmentManager().beginTransaction().add(fragment, title).commit();
+        try {
+            getFragmentManager().beginTransaction().add(fragment, title).commit();
+        } catch (IllegalStateException ex) {
+            LogUtil.e(TAG, "Unable to show dialog fragment", ex);
+        }
     }
 
     /**

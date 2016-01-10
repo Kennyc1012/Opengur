@@ -141,7 +141,7 @@ public class FileUtil {
 
         long size = 0;
         for (File file : directory.listFiles()) {
-            size += file.length();
+            if (!file.isDirectory()) size += file.length();
         }
 
         return size;
@@ -290,10 +290,11 @@ public class FileUtil {
     public static void deleteDirectory(File dir) {
         if (isFileValid(dir) && dir.isDirectory()) {
             File[] files = dir.listFiles();
+            if (files != null && files.length > 0)
 
-            for (File f : files) {
-                f.delete();
-            }
+                for (File f : files) {
+                    f.delete();
+                }
         }
     }
 }

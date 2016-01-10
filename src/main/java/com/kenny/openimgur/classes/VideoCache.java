@@ -116,6 +116,10 @@ public class VideoCache {
         mCacheDir.mkdirs();
     }
 
+    public long getCacheSize() {
+        return FileUtil.getDirectorySize(mCacheDir);
+    }
+
     public interface VideoCacheListener {
         // Called when the Video download starts
         void onVideoDownloadStart(String key, String url);
