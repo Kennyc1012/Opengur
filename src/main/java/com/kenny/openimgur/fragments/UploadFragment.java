@@ -191,7 +191,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
         } else if (args.containsKey(KEY_PASSED_LINK)) {
             mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
             String link = args.getString(KEY_PASSED_LINK);
-            getFragmentManager().beginTransaction()
+            getChildFragmentManager().beginTransaction()
                     .add(UploadLinkDialogFragment.newInstance(link), UploadLinkDialogFragment.TAG)
                     .commit();
         } else if (args.containsKey(KEY_PASSED_URIS)) {
@@ -493,7 +493,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                                                     Upload upload = (Upload) objects[1];
                                                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                                                     mAdapter.addItem(upload, position);
-                                                    if(mListener!=null) mListener.onPhotoAdded();
+                                                    if (mListener != null) mListener.onPhotoAdded();
                                                 }
                                             }
                                         })
