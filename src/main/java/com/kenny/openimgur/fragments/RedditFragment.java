@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
@@ -34,7 +35,6 @@ import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
@@ -239,7 +239,7 @@ public class RedditFragment extends BaseGridFragment {
                 }
 
                 getActivity().invalidateOptionsMenu();
-                SnackBar.show(getActivity(), messageId);
+                Snackbar.make(getSnackbarView(), messageId, Snackbar.LENGTH_LONG).show();
                 return true;
         }
 

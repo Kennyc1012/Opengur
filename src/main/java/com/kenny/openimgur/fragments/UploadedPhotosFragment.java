@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -34,7 +35,6 @@ import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.view.MultiStateView;
 
@@ -177,14 +177,14 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
                                 if (shareDialog != null) {
                                     shareDialog.show();
                                 } else {
-                                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                                    Snackbar.make(mListener != null ? mListener.getSnackbarView() : mMultiStateView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                                 }
                                 break;
 
                             case 1:
                                 ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                                 clipboard.setPrimaryClip(ClipData.newPlainText("link", photo.getUrl()));
-                                SnackBar.show(getActivity(), R.string.link_copied);
+                                Snackbar.make(mListener != null ? mListener.getSnackbarView() : mMultiStateView, R.string.link_copied, Snackbar.LENGTH_LONG).show();
                                 break;
 
                             case 2:
