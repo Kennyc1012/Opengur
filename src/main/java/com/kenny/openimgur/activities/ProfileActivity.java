@@ -35,6 +35,7 @@ import com.kenny.openimgur.fragments.ProfileUploadsFragment;
 import com.kenny.openimgur.services.AlarmReceiver;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
@@ -104,7 +105,7 @@ public class ProfileActivity extends BaseActivity {
             if (args.hasExtra(KEY_USERNAME)) {
                 LogUtil.v(TAG, "User present in Bundle extras");
                 String username = args.getStringExtra(KEY_USERNAME);
-                mSelectedUser = app.getSql().getUser(username);
+                mSelectedUser = SqlHelper.getInstance(getApplicationContext()).getUser(username);
                 configUser(username);
             } else if (user != null) {
                 LogUtil.v(TAG, "User already logged in");
@@ -287,9 +288,9 @@ public class ProfileActivity extends BaseActivity {
                     }
 
                     if (mSelectedUser.isSelf(app) && !TextUtils.isEmpty(mSelectedUser.getAccessToken())) {
-                        app.getSql().updateUserInfo(mSelectedUser);
+                        SqlHelper.getInstance(getApplicationContext()).updateUserInfo(mSelectedUser);
                     } else {
-                        app.getSql().insertProfile(mSelectedUser);
+                        SqlHelper.getInstance(getApplicationContext()).insertProfile(mSelectedUser);
                     }
 
                     mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);

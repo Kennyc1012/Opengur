@@ -32,6 +32,7 @@ import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
@@ -198,7 +199,7 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 if (cb.isChecked()) deleteItem(photo);
-                                                app.getSql().deleteUploadedPhoto(photo);
+                                                SqlHelper.getInstance(getActivity()).deleteUploadedPhoto(photo);
                                                 mAdapter.removeItem(photo);
 
                                                 if (mAdapter.isEmpty()) {
@@ -244,7 +245,7 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
     private void refresh() {
         if (mAdapter != null) mAdapter.clear();
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
-        List<UploadedPhoto> photos = app.getSql().getUploadedPhotos(true);
+        List<UploadedPhoto> photos = SqlHelper.getInstance(getActivity()).getUploadedPhotos(true);
 
         if (!photos.isEmpty()) {
             if (mAdapter == null) {

@@ -32,6 +32,7 @@ import com.kenny.openimgur.ui.CircleBitmapDisplayer;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.SqlHelper;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.util.HashSet;
@@ -76,7 +77,7 @@ public class NotificationService extends IntentService {
                 if (response != null && response.body() != null && response.body().hasNotifications()) {
                     NotificationResponse notificationResponse = response.body();
 
-                    app.getSql().insertNotifications(notificationResponse);
+                    SqlHelper.getInstance(getApplicationContext()).insertNotifications(notificationResponse);
                     Notification notification = new Notification(getApplicationContext(), notificationResponse.data);
                     notification.postNotification();
                 } else {

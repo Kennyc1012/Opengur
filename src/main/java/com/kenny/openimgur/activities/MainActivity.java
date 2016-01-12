@@ -41,6 +41,7 @@ import com.kenny.openimgur.fragments.TopicsFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 
@@ -251,7 +252,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             mName.setText(user.getUsername());
             mRep.setText(user.getNotoriety().getStringId());
             mBadgeContainer.setVisibility(View.VISIBLE);
-            int notificationCount = app.getSql().getNotifications(true).size();
+            int notificationCount = SqlHelper.getInstance(getApplicationContext()).getNotifications(true).size();
             updateNotificationBadge(notificationCount);
         } else {
             mAvatar.setImageResource(R.drawable.ic_account_circle_24dp);

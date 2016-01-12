@@ -50,7 +50,17 @@ public class SqlHelper extends SQLiteOpenHelper {
 
     private static SQLiteDatabase mWritableDatabase;
 
-    public SqlHelper(Context context) {
+    private static SqlHelper sInstance;
+
+    public static SqlHelper getInstance(@NonNull Context context) {
+        if (sInstance == null) {
+            sInstance = new SqlHelper(context.getApplicationContext());
+        }
+
+        return sInstance;
+    }
+
+    private SqlHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 

@@ -23,6 +23,7 @@ import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
@@ -111,7 +112,7 @@ public class MemeFragment extends BaseGridFragment {
         super.onRestoreSavedInstance(savedInstanceState);
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
-            List<ImgurBaseObject> memes = app.getSql().getMemes();
+            List<ImgurBaseObject> memes = SqlHelper.getInstance(getActivity()).getMemes();
 
             if (!memes.isEmpty()) {
                 LogUtil.v(TAG, "Memes found in database");
@@ -128,8 +129,9 @@ public class MemeFragment extends BaseGridFragment {
         mHasMore = false;
 
         if (!galleryResponse.data.isEmpty()) {
-            app.getSql().deleteFromTable(DBContracts.MemeContract.TABLE_NAME);
-            app.getSql().addMemes(galleryResponse.data);
+            SqlHelper sql = SqlHelper.getInstance(getActivity());
+            sql.deleteFromTable(DBContracts.MemeContract.TABLE_NAME);
+            sql.addMemes(galleryResponse.data);
         }
     }
 

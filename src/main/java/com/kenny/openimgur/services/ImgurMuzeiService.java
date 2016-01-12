@@ -82,7 +82,7 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
 
         if (photos != null && !photos.isEmpty()) {
             ImgurPhoto photo = photos.get(sRandom.nextInt(photos.size()));
-            SqlHelper sql = app.getSql();
+            SqlHelper sql = SqlHelper.getInstance(getApplicationContext());
 
             if (sql.getMuzeiLastSeen(photo.getLink()) != -1) {
                 // We have seen this image already, lets try to get another

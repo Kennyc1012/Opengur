@@ -29,6 +29,7 @@ import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.snackbar.SnackBar;
 
 import java.io.File;
@@ -173,12 +174,12 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
                 return true;
 
             case "redditHistory":
-                mApp.getSql().deleteFromTable(DBContracts.SubRedditContract.TABLE_NAME);
+                SqlHelper.getInstance(getActivity()).deleteFromTable(DBContracts.SubRedditContract.TABLE_NAME);
                 SnackBar.show(getActivity(), R.string.pref_reddit_deleted);
                 return true;
 
             case "gallerySearchHistory":
-                mApp.getSql().deleteFromTable(DBContracts.GallerySearchContract.TABLE_NAME);
+                SqlHelper.getInstance(getActivity()).deleteFromTable(DBContracts.GallerySearchContract.TABLE_NAME);
                 SnackBar.show(getActivity(), R.string.pref_search_deleted);
                 return true;
 

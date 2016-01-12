@@ -30,6 +30,7 @@ import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
 import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kennyc.view.MultiStateView;
 
 /**
@@ -132,11 +133,11 @@ public class GalleryFragment extends BaseGridFragment {
             mSearchView.setQueryHint(getString(R.string.gallery_search_hint));
 
             if (mSearchView.getSuggestionsAdapter() == null) {
-                mSearchAdapter = new SearchAdapter(getActivity(), app.getSql().getPreviousGallerySearches(), DBContracts.GallerySearchContract.COLUMN_NAME);
+                mSearchAdapter = new SearchAdapter(getActivity(), SqlHelper.getInstance(getActivity()).getPreviousGallerySearches(), DBContracts.GallerySearchContract.COLUMN_NAME);
                 mSearchAdapter.setFilterQueryProvider(new FilterQueryProvider() {
                     @Override
                     public Cursor runQuery(CharSequence constraint) {
-                        return app.getSql().getPreviousGallerySearches(constraint.toString());
+                        return SqlHelper.getInstance(getActivity()).getPreviousGallerySearches(constraint.toString());
                     }
                 });
                 mSearchView.setSuggestionsAdapter(mSearchAdapter);

@@ -20,6 +20,7 @@ import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.UploadListener;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.snackbar.SnackBar;
 
 import java.util.List;
@@ -130,7 +131,7 @@ public class UploadInfoFragment extends BaseFragment {
      * Checks if we have cached topics to display for the info fragment
      */
     private void checkForTopics() {
-        List<ImgurTopic> topics = app.getSql().getTopics();
+        List<ImgurTopic> topics = SqlHelper.getInstance(getActivity()).getTopics();
 
         if (topics.isEmpty()) {
             LogUtil.v(TAG, "No topics found, fetching");
@@ -138,8 +139,9 @@ public class UploadInfoFragment extends BaseFragment {
                 @Override
                 public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
                     if (response != null && response.body() != null) {
-                        app.getSql().addTopics(response.body().data);
-                        List<ImgurTopic> topics = app.getSql().getTopics();
+                        SqlHelper sql = SqlHelper.getInstance(getActivity());
+                        sql.addTopics(response.body().data);
+                        List<ImgurTopic> topics = sql.getTopics();
                         mTopicSpinner.setAdapter(new TopicsAdapter(getActivity(), topics));
                     }
                 }

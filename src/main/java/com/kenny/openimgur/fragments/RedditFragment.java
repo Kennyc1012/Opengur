@@ -32,6 +32,7 @@ import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
@@ -135,11 +136,11 @@ public class RedditFragment extends BaseGridFragment {
 
         if (getActivity() != null) {
             mSearchView.setQueryHint(getString(R.string.enter_sub_reddit));
-            mCursorAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(), DBContracts.SubRedditContract.COLUMN_NAME);
+            mCursorAdapter = new SearchAdapter(getActivity(), SqlHelper.getInstance(getActivity()).getSubReddits(), DBContracts.SubRedditContract.COLUMN_NAME);
             mCursorAdapter.setFilterQueryProvider(new FilterQueryProvider() {
                 @Override
                 public Cursor runQuery(CharSequence constraint) {
-                    return app.getSql().getSubReddits(constraint.toString());
+                    return SqlHelper.getInstance(getActivity()).getSubReddits(constraint.toString());
                 }
             });
             mSearchView.setSuggestionsAdapter(mCursorAdapter);
@@ -396,13 +397,14 @@ public class RedditFragment extends BaseGridFragment {
         super.onApiResult(galleryResponse);
 
         if (mCurrentPage == 0 && !galleryResponse.data.isEmpty()) {
-            app.getSql().addSubReddit(mQuery);
+            SqlHelper sql = SqlHelper.getInstance(getActivity());
+            sql.addSubReddit(mQuery);
 
             if (mCursorAdapter == null) {
-                mCursorAdapter = new SearchAdapter(getActivity(), app.getSql().getSubReddits(mQuery), DBContracts.SubRedditContract.COLUMN_NAME);
+                mCursorAdapter = new SearchAdapter(getActivity(), sql.getSubReddits(mQuery), DBContracts.SubRedditContract.COLUMN_NAME);
                 mSearchView.setSuggestionsAdapter(mCursorAdapter);
             } else {
-                mCursorAdapter.changeCursor(app.getSql().getSubReddits(mQuery));
+                mCursorAdapter.changeCursor(sql.getSubReddits(mQuery));
             }
 
             mCursorAdapter.notifyDataSetChanged();
