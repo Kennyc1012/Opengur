@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.View;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.FragmentListener;
@@ -25,6 +27,9 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
 
     @Bind(R.id.toolBar)
     Toolbar mToolBar;
+
+    @Bind(R.id.coordinatorLayout)
+    CoordinatorLayout mCoordinatorLayout;
 
     public static Intent createIntent(Context context, String query) {
         return new Intent(context, GallerySearchActivity.class).putExtra(KEY_QUERY, query);
@@ -78,6 +83,11 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
     @Override
     public void onUpdateActionBarSpinner(List<ImgurTopic> topics, @Nullable ImgurTopic currentTopic) {
         // NOOP
+    }
+
+    @Override
+    public View getSnackbarView() {
+        return mCoordinatorLayout;
     }
 
     @Override

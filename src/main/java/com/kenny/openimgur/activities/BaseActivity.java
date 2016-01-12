@@ -38,8 +38,6 @@ abstract public class BaseActivity extends AppCompatActivity {
 
     public ImgurTheme theme;
 
-    private boolean mIsActionBarShowing = true;
-
     private boolean mIsLandscape = false;
 
     private boolean mIsTablet = false;

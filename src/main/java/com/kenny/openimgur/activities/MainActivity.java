@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -93,6 +94,9 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     @Bind(R.id.appbar)
     AppBarLayout mAppBar;
+
+    @Bind(R.id.coordinatorLayout)
+    CoordinatorLayout mCoordinatorLayout;
 
     ImageView mAvatar;
 
@@ -414,6 +418,11 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
         mTopicsSpinner.setAdapter(new TopicsAdapter(this, topics));
         mTopicsSpinner.setSelection(selectedPosition);
+    }
+
+    @Override
+    public View getSnackbarView() {
+        return mCoordinatorLayout;
     }
 
     @OnClick(R.id.fab)
