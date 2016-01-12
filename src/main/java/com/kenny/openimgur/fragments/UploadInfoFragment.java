@@ -3,6 +3,7 @@ package com.kenny.openimgur.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -21,7 +22,6 @@ import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.UploadListener;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
-import com.kenny.snackbar.SnackBar;
 
 import java.util.List;
 
@@ -95,7 +95,7 @@ public class UploadInfoFragment extends BaseFragment {
     public void onCheckChanged(boolean checked) {
         if (checked && user == null) {
             mGallerySwitch.setChecked(false);
-            SnackBar.show(getActivity(), R.string.upload_gallery_no_user);
+            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.upload_gallery_no_user, Snackbar.LENGTH_LONG).show();
             return;
         }
 

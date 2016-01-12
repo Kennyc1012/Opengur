@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,6 @@ import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.view.MultiStateView;
 
@@ -88,7 +88,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements View.OnL
                                 if (shareDialog != null) {
                                     shareDialog.show();
                                 } else {
-                                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                                    Snackbar.make(mMultiStateView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                                 }
                                 break;
 
@@ -154,9 +154,9 @@ public class ProfileUploadsFragment extends BaseGridFragment implements View.OnL
                         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     }
 
-                    SnackBar.show(getActivity(), R.string.profile_delete_success_image);
+                    Snackbar.make(mMultiStateView, R.string.profile_delete_success_image, Snackbar.LENGTH_LONG).show();
                 } else {
-                    SnackBar.show(getActivity(), R.string.error_generic);
+                    Snackbar.make(mMultiStateView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                 }
             }
 
@@ -165,7 +165,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements View.OnL
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to delete photo", t);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-                SnackBar.show(getActivity(), R.string.error_generic);
+                Snackbar.make(mMultiStateView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
             }
         });
 

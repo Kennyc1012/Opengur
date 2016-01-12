@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +27,6 @@ import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
 
 import java.util.List;
@@ -273,7 +273,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                     ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 } else {
-                    SnackBar.show(NotificationActivity.this, ApiClient.getErrorCode(t));
+                    Snackbar.make(mMultiView, ApiClient.getErrorCode(t), Snackbar.LENGTH_LONG).show();
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 }
             }

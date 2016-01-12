@@ -13,6 +13,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -43,7 +44,6 @@ import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 
 import java.util.List;
@@ -326,7 +326,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                 if (shareDialog != null) {
                     shareDialog.show();
                 } else {
-                    SnackBar.show(this, R.string.cant_launch_intent);
+                    Snackbar.make(mCoordinatorLayout, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                 }
                 break;
 
@@ -355,7 +355,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                                 if (browserIntent.resolveActivity(getPackageManager()) != null) {
                                     startActivity(browserIntent);
                                 } else {
-                                    SnackBar.show(MainActivity.this, R.string.cant_launch_intent);
+                                    Snackbar.make(mCoordinatorLayout, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                                 }
                             }
                         }).show();

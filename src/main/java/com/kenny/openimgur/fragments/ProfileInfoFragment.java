@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -28,7 +30,6 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.LinkUtils;
-import com.kenny.snackbar.SnackBar;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,6 +53,9 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
     @Bind(R.id.date)
     TextView mDate;
+
+    @Bind(R.id.container)
+    NestedScrollView mContainer;
 
     private ImgurUser mSelectedUser;
 
@@ -108,7 +112,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                     ImgurConvo convo = new ImgurConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
                     startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
                 } else {
-                    SnackBar.show(getActivity(), R.string.user_not_logged_in);
+                    Snackbar.make(mContainer, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
         }
@@ -202,7 +206,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                     if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                         startActivity(browserIntent);
                     } else {
-                        SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                        Snackbar.make(mContainer, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                     }
                     break;
             }

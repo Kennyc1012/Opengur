@@ -32,7 +32,6 @@
         <item name="searchViewStyle">@style/SearchViewStyle</item>
         <item name="toolBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="dividerColor">@color/bg_dark</item>
-        <item name="snack_bar_text_action_color">?colorAccent</item>
     </style>
 
     <style name="Theme_Opengur_Light.Blue">

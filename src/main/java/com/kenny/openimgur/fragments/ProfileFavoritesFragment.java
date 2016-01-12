@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +25,6 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
@@ -189,7 +189,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
                     }
 
                 } else {
-                    SnackBar.show(getActivity(), R.string.error_generic);
+                    Snackbar.make(mMultiStateView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 }
             }
@@ -198,7 +198,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
             public void onFailure(Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to favorite item", t);
-                SnackBar.show(getActivity(), R.string.error_generic);
+                Snackbar.make(mMultiStateView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
         });

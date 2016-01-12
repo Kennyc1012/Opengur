@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
@@ -38,9 +39,6 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
-import com.kenny.snackbar.SnackBarItem;
-import com.kenny.snackbar.SnackBarListener;
 import com.kennyc.view.MultiStateView;
 
 import java.io.File;
@@ -162,7 +160,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                 if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivityForResult(intent, RequestCodes.SELECT_PHOTO);
                 } else {
-                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                    // TODO?
                 }
                 return true;
 
@@ -289,7 +287,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                SnackBar.show(getActivity(), R.string.permission_denied);
+                                Snackbar.make(mMultiView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                             }
                         }).setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
                     @Override
@@ -299,7 +297,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                 }).setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
-                        SnackBar.show(getActivity(), R.string.permission_denied);
+                        Snackbar.make(mMultiView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                     }
                 }).show();
                 break;
@@ -323,7 +321,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
             if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
                 startActivityForResult(intent, RequestCodes.TAKE_PHOTO);
             } else {
-                SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                Snackbar.make(mMultiView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
             }
         }
     }
@@ -387,7 +385,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                 if (PermissionUtils.verifyPermissions(grantResults)) {
                     startCamera();
                 } else {
-                    SnackBar.show(getActivity(), R.string.permission_denied);
+                    Snackbar.make(mMultiView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                 }
                 break;
 
@@ -395,7 +393,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                 if (PermissionUtils.verifyPermissions(grantResults)) {
                     if (mPhotoUris != null) new DecodeImagesTask(this).execute(mPhotoUris);
                 } else {
-                    SnackBar.show(getActivity(), R.string.permission_denied);
+                    Snackbar.make(mMultiView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                 }
         }
     }
@@ -406,7 +404,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
             case RequestCodes.TAKE_PHOTO:
                 if (resultCode == Activity.RESULT_OK) {
                     if (!FileUtil.isFileValid(mTempFile)) {
-                        SnackBar.show(getActivity(), R.string.upload_camera_error);
+                        Snackbar.make(mMultiView, R.string.upload_camera_error, Snackbar.LENGTH_LONG).show();
                         return;
                     }
 
@@ -449,14 +447,14 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                         new DecodeImagesTask(this).execute(uris);
                     } else {
-                        SnackBar.show(getActivity(), R.string.error_generic);
+                        Snackbar.make(mMultiView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                     }
                 }
                 break;
 
             case RequestCodes.UPLOAD_EDIT:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    Upload upload;
+                    final Upload upload;
 
                     if (data.hasExtra(UploadEditActivity.KEY_UPDATED_UPLOAD)) {
                         upload = data.getParcelableExtra(UploadEditActivity.KEY_UPDATED_UPLOAD);
@@ -468,36 +466,22 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                         upload = data.getParcelableExtra(UploadEditActivity.KEY_UPDATED_DELETED);
 
                         if (upload != null) {
-                            int itemIndex = mAdapter.indexOf(upload);
+                            final int itemIndex = mAdapter.indexOf(upload);
 
                             if (itemIndex > -1) {
                                 mAdapter.removeItem(itemIndex);
                                 if (mListener != null) mListener.onPhotoRemoved(mAdapter.getItemCount());
                                 if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
 
-                                new SnackBarItem.Builder(getActivity())
-                                        .setMessageResource(R.string.upload_photo_removed)
-                                        .setActionMessageResource(R.string.undo)
-                                        .setObject(new Object[]{itemIndex, upload})
-                                        .setSnackBarListener(new SnackBarListener() {
+                                Snackbar.make(mMultiView, R.string.upload_photo_removed, Snackbar.LENGTH_LONG)
+                                        .setAction(R.string.undo, new View.OnClickListener() {
                                             @Override
-                                            public void onSnackBarStarted(Object o) {
-                                                // NOOP
+                                            public void onClick(View v) {
+                                                mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                                                mAdapter.addItem(upload, itemIndex);
+                                                if (mListener != null) mListener.onPhotoAdded();
                                             }
-
-                                            @Override
-                                            public void onSnackBarFinished(Object object, boolean actionPressed) {
-                                                if (actionPressed && object instanceof Object[]) {
-                                                    Object[] objects = (Object[]) object;
-                                                    int position = (int) objects[0];
-                                                    Upload upload = (Upload) objects[1];
-                                                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-                                                    mAdapter.addItem(upload, position);
-                                                    if (mListener != null) mListener.onPhotoAdded();
-                                                }
-                                            }
-                                        })
-                                        .show();
+                                        }).show();
                             }
 
                         }

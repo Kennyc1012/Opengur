@@ -23,7 +23,6 @@ import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -245,7 +244,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     @Override
     public void onVideoDownloadFailed(Exception ex, String url) {
         if (isAdded() && isResumed() && getActivity() != null) {
-            SnackBar.show(getActivity(), R.string.loading_image_error);
+            Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
             dismissAllowingStateLoss();
         }
     }
@@ -279,7 +278,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
                         displayImage(mImageUrl, photo.isAnimated());
                     }
                 } else {
-                    SnackBar.show(getActivity(), R.string.error_generic);
+                    Toast.makeText(getActivity(), R.string.error_generic, Toast.LENGTH_SHORT).show();
                     dismissAllowingStateLoss();
                 }
             }
@@ -287,7 +286,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             @Override
             public void onFailure(Throwable t) {
                 if (!isAdded()) return;
-                SnackBar.show(getActivity(), R.string.error_generic);
+                Toast.makeText(getActivity(), R.string.error_generic, Toast.LENGTH_SHORT).show();
                 dismissAllowingStateLoss();
             }
         });

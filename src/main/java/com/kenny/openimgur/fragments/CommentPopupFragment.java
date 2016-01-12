@@ -12,10 +12,10 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.OpengurApp;
-import com.kenny.snackbar.SnackBar;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -92,7 +92,7 @@ public class CommentPopupFragment extends DialogFragment implements DialogInterf
 
         if (args == null || !args.containsKey(KEY_GALLERY_ID)) {
             dismiss();
-            SnackBar.show(getActivity(), R.string.error_generic);
+            Toast.makeText(getActivity(), R.string.error_generic, Toast.LENGTH_SHORT).show();
             return;
         }
 
