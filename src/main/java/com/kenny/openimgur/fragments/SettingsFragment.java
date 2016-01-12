@@ -25,6 +25,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.VideoCache;
+import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -172,12 +173,12 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
                 return true;
 
             case "redditHistory":
-                mApp.getSql().deleteSubReddits();
+                mApp.getSql().deleteFromTable(DBContracts.SubRedditContract.TABLE_NAME);
                 SnackBar.show(getActivity(), R.string.pref_reddit_deleted);
                 return true;
 
             case "gallerySearchHistory":
-                mApp.getSql().deletePreviousGallerySearch();
+                mApp.getSql().deleteFromTable(DBContracts.GallerySearchContract.TABLE_NAME);
                 SnackBar.show(getActivity(), R.string.pref_search_deleted);
                 return true;
 

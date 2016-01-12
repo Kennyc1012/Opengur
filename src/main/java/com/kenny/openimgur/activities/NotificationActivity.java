@@ -22,6 +22,7 @@ import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurNotification;
+import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kenny.snackbar.SnackBar;
@@ -109,7 +110,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     mAdapter.clear();
-                                    app.getSql().deleteNotifications();
+                                    app.getSql().deleteFromTable(DBContracts.NotificationContract.TABLE_NAME);
                                     mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                                 }
                             }).show();

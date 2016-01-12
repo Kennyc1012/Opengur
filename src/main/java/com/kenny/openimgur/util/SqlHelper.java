@@ -429,20 +429,6 @@ public class SqlHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Deletes all searched subreddits
-     */
-    public void deleteSubReddits() {
-        getWritableDatabase().delete(SubRedditContract.TABLE_NAME, null, null);
-    }
-
-    /**
-     * Delets all memes from the database
-     */
-    public void deleteMemes() {
-        getWritableDatabase().delete(MemeContract.TABLE_NAME, null, null);
-    }
-
-    /**
      * Adds a list of Memes to the database
      *
      * @param memes
@@ -516,13 +502,6 @@ public class SqlHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues(1);
         values.put(GallerySearchContract.COLUMN_NAME, name);
         db.insertWithOnConflict(GallerySearchContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-    }
-
-    /**
-     * Deletes all records from the previous gallery search table
-     */
-    public void deletePreviousGallerySearch() {
-        getWritableDatabase().delete(GallerySearchContract.TABLE_NAME, null, null);
     }
 
     /**
@@ -754,10 +733,13 @@ public class SqlHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Deletes all notifications
+     * Deletes all records from a table
+     *
+     * @param tableName The table to delete from
+     * @return the number of records deleted
      */
-    public void deleteNotifications() {
-        getWritableDatabase().delete(NotificationContract.TABLE_NAME, null, null);
+    public int deleteFromTable(String tableName) {
+        return getWritableDatabase().delete(tableName, null, null);
     }
 
     @Override

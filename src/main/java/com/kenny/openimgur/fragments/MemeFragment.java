@@ -19,6 +19,7 @@ import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
@@ -127,7 +128,7 @@ public class MemeFragment extends BaseGridFragment {
         mHasMore = false;
 
         if (!galleryResponse.data.isEmpty()) {
-            app.getSql().deleteMemes();
+            app.getSql().deleteFromTable(DBContracts.MemeContract.TABLE_NAME);
             app.getSql().addMemes(galleryResponse.data);
         }
     }
