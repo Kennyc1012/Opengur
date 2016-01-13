@@ -6,6 +6,7 @@ package com.kenny.openimgur.classes;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -136,6 +137,25 @@ public class ImgurComment extends ImgurBaseObject {
 
     public String getAlbumCoverId() {
         return mAlbumCoverId;
+    }
+
+    @Override
+    public void setVote(String vote) {
+        String currentVote = getVote();
+
+        if (!TextUtils.isEmpty(getVote())) {
+            if (vote.equals(VOTE_UP) && currentVote.equals(VOTE_DOWN)) {
+                mPoints += 2;
+            } else if (vote.equals(VOTE_DOWN) && currentVote.equals(VOTE_UP)) {
+                mPoints -= 2;
+            }
+        } else if (vote.equals(VOTE_DOWN)) {
+            mPoints--;
+        } else {
+            mPoints++;
+        }
+
+        super.setVote(vote);
     }
 
     @Override

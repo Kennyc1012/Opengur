@@ -617,7 +617,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             outState.putBoolean(KEY_PANEL_EXPANDED, mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
-    private void onListItemClick(int position) {
+    private void onListItemClick(final int position) {
         if (mCommentAdapter == null) return;
 
         if (position != RecyclerView.NO_POSITION) {
@@ -652,7 +652,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                                         if (user != null) {
                                             String vote = id == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
                                             comment.setVote(vote);
-                                            mCommentAdapter.notifyDataSetChanged();
+                                            mCommentAdapter.notifyItemChanged(position);
                                             voteOnComment(comment.getId(), vote);
                                         } else {
                                             Snackbar.make(mViewPager, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
