@@ -299,18 +299,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     public void setVote(String vote) {
         // Trigger the adapter to redraw displaying the vote
         if (mImgurObject != null) mImgurObject.setVote(vote);
-
-        if (mPhotoAdapter != null) {
-            LinearLayoutManager manager = ((LinearLayoutManager) mListView.getLayoutManager());
-            int firstVisible = manager.findFirstVisibleItemPosition();
-
-            if (firstVisible == 0) {
-                // The header is visible, update it without triggering a list redraw
-                View view = mListView.getChildAt(0);
-                if (view != null) mPhotoAdapter.updateHeader(mListView.getChildViewHolder(view));
-            }
-            // If the header is not visible, it will get updated when it becomes visible
-        }
+        if (mPhotoAdapter != null) mPhotoAdapter.notifyItemChanged(0);
     }
 
     @Override
@@ -636,7 +625,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
                     if (tagResponse.data != null && !tagResponse.data.tags.isEmpty()) {
                         mImgurObject.setTags(tagResponse.data.tags);
-                        if (mPhotoAdapter != null) mPhotoAdapter.setTags(tagResponse.data.tags);
+                        if (mPhotoAdapter != null) mPhotoAdapter.notifyItemChanged(0);
                     } else {
                         LogUtil.v(TAG, "Did not receive any tags");
                     }

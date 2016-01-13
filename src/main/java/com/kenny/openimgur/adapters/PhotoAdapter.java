@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,12 +18,10 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.ImgurTag;
 import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
-import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
@@ -56,7 +53,6 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
      */
     @Override
     public void onDestroy() {
-        super.onDestroy();
         clear();
         mListener = null;
     }
@@ -183,24 +179,6 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
         }
     }
 
-    public void updateHeader(RecyclerView.ViewHolder holder) {
-        if (holder instanceof PhotoTitleHolder) {
-            PhotoTitleHolder titleHolder = (PhotoTitleHolder) holder;
-            int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
-            int votePoints = mImgurObject.getUpVotes() - mImgurObject.getDownVotes();
-            titleHolder.points.setText(mResources.getQuantityString(R.plurals.points, votePoints, votePoints));
-            titleHolder.pointsBar.setPoints(mImgurObject.getUpVotes(), totalPoints);
-
-            if (mImgurObject.isFavorited() || ImgurBaseObject.VOTE_UP.equals(mImgurObject.getVote())) {
-                titleHolder.points.setTextColor(getColor(R.color.notoriety_positive));
-            } else if (ImgurBaseObject.VOTE_DOWN.equals(mImgurObject.getVote())) {
-                titleHolder.points.setTextColor(getColor(R.color.notoriety_negative));
-            }
-        } else {
-            LogUtil.v(TAG, "ViewHolder not instance of PhotoTitleHolder");
-        }
-    }
-
     /**
      * Sets all the click listeners for the appropriate views
      *
@@ -288,7 +266,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
      * Attempts to pause the currently playing gif or video
      *
      * @param view
-     * @return If pausing was successfuly
+     * @return If pausing was successfully
      */
     public boolean attemptToPause(View view) {
         if (!(view.getTag() instanceof PhotoViewHolder)) return false;
@@ -309,11 +287,6 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
         }
 
         return false;
-    }
-
-    public void setTags(List<ImgurTag> tags) {
-        mImgurObject.setTags(tags);
-        notifyDataSetChanged();
     }
 
     @Override
