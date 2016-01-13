@@ -19,7 +19,6 @@ import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurConvo;
-import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 
@@ -108,7 +107,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 }
 
                 if (content != null) {
-                    SqlHelper sql = OpengurApp.getInstance(context).getSql();
+                    SqlHelper sql = SqlHelper.getInstance(context);
                     String ids = sql.getNotificationIds(content);
                     sql.markNotificationRead(content);
 
@@ -136,7 +135,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 break;
 
             case ACTION_NOTIFICATIONS_READ:
-                SqlHelper sql = OpengurApp.getInstance(context).getSql();
+                SqlHelper sql = SqlHelper.getInstance(context);
                 String ids = sql.getNotificationIds();
                 sql.markNotificationsRead();
 

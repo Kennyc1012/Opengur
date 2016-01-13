@@ -1,14 +1,14 @@
 package com.kenny.openimgur.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -23,14 +23,14 @@ import butterknife.Bind;
  * Created by Kenny-PC on 6/21/2015.
  */
 public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
-    private PhotoUploadListener mListener;
+    private View.OnClickListener mListener;
 
-    public UploadPhotoAdapter(Context context, List<Upload> uploads, PhotoUploadListener listener) {
+    public UploadPhotoAdapter(Context context, List<Upload> uploads, View.OnClickListener listener) {
         super(context, uploads, true);
         mListener = listener;
     }
 
-    public UploadPhotoAdapter(Context context, Upload upload, PhotoUploadListener listener) {
+    public UploadPhotoAdapter(Context context, Upload upload, View.OnClickListener listener) {
         this(context, new ArrayList<Upload>(1), listener);
         addItem(upload);
     }
@@ -41,9 +41,43 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
         mListener = null;
     }
 
-    public void onItemMove(int from, int to) {
-        Collections.swap(getAllItems(), from, to);
-        notifyItemMoved(from, to);
+    public boolean onItemMove(int from, int to) {
+        if (from != RecyclerView.NO_POSITION && to != RecyclerView.NO_POSITION) {
+            int movement = Math.abs(from - to);
+            if (movement == 1) {
+                // Item moved only 1 space over, simple swap
+                Collections.swap(getAllItems(), from, to);
+                notifyItemMoved(from, to);
+                return true;
+            } else {
+                // Shift the items so they get rendered correctly.
+                List<Upload> backingList = getAllItems();
+                Upload item = backingList.remove(from);
+                backingList.add(to, item);
+                notifyItemMoved(from, to);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void updateItem(@NonNull Upload upload) {
+        int position = -1;
+        int size = getItemCount();
+
+        for (int i = 0; i < size; i++) {
+            if (getItem(i).equals(upload)) {
+                position = i;
+                break;
+            }
+        }
+
+        if (position > -1) {
+            removeItem(position);
+            addItem(upload, position);
+            notifyItemChanged(position);
+        }
     }
 
     @Override
@@ -54,12 +88,7 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final UploadPhotoHolder holder = new UploadPhotoHolder(mInflater.inflate(R.layout.upload_photo_item, parent, false));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mListener != null) mListener.onItemClicked(holder.getAdapterPosition());
-            }
-        });
+        if (mListener != null) holder.itemView.setOnClickListener(mListener);
         return holder;
     }
 
@@ -68,16 +97,12 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
         UploadPhotoHolder uploadHolder = (UploadPhotoHolder) holder;
         Upload upload = getItem(position);
 
-        if (TextUtils.isEmpty(upload.getDescription())) {
-            uploadHolder.description.setText(R.string.upload_empty_desc);
+        if (TextUtils.isEmpty(upload.getTitle()) && TextUtils.isEmpty(upload.getDescription())) {
+            uploadHolder.contentContainer.setVisibility(View.GONE);
         } else {
-            uploadHolder.description.setText(upload.getDescription());
-        }
-
-        if (TextUtils.isEmpty(upload.getTitle())) {
-            uploadHolder.title.setText(R.string.upload_empty_title);
-        } else {
-            uploadHolder.title.setText(upload.getTitle());
+            uploadHolder.contentContainer.setVisibility(View.VISIBLE);
+            uploadHolder.title.setVisibility(TextUtils.isEmpty(upload.getTitle()) ? View.GONE : View.VISIBLE);
+            uploadHolder.desc.setVisibility(TextUtils.isEmpty(upload.getDescription()) ? View.GONE : View.VISIBLE);
         }
 
         String photoLocation = upload.isLink() ? upload.getLocation() : "file://" + upload.getLocation();
@@ -85,14 +110,17 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
     }
 
     static class UploadPhotoHolder extends BaseViewHolder {
-        @Bind(R.id.title)
-        TextView title;
-
-        @Bind(R.id.desc)
-        TextView description;
-
         @Bind(R.id.image)
         ImageView image;
+
+        @Bind(R.id.contentContainer)
+        View contentContainer;
+
+        @Bind(R.id.title)
+        View title;
+
+        @Bind(R.id.desc)
+        View desc;
 
         public UploadPhotoHolder(View view) {
             super(view);

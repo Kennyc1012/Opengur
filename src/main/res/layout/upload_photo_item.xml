@@ -1,45 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:orientation="vertical"
-    app:cardBackgroundColor="?cardBG"
-    app:contentPadding="8dp">
+    android:layout_height="@dimen/gallery_column_height"
+    android:foreground="@drawable/pressed_drawable"
+    tools:layout_width="200dp">
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="@dimen/upload_photo_size"
-        android:layout_height="@dimen/upload_photo_size"
-        tools:src="@drawable/ic_launcher" />
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/gallery_column_height"
+        android:scaleType="centerCrop"
+        android:transitionName="@string/transition_upload_photo" />
 
     <LinearLayout
+        android:id="@+id/contentContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="@dimen/upload_content_margin"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:padding="4dp"
+        android:background="#80000000">
 
         <TextView
             android:id="@+id/title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textSize="@dimen/abc_text_size_small_material"
-            tools:text="@string/upload_empty_title" />
+            android:gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:drawableRight="@drawable/ic_done_24dp"
+            android:textSize="12sp"
+            android:text="@string/title" />
 
         <TextView
             android:id="@+id/desc"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textSize="@dimen/abc_text_size_small_material"
-            tools:text="@string/upload_empty_desc" />
+            android:textColor="@android:color/white"
+            android:gravity="center_vertical"
+            android:drawableRight="@drawable/ic_done_24dp"
+            android:textSize="12sp"
+            android:text="@string/description" />
 
     </LinearLayout>
 
-</android.support.v7.widget.CardView>
+</FrameLayout>

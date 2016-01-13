@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,11 +20,12 @@ import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
 
 import org.apache.commons.collections15.list.SetUniqueList;
@@ -69,7 +71,7 @@ public class MemeFragment extends BaseGridFragment {
                 if (getAdapter() != null) getAdapter().clear();
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                 fetchGallery();
-                break;
+                return true;
 
             case R.id.importPhoto:
                 Intent intent = new Intent(Intent.ACTION_PICK);
@@ -78,9 +80,9 @@ public class MemeFragment extends BaseGridFragment {
                 if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivityForResult(intent, RequestCodes.SELECT_PHOTO);
                 } else {
-                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                    Snackbar.make(getSnackbarView(), R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                 }
-                break;
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -110,7 +112,7 @@ public class MemeFragment extends BaseGridFragment {
         super.onRestoreSavedInstance(savedInstanceState);
 
         if (getAdapter() == null || getAdapter().isEmpty()) {
-            List<ImgurBaseObject> memes = app.getSql().getMemes();
+            List<ImgurBaseObject> memes = SqlHelper.getInstance(getActivity()).getMemes();
 
             if (!memes.isEmpty()) {
                 LogUtil.v(TAG, "Memes found in database");
@@ -127,8 +129,9 @@ public class MemeFragment extends BaseGridFragment {
         mHasMore = false;
 
         if (!galleryResponse.data.isEmpty()) {
-            app.getSql().deleteMemes();
-            app.getSql().addMemes(galleryResponse.data);
+            SqlHelper sql = SqlHelper.getInstance(getActivity());
+            sql.deleteFromTable(DBContracts.MemeContract.TABLE_NAME);
+            sql.addMemes(galleryResponse.data);
         }
     }
 
@@ -145,7 +148,7 @@ public class MemeFragment extends BaseGridFragment {
             if (FileUtil.isFileValid(file)) {
                 startActivity(MemeActivity.createIntent(getActivity(), file));
             } else {
-                SnackBar.show(getActivity(), R.string.upload_decode_failure);
+                Snackbar.make(getSnackbarView(), R.string.upload_decode_failure, Snackbar.LENGTH_LONG).show();
             }
         }
 

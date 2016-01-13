@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,7 +53,6 @@ import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
 import com.kennyc.view.MultiStateView;
@@ -290,7 +290,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             LogUtil.v(TAG, "Received Gallery via ACTION_VIEW");
             mGalleryId = intent.getData().getPathSegments().get(1);
         } else if (!intent.hasExtra(KEY_OBJECTS) || !intent.hasExtra(KEY_POSITION)) {
-            SnackBar.show(ViewActivity.this, R.string.error_generic);
+            Snackbar.make(mViewPager, R.string.error_generic, Snackbar.LENGTH_LONG).show();
             finish();
         } else {
             mCurrentPosition = intent.getIntExtra(KEY_POSITION, 0);
@@ -464,7 +464,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                     voteOnGallery(obj.getId(), vote);
                 } else {
-                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                    Snackbar.make(mViewPager, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                 }
                 break;
 
@@ -473,7 +473,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), null);
                     showDialogFragment(fragment, "comment");
                 } else {
-                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                    Snackbar.make(mViewPager, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                 }
                 break;
 
@@ -561,7 +561,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     if (browserIntent.resolveActivity(getPackageManager()) != null) {
                         startActivity(browserIntent);
                     } else {
-                        SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
+                        Snackbar.make(mViewPager, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                     }
                     break;
             }
@@ -654,7 +654,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                                             mCommentAdapter.notifyDataSetChanged();
                                             voteOnComment(comment.getId(), vote);
                                         } else {
-                                            SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                                            Snackbar.make(mViewPager, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                                         }
                                         break;
 
@@ -667,7 +667,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                                             DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), comment.getId());
                                             showDialogFragment(fragment, "comment");
                                         } else {
-                                            SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                                            Snackbar.make(mViewPager, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                                         }
                                         break;
 
@@ -675,7 +675,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                                         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                                         ClipData clip = ClipData.newPlainText(getString(R.string.comment), comment.getComment());
                                         clipboard.setPrimaryClip(clip);
-                                        SnackBar.show(ViewActivity.this, R.string.comment_copied);
+                                        Snackbar.make(mViewPager, R.string.comment_copied, Snackbar.LENGTH_LONG).show();
                                         break;
                                 }
                             }
@@ -838,14 +838,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     set.setDuration(1500L).setInterpolator(new OvershootInterpolator());
                     set.start();
                 } else {
-                    SnackBar.show(ViewActivity.this, R.string.error_generic);
+                    Snackbar.make(mViewPager, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 LogUtil.e(TAG, "Unable to vote on gallery", t);
-                SnackBar.show(ViewActivity.this, R.string.error_generic);
+                Snackbar.make(mViewPager, R.string.error_generic, Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -880,10 +880,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onResponse(Response<CommentPostResponse> response) {
                 if (response != null && response.body() != null && response.body().data != null && !TextUtils.isEmpty(response.body().data.id)) {
-                    SnackBar.show(ViewActivity.this, R.string.comment_post_successful);
+                    Snackbar.make(mViewPager, R.string.comment_post_successful, Snackbar.LENGTH_LONG).show();
                     fetchComments();
                 } else {
-                    SnackBar.show(ViewActivity.this, R.string.comment_post_unsuccessful);
+                    Snackbar.make(mViewPager, R.string.comment_post_unsuccessful, Snackbar.LENGTH_LONG).show();
                     mMultiView.setViewState(viewState);
                 }
             }
@@ -891,7 +891,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onFailure(Throwable t) {
                 LogUtil.e(TAG, "Unable to post comment", t);
-                SnackBar.show(ViewActivity.this, R.string.comment_post_unsuccessful);
+                Snackbar.make(mViewPager, R.string.comment_post_unsuccessful, Snackbar.LENGTH_LONG).show();
                 mMultiView.setViewState(viewState);
             }
         });

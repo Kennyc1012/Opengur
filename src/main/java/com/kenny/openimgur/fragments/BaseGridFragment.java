@@ -357,4 +357,14 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     protected boolean showPoints() {
         return true;
     }
+
+    /**
+     * Returns the view to attach a {@link android.support.design.widget.Snackbar} to
+     *
+     * @return
+     */
+    @NonNull
+    protected View getSnackbarView() {
+        return mListener != null ? mListener.getSnackbarView() : mMultiStateView;
+    }
 }

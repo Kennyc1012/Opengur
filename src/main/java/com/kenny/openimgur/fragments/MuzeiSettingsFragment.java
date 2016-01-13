@@ -12,6 +12,7 @@ import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 
 import java.util.List;
 
@@ -38,9 +39,9 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
         mInputPreference.setOnPreferenceChangeListener(this);
         String savedSubReddit = mApp.getPreferences().getString(MuzeiSettingsActivity.KEY_INPUT, "aww");
         mInputPreference.setSummary(savedSubReddit);
-        List<ImgurTopic> topics = mApp.getSql().getTopics();
+        List<ImgurTopic> topics = SqlHelper.getInstance(getActivity()).getTopics();
 
-        if (topics != null && !topics.isEmpty()) {
+        if (!topics.isEmpty()) {
             String[] topicNames = new String[topics.size()];
             String[] topicIds = new String[topics.size()];
 
@@ -60,7 +61,7 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
                     if (!isAdded() || response == null || response.body() == null) return;
 
                     TopicResponse topicResponse = response.body();
-                    mApp.getSql().addTopics(topicResponse.data);
+                    SqlHelper.getInstance(getActivity()).addTopics(topicResponse.data);
 
                     if (!topicResponse.data.isEmpty()) {
                         String[] topicNames = new String[topicResponse.data.size()];

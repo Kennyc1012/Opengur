@@ -2,5 +2,6 @@
 <resources>
 
     <integer name="gallery_num_columns">4</integer>
+    <integer name="upload_num_columns">3</integer>
 
 </resources>

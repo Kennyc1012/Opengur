@@ -22,7 +22,6 @@ import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.snackbar.SnackBar;
 
 import butterknife.ButterKnife;
 
@@ -37,8 +36,6 @@ abstract public class BaseActivity extends AppCompatActivity {
     public ImgurUser user;
 
     public ImgurTheme theme;
-
-    private boolean mIsActionBarShowing = true;
 
     private boolean mIsLandscape = false;
 
@@ -92,7 +89,6 @@ abstract public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         LogUtil.v(TAG, "onPause");
-        SnackBar.cancelSnackBars(this);
         super.onPause();
     }
 

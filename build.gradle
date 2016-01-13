@@ -15,8 +15,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 project.ext {
-    version_name = '4.2.2'
-    version_code = 62
+    version_name = '4.3.0'
+    version_code = 63
     support_version = '23.1.1'
 }
 
@@ -48,7 +48,7 @@ android {
         }
 
         beta {
-            versionName project.ext.version_name + "-beta"
+            versionName project.ext.version_name + "-beta1"
         }
     }
 
@@ -87,7 +87,6 @@ dependencies {
     compile "com.android.support:design:${project.ext.support_version}"
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.11'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'com.kennyc:snackbar:2.5'
     compile 'com.kennyc:multistateview:1.1'
     compile 'com.github.Kennyc1012:BottomSheet:2.0.4'
     compile 'com.kennyc:text-drawable:1.0'
@@ -98,6 +97,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta3'
     compile 'com.squareup.okhttp3:okhttp:3.0.0-RC1'
     compile 'com.google.code.gson:gson:2.5'
+    compile 'com.pacioianu.david:ink-page-indicator:1.0.1'
     compile(name: 'sliding_panel', ext: 'aar')
     compile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;

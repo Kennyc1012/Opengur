@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,9 +51,6 @@ import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
-import com.kenny.snackbar.SnackBarItem;
-import com.kenny.snackbar.SnackBarListener;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -150,7 +148,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (mImgurObject instanceof ImgurAlbum) {
                     ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                     clipboard.setPrimaryClip(ClipData.newPlainText("link", mImgurObject.getLink()));
-                    SnackBar.show(getActivity(), R.string.link_copied);
+                    Snackbar.make(mMultiView, R.string.link_copied, Snackbar.LENGTH_LONG).show();
                 }
                 break;
 
@@ -158,7 +156,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (user != null) {
                     favoriteItem();
                 } else {
-                    SnackBar.show(getActivity(), R.string.user_not_logged_in);
+                    Snackbar.make(mMultiView, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
 
@@ -176,7 +174,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivity(browserIntent);
                 } else {
-                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                    Snackbar.make(mMultiView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
 
@@ -186,7 +184,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (shareDialog != null) {
                     shareDialog.show();
                 } else {
-                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                    Snackbar.make(mMultiView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
 
@@ -202,7 +200,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                                 }
                             }).show();
                 } else {
-                    SnackBar.show(getActivity(), R.string.user_not_logged_in);
+                    Snackbar.make(mMultiView, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                 }
                 break;
 
@@ -389,12 +387,12 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                                     shareIntent.setType("text/plain");
                                     shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-                                    BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, isTablet());
+                                    BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, true);
 
                                     if (shareDialog != null) {
                                         shareDialog.show();
                                     } else {
-                                        SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                                        Snackbar.make(mMultiView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                                     }
                                     break;
                             }
@@ -431,7 +429,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
             if (FileUtil.isFileValid(file)) {
                 if (!ImageUtil.loadAndDisplayGif(image, photo.getLink(), app.getImageLoader())) {
-                    SnackBar.show(getActivity(), R.string.loading_image_error);
+                    Snackbar.make(mMultiView, R.string.loading_image_error, Snackbar.LENGTH_LONG).show();
                     prog.setVisibility(View.GONE);
                     play.setVisibility(View.VISIBLE);
                 } else {
@@ -447,7 +445,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     @Override
                     public void onLoadingFailed(String s, View view, FailReason failReason) {
                         if (image != null && getActivity() != null) {
-                            SnackBar.show(getActivity(), R.string.loading_image_error);
+                            Snackbar.make(mMultiView, R.string.loading_image_error, Snackbar.LENGTH_LONG).show();
                             prog.setVisibility(View.GONE);
                             play.setVisibility(View.VISIBLE);
                         }
@@ -457,7 +455,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     public void onLoadingComplete(String s, View view, Bitmap bitmap) {
                         if (image != null && getActivity() != null) {
                             if (!ImageUtil.loadAndDisplayGif(image, s, app.getImageLoader())) {
-                                SnackBar.show(getActivity(), R.string.loading_image_error);
+                                Snackbar.make(mMultiView, R.string.loading_image_error, Snackbar.LENGTH_LONG).show();
                                 prog.setVisibility(View.GONE);
                                 play.setVisibility(View.VISIBLE);
                             } else {
@@ -469,7 +467,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     @Override
                     public void onLoadingCancelled(String s, View view) {
                         if (image != null && getActivity() != null) {
-                            SnackBar.show(getActivity(), R.string.loading_image_error);
+                            Snackbar.make(mMultiView, R.string.loading_image_error, Snackbar.LENGTH_LONG).show();
                             prog.setVisibility(View.GONE);
                             play.setVisibility(View.VISIBLE);
                         }
@@ -499,7 +497,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                         LogUtil.e(TAG, "Unable to download video", ex);
 
                         if (image != null && getActivity() != null) {
-                            SnackBar.show(getActivity(), R.string.loading_image_error);
+                            Snackbar.make(mMultiView, R.string.loading_image_error, Snackbar.LENGTH_LONG).show();
                             prog.setVisibility(View.GONE);
                             play.setVisibility(View.VISIBLE);
                         }
@@ -561,23 +559,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 return true;
 
             case PermissionUtils.PERMISSION_DENIED:
-                new SnackBarItem.Builder(getActivity())
-                        .setMessageResource(R.string.permission_rationale_download)
-                        .setActionMessageResource(R.string.okay)
-                        .setAutoDismiss(false)
-                        .setSnackBarListener(new SnackBarListener() {
+                Snackbar.make(mMultiView, R.string.permission_rationale_download, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.okay, new View.OnClickListener() {
                             @Override
-                            public void onSnackBarStarted(Object o) {
-                                // NOOP
-                            }
-
-                            @Override
-                            public void onSnackBarFinished(Object o, boolean actionClicked) {
-                                if (actionClicked) {
-                                    FragmentCompat.requestPermissions(ImgurViewFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
-                                } else {
-                                    SnackBar.show(getActivity(), R.string.permission_denied);
-                                }
+                            public void onClick(View v) {
+                                FragmentCompat.requestPermissions(ImgurViewFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                             }
                         }).show();
                 break;
@@ -602,7 +588,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
                 getActivity().startService(DownloaderService.createIntent(getActivity(), urls));
             } else {
-                SnackBar.show(getActivity(), R.string.error_generic);
+                Snackbar.make(mMultiView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
             }
         } else {
             LogUtil.w(TAG, "Item is not an album");
@@ -706,7 +692,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     mImgurObject.setIsFavorite(!mImgurObject.isFavorited());
                     getActivity().invalidateOptionsMenu();
                 } else {
-                    SnackBar.show(getActivity(), R.string.error_generic);
+                    Snackbar.make(mMultiView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                 }
             }
 
@@ -714,7 +700,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             public void onFailure(Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to favorite item", t);
-                SnackBar.show(getActivity(), R.string.error_generic);
+                Snackbar.make(mMultiView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -726,9 +712,9 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data) {
-                    SnackBar.show(getActivity(), R.string.report_post_success);
+                    Snackbar.make(mMultiView, R.string.report_post_success, Snackbar.LENGTH_LONG).show();
                 } else {
-                    SnackBar.show(getActivity(), R.string.report_post_failure);
+                    Snackbar.make(mMultiView, R.string.report_post_failure, Snackbar.LENGTH_LONG).show();
                 }
             }
 
@@ -736,7 +722,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             public void onFailure(Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Error reporting post", t);
-                SnackBar.show(getActivity(), R.string.report_post_failure);
+                Snackbar.make(mMultiView, R.string.report_post_failure, Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -755,10 +741,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                         String link = getLink((ImgurPhoto) mImgurObject);
                         getActivity().startService(DownloaderService.createIntent(getActivity(), link));
                     } else {
-                        SnackBar.show(getActivity(), R.string.permission_granted);
+                        Snackbar.make(mMultiView, R.string.permission_granted, Snackbar.LENGTH_LONG).show();
                     }
                 } else {
-                    SnackBar.show(getActivity(), R.string.permission_denied);
+                    Snackbar.make(mMultiView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                 }
                 break;
         }

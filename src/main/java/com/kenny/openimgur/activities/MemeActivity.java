@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.transition.Transition;
@@ -32,7 +33,6 @@ import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
 import com.kennyc.view.MultiStateView;
@@ -298,7 +298,7 @@ public class MemeActivity extends BaseActivity {
                     })
                     .show();
         } else {
-            SnackBar.show(this, R.string.meme_failed);
+            Snackbar.make(mMultiStateView, R.string.meme_failed, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -339,7 +339,7 @@ public class MemeActivity extends BaseActivity {
                     app.getImageLoader().clearMemoryCache();
                     new SaveMemeTask().execute(this);
                 } else {
-                    SnackBar.show(this, R.string.permission_denied);
+                    Snackbar.make(mMultiStateView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                 }
                 break;
         }

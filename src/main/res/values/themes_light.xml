@@ -8,11 +8,17 @@
     <!-- Needed for v21 Override -->
     <style name="Theme.Opengur.Light.Main.Light" />
 
+    <style name="Theme.Opengur.Light.DarkActionBar.Upload" />
+
     <style name="Theme.Opengur.Light.DarkActionBar" parent="Theme.AppCompat.Light.DarkActionBar" />
 
     <style name="Theme.Opengur.Light.View.Light" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="Theme.Opengur.Light.DarkActionBar.Upload.Edit">
+        <item name="windowActionBarOverlay">true</item>
     </style>
 
     <style name="Theme_Opengur_Light">
@@ -26,7 +32,6 @@
         <item name="searchViewStyle">@style/SearchViewStyle</item>
         <item name="toolBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="dividerColor">@color/bg_dark</item>
-        <item name="snack_bar_text_action_color">?colorAccent</item>
     </style>
 
     <style name="Theme_Opengur_Light.Blue">

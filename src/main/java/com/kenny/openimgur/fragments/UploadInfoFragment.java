@@ -3,8 +3,8 @@ package com.kenny.openimgur.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,18 +15,21 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.activities.BaseActivity;
 import com.kenny.openimgur.adapters.TopicsAdapter;
+import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;
-import com.kenny.openimgur.classes.OpengurApp;
-import com.kenny.openimgur.classes.PhotoUploadListener;
-import com.kenny.snackbar.SnackBar;
+import com.kenny.openimgur.classes.UploadListener;
+import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Kenny-PC on 7/4/2015.
@@ -50,7 +53,7 @@ public class UploadInfoFragment extends BaseFragment {
     @Bind(R.id.topicHeader)
     View mTopicHeader;
 
-    private PhotoUploadListener mListener;
+    private UploadListener mListener;
 
     public static UploadInfoFragment newInstance() {
         return new UploadInfoFragment();
@@ -59,7 +62,7 @@ public class UploadInfoFragment extends BaseFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        if (activity instanceof PhotoUploadListener) mListener = (PhotoUploadListener) activity;
+        if (activity instanceof UploadListener) mListener = (UploadListener) activity;
     }
 
     @Override
@@ -84,29 +87,14 @@ public class UploadInfoFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        List<ImgurTopic> topics = OpengurApp.getInstance(getActivity()).getSql().getTopics();
-        mTopicSpinner.setAdapter(new TopicsAdapter(getActivity(), topics));
-
-        Toolbar tb = (Toolbar) view.findViewById(R.id.toolBar);
-        tb.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentManager().beginTransaction()
-                        .remove(UploadInfoFragment.this)
-                        .commit();
-
-                ((BaseActivity) getActivity()).getSupportActionBar().show();
-            }
-        });
-
-        tb.setTitle(R.string.upload_info);
+        checkForTopics();
     }
 
     @OnCheckedChanged(R.id.gallerySwitch)
     public void onCheckChanged(boolean checked) {
         if (checked && user == null) {
             mGallerySwitch.setChecked(false);
-            SnackBar.show(getActivity(), R.string.upload_gallery_no_user);
+            Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.upload_gallery_no_user, Snackbar.LENGTH_LONG).show();
             return;
         }
 
@@ -135,6 +123,36 @@ public class UploadInfoFragment extends BaseFragment {
             }
         } else {
             if (mListener != null) mListener.onUpload(false, title, desc, topic);
+        }
+    }
+
+    /**
+     * Checks if we have cached topics to display for the info fragment
+     */
+    private void checkForTopics() {
+        List<ImgurTopic> topics = SqlHelper.getInstance(getActivity()).getTopics();
+
+        if (topics.isEmpty()) {
+            LogUtil.v(TAG, "No topics found, fetching");
+            ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
+                @Override
+                public void onResponse(Response<TopicResponse> response) {
+                    if (response != null && response.body() != null) {
+                        SqlHelper sql = SqlHelper.getInstance(getActivity());
+                        sql.addTopics(response.body().data);
+                        List<ImgurTopic> topics = sql.getTopics();
+                        mTopicSpinner.setAdapter(new TopicsAdapter(getActivity(), topics));
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    LogUtil.e(TAG, "Failed to receive topics", t);
+                }
+            });
+        } else {
+            LogUtil.v(TAG, "Topics in database");
+            mTopicSpinner.setAdapter(new TopicsAdapter(getActivity(), topics));
         }
     }
 }

@@ -373,6 +373,8 @@ public class VideoView extends SurfaceView implements MediaPlayerControl {
                         if (mOnErrorListener.onError(mMediaPlayer, framework_err, impl_err)) {
                             return true;
                         }
+
+                        mOnErrorListener = null;
                     }
 
             /* Otherwise, pop up an error dialog so the user knows that
@@ -381,6 +383,7 @@ public class VideoView extends SurfaceView implements MediaPlayerControl {
              * longer have a window, don't bother showing the user an error.
              */
                     if (getWindowToken() != null) {
+                        mMediaPlayer.setOnErrorListener(null);
 
                         new AlertDialog.Builder(getContext())
                                 .setTitle(R.string.error_generic)

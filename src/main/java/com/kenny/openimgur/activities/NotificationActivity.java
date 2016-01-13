@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,9 +23,10 @@ import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurNotification;
+import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
 
 import java.util.List;
@@ -108,7 +110,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     mAdapter.clear();
-                                    app.getSql().deleteNotifications();
+                                    SqlHelper.getInstance(getApplicationContext()).deleteFromTable(DBContracts.NotificationContract.TABLE_NAME);
                                     mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
                                 }
                             }).show();
@@ -124,7 +126,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
         super.onResume();
 
         if (mAdapter == null || mAdapter.isEmpty()) {
-            List<ImgurNotification> notifications = app.getSql().getNotifications(false);
+            List<ImgurNotification> notifications = SqlHelper.getInstance(getApplicationContext()).getNotifications(false);
 
             if (!notifications.isEmpty()) {
                 LogUtil.v(TAG, "Notifications present in database");
@@ -210,7 +212,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete:
-                app.getSql().deleteNotifications(mAdapter.getSelectedNotifications());
+                SqlHelper.getInstance(getApplicationContext()).deleteNotifications(mAdapter.getSelectedNotifications());
                 mAdapter.deleteNotifications();
                 mode.finish();
                 if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
@@ -238,8 +240,9 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                 NotificationResponse notificationResponse = response.body();
 
                 if (notificationResponse != null && notificationResponse.hasNotifications()) {
-                    app.getSql().insertNotifications(notificationResponse);
-                    List<ImgurNotification> notifications = app.getSql().getNotifications(false);
+                    SqlHelper sql = SqlHelper.getInstance(getApplicationContext());
+                    sql.insertNotifications(notificationResponse);
+                    List<ImgurNotification> notifications = sql.getNotifications(false);
                     // Mark any notifications immediately read
                     markNotificationsRead();
 
@@ -269,7 +272,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
                     ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 } else {
-                    SnackBar.show(NotificationActivity.this, ApiClient.getErrorCode(t));
+                    Snackbar.make(mMultiView, ApiClient.getErrorCode(t), Snackbar.LENGTH_LONG).show();
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 }
             }
@@ -288,11 +291,12 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
     }
 
     private void markNotificationsRead() {
-        String ids = app.getSql().getNotificationIds();
+        SqlHelper sql = SqlHelper.getInstance(getApplicationContext());
+        String ids = sql.getNotificationIds();
 
         // Mark all the notifications read when loaded
         if (!TextUtils.isEmpty(ids)) {
-            app.getSql().markNotificationsRead();
+            sql.markNotificationsRead();
             ApiClient.getService().markNotificationsRead(ids).enqueue(new Callback<BasicResponse>() {
                 @Override
                 public void onResponse(Response<BasicResponse> response) {

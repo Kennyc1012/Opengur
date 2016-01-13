@@ -15,6 +15,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.RingtonePreference;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
@@ -25,10 +26,11 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.VideoCache;
+import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.snackbar.SnackBar;
+import com.kenny.openimgur.util.SqlHelper;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -166,19 +168,19 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
                 if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivity(browserIntent);
                 } else {
-                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                 }
 
                 return true;
 
             case "redditHistory":
-                mApp.getSql().deleteSubReddits();
-                SnackBar.show(getActivity(), R.string.pref_reddit_deleted);
+                SqlHelper.getInstance(getActivity()).deleteFromTable(DBContracts.SubRedditContract.TABLE_NAME);
+                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.pref_reddit_deleted, Snackbar.LENGTH_LONG).show();
                 return true;
 
             case "gallerySearchHistory":
-                mApp.getSql().deletePreviousGallerySearch();
-                SnackBar.show(getActivity(), R.string.pref_search_deleted);
+                SqlHelper.getInstance(getActivity()).deleteFromTable(DBContracts.GallerySearchContract.TABLE_NAME);
+                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.pref_search_deleted, Snackbar.LENGTH_LONG).show();
                 return true;
 
             case "experimentalSettings":
@@ -187,7 +189,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
 
             case "mySubreddits":
                 mApp.getPreferences().edit().remove(RedditFragment.KEY_PINNED_SUBREDDITS).apply();
-                SnackBar.show(getActivity(), R.string.pref_reddit_deleted);
+                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.pref_reddit_deleted, Snackbar.LENGTH_LONG).show();
                 return true;
         }
 

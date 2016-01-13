@@ -110,7 +110,7 @@ public class UploadService extends IntentService {
             int totalUploads = uploads.size();
             LogUtil.v(TAG, "Starting upload of " + uploads.size() + " images");
             List<ImgurPhoto> uploadedPhotos = new ArrayList<>(totalUploads);
-            SqlHelper sql = app.getSql();
+            SqlHelper sql = SqlHelper.getInstance(getApplicationContext());
 
             for (int i = 0; i < totalUploads; i++) {
                 Upload u = uploads.get(i);
@@ -250,7 +250,7 @@ public class UploadService extends IntentService {
                 String link = "https://imgur.com/a/" + object.getId();
                 ImgurAlbum album = new ImgurAlbum(object.getId(), title, link, object.getDeleteHash());
                 album.setCoverId(coverId);
-                OpengurApp.getInstance(getApplicationContext()).getSql().insertUploadedAlbum(album);
+                SqlHelper.getInstance(getApplicationContext()).insertUploadedAlbum(album);
 
                 if (!submitToGallery) {
                     LogUtil.v(TAG, "Album creation successful");

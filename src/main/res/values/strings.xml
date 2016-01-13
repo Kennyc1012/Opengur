@@ -62,6 +62,10 @@
     <string name="hide_comment_bar">Hide bottom bar</string>
     <string name="download_album">Download Album</string>
     <string name="search_opengur">Search Opengur</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -240,8 +244,8 @@
     <string name="upload_invalid_link">The link you entered is not a valid image link.</string>
     <string name="upload_valid_link">The link you entered is valid!</string>
     <string name="upload_link_dialog_title">Photo Link</string>
-    <string name="upload_edit_title_hint">Enter title</string>
-    <string name="upload_edit_desc_hint">Enter description</string>
+    <string name="upload_edit_title_hint">Title (optional)</string>
+    <string name="upload_edit_desc_hint">Description (optional)</string>
     <string name="upload_notif_starting">Starting upload</string>
     <string name="upload_notif_starting_content">Your upload will begin shortly</string>
     <string name="upload_notif_in_progress">Upload in Progress</string>
@@ -359,5 +363,8 @@
     <string name="filter_scoring_year">Highest Scoring &#8226; Year</string>
     <string name="filter_scoring_all">Highest Scoring &#8226; All</string>
 
+    <!-- UI transition names, should not be translated -->
+    <string name="transition_upload_photo" translatable="false">uploadPhoto</string>
     <string name="gallery_item_transition" translatable="false">gallery_transition</string>
+
 </resources>
