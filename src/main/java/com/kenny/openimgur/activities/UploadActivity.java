@@ -1,8 +1,5 @@
 package com.kenny.openimgur.activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -192,8 +189,10 @@ public class UploadActivity extends BaseActivity implements UploadListener, View
 
         if (mIndicatorContainer.getVisibility() == View.GONE) {
             mIndicatorContainer.setVisibility(View.VISIBLE);
-            mBackButton.setVisibility(View.GONE);
-            mNextButton.setVisibility(View.VISIBLE);
+            mBackButton.setEnabled(false);
+            mBackButton.setAlpha(0);
+            mNextButton.setEnabled(true);
+            mNextButton.setAlpha(1);
         }
     }
 
@@ -244,50 +243,14 @@ public class UploadActivity extends BaseActivity implements UploadListener, View
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        // NOOP
+        mNextButton.setAlpha(position == PAGE_PHOTOS ? 1.0f - positionOffset : 0.0f);
+        mBackButton.setAlpha(position == PAGE_PHOTOS ? positionOffset : 1.0f);
     }
 
     @Override
     public void onPageSelected(int position) {
-        if (position == PAGE_PHOTOS) {
-            ObjectAnimator nextAnimator = ObjectAnimator.ofFloat(mNextButton, "alpha", 0.0f, 1.0f);
-            nextAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    mNextButton.setVisibility(View.VISIBLE);
-                }
-            });
-
-            ObjectAnimator backAnimator = ObjectAnimator.ofFloat(mBackButton, "alpha", 1.0f, 0.0f);
-            backAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mBackButton.setVisibility(View.GONE);
-                }
-            });
-
-            nextAnimator.start();
-            backAnimator.start();
-        } else {
-            ObjectAnimator nextAnimator = ObjectAnimator.ofFloat(mNextButton, "alpha", 1.0f, 0.0f);
-            nextAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mNextButton.setVisibility(View.GONE);
-                }
-            });
-
-            ObjectAnimator backAnimator = ObjectAnimator.ofFloat(mBackButton, "alpha", 0.0f, 1.0f);
-            backAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    mBackButton.setVisibility(View.VISIBLE);
-                }
-            });
-
-            nextAnimator.start();
-            backAnimator.start();
-        }
+        mBackButton.setEnabled(position == PAGE_INFO);
+        mNextButton.setEnabled(position == PAGE_PHOTOS);
     }
 
     @Override
