@@ -54,8 +54,8 @@ public interface ImgurService {
     @GET("/3/account/{user}")
     Call<UserResponse> getProfile(@Path("user") String username);
 
-    @GET("/3/account/{user}/favorites")
-    Call<GalleryResponse> getProfileFavorites(@Path("user") String username);
+    @GET("/3/account/{user}/favorites/{page}")
+    Call<GalleryResponse> getProfileFavorites(@Path("user") String username,@Path("page") int page);
 
     @GET("/3/account/{user}/gallery_favorites/{page}/newest")
     Call<GalleryResponse> getProfileGalleryFavorites(@Path("user") String username, @Path("page") int page);
