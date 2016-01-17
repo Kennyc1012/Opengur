@@ -320,7 +320,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             case R.id.nav_feedback:
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                         "mailto", "kennyc.developer@gmail.com", null));
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Open Imgur Feedback");
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Opengur Feedback");
                 BottomSheet shareDialog = BottomSheet.createShareBottomSheet(this, emailIntent, R.string.send_feedback, true);
 
                 if (shareDialog != null) {
