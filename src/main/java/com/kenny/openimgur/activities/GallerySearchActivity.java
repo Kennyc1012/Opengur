@@ -48,7 +48,7 @@ public class GallerySearchActivity extends BaseActivity implements FragmentListe
         } else {
             Intent intent = getIntent();
 
-            if (isApiLevel(Build.VERSION_CODES.M) && intent.getAction() == Intent.ACTION_PROCESS_TEXT) {
+            if (isApiLevel(Build.VERSION_CODES.M) && intent.getAction().equals(Intent.ACTION_PROCESS_TEXT)) {
                 query = intent.getStringExtra(Intent.EXTRA_PROCESS_TEXT);
                 if (TextUtils.isEmpty(query)) query = intent.getStringExtra(Intent.EXTRA_PROCESS_TEXT_READONLY);
             } else {
