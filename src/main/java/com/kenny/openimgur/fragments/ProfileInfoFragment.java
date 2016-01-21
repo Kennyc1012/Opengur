@@ -24,6 +24,8 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
 import com.kenny.openimgur.activities.ProfileActivity;
 import com.kenny.openimgur.activities.ViewActivity;
+import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.responses.TrophyResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurListener;
@@ -35,6 +37,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import butterknife.Bind;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 12/14/14.
@@ -221,5 +226,19 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onPhotoLongTapListener(View view) {
         // NOOP
+    }
+
+    private void fetchTrophies() {
+        ApiClient.getService().getProfileTrophies(mSelectedUser.getUsername()).enqueue(new Callback<TrophyResponse>() {
+            @Override
+            public void onResponse(Response<TrophyResponse> response, Retrofit retrofit) {
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
     }
 }
