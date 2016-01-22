@@ -50,6 +50,9 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
 
     private static final int RETY_ATTEMPTS = 5;
 
+    @Nullable
+    private String mSubreddit = null;
+
     public ImgurMuzeiService() {
         super(TAG);
     }
@@ -109,7 +112,8 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
             title = photo.getTitle();
 
             if (source.equals(MuzeiSettingsActivity.SOURCE_REDDIT)) {
-                byline = pref.getString(MuzeiSettingsActivity.KEY_INPUT, FALLBACK_SUBREDDIT);
+                byline = TextUtils.isEmpty(mSubreddit) ? pref.getString(MuzeiSettingsActivity.KEY_INPUT, FALLBACK_SUBREDDIT) : mSubreddit;
+                mSubreddit = null;
             } else {
                 byline = TextUtils.isEmpty(photo.getAccount()) ? "?????" : photo.getAccount();
             }
@@ -157,8 +161,15 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
 
         try {
             if (MuzeiSettingsActivity.SOURCE_REDDIT.equals(source)) {
-                String query = pref.getString(MuzeiSettingsActivity.KEY_INPUT, FALLBACK_SUBREDDIT).replaceAll("\\s", "");
-                call = ApiClient.getService().getSubReddit(query, ImgurFilters.RedditSort.TIME.getSort(), 0);
+                String query = pref.getString(MuzeiSettingsActivity.KEY_INPUT, FALLBACK_SUBREDDIT);
+                String[] split = query.split(",");
+
+                if (split.length > 1) {
+                    query = split[sRandom.nextInt(split.length)];
+                }
+
+                mSubreddit = query.replaceAll("\\s", "");
+                call = ApiClient.getService().getSubReddit(mSubreddit, ImgurFilters.RedditSort.TIME.getSort(), 0);
             } else if (MuzeiSettingsActivity.SOURCE_USER_SUB.equals(source)) {
                 call = ApiClient.getService().getGallery(ImgurFilters.GallerySection.USER.getSection(), ImgurFilters.GallerySort.VIRAL.getSort(), 0, false);
             } else if (MuzeiSettingsActivity.SOURCE_TOPICS.equals(source)) {

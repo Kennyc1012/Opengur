@@ -374,6 +374,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
         }
 
         mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+        if (mListener != null) mListener.onPhotoAdded();
     }
 
     @Override
@@ -395,6 +396,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                 } else {
                     Snackbar.make(mMultiView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                 }
+                break;
         }
     }
 
@@ -470,8 +472,10 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
 
                             if (itemIndex > -1) {
                                 mAdapter.removeItem(itemIndex);
-                                if (mListener != null) mListener.onPhotoRemoved(mAdapter.getItemCount());
-                                if (mAdapter.isEmpty()) mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
+                                if (mListener != null)
+                                    mListener.onPhotoRemoved(mAdapter.getItemCount());
+                                if (mAdapter.isEmpty())
+                                    mMultiView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
 
                                 Snackbar.make(mMultiView, R.string.upload_photo_removed, Snackbar.LENGTH_LONG)
                                         .setAction(R.string.undo, new View.OnClickListener() {

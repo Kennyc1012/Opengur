@@ -13,6 +13,7 @@ import com.kenny.openimgur.api.responses.OAuthResponse;
 import com.kenny.openimgur.api.responses.PhotoResponse;
 import com.kenny.openimgur.api.responses.TagResponse;
 import com.kenny.openimgur.api.responses.TopicResponse;
+import com.kenny.openimgur.api.responses.TrophyResponse;
 import com.kenny.openimgur.api.responses.UserResponse;
 
 import okhttp3.RequestBody;
@@ -54,8 +55,8 @@ public interface ImgurService {
     @GET("/3/account/{user}")
     Call<UserResponse> getProfile(@Path("user") String username);
 
-    @GET("/3/account/{user}/favorites")
-    Call<GalleryResponse> getProfileFavorites(@Path("user") String username);
+    @GET("/3/account/{user}/favorites/{page}")
+    Call<GalleryResponse> getProfileFavorites(@Path("user") String username, @Path("page") int page);
 
     @GET("/3/account/{user}/gallery_favorites/{page}/newest")
     Call<GalleryResponse> getProfileGalleryFavorites(@Path("user") String username, @Path("page") int page);
@@ -71,6 +72,9 @@ public interface ImgurService {
 
     @GET("/3/account/{user}/images/{page}")
     Call<GalleryResponse> getProfileUploads(@Path("user") String username, @Path("page") int page);
+
+    @GET("/3/account/{user}/gallery_profile")
+    Call<TrophyResponse> getProfileTrophies(@Path("user") String username);
 
     @GET("/3/conversations")
     Call<ConvoResponse> getConversations();

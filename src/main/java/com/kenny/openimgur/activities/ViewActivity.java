@@ -196,8 +196,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     public static Intent createIntent(Context context, String url, boolean isAlbumLink) {
-        return new Intent(context, ViewActivity.class).setAction(Intent.ACTION_VIEW)
-                .setData(Uri.parse(url)).putExtra(KEY_VIEW_FOR_ALBUM, isAlbumLink);
+        return createIntent(context, url).putExtra(KEY_VIEW_FOR_ALBUM, isAlbumLink);
+    }
+
+    public static Intent createIntent(Context context, String url) {
+        return new Intent(context, ViewActivity.class).setAction(Intent.ACTION_VIEW).setData(Uri.parse(url));
     }
 
     @Override
