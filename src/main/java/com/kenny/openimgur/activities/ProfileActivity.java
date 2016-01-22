@@ -287,6 +287,8 @@ public class ProfileActivity extends BaseActivity {
                         mSelectedUser = userResponse.data;
                     }
 
+                    mSelectedUser.setLastSeen(System.currentTimeMillis());
+
                     if (mSelectedUser.isSelf(app) && !TextUtils.isEmpty(mSelectedUser.getAccessToken())) {
                         SqlHelper.getInstance(getApplicationContext()).updateUserInfo(mSelectedUser);
                     } else {
