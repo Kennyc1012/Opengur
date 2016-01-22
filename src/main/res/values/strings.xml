@@ -30,7 +30,6 @@
     <string name="sort_by">Sort By</string>
     <string name="developer">Developer</string>
     <string name="version">Version</string>
-    <string name="one_moment">One Moment…</string>
     <string name="not_logged_in">Not Logged In</string>
     <string name="copy_link">Copy Link</string>
     <string name="open_source">Open Source</string>
@@ -65,6 +64,7 @@
     <string name="description">Description</string>
     <string name="back">Back</string>
     <string name="next">Next</string>
+    <string name="clearing_cache">Clearing cache&#8230;</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
