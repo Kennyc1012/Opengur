@@ -587,7 +587,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void fetchAlbumImages() {
         ApiClient.getService().getAlbumImages(mImgurObject.getId()).enqueue(new Callback<AlbumResponse>() {
             @Override
-            public void onResponse(Response<AlbumResponse> response) {
+            public void onResponse(Call<AlbumResponse> call, Response<AlbumResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && !response.body().data.isEmpty()) {
@@ -603,7 +603,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<AlbumResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch album images", t);
                 ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
@@ -617,7 +617,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         if (mDisplayTags && mImgurObject.isListed() && (mImgurObject.getTags() == null || mImgurObject.getTags().isEmpty())) {
             ApiClient.getService().getTags(mImgurObject.getId()).enqueue(new Callback<TagResponse>() {
                 @Override
-                public void onResponse(Response<TagResponse> response) {
+                public void onResponse(Call<TagResponse> call, Response<TagResponse> response) {
                     if (!isAdded() || response == null || response.body() == null) return;
 
                     TagResponse tagResponse = response.body();
@@ -631,7 +631,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(Call<TagResponse> call, Throwable t) {
                     LogUtil.e(TAG, "Received an error while fetching tags", t);
                 }
             });
@@ -641,7 +641,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void fetchGalleryDetails() {
         ApiClient.getService().getGalleryDetails(mImgurObject.getId()).enqueue(new Callback<BasicObjectResponse>() {
             @Override
-            public void onResponse(Response<BasicObjectResponse> response) {
+            public void onResponse(Call<BasicObjectResponse> call, Response<BasicObjectResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data != null) {
@@ -653,7 +653,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicObjectResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch gallery details", t);
                 ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
@@ -674,7 +674,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         call.enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response) {
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().success) {
@@ -686,7 +686,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to favorite item", t);
                 Snackbar.make(mMultiView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
@@ -697,7 +697,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void reportItem(int reason) {
         ApiClient.getService().reportPost(mImgurObject.getId(), reason).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response) {
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data) {
@@ -708,7 +708,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Error reporting post", t);
                 Snackbar.make(mMultiView, R.string.report_post_failure, Snackbar.LENGTH_LONG).show();

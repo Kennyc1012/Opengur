@@ -706,7 +706,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_LOADING);
                 ApiClient.getService().getComments(imgurBaseObject.getId(), mCommentSort.getApiValue()).enqueue(new Callback<CommentResponse>() {
                     @Override
-                    public void onResponse(Response<CommentResponse> response) {
+                    public void onResponse(Call<CommentResponse> call, Response<CommentResponse> response) {
                         if (mPagerAdapter == null || mPagerAdapter.getImgurItem(mCurrentPosition) == null) {
                             return;
                         }
@@ -754,7 +754,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Call<CommentResponse> call, Throwable t) {
                         ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     }
@@ -773,7 +773,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         if (isAlbum) {
             ApiClient.getService().getAlbumImages(id).enqueue(new Callback<AlbumResponse>() {
                 @Override
-                public void onResponse(Response<AlbumResponse> response) {
+                public void onResponse(Call<AlbumResponse> call, Response<AlbumResponse> response) {
                     if (response == null || response.body() == null) {
                         ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
@@ -793,7 +793,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(Call<AlbumResponse> call, Throwable t) {
                     LogUtil.e(TAG, "Unable to fetch album details", t);
                     ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
@@ -802,7 +802,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         } else {
             ApiClient.getService().getGalleryDetails(id).enqueue(new Callback<BasicObjectResponse>() {
                 @Override
-                public void onResponse(Response<BasicObjectResponse> response) {
+                public void onResponse(Call<BasicObjectResponse> call, Response<BasicObjectResponse> response) {
                     if (response != null && response.body() != null && response.body().data != null) {
                         final ArrayList<ImgurBaseObject> objects = new ArrayList<>(1);
                         objects.add(response.body().data);
@@ -817,7 +817,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(Call<BasicObjectResponse> call, Throwable t) {
                     LogUtil.e(TAG, "Unable to fetch album details", t);
                     ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
@@ -829,7 +829,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private void voteOnGallery(String id, final String vote) {
         ApiClient.getService().voteOnGallery(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response) {
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 if (response != null && response.body() != null && response.body().data) {
                     View animateView = ImgurBaseObject.VOTE_UP.equals(vote) ? mUpVoteBtn : mDownVoteBtn;
                     AnimatorSet set = new AnimatorSet();
@@ -846,7 +846,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
                 LogUtil.e(TAG, "Unable to vote on gallery", t);
                 Snackbar.make(mViewPager, R.string.error_generic, Snackbar.LENGTH_LONG).show();
             }
@@ -856,12 +856,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private void voteOnComment(String id, final String vote) {
         ApiClient.getService().voteOnComment(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response) {
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 if (response.body() != null) LogUtil.v(TAG, "Result of comment voting " + response.body().data);
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
                 LogUtil.e(TAG, "Unable to vote on comment", t);
             }
         });
@@ -881,7 +881,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
         call.enqueue(new Callback<CommentPostResponse>() {
             @Override
-            public void onResponse(Response<CommentPostResponse> response) {
+            public void onResponse(Call<CommentPostResponse> call, Response<CommentPostResponse> response) {
                 if (response != null && response.body() != null && response.body().data != null && !TextUtils.isEmpty(response.body().data.id)) {
                     Snackbar.make(mViewPager, R.string.comment_post_successful, Snackbar.LENGTH_LONG).show();
                     fetchComments();
@@ -892,7 +892,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<CommentPostResponse> call, Throwable t) {
                 LogUtil.e(TAG, "Unable to post comment", t);
                 Snackbar.make(mViewPager, R.string.comment_post_unsuccessful, Snackbar.LENGTH_LONG).show();
                 mMultiView.setViewState(viewState);

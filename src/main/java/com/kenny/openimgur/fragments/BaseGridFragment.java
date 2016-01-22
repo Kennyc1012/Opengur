@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.OnClick;
+import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
@@ -277,7 +278,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     }
 
     @Override
-    public void onResponse(Response<GalleryResponse> response) {
+    public void onResponse(Call<GalleryResponse> call, Response<GalleryResponse> response) {
         if (!isAdded()) return;
 
         if (response != null) {
@@ -292,7 +293,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     }
 
     @Override
-    public void onFailure(Throwable t) {
+    public void onFailure(Call<GalleryResponse> call, Throwable t) {
         if (!isAdded()) return;
         onApiFailure(ApiClient.getErrorCode(t));
         if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.GONE);

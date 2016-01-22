@@ -173,7 +173,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
 
         call.enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response) {
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().success) {
@@ -194,7 +194,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to favorite item", t);
                 Snackbar.make(mMultiStateView, R.string.error_generic, Snackbar.LENGTH_LONG).show();

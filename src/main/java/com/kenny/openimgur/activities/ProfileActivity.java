@@ -40,6 +40,7 @@ import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
 import butterknife.Bind;
+import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
@@ -274,7 +275,7 @@ public class ProfileActivity extends BaseActivity {
     private void fetchProfile(String username) {
         ApiClient.getService().getProfile(username).enqueue(new Callback<UserResponse>() {
             @Override
-            public void onResponse(Response<UserResponse> response) {
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 if (isDestroyed() || isFinishing()) return;
 
                 if (response != null && response.body() != null) {
@@ -306,7 +307,7 @@ public class ProfileActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<UserResponse> call, Throwable t) {
                 ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             }
