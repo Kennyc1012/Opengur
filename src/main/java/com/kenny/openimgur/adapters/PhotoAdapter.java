@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
+import android.text.util.Linkify;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -22,6 +24,7 @@ import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.LinkUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
@@ -175,6 +178,10 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
                 photoHolder.title.setVisibility(View.GONE);
             }
 
+            Linkify.addLinks(photoHolder.title, Linkify.WEB_URLS);
+            Linkify.addLinks(photoHolder.title, LinkUtils.USER_CALLOUT_PATTERN, null);
+            Linkify.addLinks(photoHolder.desc, Linkify.WEB_URLS);
+            Linkify.addLinks(photoHolder.desc, LinkUtils.USER_CALLOUT_PATTERN, null);
             displayImage(photoHolder.image, url);
         }
     }
@@ -233,8 +240,8 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
             }
         });
 
-        // holder.title.setMovementMethod(CustomLinkMovement.getInstance(mListener));
-        //holder.desc.setMovementMethod(CustomLinkMovement.getInstance(mListener));
+        holder.title.setMovementMethod(CustomLinkMovement.getInstance());
+        holder.desc.setMovementMethod(CustomLinkMovement.getInstance());
     }
 
     /**

@@ -20,11 +20,11 @@ import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurListener;
+import com.kenny.openimgur.util.LinkUtils;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import butterknife.Bind;
 
@@ -35,8 +35,6 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     private static final float EXPANDED = 135.0f;
 
     private static final float COLLAPSED = 0.0f;
-
-    private static final Pattern sUserPattern = Pattern.compile("@\\w+");
 
     private ImgurListener mListener;
 
@@ -106,7 +104,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         commentHolder.comment.setText(comment.getComment());
         commentHolder.author.setText(constructSpan(comment));
         Linkify.addLinks(commentHolder.comment, Linkify.WEB_URLS);
-        Linkify.addLinks(commentHolder.comment, sUserPattern, null);
+        Linkify.addLinks(commentHolder.comment, LinkUtils.USER_CALLOUT_PATTERN, null);
         commentHolder.replies.setVisibility(comment.getReplyCount() > 0 ? View.VISIBLE : View.GONE);
         boolean isExpanded = mExpandedComments.contains(comment);
         commentHolder.replies.setRotation(isExpanded ? EXPANDED : COLLAPSED);

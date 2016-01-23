@@ -42,6 +42,7 @@ public class LinkUtils {
     private static final Pattern USER_PATTERN = Pattern.compile("(?<=/user/)(?!=/)\\w+");
     private static final Pattern GALLERY_ID_PATTERN = Pattern.compile("(?<=/gallery/)(?!=/)\\w+");
     private static final Pattern ALBUM_ID_PATTERN = Pattern.compile("(?<=/a/)(?!=/)\\w+");
+    public static final Pattern USER_CALLOUT_PATTERN = Pattern.compile("@\\w+");
 
     public enum LinkMatch {
         IMAGE_URL,
