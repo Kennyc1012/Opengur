@@ -16,7 +16,7 @@ apply plugin: 'io.fabric'
 
 project.ext {
     version_name = '4.3.0'
-    version_code = 64
+    version_code = 65
     support_version = '23.1.1'
 }
 
@@ -48,7 +48,7 @@ android {
         }
 
         beta {
-            versionName project.ext.version_name + "-beta2"
+            versionName project.ext.version_name + "-beta"
         }
     }
 
