@@ -26,7 +26,7 @@ public class LinkUtils {
             "(m.imgur.com|imgur.com|i.imgur.com)\\/user\\/.+";
 
     private static final String REGEX_IMGUR_ALBUM = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/a\\/(?!=\\/)\\w+$";
+            "(m.imgur.com|imgur.com|i.imgur.com)\\/a\\/.+";
 
     private static final String REGEX_IMGUR_DIRECT_LINK = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
             "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+(.jpg|.jpeg|.gif|.png|.gifv|.mp4|.webm)$";
@@ -41,6 +41,7 @@ public class LinkUtils {
     private static final Pattern ID_PATTERN = Pattern.compile(".com\\/(.*)\\W");
     private static final Pattern USER_PATTERN = Pattern.compile("(?<=/user/)(?!=/)\\w+");
     private static final Pattern GALLERY_ID_PATTERN = Pattern.compile("(?<=/gallery/)(?!=/)\\w+");
+    private static final Pattern ALBUM_ID_PATTERN = Pattern.compile("(?<=/a/)(?!=/)\\w+");
 
     public enum LinkMatch {
         IMAGE_URL,
@@ -143,6 +144,26 @@ public class LinkUtils {
         if (match.find()) {
             String id = match.group();
             LogUtil.v(TAG, "Gallery Id " + id + " extracted from url " + url);
+            return id;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns an album id from a given url
+     *
+     * @param url
+     * @return
+     */
+    @Nullable
+    public static String getAlbumId(@Nullable String url) {
+        if (TextUtils.isEmpty(url)) return null;
+        Matcher match = ALBUM_ID_PATTERN.matcher(url);
+
+        if (match.find()) {
+            String id = match.group();
+            LogUtil.v(TAG, "Album Id " + id + " extracted from url " + url);
             return id;
         }
 

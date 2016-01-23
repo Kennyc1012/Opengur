@@ -51,13 +51,17 @@ public class RoutingActivity extends BaseActivity {
                 String id = LinkUtils.getGalleryId(link);
 
                 if (!TextUtils.isEmpty(id)) {
-                    routingIntent = ViewActivity.createIntent(getApplicationContext(), id);
+                    routingIntent = ViewActivity.createGalleryIntentIntent(getApplicationContext(), id);
                 }
                 break;
 
             case IMAGE:
+                routingIntent = ViewActivity.createIntent(getApplicationContext(), link, false);
+                break;
+
             case ALBUM:
-                routingIntent = ViewActivity.createIntent(getApplicationContext(), link, match == LinkUtils.LinkMatch.ALBUM);
+                String albumId = LinkUtils.getAlbumId(link);
+                routingIntent = ViewActivity.createAlbumIntent(getApplicationContext(), albumId);
                 break;
 
             case IMAGE_URL_QUERY:

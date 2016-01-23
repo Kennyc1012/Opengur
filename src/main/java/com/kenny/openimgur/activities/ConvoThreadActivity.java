@@ -372,12 +372,13 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                     String id = LinkUtils.getGalleryId(url);
 
                     if (!TextUtils.isEmpty(id)) {
-                        startActivity(ViewActivity.createIntent(getApplicationContext(), id).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        startActivity(ViewActivity.createGalleryIntentIntent(getApplicationContext(), id));
                     }
                     break;
 
                 case ALBUM:
-                    Intent intent = ViewActivity.createIntent(getApplicationContext(), url, match == LinkUtils.LinkMatch.ALBUM).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    String albumId = LinkUtils.getAlbumId(url);
+                    Intent intent = ViewActivity.createAlbumIntent(getApplicationContext(), albumId);
                     startActivity(intent);
                     break;
 

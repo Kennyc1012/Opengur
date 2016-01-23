@@ -168,7 +168,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
             String id = LinkUtils.getGalleryId(trophy.getDataLink());
 
             if (!TextUtils.isEmpty(id)) {
-                startActivity(ViewActivity.createIntent(getActivity(), id));
+                startActivity(ViewActivity.createGalleryIntentIntent(getActivity(), id));
             } else if (!TextUtils.isEmpty(dataLink)) {
                 onLinkTap(null, dataLink);
             }
@@ -190,12 +190,13 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                     String id = LinkUtils.getGalleryId(url);
 
                     if (!TextUtils.isEmpty(id)) {
-                        startActivity(ViewActivity.createIntent(getActivity(), id).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        startActivity(ViewActivity.createGalleryIntentIntent(getActivity(), id));
                     }
                     break;
 
                 case ALBUM:
-                    Intent intent = ViewActivity.createIntent(getActivity(), url, match == LinkUtils.LinkMatch.ALBUM).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    String albumId = LinkUtils.getAlbumId(url);
+                    Intent intent = ViewActivity.createAlbumIntent(getActivity(), albumId);
                     startActivity(intent);
                     break;
 
