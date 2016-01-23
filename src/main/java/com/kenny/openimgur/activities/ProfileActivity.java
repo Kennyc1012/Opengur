@@ -35,10 +35,12 @@ import com.kenny.openimgur.fragments.ProfileUploadsFragment;
 import com.kenny.openimgur.services.AlarmReceiver;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -104,7 +106,7 @@ public class ProfileActivity extends BaseActivity {
             if (args.hasExtra(KEY_USERNAME)) {
                 LogUtil.v(TAG, "User present in Bundle extras");
                 String username = args.getStringExtra(KEY_USERNAME);
-                mSelectedUser = app.getSql().getUser(username);
+                mSelectedUser = SqlHelper.getInstance(getApplicationContext()).getUser(username);
                 configUser(username);
             } else if (user != null) {
                 LogUtil.v(TAG, "User already logged in");
@@ -271,7 +273,12 @@ public class ProfileActivity extends BaseActivity {
         });
     }
 
-    private void fetchProfile(String username) {
+    @OnClick(R.id.errorButton)
+    public void retryClick() {
+        if (mSelectedUser != null) fetchProfile(mSelectedUser.getUsername());
+    }
+
+    private void fetchProfile(final String username) {
         ApiClient.getService().getProfile(username).enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Response<UserResponse> response, Retrofit retrofit) {
@@ -286,10 +293,12 @@ public class ProfileActivity extends BaseActivity {
                         mSelectedUser = userResponse.data;
                     }
 
+                    mSelectedUser.setLastSeen(System.currentTimeMillis());
+
                     if (mSelectedUser.isSelf(app) && !TextUtils.isEmpty(mSelectedUser.getAccessToken())) {
-                        app.getSql().updateUserInfo(mSelectedUser);
+                        SqlHelper.getInstance(getApplicationContext()).updateUserInfo(mSelectedUser);
                     } else {
-                        app.getSql().insertProfile(mSelectedUser);
+                        SqlHelper.getInstance(getApplicationContext()).insertProfile(mSelectedUser);
                     }
 
                     mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);
@@ -298,7 +307,7 @@ public class ProfileActivity extends BaseActivity {
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     supportInvalidateOptionsMenu();
                 } else {
-                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, getString(R.string.profile_not_found, username));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }

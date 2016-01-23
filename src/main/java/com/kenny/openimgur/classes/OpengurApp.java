@@ -39,8 +39,6 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
 
     private SharedPreferences mPref;
 
-    private SqlHelper mSql;
-
     private ImgurUser mUser;
 
     private ImgurTheme mTheme = ImgurTheme.GREY;
@@ -52,11 +50,11 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         stopUserManagerLeak();
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mPref.registerOnSharedPreferenceChangeListener(this);
-        mSql = new SqlHelper(getApplicationContext());
-        mUser = mSql.getUser();
+        mUser = SqlHelper.getInstance(this).getUser();
         if (mUser != null) AlarmReceiver.createNotificationAlarm(this);
         mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.KEY_THEME, ImgurTheme.GREY.themeName));
         mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, true);
+        ImageUtil.initImageLoader(getApplicationContext());
 
         // Start crashlytics if enabled
         if (!BuildConfig.DEBUG && mPref.getBoolean(SettingsActivity.KEY_CRASHLYTICS, true)) {
@@ -110,17 +108,13 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         return mPref;
     }
 
-    public SqlHelper getSql() {
-        return mSql;
-    }
-
     public ImgurUser getUser() {
         return mUser;
     }
 
     public void setUser(ImgurUser user) {
         this.mUser = user;
-        mSql.insertUser(user);
+        SqlHelper.getInstance(this).insertUser(user);
     }
 
     /**
@@ -154,7 +148,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
      */
     public void onLogout() {
         mUser = null;
-        mSql.onUserLogout();
+        SqlHelper.getInstance(this).onUserLogout();
         OAuthInterceptor.setAccessToken(null);
     }
 

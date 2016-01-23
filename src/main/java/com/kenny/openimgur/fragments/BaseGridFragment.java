@@ -156,7 +156,8 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         if (adapter == null || adapter.isEmpty()) {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             mIsLoading = true;
-            if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
+            if (mListener != null)
+                mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
             fetchGallery();
         }
     }
@@ -179,17 +180,20 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     @Override
     public void onClick(View v) {
         int adapterPosition = mGrid.getChildAdapterPosition(v);
-        ArrayList<ImgurBaseObject> items = getAdapter().getItems(adapterPosition);
-        int itemPosition = adapterPosition;
 
-        // Get the correct array index of the selected item
-        if (itemPosition > GalleryAdapter.MAX_ITEMS / 2) {
-            itemPosition = items.size() == GalleryAdapter.MAX_ITEMS
-                    ? GalleryAdapter.MAX_ITEMS / 2
-                    : items.size() - (getAdapter().getItemCount() - itemPosition);
+        if (adapterPosition != RecyclerView.NO_POSITION) {
+            ArrayList<ImgurBaseObject> items = getAdapter().getItems(adapterPosition);
+            int itemPosition = adapterPosition;
+
+            // Get the correct array index of the selected item
+            if (itemPosition > GalleryAdapter.MAX_ITEMS / 2) {
+                itemPosition = items.size() == GalleryAdapter.MAX_ITEMS
+                        ? GalleryAdapter.MAX_ITEMS / 2
+                        : items.size() - (getAdapter().getItemCount() - itemPosition);
+            }
+
+            onItemSelected(v, itemPosition, items);
         }
-
-        onItemSelected(itemPosition, items);
     }
 
     public boolean allowNSFW() {
@@ -201,7 +205,8 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         mCurrentPage = 0;
         mIsLoading = true;
         if (getAdapter() != null) getAdapter().clear();
-        if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
+        if (mListener != null)
+            mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_STARTED);
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
         fetchGallery();
     }
@@ -224,7 +229,8 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
                 int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
                 setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(items), this, showPoints()));
                 mGrid.scrollToPosition(currentPosition);
-                if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
+                if (mListener != null)
+                    mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
         }
@@ -255,10 +261,11 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     /**
      * Callback for when an item is selected from the grid
      *
+     * @param view     The {@link View} selected
      * @param position The position of the item in the list of items
      * @param items    The list of items that will be able to paged between
      */
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
+    protected void onItemSelected(View view, int position, ArrayList<ImgurBaseObject> items) {
         startActivity(ViewActivity.createIntent(getActivity(), items, position));
     }
 
@@ -350,5 +357,15 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
      */
     protected boolean showPoints() {
         return true;
+    }
+
+    /**
+     * Returns the view to attach a {@link android.support.design.widget.Snackbar} to
+     *
+     * @return
+     */
+    @NonNull
+    protected View getSnackbarView() {
+        return mListener != null ? mListener.getSnackbarView() : mMultiStateView;
     }
 }

@@ -1,8 +1,6 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +13,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.RingtonePreference;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
@@ -25,10 +24,11 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.VideoCache;
+import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.snackbar.SnackBar;
+import com.kenny.openimgur.util.SqlHelper;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -69,7 +69,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
     @Override
     public void onResume() {
         super.onResume();
-        long cacheSize = FileUtil.getDirectorySize(mApp.getImageLoader().getDiskCache().getDirectory());
+        long cacheSize = ImageUtil.getTotalImageCacheSize(mApp);
         findPreference(SettingsActivity.KEY_CURRENT_CACHE_SIZE).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
 
         try {
@@ -100,12 +100,6 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
                     theme.isDarkTheme = isDarkTheme;
                     mApp.setImgurTheme(theme);
                     if (!mFirstLaunch) getActivity().recreate();
-                    updated = true;
-                    break;
-
-                case SettingsActivity.KEY_CACHE_LOC:
-                    if (!mFirstLaunch)
-                        new DeleteCacheTask(SettingsFragment.this, object.toString()).execute();
                     updated = true;
                     break;
             }
@@ -145,6 +139,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.clearing_cache, Snackbar.LENGTH_LONG).show();
                                 new DeleteCacheTask(SettingsFragment.this, null).execute();
                             }
                         }).show();
@@ -166,19 +161,19 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
                 if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivity(browserIntent);
                 } else {
-                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                 }
 
                 return true;
 
             case "redditHistory":
-                mApp.getSql().deleteSubReddits();
-                SnackBar.show(getActivity(), R.string.pref_reddit_deleted);
+                SqlHelper.getInstance(getActivity()).deleteFromTable(DBContracts.SubRedditContract.TABLE_NAME);
+                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.pref_reddit_deleted, Snackbar.LENGTH_LONG).show();
                 return true;
 
             case "gallerySearchHistory":
-                mApp.getSql().deletePreviousGallerySearch();
-                SnackBar.show(getActivity(), R.string.pref_search_deleted);
+                SqlHelper.getInstance(getActivity()).deleteFromTable(DBContracts.GallerySearchContract.TABLE_NAME);
+                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.pref_search_deleted, Snackbar.LENGTH_LONG).show();
                 return true;
 
             case "experimentalSettings":
@@ -187,7 +182,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
 
             case "mySubreddits":
                 mApp.getPreferences().edit().remove(RedditFragment.KEY_PINNED_SUBREDDITS).apply();
-                SnackBar.show(getActivity(), R.string.pref_reddit_deleted);
+                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.pref_reddit_deleted, Snackbar.LENGTH_LONG).show();
                 return true;
         }
 
@@ -216,12 +211,6 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mFragment.get().getFragmentManager().beginTransaction().add(LoadingDialogFragment.createInstance(R.string.one_moment, false), "loading").commit();
-        }
-
-        @Override
         protected Long doInBackground(Void... voids) {
             SettingsFragment frag = mFragment.get();
             Activity activity = frag.getActivity();
@@ -242,12 +231,6 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
 
             if (frag != null) {
                 frag.findPreference(SettingsActivity.KEY_CURRENT_CACHE_SIZE).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
-                Fragment fragment = frag.getFragmentManager().findFragmentByTag("loading");
-
-                if (fragment != null) {
-                    ((DialogFragment) fragment).dismiss();
-                }
-
                 mFragment.clear();
             }
         }

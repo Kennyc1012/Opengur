@@ -240,6 +240,9 @@
         <activity
             android:name=".activities.MuzeiSettingsActivity"
             android:exported="true" />
+        <activity
+            android:name=".activities.UploadEditActivity"
+            android:windowSoftInputMode="stateHidden" />
 
         <service android:name=".services.DownloaderService" />
         <service android:name=".services.UploadService" />
@@ -248,7 +251,7 @@
         <service
             android:name=".services.ImgurMuzeiService"
             android:description="@string/muzei_description"
-            android:icon="@drawable/ic_notif"
+            android:icon="@drawable/ic_muzei"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />

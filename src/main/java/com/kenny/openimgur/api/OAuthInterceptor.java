@@ -7,6 +7,7 @@ import android.text.format.DateUtils;
 import com.kenny.openimgur.api.responses.OAuthResponse;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -110,7 +111,7 @@ public class OAuthInterceptor implements Interceptor {
 
             if (!TextUtils.isEmpty(oAuthResponse.access_token) && !TextUtils.isEmpty(oAuthResponse.refresh_token)) {
                 app.getUser().setTokens(oAuthResponse.access_token, oAuthResponse.refresh_token, oAuthResponse.expires_in);
-                app.getSql().updateUserTokens(oAuthResponse.access_token, oAuthResponse.refresh_token, oAuthResponse.expires_in);
+                SqlHelper.getInstance(app).updateUserTokens(oAuthResponse.access_token, oAuthResponse.refresh_token, oAuthResponse.expires_in);
                 return oAuthResponse.access_token;
             }
 

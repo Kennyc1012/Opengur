@@ -16,25 +16,25 @@ import java.util.Set;
  */
 public class CustomLinkMovement extends LinkMovementMethod {
 
-    private static CustomLinkMovement mInstance;
+    private static CustomLinkMovement sInstance;
 
     private Set<ImgurListener> mListeners = new HashSet<>();
 
     public static CustomLinkMovement getInstance(ImgurListener listener) {
-        if (mInstance == null) {
-            mInstance = new CustomLinkMovement();
+        if (sInstance == null) {
+            sInstance = new CustomLinkMovement();
         }
 
-        mInstance.mListeners.add(listener);
-        return mInstance;
+        sInstance.mListeners.add(listener);
+        return sInstance;
     }
 
     public static CustomLinkMovement getInstance() {
-        if (mInstance == null) {
-            mInstance = new CustomLinkMovement();
+        if (sInstance == null) {
+            sInstance = new CustomLinkMovement();
         }
 
-        return mInstance;
+        return sInstance;
     }
 
     public void addListener(ImgurListener listener) {

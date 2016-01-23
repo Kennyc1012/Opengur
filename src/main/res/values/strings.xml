@@ -30,8 +30,6 @@
     <string name="sort_by">Sort By</string>
     <string name="developer">Developer</string>
     <string name="version">Version</string>
-    <string name="vote_cast">Vote Cast</string>
-    <string name="one_moment">One Moment…</string>
     <string name="not_logged_in">Not Logged In</string>
     <string name="copy_link">Copy Link</string>
     <string name="open_source">Open Source</string>
@@ -62,6 +60,11 @@
     <string name="hide_comment_bar">Hide bottom bar</string>
     <string name="download_album">Download Album</string>
     <string name="search_opengur">Search Opengur</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="clearing_cache">Clearing cache&#8230;</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -134,6 +137,7 @@
     <string name="profile_no_albums">%s has not created any albums</string>
     <string name="profile_unfavorite_title">Remove Favorite</string>
     <string name="profile_unfavorite_message">Are you sure you want to remove this from your favorites?</string>
+    <string name="profile_not_found">Unable to find user %s</string>
 
     <!-- Preferences -->
     <string name="pref_cache_title">Cache</string>
@@ -233,15 +237,13 @@
     <string name="upload_camera">Camera</string>
     <string name="upload_gallery">Gallery</string>
     <string name="upload_link">Link</string>
-    <string name="upload_empty_title">No title set</string>
-    <string name="upload_empty_desc">No description set</string>
     <string name="upload_enter_link">Enter Link</string>
     <string name="upload_checking_link">Checking link&#8230;</string>
     <string name="upload_invalid_link">The link you entered is not a valid image link.</string>
     <string name="upload_valid_link">The link you entered is valid!</string>
     <string name="upload_link_dialog_title">Photo Link</string>
-    <string name="upload_edit_title_hint">Enter title</string>
-    <string name="upload_edit_desc_hint">Enter description</string>
+    <string name="upload_edit_title_hint">Title (optional)</string>
+    <string name="upload_edit_desc_hint">Description (optional)</string>
     <string name="upload_notif_starting">Starting upload</string>
     <string name="upload_notif_starting_content">Your upload will begin shortly</string>
     <string name="upload_notif_in_progress">Upload in Progress</string>
@@ -358,5 +360,9 @@
     <string name="filter_scoring_month">Highest Scoring &#8226; Month</string>
     <string name="filter_scoring_year">Highest Scoring &#8226; Year</string>
     <string name="filter_scoring_all">Highest Scoring &#8226; All</string>
+
+    <!-- UI transition names, should not be translated -->
+    <string name="transition_upload_photo" translatable="false">uploadPhoto</string>
+    <string name="gallery_item_transition" translatable="false">gallery_transition</string>
 
 </resources>

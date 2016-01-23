@@ -116,6 +116,10 @@ public class VideoCache {
         mCacheDir.mkdirs();
     }
 
+    public long getCacheSize() {
+        return FileUtil.getDirectorySize(mCacheDir);
+    }
+
     public interface VideoCacheListener {
         // Called when the Video download starts
         void onVideoDownloadStart(String key, String url);
@@ -151,10 +155,11 @@ public class VideoCache {
             InputStream in = null;
             BufferedOutputStream buffer = null;
             LogUtil.v(TAG, "Downloading video from " + mUrl);
+            File writeFile = null;
 
             try {
                 in = new URL(mUrl).openStream();
-                File writeFile = file[0];
+                writeFile = file[0];
                 buffer = new BufferedOutputStream(new FileOutputStream(writeFile));
                 byte byt[] = new byte[1024];
                 int i;
@@ -167,6 +172,8 @@ public class VideoCache {
                 return writeFile;
             } catch (Exception e) {
                 LogUtil.e(TAG, "An error occurred whiling downloading video", e);
+                // Delete the file if an exception occurs to allow download retries
+                if (writeFile != null) writeFile.delete();
                 return e;
             } finally {
                 FileUtil.closeStream(in);

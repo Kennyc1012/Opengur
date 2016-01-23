@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -35,9 +36,6 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
-import com.kenny.snackbar.SnackBarItem;
-import com.kenny.snackbar.SnackBarListener;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -357,23 +355,11 @@ public class FullScreenPhotoFragment extends BaseFragment {
                         break;
 
                     case PermissionUtils.PERMISSION_DENIED:
-                        new SnackBarItem.Builder(getActivity())
-                                .setMessageResource(R.string.permission_rationale_download)
-                                .setActionMessageResource(R.string.okay)
-                                .setAutoDismiss(false)
-                                .setSnackBarListener(new SnackBarListener() {
+                        Snackbar.make(mMultiView, R.string.permission_rationale_download, Snackbar.LENGTH_LONG)
+                                .setAction(R.string.okay, new View.OnClickListener() {
                                     @Override
-                                    public void onSnackBarStarted(Object o) {
-                                        // NOOP
-                                    }
-
-                                    @Override
-                                    public void onSnackBarFinished(Object o, boolean actionClicked) {
-                                        if (actionClicked) {
-                                            FragmentCompat.requestPermissions(FullScreenPhotoFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
-                                        } else {
-                                            SnackBar.show(getActivity(), R.string.permission_denied);
-                                        }
+                                    public void onClick(View v) {
+                                        FragmentCompat.requestPermissions(FullScreenPhotoFragment.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                                     }
                                 }).show();
                         break;
@@ -407,7 +393,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
                 if (shareDialog != null) {
                     shareDialog.show();
                 } else {
-                    SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                    Snackbar.make(mMultiView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
         }
@@ -455,7 +441,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
                 if (granted) {
                     getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
                 } else {
-                    SnackBar.show(getActivity(), R.string.permission_denied);
+                    Snackbar.make(mMultiView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                 }
                 break;
         }

@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,14 +19,12 @@ import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.BasicResponse;
-import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
@@ -63,21 +63,27 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
 
     @Override
     public boolean onLongClick(View v) {
-        final ImgurBaseObject obj = getAdapter().getItem(mGrid.getChildAdapterPosition(v));
-        new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
-                .setTitle(R.string.profile_unfavorite_title)
-                .setMessage(R.string.profile_unfavorite_message)
-                .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
-                        removeFavorite(obj);
-                    }
-                })
-                .show();
+        int adapterPosition = mGrid.getChildAdapterPosition(v);
 
-        return true;
+        if (adapterPosition != RecyclerView.NO_POSITION) {
+            final ImgurBaseObject obj = getAdapter().getItem(adapterPosition);
+            new AlertDialog.Builder(getActivity(), theme.getAlertDialogTheme())
+                    .setTitle(R.string.profile_unfavorite_title)
+                    .setMessage(R.string.profile_unfavorite_message)
+                    .setNegativeButton(R.string.cancel, null)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
+                            removeFavorite(obj);
+                        }
+                    })
+                    .show();
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -87,7 +93,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
         ImgurService apiService = ApiClient.getService();
 
         if (isSelf) {
-            apiService.getProfileFavorites(mSelectedUser.getUsername()).enqueue(this);
+            apiService.getProfileFavorites(mSelectedUser.getUsername(), mCurrentPage).enqueue(this);
         } else {
             apiService.getProfileGalleryFavorites(mSelectedUser.getUsername(), mCurrentPage).enqueue(this);
         }
@@ -98,11 +104,6 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
         super.setAdapter(adapter);
         if (mSelectedUser != null && mSelectedUser.isSelf(app))
             adapter.setOnLongClickPressListener(this);
-    }
-
-    @Override
-    protected void onItemSelected(int position, ArrayList<ImgurBaseObject> items) {
-        super.onItemSelected(position, items);
     }
 
     @Override
@@ -150,12 +151,6 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
     }
 
     @Override
-    protected void onApiResult(GalleryResponse galleryResponse) {
-        super.onApiResult(galleryResponse);
-        if (mSelectedUser.isSelf(app)) mHasMore = false;
-    }
-
-    @Override
     protected void onEmptyResults() {
         mIsLoading = false;
         mHasMore = false;
@@ -185,9 +180,16 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
                 if (response != null && response.body() != null && response.body().success) {
                     GalleryAdapter adapter = getAdapter();
                     if (adapter != null) adapter.removeItem(object);
-                    mMultiStateView.setViewState(adapter != null && adapter.isEmpty() ? MultiStateView.VIEW_STATE_EMPTY : MultiStateView.VIEW_STATE_CONTENT);
+
+                    if (adapter != null && adapter.isEmpty()) {
+                        ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, getString(R.string.profile_no_favorites, mSelectedUser.getUsername()));
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                    } else {
+                        mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                    }
+
                 } else {
-                    SnackBar.show(getActivity(), R.string.error_generic);
+                    Snackbar.make(mMultiStateView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                 }
             }
@@ -196,7 +198,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
             public void onFailure(Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to favorite item", t);
-                SnackBar.show(getActivity(), R.string.error_generic);
+                Snackbar.make(mMultiStateView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
         });

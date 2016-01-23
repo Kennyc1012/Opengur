@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,7 +53,6 @@ import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
 import com.kennyc.view.MultiStateView;
@@ -197,8 +197,20 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     public static Intent createIntent(Context context, String url, boolean isAlbumLink) {
-        return new Intent(context, ViewActivity.class).setAction(Intent.ACTION_VIEW)
-                .setData(Uri.parse(url)).putExtra(KEY_VIEW_FOR_ALBUM, isAlbumLink);
+        return new Intent(context, ViewActivity.class)
+                .setAction(Intent.ACTION_VIEW)
+                .setData(Uri.parse(url))
+                .putExtra(KEY_VIEW_FOR_ALBUM, isAlbumLink);
+    }
+
+    public static Intent createGalleryIntentIntent(Context context, String id) {
+        String url = String.format("http://imgur.com/gallery/%s", id);
+        return createIntent(context, url, false);
+    }
+
+    public static Intent createAlbumIntent(Context context, String id) {
+        String url = String.format("http://imgur.com/a/%s", id);
+        return createIntent(context, url, true);
     }
 
     @Override
@@ -291,7 +303,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             LogUtil.v(TAG, "Received Gallery via ACTION_VIEW");
             mGalleryId = intent.getData().getPathSegments().get(1);
         } else if (!intent.hasExtra(KEY_OBJECTS) || !intent.hasExtra(KEY_POSITION)) {
-            SnackBar.show(ViewActivity.this, R.string.error_generic);
+            Snackbar.make(mViewPager, R.string.error_generic, Snackbar.LENGTH_LONG).show();
             finish();
         } else {
             mCurrentPosition = intent.getIntExtra(KEY_POSITION, 0);
@@ -437,6 +449,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @OnClick({R.id.panelUpBtn, R.id.upVoteBtn, R.id.downVoteBtn, R.id.commentBtn, R.id.sortComments, R.id.errorButton})
     @Override
     public void onClick(View view) {
+        if (!canDoFragmentTransaction()) return;
+
         switch (view.getId()) {
             case R.id.panelUpBtn:
                 if (mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
@@ -463,7 +477,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                     voteOnGallery(obj.getId(), vote);
                 } else {
-                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                    Snackbar.make(mViewPager, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                 }
                 break;
 
@@ -472,7 +486,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), null);
                     showDialogFragment(fragment, "comment");
                 } else {
-                    SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                    Snackbar.make(mViewPager, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                 }
                 break;
 
@@ -525,8 +539,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             switch (match) {
                 case GALLERY:
+                    String id = LinkUtils.getGalleryId(url);
+
+                    if (!TextUtils.isEmpty(id)) {
+                        startActivity(ViewActivity.createGalleryIntentIntent(getApplicationContext(), id).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    }
+                    break;
+
                 case ALBUM:
-                    Intent intent = ViewActivity.createIntent(getApplicationContext(), url, match == LinkUtils.LinkMatch.ALBUM).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    String albumId = LinkUtils.getAlbumId(url);
+                    Intent intent = ViewActivity.createAlbumIntent(getApplicationContext(), albumId).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;
 
@@ -553,6 +575,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     startActivity(ProfileActivity.createIntent(getApplicationContext(), url.replace("@", "")));
                     break;
 
+                case USER:
+                    String username = LinkUtils.getUsername(url);
+
+                    if (!TextUtils.isEmpty(username)) {
+                        startActivity(ProfileActivity.createIntent(getApplicationContext(), username));
+                    }
+                    break;
+
                 case NONE:
                 default:
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -560,20 +590,20 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     if (browserIntent.resolveActivity(getPackageManager()) != null) {
                         startActivity(browserIntent);
                     } else {
-                        SnackBar.show(ViewActivity.this, R.string.cant_launch_intent);
+                        Snackbar.make(mViewPager, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                     }
                     break;
             }
         } else {
             if (view.getLayoutParams() instanceof RecyclerView.LayoutParams) {
-                onListItemClick(mCommentList.getLayoutManager().getPosition(view));
+                onListItemClick(mCommentList.getChildAdapterPosition(view));
             } else {
-                // This is super ugly, in order to the get position from the layout manager, we need the root view
+                // This is super ugly, in order to the get position from the RecyclerView, we need the root view
                 View parent = (View) view.getParent();
                 if (parent != null) parent = (View) parent.getParent();
 
                 if (parent != null && parent.getLayoutParams() instanceof RecyclerView.LayoutParams) {
-                    onListItemClick(mCommentList.getLayoutManager().getPosition(parent));
+                    onListItemClick(mCommentList.getChildAdapterPosition(parent));
                 }
             }
         }
@@ -615,10 +645,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             outState.putBoolean(KEY_PANEL_EXPANDED, mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
-    private void onListItemClick(int position) {
+    private void onListItemClick(final int position) {
         if (mCommentAdapter == null) return;
 
-        if (position >= 0) {
+        if (position != RecyclerView.NO_POSITION) {
             boolean shouldClose = mCommentAdapter.setSelectedIndex(position);
 
             if (!shouldClose) {
@@ -650,10 +680,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                                         if (user != null) {
                                             String vote = id == R.id.upVote ? ImgurBaseObject.VOTE_UP : ImgurBaseObject.VOTE_DOWN;
                                             comment.setVote(vote);
-                                            mCommentAdapter.notifyDataSetChanged();
+                                            mCommentAdapter.notifyItemChanged(position);
                                             voteOnComment(comment.getId(), vote);
                                         } else {
-                                            SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                                            Snackbar.make(mViewPager, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                                         }
                                         break;
 
@@ -666,7 +696,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                                             DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), comment.getId());
                                             showDialogFragment(fragment, "comment");
                                         } else {
-                                            SnackBar.show(ViewActivity.this, R.string.user_not_logged_in);
+                                            Snackbar.make(mViewPager, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                                         }
                                         break;
 
@@ -674,7 +704,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                                         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                                         ClipData clip = ClipData.newPlainText(getString(R.string.comment), comment.getComment());
                                         clipboard.setPrimaryClip(clip);
-                                        SnackBar.show(ViewActivity.this, R.string.comment_copied);
+                                        Snackbar.make(mViewPager, R.string.comment_copied, Snackbar.LENGTH_LONG).show();
                                         break;
                                 }
                             }
@@ -721,7 +751,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                             if (comment.getImageId().equals(imgurBaseObject.getId())) {
                                 // Reverse the list for worst sorting as it will be loading the Top comments
-                                if (mCommentSort == CommentSort.WORST) Collections.reverse(commentResponse.data);
+                                if (mCommentSort == CommentSort.WORST)
+                                    Collections.reverse(commentResponse.data);
 
                                 // We only show the comments for the correct gallery item
                                 if (mCommentAdapter == null) {
@@ -837,14 +868,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     set.setDuration(1500L).setInterpolator(new OvershootInterpolator());
                     set.start();
                 } else {
-                    SnackBar.show(ViewActivity.this, R.string.error_generic);
+                    Snackbar.make(mViewPager, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 LogUtil.e(TAG, "Unable to vote on gallery", t);
-                SnackBar.show(ViewActivity.this, R.string.error_generic);
+                Snackbar.make(mViewPager, R.string.error_generic, Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -853,7 +884,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         ApiClient.getService().voteOnComment(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
-                if (response.body() != null) LogUtil.v(TAG, "Result of comment voting " + response.body().data);
+                if (response.body() != null)
+                    LogUtil.v(TAG, "Result of comment voting " + response.body().data);
             }
 
             @Override
@@ -879,10 +911,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onResponse(Response<CommentPostResponse> response, Retrofit retrofit) {
                 if (response != null && response.body() != null && response.body().data != null && !TextUtils.isEmpty(response.body().data.id)) {
-                    SnackBar.show(ViewActivity.this, R.string.comment_post_successful);
+                    Snackbar.make(mViewPager, R.string.comment_post_successful, Snackbar.LENGTH_LONG).show();
                     fetchComments();
                 } else {
-                    SnackBar.show(ViewActivity.this, R.string.comment_post_unsuccessful);
+                    Snackbar.make(mViewPager, R.string.comment_post_unsuccessful, Snackbar.LENGTH_LONG).show();
                     mMultiView.setViewState(viewState);
                 }
             }
@@ -890,7 +922,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onFailure(Throwable t) {
                 LogUtil.e(TAG, "Unable to post comment", t);
-                SnackBar.show(ViewActivity.this, R.string.comment_post_unsuccessful);
+                Snackbar.make(mViewPager, R.string.comment_post_unsuccessful, Snackbar.LENGTH_LONG).show();
                 mMultiView.setViewState(viewState);
             }
         });

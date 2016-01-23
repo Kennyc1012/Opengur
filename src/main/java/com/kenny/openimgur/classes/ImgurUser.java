@@ -216,6 +216,10 @@ public class ImgurUser implements Parcelable {
         return mLastSeen;
     }
 
+    public void setLastSeen(long lastSeen) {
+        mLastSeen = lastSeen;
+    }
+
     /**
      * Sets the user's tokens
      *

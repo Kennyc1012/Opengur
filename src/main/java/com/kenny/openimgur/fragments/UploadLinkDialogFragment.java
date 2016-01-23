@@ -1,6 +1,5 @@
 package com.kenny.openimgur.fragments;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurHandler;
 import com.kenny.openimgur.classes.OpengurApp;
-import com.kenny.openimgur.classes.PhotoUploadListener;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -55,8 +53,6 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
     @Bind(R.id.loadingIndicator)
     ProgressBar mLoadingIndicator;
 
-    private PhotoUploadListener mListener;
-
     public static DialogFragment newInstance(@Nullable String link) {
         UploadLinkDialogFragment fragment = new UploadLinkDialogFragment();
 
@@ -67,18 +63,6 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
         }
 
         return fragment;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof PhotoUploadListener) mListener = (PhotoUploadListener) activity;
-    }
-
-    @Override
-    public void onDetach() {
-        mListener = null;
-        super.onDetach();
     }
 
     @Override
@@ -143,7 +127,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.add:
-                if (mListener != null) mListener.onLinkAdded(mLink.getText().toString());
+                if (getParentFragment() instanceof UploadFragment) ((UploadFragment) getParentFragment()).onLinkAdded(mLink.getText().toString());
                 // Intentional fall through
             case R.id.cancel:
                 dismissAllowingStateLoss();

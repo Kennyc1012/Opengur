@@ -18,6 +18,7 @@ import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
@@ -112,13 +113,14 @@ public class GallerySearchFragment extends GalleryFragment {
     protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
         super.onApiResult(galleryResponse);
         if (mCurrentPage == 0 && !galleryResponse.data.isEmpty()) {
-            app.getSql().addPreviousGallerySearch(mQuery);
+            SqlHelper sql = SqlHelper.getInstance(getActivity());
+            sql.addPreviousGallerySearch(mQuery);
 
             if (mSearchAdapter == null) {
-                mSearchAdapter = new SearchAdapter(getActivity(), app.getSql().getPreviousGallerySearches(mQuery), DBContracts.GallerySearchContract.COLUMN_NAME);
+                mSearchAdapter = new SearchAdapter(getActivity(), sql.getPreviousGallerySearches(mQuery), DBContracts.GallerySearchContract.COLUMN_NAME);
                 mSearchView.setSuggestionsAdapter(mSearchAdapter);
             } else {
-                mSearchAdapter.changeCursor(app.getSql().getPreviousGallerySearches(mQuery));
+                mSearchAdapter.changeCursor(sql.getPreviousGallerySearches(mQuery));
             }
 
             mSearchAdapter.notifyDataSetChanged();

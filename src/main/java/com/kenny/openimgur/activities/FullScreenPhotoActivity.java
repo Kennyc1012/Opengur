@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -28,12 +29,9 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.fragments.FullScreenPhotoFragment;
 import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.ViewPager;
-import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
-import com.kenny.snackbar.SnackBarItem;
-import com.kenny.snackbar.SnackBarListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +85,8 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
         setContentView(R.layout.activity_full_screen);
         handleArguments(savedInstanceState, intent);
+        setStatusBarColor(Color.BLACK);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         if (hasImmersiveMode()) {
             mDecorView = getWindow().getDecorView();
@@ -108,15 +108,13 @@ public class FullScreenPhotoActivity extends BaseActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+
         if (hasImmersiveMode()) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             mHandler = new VisibilityHandler();
             Message msg = mHandler.obtainMessage(0, mDecorView);
             mHandler.sendMessageDelayed(msg, VisibilityHandler.HIDE_DELAY);
         }
-
-        setStatusBarColor(Color.BLACK);
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
     @Override
@@ -179,26 +177,14 @@ public class FullScreenPhotoActivity extends BaseActivity {
                         break;
 
                     case PermissionUtils.PERMISSION_DENIED:
-                        new SnackBarItem.Builder(this)
-                                .setMessageResource(R.string.permission_rationale_download)
-                                .setActionMessageResource(R.string.okay)
-                                .setAutoDismiss(false)
-                                .setSnackBarListener(new SnackBarListener() {
+                        Snackbar.make(mPager, R.string.permission_rationale_download, Snackbar.LENGTH_LONG)
+                                .setAction(R.string.okay, new View.OnClickListener() {
                                     @Override
-                                    public void onSnackBarStarted(Object o) {
-                                        LogUtil.v(TAG, "Permissions have been denied before, showing rationale");
+                                    public void onClick(View v) {
+                                        ActivityCompat.requestPermissions(FullScreenPhotoActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
                                     }
-
-                                    @Override
-                                    public void onSnackBarFinished(Object o, boolean actionClicked) {
-                                        if (actionClicked) {
-                                            ActivityCompat.requestPermissions(FullScreenPhotoActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RequestCodes.REQUEST_PERMISSION_WRITE);
-                                        } else {
-                                            Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
-                                            finish();
-                                        }
-                                    }
-                                }).show();
+                                })
+                                .show();
                         break;
 
                     case PermissionUtils.PERMISSION_NEVER_ASKED:
@@ -335,6 +321,6 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
     @Override
     protected int getStyleRes() {
-        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
+        return theme.isDarkTheme ? R.style.Theme_Opengur_Dark_View_Dark : R.style.Theme_Opengur_Light_View_Light;
     }
 }

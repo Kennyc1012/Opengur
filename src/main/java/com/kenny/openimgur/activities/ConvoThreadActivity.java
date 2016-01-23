@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,7 +36,6 @@ import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
@@ -161,7 +161,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         if (!TextUtils.isEmpty(message.trim())) {
             sendMessage(ImgurMessage.createMessage(message, user.getId()));
         } else {
-            SnackBar.show(this, R.string.convo_message_hint);
+            Snackbar.make(mMultiView, R.string.convo_message_hint, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -301,14 +301,14 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                                     setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_BLOCKED_CONVO, mConvo));
                                     finish();
                                 } else {
-                                    SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
+                                    Snackbar.make(mMultiView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                                 }
                             }
 
                             @Override
                             public void onFailure(Throwable t) {
                                 LogUtil.e(TAG, "Unable to block user", t);
-                                SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
+                                Snackbar.make(mMultiView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                             }
                         });
                     }
@@ -327,16 +327,16 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                             @Override
                             public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
                                 if (response != null && response.body() != null && response.body().data) {
-                                    SnackBar.show(ConvoThreadActivity.this, getString(R.string.convo_user_reported, mConvo.getWithAccount()));
+                                    Snackbar.make(mMultiView, getString(R.string.convo_user_reported, mConvo.getWithAccount()), Snackbar.LENGTH_LONG).show();
                                 } else {
-                                    SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
+                                    Snackbar.make(mMultiView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                                 }
                             }
 
                             @Override
                             public void onFailure(Throwable t) {
                                 LogUtil.e(TAG, "Unable to report user", t);
-                                SnackBar.show(ConvoThreadActivity.this, R.string.error_generic);
+                                Snackbar.make(mMultiView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
                             }
                         });
                     }
@@ -369,8 +369,16 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
 
             switch (match) {
                 case GALLERY:
+                    String id = LinkUtils.getGalleryId(url);
+
+                    if (!TextUtils.isEmpty(id)) {
+                        startActivity(ViewActivity.createGalleryIntentIntent(getApplicationContext(), id));
+                    }
+                    break;
+
                 case ALBUM:
-                    Intent intent = ViewActivity.createIntent(getApplicationContext(), url, match == LinkUtils.LinkMatch.ALBUM).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    String albumId = LinkUtils.getAlbumId(url);
+                    Intent intent = ViewActivity.createAlbumIntent(getApplicationContext(), albumId);
                     startActivity(intent);
                     break;
 
@@ -393,6 +401,14 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                     getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(split[split.length - 1], false, false, false), "popup").commitAllowingStateLoss();
                     break;
 
+                case USER:
+                    String username = LinkUtils.getUsername(url);
+
+                    if (!TextUtils.isEmpty(username)) {
+                        startActivity(ProfileActivity.createIntent(getApplicationContext(), username));
+                    }
+                    break;
+
                 case NONE:
                 default:
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -400,7 +416,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                     if (browserIntent.resolveActivity(getPackageManager()) != null) {
                         startActivity(browserIntent);
                     } else {
-                        SnackBar.show(this, R.string.cant_launch_intent);
+                        Snackbar.make(mMultiView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                     }
                     break;
             }

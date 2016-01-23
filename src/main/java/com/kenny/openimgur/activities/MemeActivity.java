@@ -1,17 +1,22 @@
 package com.kenny.openimgur.activities;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.transition.Transition;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +33,6 @@ import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
-import com.kenny.snackbar.SnackBar;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
 import com.kennyc.view.MultiStateView;
@@ -74,11 +78,13 @@ public class MemeActivity extends BaseActivity {
         return new Intent(context, MemeActivity.class).putExtra(KEY_FILE_PATH, file.getAbsolutePath());
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meme_create);
         Intent intent = getIntent();
+        boolean hasTransition;
 
         if (intent == null) {
             LogUtil.w(TAG, "No object was found in the intent");
@@ -88,14 +94,53 @@ public class MemeActivity extends BaseActivity {
 
         if (intent.hasExtra(KEY_OBJECT)) {
             mObject = intent.getParcelableExtra(KEY_OBJECT);
+            hasTransition = isApiLevel(Build.VERSION_CODES.LOLLIPOP) && savedInstanceState == null;
         } else {
             String path = intent.getStringExtra(KEY_FILE_PATH);
             mObject = new ImgurBaseObject("-1", null, "file:///" + path);
+            // Locally imported images will not have an activity transition
+            hasTransition = false;
         }
 
         getSupportActionBar().setTitle(mObject.getTitle());
         loadImage();
         mView.setDrawingCacheEnabled(true);
+
+        if (hasTransition) {
+            mTopText.setVisibility(View.GONE);
+            mBottomText.setVisibility(View.GONE);
+
+            getWindow().getEnterTransition().addListener(new Transition.TransitionListener() {
+                @Override
+                public void onTransitionStart(Transition transition) {
+                    // NOOP
+                }
+
+                @Override
+                public void onTransitionEnd(Transition transition) {
+                    mTopText.setVisibility(View.VISIBLE);
+                    mBottomText.setVisibility(View.VISIBLE);
+                    ObjectAnimator.ofFloat(mTopText, "alpha", 0.0f, 1.0f).setDuration(200).start();
+                    ObjectAnimator.ofFloat(mBottomText, "alpha", 0.0f, 1.0f).setDuration(200).start();
+                    getWindow().getEnterTransition().removeListener(this);
+                }
+
+                @Override
+                public void onTransitionCancel(Transition transition) {
+                    // NOOP
+                }
+
+                @Override
+                public void onTransitionPause(Transition transition) {
+                    // NOOP
+                }
+
+                @Override
+                public void onTransitionResume(Transition transition) {
+                    // NOOP
+                }
+            });
+        }
     }
 
     @Override
@@ -253,7 +298,7 @@ public class MemeActivity extends BaseActivity {
                     })
                     .show();
         } else {
-            SnackBar.show(this, R.string.meme_failed);
+            Snackbar.make(mMultiStateView, R.string.meme_failed, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -294,7 +339,7 @@ public class MemeActivity extends BaseActivity {
                     app.getImageLoader().clearMemoryCache();
                     new SaveMemeTask().execute(this);
                 } else {
-                    SnackBar.show(this, R.string.permission_denied);
+                    Snackbar.make(mMultiStateView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                 }
                 break;
         }

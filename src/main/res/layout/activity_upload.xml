@@ -6,60 +6,52 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.kennyc.view.MultiStateView
-        android:id="@+id/multiView"
+    <com.kenny.openimgur.ui.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        app:msv_emptyView="@layout/uploads_empty"
-        app:msv_loadingView="@layout/loading_view"
-        app:msv_viewState="empty">
+        app:swipingEnabled="false" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </com.kennyc.view.MultiStateView>
-
-    <LinearLayout
-        android:id="@+id/uploadContainer"
+    <FrameLayout
+        android:id="@+id/indicatorContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?colorPrimaryDark"
-        android:orientation="horizontal"
-        tools:background="@color/theme_blue_dark">
+        android:background="?colorPrimary"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <Button
-            android:id="@+id/cameraBtn"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="0dp"
+            android:id="@+id/back"
+            style="?borderlessButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_action_camera_24dp"
-            android:text="@string/upload_camera"
+            android:layout_gravity="left|center_vertical"
+            android:drawableLeft="@drawable/ic_left_24dp"
+            android:text="@string/back"
             android:textColor="@android:color/white" />
+
+        <com.davidpacioianu.inkpageindicator.InkPageIndicator
+            android:id="@+id/indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:animationDuration="320"
+            app:currentPageIndicatorColor="?colorAccent"
+            app:dotDiameter="8dp"
+            app:dotGap="8dp"
+            app:pageIndicatorColor="@color/primary_dark_light" />
 
         <Button
-            android:id="@+id/galleryBtn"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="0dp"
+            android:id="@+id/next"
+            style="?borderlessButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_action_gallery_24dp"
-            android:text="@string/upload_gallery"
+            android:layout_gravity="right|center_vertical"
+            android:drawableRight="@drawable/ic_right_24dp"
+            android:text="@string/next"
             android:textColor="@android:color/white" />
 
-        <Button
-            android:id="@+id/linkBtn"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_action_link_24dp"
-            android:text="@string/upload_link"
-            android:textColor="@android:color/white" />
-
-    </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

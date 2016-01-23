@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     app:msv_emptyView="@layout/login_view"
-    app:msv_errorView="@layout/profile_error"
+    app:msv_errorView="@layout/error_view"
     app:msv_loadingView="@layout/loading_view"
     app:msv_viewState="loading">
 

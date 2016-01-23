@@ -11,7 +11,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         app:msv_emptyView="@layout/empty_comment_view"
-        app:msv_errorView="@layout/profile_error"
+        app:msv_errorView="@layout/error_view"
         app:msv_loadingView="@layout/loading_view"
         app:msv_viewState="loading">
 

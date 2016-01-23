@@ -2,6 +2,7 @@ package com.kenny.openimgur.classes;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import java.util.List;
 
@@ -22,4 +23,6 @@ public interface FragmentListener {
     void onUpdateActionBarTitle(String title);
 
     void onFragmentStateChange(@FragmentState int state);
+
+    View getSnackbarView();
 }

@@ -22,6 +22,7 @@ import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
@@ -182,7 +183,7 @@ public class TopicsFragment extends BaseGridFragment {
                         /* No results came back from the api, topic must have been removed.
                          This needs to be confirmed that this can happen */
             String message = getString(R.string.topics_empty_result, mTopic.getName());
-            app.getSql().deleteTopic(mTopic.getId());
+            SqlHelper.getInstance(getActivity()).deleteTopic(mTopic.getId());
             ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, message);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         }
@@ -191,19 +192,20 @@ public class TopicsFragment extends BaseGridFragment {
     @Override
     protected void onRestoreSavedInstance(Bundle savedInstanceState) {
         super.onRestoreSavedInstance(savedInstanceState);
+        SqlHelper sql = SqlHelper.getInstance(getActivity());
 
         if (savedInstanceState == null) {
             SharedPreferences pref = app.getPreferences();
             mSort = ImgurFilters.GallerySort.getSortFromString(pref.getString(KEY_SORT, null));
             mTimeSort = ImgurFilters.TimeSort.getSortFromString(pref.getString(KEY_TOP_SORT, null));
-            mTopic = app.getSql().getTopic(pref.getInt(KEY_TOPIC_ID, -1));
+            mTopic = sql.getTopic(pref.getInt(KEY_TOPIC_ID, -1));
         } else {
             mSort = ImgurFilters.GallerySort.getSortFromString(savedInstanceState.getString(KEY_SORT, ImgurFilters.GallerySort.TIME.getSort()));
             mTimeSort = ImgurFilters.TimeSort.getSortFromString(savedInstanceState.getString(KEY_TOP_SORT, null));
             mTopic = savedInstanceState.getParcelable(KEY_TOPIC);
         }
 
-        List<ImgurTopic> topics = app.getSql().getTopics();
+        List<ImgurTopic> topics = sql.getTopics();
 
         if (!topics.isEmpty()) {
             if (mTopic == null) mTopic = topics.get(0);
@@ -242,7 +244,7 @@ public class TopicsFragment extends BaseGridFragment {
 
                 if (response != null && response.body() != null && !response.body().data.isEmpty()) {
                     List<ImgurTopic> topics = response.body().data;
-                    app.getSql().addTopics(topics);
+                    SqlHelper.getInstance(getActivity()).addTopics(topics);
                     // Auto fetch the first topic
                     if (mTopic == null) mTopic = topics.get(0);
                     if (mListener != null) mListener.onUpdateActionBarSpinner(topics, mTopic);

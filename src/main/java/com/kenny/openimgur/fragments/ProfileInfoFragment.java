@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,42 +18,45 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
 import com.kenny.openimgur.activities.ProfileActivity;
 import com.kenny.openimgur.activities.ViewActivity;
+import com.kenny.openimgur.adapters.ProfileInfoAdapter;
+import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.responses.TrophyResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurListener;
+import com.kenny.openimgur.classes.ImgurTrophy;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.LinkUtils;
-import com.kenny.snackbar.SnackBar;
+import com.kennyc.view.MultiStateView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.List;
 
 import butterknife.Bind;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 12/14/14.
  */
 public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
+    private static final String KEY_TROPHIES = "trophies";
+
     private static final String KEY_USER = "user";
 
-    @Bind(R.id.notoriety)
-    TextView mNotoriety;
+    @Bind(R.id.list)
+    RecyclerView mList;
 
-    @Bind(R.id.rep)
-    TextView mRep;
+    @Bind(R.id.container)
+    MultiStateView mMultiStateView;
 
-    @Bind(R.id.bio)
-    TextView mBio;
-
-    @Bind(R.id.date)
-    TextView mDate;
+    private ProfileInfoAdapter mAdapter;
 
     private ImgurUser mSelectedUser;
 
@@ -78,14 +83,32 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Bundle bundle = getArguments();
+        List<ImgurTrophy> trophies = null;
 
-        if (bundle == null || !bundle.containsKey(KEY_USER)) {
-            throw new IllegalArgumentException("Bundle can not be null and must contain a user");
+        if (savedInstanceState != null) {
+            mSelectedUser = savedInstanceState.getParcelable(KEY_USER);
+            trophies = savedInstanceState.getParcelableArrayList(KEY_TROPHIES);
         }
 
-        mSelectedUser = bundle.getParcelable(KEY_USER);
-        setupInfo();
+        if (mSelectedUser == null) {
+            Bundle bundle = getArguments();
+            if (bundle == null || !bundle.containsKey(KEY_USER)) {
+                throw new IllegalArgumentException("Bundle can not be null and must contain a user");
+            } else {
+                mSelectedUser = bundle.getParcelable(KEY_USER);
+            }
+        }
+
+
+        mList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+
+        if (trophies != null && !trophies.isEmpty()) {
+            mAdapter = new ProfileInfoAdapter(getActivity(), trophies, mSelectedUser, this);
+            mList.setAdapter(mAdapter);
+            mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+        } else {
+            fetchTrophies();
+        }
     }
 
     @Override
@@ -108,7 +131,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                     ImgurConvo convo = new ImgurConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
                     startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
                 } else {
-                    SnackBar.show(getActivity(), R.string.user_not_logged_in);
+                    Snackbar.make(mMultiStateView, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
                 }
                 return true;
         }
@@ -128,28 +151,28 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
         super.onPause();
     }
 
-    /**
-     * Sets up the view to display the user's info
-     */
-    private void setupInfo() {
-        String date = new SimpleDateFormat("MMM yyyy").format(new Date(mSelectedUser.getCreated()));
-        mNotoriety.setText(mSelectedUser.getNotoriety().getStringId());
-        mNotoriety.setTextColor(getResources().getColor(mSelectedUser.getNotoriety().getNotorietyColor()));
-        mRep.setText(getString(R.string.profile_rep, mSelectedUser.getReputation()));
-        mDate.setText(getString(R.string.profile_date, date));
-
-        if (!TextUtils.isEmpty(mSelectedUser.getBio())) {
-            mBio.setText(mSelectedUser.getBio());
-            mBio.setMovementMethod(CustomLinkMovement.getInstance(this));
-            Linkify.addLinks(mBio, Linkify.WEB_URLS);
-        } else {
-            mBio.setText(getString(R.string.profile_bio_empty, mSelectedUser.getUsername()));
-        }
+    @Override
+    public void onDestroyView() {
+        if (mAdapter != null) mAdapter.onDestroy();
+        super.onDestroyView();
     }
 
     @Override
     public void onPhotoTap(View view) {
-        // NOOP
+        // Adjust for header
+        int adapterPosition = mList.getChildAdapterPosition(view) - 1;
+
+        if (adapterPosition != RecyclerView.NO_POSITION) {
+            ImgurTrophy trophy = mAdapter.getItem(adapterPosition);
+            String dataLink = trophy.getDataLink();
+            String id = LinkUtils.getGalleryId(trophy.getDataLink());
+
+            if (!TextUtils.isEmpty(id)) {
+                startActivity(ViewActivity.createGalleryIntentIntent(getActivity(), id));
+            } else if (!TextUtils.isEmpty(dataLink)) {
+                onLinkTap(null, dataLink);
+            }
+        }
     }
 
     @Override
@@ -164,8 +187,16 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
             switch (match) {
                 case GALLERY:
+                    String id = LinkUtils.getGalleryId(url);
+
+                    if (!TextUtils.isEmpty(id)) {
+                        startActivity(ViewActivity.createGalleryIntentIntent(getActivity(), id));
+                    }
+                    break;
+
                 case ALBUM:
-                    Intent intent = ViewActivity.createIntent(getActivity(), url, match == LinkUtils.LinkMatch.ALBUM).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    String albumId = LinkUtils.getAlbumId(url);
+                    Intent intent = ViewActivity.createAlbumIntent(getActivity(), albumId);
                     startActivity(intent);
                     break;
 
@@ -195,6 +226,14 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                     startActivity(ProfileActivity.createIntent(getActivity(), url.replace("@", "")));
                     break;
 
+                case USER:
+                    String username = LinkUtils.getUsername(url);
+
+                    if (!TextUtils.isEmpty(username)) {
+                        startActivity(ProfileActivity.createIntent(getActivity(), username));
+                    }
+                    break;
+
                 case NONE:
                 default:
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -202,7 +241,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                     if (browserIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                         startActivity(browserIntent);
                     } else {
-                        SnackBar.show(getActivity(), R.string.cant_launch_intent);
+                        Snackbar.make(mMultiStateView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
                     }
                     break;
             }
@@ -217,5 +256,38 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onPhotoLongTapListener(View view) {
         // NOOP
+    }
+
+    private void fetchTrophies() {
+        ApiClient.getService().getProfileTrophies(mSelectedUser.getUsername()).enqueue(new Callback<TrophyResponse>() {
+            @Override
+            public void onResponse(Response<TrophyResponse> response, Retrofit retrofit) {
+                if (response.body() != null && response.body().data != null) {
+                    mAdapter = new ProfileInfoAdapter(getActivity(), response.body().data.trophies, mSelectedUser, ProfileInfoFragment.this);
+                } else {
+                    mAdapter = new ProfileInfoAdapter(getActivity(), null, mSelectedUser, ProfileInfoFragment.this);
+                }
+
+                mList.setAdapter(mAdapter);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                mAdapter = new ProfileInfoAdapter(getActivity(), null, mSelectedUser, ProfileInfoFragment.this);
+                mList.setAdapter(mAdapter);
+                mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+            }
+        });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mAdapter != null) {
+            outState.putParcelableArrayList(KEY_TROPHIES, mAdapter.retainItems());
+        }
+
+        outState.putParcelable(KEY_USER, mSelectedUser);
     }
 }
