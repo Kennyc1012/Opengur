@@ -20,7 +20,7 @@ public class LinkUtils {
             "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+$";
 
     private static final String REGEX_IMGUR_GALLERY = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/gallery\\/(?!=\\/)\\w+$";
+            "(m.imgur.com|imgur.com|i.imgur.com)\\/gallery\\/.+";
 
     private static final String REGEX_IMGUR_USER = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
             "(m.imgur.com|imgur.com|i.imgur.com)\\/user\\/.+";
@@ -37,11 +37,10 @@ public class LinkUtils {
 
     private static final String REGEX_IMGUR_PHOTO_PNG = "([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/(m.imgur.com\\/|imgur.com\\/|i.imgur.com\\/)\\w+\\.png$";
 
-    // Pattern used to extra an ID from a url
+    // Patterns used to extract Imgur meta data from Urls
     private static final Pattern ID_PATTERN = Pattern.compile(".com\\/(.*)\\W");
-
-    // Pattern used to extra a username from a url
     private static final Pattern USER_PATTERN = Pattern.compile("(?<=/user/)(?!=/)\\w+");
+    private static final Pattern GALLERY_ID_PATTERN = Pattern.compile("(?<=/gallery/)(?!=/)\\w+");
 
     public enum LinkMatch {
         IMAGE_URL,
@@ -125,6 +124,26 @@ public class LinkUtils {
             String username = match.group();
             LogUtil.v(TAG, "Username " + username + " extracted from url " + url);
             return username;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns a gallery id from a given url
+     *
+     * @param url
+     * @return
+     */
+    @Nullable
+    public static String getGalleryId(@Nullable String url) {
+        if (TextUtils.isEmpty(url)) return null;
+        Matcher match = GALLERY_ID_PATTERN.matcher(url);
+
+        if (match.find()) {
+            String id = match.group();
+            LogUtil.v(TAG, "Gallery Id " + id + " extracted from url " + url);
+            return id;
         }
 
         return null;
