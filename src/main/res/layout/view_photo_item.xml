@@ -19,6 +19,8 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:linksClickable="true"
             android:padding="8dp"
             android:textStyle="bold" />
 
@@ -61,6 +63,8 @@
             android:id="@+id/desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:linksClickable="true"
             android:padding="8dp"
             android:textAppearance="@style/TextAppearance.Regular" />
 

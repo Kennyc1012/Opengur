@@ -277,7 +277,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
             @Override
             public void onFailure(Throwable t) {
                 if (!isAdded()) return;
-                
+
                 mAdapter = new ProfileInfoAdapter(getActivity(), null, mSelectedUser, ProfileInfoFragment.this);
                 mList.setAdapter(mAdapter);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
