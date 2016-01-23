@@ -15,8 +15,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 project.ext {
-    version_name = '4.3.0'
-    version_code = 65
+    version_name = '4.3.1'
+    version_code = 66
     support_version = '23.1.1'
 }
 
