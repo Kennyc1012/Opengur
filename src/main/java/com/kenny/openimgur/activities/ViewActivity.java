@@ -558,6 +558,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     startActivity(ProfileActivity.createIntent(getApplicationContext(), url.replace("@", "")));
                     break;
 
+                case USER:
+                    String username = LinkUtils.getUsername(url);
+
+                    if (!TextUtils.isEmpty(username)) {
+                        startActivity(ProfileActivity.createIntent(getApplicationContext(), username));
+                    }
+                    break;
+
                 case NONE:
                 default:
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -726,7 +734,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                             if (comment.getImageId().equals(imgurBaseObject.getId())) {
                                 // Reverse the list for worst sorting as it will be loading the Top comments
-                                if (mCommentSort == CommentSort.WORST) Collections.reverse(commentResponse.data);
+                                if (mCommentSort == CommentSort.WORST)
+                                    Collections.reverse(commentResponse.data);
 
                                 // We only show the comments for the correct gallery item
                                 if (mCommentAdapter == null) {
@@ -858,7 +867,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         ApiClient.getService().voteOnComment(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
-                if (response.body() != null) LogUtil.v(TAG, "Result of comment voting " + response.body().data);
+                if (response.body() != null)
+                    LogUtil.v(TAG, "Result of comment voting " + response.body().data);
             }
 
             @Override

@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
  * Created by kcampagna on 9/8/14.
  */
 public class LinkUtils {
+    private static final String TAG = LinkUtils.class.getSimpleName();
+
     private static final String REGEX_IMAGE_URL = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://\\S+(.jpg|.jpeg|.gif|.png)$";
 
     private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
@@ -21,7 +23,7 @@ public class LinkUtils {
             "(m.imgur.com|imgur.com|i.imgur.com)\\/gallery\\/(?!=\\/)\\w+$";
 
     private static final String REGEX_IMGUR_USER = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/user\\/(?!=\\/)\\w+$";
+            "(m.imgur.com|imgur.com|i.imgur.com)\\/user\\/.+";
 
     private static final String REGEX_IMGUR_ALBUM = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
             "(m.imgur.com|imgur.com|i.imgur.com)\\/a\\/(?!=\\/)\\w+$";
@@ -37,6 +39,9 @@ public class LinkUtils {
 
     // Pattern used to extra an ID from a url
     private static final Pattern ID_PATTERN = Pattern.compile(".com\\/(.*)\\W");
+
+    // Pattern used to extra a username from a url
+    private static final Pattern USER_PATTERN = Pattern.compile("(?<=/user/)(?!=/)\\w+");
 
     public enum LinkMatch {
         IMAGE_URL,
@@ -88,7 +93,8 @@ public class LinkUtils {
      * @param url The url of the image
      * @return The id of the image, or null if not found
      */
-    public static String getId(String url) {
+    @Nullable
+    public static String getId(@Nullable String url) {
         if (TextUtils.isEmpty(url)) {
             return null;
         }
@@ -96,7 +102,29 @@ public class LinkUtils {
         Matcher match = ID_PATTERN.matcher(url);
 
         if (match.find()) {
-            return match.group(1);
+            String id = match.group(1);
+            LogUtil.v(TAG, "Id " + id + " extracted from url " + url);
+            return id;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns a username from a given url
+     *
+     * @param url
+     * @return
+     */
+    @Nullable
+    public static String getUsername(@Nullable String url) {
+        if (TextUtils.isEmpty(url)) return null;
+        Matcher match = USER_PATTERN.matcher(url);
+
+        if (match.find()) {
+            String username = match.group();
+            LogUtil.v(TAG, "Username " + username + " extracted from url " + url);
+            return username;
         }
 
         return null;

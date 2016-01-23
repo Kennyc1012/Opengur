@@ -224,6 +224,14 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                     startActivity(ProfileActivity.createIntent(getActivity(), url.replace("@", "")));
                     break;
 
+                case USER:
+                    String username = LinkUtils.getUsername(url);
+
+                    if (!TextUtils.isEmpty(username)) {
+                        startActivity(ProfileActivity.createIntent(getActivity(), username));
+                    }
+                    break;
+
                 case NONE:
                 default:
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));

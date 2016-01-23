@@ -435,7 +435,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
             case R.id.header:
                 mDrawer.closeDrawers();
-                startActivityForResult(ProfileActivity.createIntent(getApplicationContext(), null), RequestCodes.PROFILE);
+                startActivityForResult(ProfileActivity.createIntent(getApplicationContext(), "MrMusho"), RequestCodes.PROFILE);
                 break;
 
             case R.id.badgeContainer:

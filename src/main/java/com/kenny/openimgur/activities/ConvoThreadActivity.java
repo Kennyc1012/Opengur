@@ -393,6 +393,14 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                     getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(split[split.length - 1], false, false, false), "popup").commitAllowingStateLoss();
                     break;
 
+                case USER:
+                    String username = LinkUtils.getUsername(url);
+
+                    if (!TextUtils.isEmpty(username)) {
+                        startActivity(ProfileActivity.createIntent(getApplicationContext(), username));
+                    }
+                    break;
+
                 case NONE:
                 default:
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
