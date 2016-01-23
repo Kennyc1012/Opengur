@@ -168,7 +168,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
             String id = LinkUtils.getGalleryId(trophy.getDataLink());
 
             if (!TextUtils.isEmpty(id)) {
-                startActivity(ViewActivity.createGalleryIntentIntent(getActivity(), id));
+                startActivity(ViewActivity.createGalleryIntent(getActivity(), id));
             } else if (!TextUtils.isEmpty(dataLink)) {
                 onLinkTap(null, dataLink);
             }
@@ -190,7 +190,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                     String id = LinkUtils.getGalleryId(url);
 
                     if (!TextUtils.isEmpty(id)) {
-                        startActivity(ViewActivity.createGalleryIntentIntent(getActivity(), id));
+                        startActivity(ViewActivity.createGalleryIntent(getActivity(), id));
                     }
                     break;
 
