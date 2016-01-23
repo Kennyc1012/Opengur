@@ -137,6 +137,7 @@
     <string name="profile_no_albums">%s has not created any albums</string>
     <string name="profile_unfavorite_title">Remove Favorite</string>
     <string name="profile_unfavorite_message">Are you sure you want to remove this from your favorites?</string>
+    <string name="profile_not_found">Unable to find user %s</string>
 
     <!-- Preferences -->
     <string name="pref_cache_title">Cache</string>
