@@ -262,6 +262,8 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
         ApiClient.getService().getProfileTrophies(mSelectedUser.getUsername()).enqueue(new Callback<TrophyResponse>() {
             @Override
             public void onResponse(Response<TrophyResponse> response, Retrofit retrofit) {
+                if (!isAdded()) return;
+
                 if (response.body() != null && response.body().data != null) {
                     mAdapter = new ProfileInfoAdapter(getActivity(), response.body().data.trophies, mSelectedUser, ProfileInfoFragment.this);
                 } else {
@@ -274,6 +276,8 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
             @Override
             public void onFailure(Throwable t) {
+                if (!isAdded()) return;
+
                 mAdapter = new ProfileInfoAdapter(getActivity(), null, mSelectedUser, ProfileInfoFragment.this);
                 mList.setAdapter(mAdapter);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
