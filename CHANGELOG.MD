@@ -1,4 +1,24 @@
 #Open Imgur Changelog
+<b>4.3.0</b> January 23, 2016
+- Revamp of uploading
+- Display trophies on profiles
+- Add shared element transitions for Meme creation
+- Allow multiple subreddits in Muzei (comma separate values)
+- Better link handling
+- Rework caching directories
+- Switch to design library Snackbar
+- Use Singleton for database calls
+- Fix Muzei icon
+- Fix endless Alert dialog error
+- Several crash fixes
+- Update Okhttp V2.7.1
+- Update gradle V2.10
+- Update gradle plugin V2.0.0-alpha7
+
+<b>4.2.2</b> December 21, 2015
+- Make Immersive mode a setting
+- Update Share Bottom sheets to be grid style
+
 <b>4.2.1</b> December 19, 2015
 - Add "Worst" comment sorting 
 - Add Immersive mode to fullscreen photos

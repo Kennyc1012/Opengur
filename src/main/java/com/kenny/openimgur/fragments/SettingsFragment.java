@@ -1,8 +1,6 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -104,12 +102,6 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
                     if (!mFirstLaunch) getActivity().recreate();
                     updated = true;
                     break;
-
-                case SettingsActivity.KEY_CACHE_LOC:
-                    if (!mFirstLaunch)
-                        new DeleteCacheTask(SettingsFragment.this, object.toString()).execute();
-                    updated = true;
-                    break;
             }
         } else if (preference instanceof CheckBoxPreference) {
             switch (key) {
@@ -147,6 +139,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.clearing_cache, Snackbar.LENGTH_LONG).show();
                                 new DeleteCacheTask(SettingsFragment.this, null).execute();
                             }
                         }).show();
@@ -218,12 +211,6 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mFragment.get().getFragmentManager().beginTransaction().add(LoadingDialogFragment.createInstance(R.string.one_moment, false), "loading").commit();
-        }
-
-        @Override
         protected Long doInBackground(Void... voids) {
             SettingsFragment frag = mFragment.get();
             Activity activity = frag.getActivity();
@@ -244,12 +231,6 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
 
             if (frag != null) {
                 frag.findPreference(SettingsActivity.KEY_CURRENT_CACHE_SIZE).setSummary(FileUtil.humanReadableByteCount(cacheSize, false));
-                Fragment fragment = frag.getFragmentManager().findFragmentByTag("loading");
-
-                if (fragment != null) {
-                    ((DialogFragment) fragment).dismiss();
-                }
-
                 mFragment.clear();
             }
         }

@@ -6,7 +6,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0-alpha5'
+        classpath 'com.android.tools.build:gradle:2.0.0-alpha7'
         classpath 'io.fabric.tools:gradle:+'
     }
 }
@@ -17,6 +17,7 @@ apply plugin: 'io.fabric'
 project.ext {
     version_name = '4.3.0'
     version_code = 64
+    version_code = 65
     support_version = '23.1.1'
 }
 
@@ -50,7 +51,7 @@ android {
         }
 
         beta {
-            versionName project.ext.version_name + "-beta2"
+            versionName project.ext.version_name + "-beta"
         }
     }
 

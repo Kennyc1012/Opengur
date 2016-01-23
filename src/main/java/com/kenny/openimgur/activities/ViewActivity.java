@@ -196,11 +196,20 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     public static Intent createIntent(Context context, String url, boolean isAlbumLink) {
-        return createIntent(context, url).putExtra(KEY_VIEW_FOR_ALBUM, isAlbumLink);
+        return new Intent(context, ViewActivity.class)
+                .setAction(Intent.ACTION_VIEW)
+                .setData(Uri.parse(url))
+                .putExtra(KEY_VIEW_FOR_ALBUM, isAlbumLink);
     }
 
-    public static Intent createIntent(Context context, String url) {
-        return new Intent(context, ViewActivity.class).setAction(Intent.ACTION_VIEW).setData(Uri.parse(url));
+    public static Intent createGalleryIntentIntent(Context context, String id) {
+        String url = String.format("http://imgur.com/gallery/%s", id);
+        return createIntent(context, url, false);
+    }
+
+    public static Intent createAlbumIntent(Context context, String id) {
+        String url = String.format("http://imgur.com/a/%s", id);
+        return createIntent(context, url, true);
     }
 
     @Override
@@ -529,8 +538,16 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             switch (match) {
                 case GALLERY:
+                    String id = LinkUtils.getGalleryId(url);
+
+                    if (!TextUtils.isEmpty(id)) {
+                        startActivity(ViewActivity.createGalleryIntentIntent(getApplicationContext(), id).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    }
+                    break;
+
                 case ALBUM:
-                    Intent intent = ViewActivity.createIntent(getApplicationContext(), url, match == LinkUtils.LinkMatch.ALBUM).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    String albumId = LinkUtils.getAlbumId(url);
+                    Intent intent = ViewActivity.createAlbumIntent(getApplicationContext(), albumId).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;
 
@@ -555,6 +572,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                 case USER_CALLOUT:
                     startActivity(ProfileActivity.createIntent(getApplicationContext(), url.replace("@", "")));
+                    break;
+
+                case USER:
+                    String username = LinkUtils.getUsername(url);
+
+                    if (!TextUtils.isEmpty(username)) {
+                        startActivity(ProfileActivity.createIntent(getApplicationContext(), username));
+                    }
                     break;
 
                 case NONE:
@@ -725,7 +750,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                             if (comment.getImageId().equals(imgurBaseObject.getId())) {
                                 // Reverse the list for worst sorting as it will be loading the Top comments
-                                if (mCommentSort == CommentSort.WORST) Collections.reverse(commentResponse.data);
+                                if (mCommentSort == CommentSort.WORST)
+                                    Collections.reverse(commentResponse.data);
 
                                 // We only show the comments for the correct gallery item
                                 if (mCommentAdapter == null) {
@@ -857,7 +883,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         ApiClient.getService().voteOnComment(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                if (response.body() != null) LogUtil.v(TAG, "Result of comment voting " + response.body().data);
+                if (response.body() != null)
+                    LogUtil.v(TAG, "Result of comment voting " + response.body().data);
             }
 
             @Override

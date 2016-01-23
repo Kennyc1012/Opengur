@@ -2,6 +2,7 @@ package com.kenny.openimgur.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.util.LinkUtils;
@@ -39,15 +40,28 @@ public class RoutingActivity extends BaseActivity {
 
         switch (match) {
             case USER:
-                String username = link.substring(link.lastIndexOf("/") + 1);
-                LogUtil.v(TAG, "Username " + username + " extracted from url");
-                routingIntent = ProfileActivity.createIntent(getApplicationContext(), username);
+                String username = LinkUtils.getUsername(link);
+
+                if (!TextUtils.isEmpty(username)) {
+                    routingIntent = ProfileActivity.createIntent(getApplicationContext(), username);
+                }
                 break;
 
             case GALLERY:
+                String id = LinkUtils.getGalleryId(link);
+
+                if (!TextUtils.isEmpty(id)) {
+                    routingIntent = ViewActivity.createGalleryIntentIntent(getApplicationContext(), id);
+                }
+                break;
+
             case IMAGE:
+                routingIntent = ViewActivity.createIntent(getApplicationContext(), link, false);
+                break;
+
             case ALBUM:
-                routingIntent = ViewActivity.createIntent(getApplicationContext(), link, match == LinkUtils.LinkMatch.ALBUM);
+                String albumId = LinkUtils.getAlbumId(link);
+                routingIntent = ViewActivity.createAlbumIntent(getApplicationContext(), albumId);
                 break;
 
             case IMAGE_URL_QUERY:

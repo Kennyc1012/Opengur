@@ -12,19 +12,21 @@ import java.util.regex.Pattern;
  * Created by kcampagna on 9/8/14.
  */
 public class LinkUtils {
+    private static final String TAG = LinkUtils.class.getSimpleName();
+
     private static final String REGEX_IMAGE_URL = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://\\S+(.jpg|.jpeg|.gif|.png)$";
 
     private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
             "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+$";
 
     private static final String REGEX_IMGUR_GALLERY = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/gallery\\/(?!=\\/)\\w+$";
+            "(m.imgur.com|imgur.com|i.imgur.com)\\/gallery\\/.+";
 
     private static final String REGEX_IMGUR_USER = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/user\\/(?!=\\/)\\w+$";
+            "(m.imgur.com|imgur.com|i.imgur.com)\\/user\\/.+";
 
     private static final String REGEX_IMGUR_ALBUM = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/a\\/(?!=\\/)\\w+$";
+            "(m.imgur.com|imgur.com|i.imgur.com)\\/a\\/.+";
 
     private static final String REGEX_IMGUR_DIRECT_LINK = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
             "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+(.jpg|.jpeg|.gif|.png|.gifv|.mp4|.webm)$";
@@ -35,8 +37,12 @@ public class LinkUtils {
 
     private static final String REGEX_IMGUR_PHOTO_PNG = "([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/(m.imgur.com\\/|imgur.com\\/|i.imgur.com\\/)\\w+\\.png$";
 
-    // Pattern used to extra an ID from a url
+    // Patterns used to extract Imgur meta data from Urls
     private static final Pattern ID_PATTERN = Pattern.compile(".com\\/(.*)\\W");
+    private static final Pattern USER_PATTERN = Pattern.compile("(?<=/user/)(?!=/)\\w+");
+    private static final Pattern GALLERY_ID_PATTERN = Pattern.compile("(?<=/gallery/)(?!=/)\\w+");
+    private static final Pattern ALBUM_ID_PATTERN = Pattern.compile("(?<=/a/)(?!=/)\\w+");
+    public static final Pattern USER_CALLOUT_PATTERN = Pattern.compile("@\\w+");
 
     public enum LinkMatch {
         IMAGE_URL,
@@ -88,7 +94,8 @@ public class LinkUtils {
      * @param url The url of the image
      * @return The id of the image, or null if not found
      */
-    public static String getId(String url) {
+    @Nullable
+    public static String getId(@Nullable String url) {
         if (TextUtils.isEmpty(url)) {
             return null;
         }
@@ -96,7 +103,69 @@ public class LinkUtils {
         Matcher match = ID_PATTERN.matcher(url);
 
         if (match.find()) {
-            return match.group(1);
+            String id = match.group(1);
+            LogUtil.v(TAG, "Id " + id + " extracted from url " + url);
+            return id;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns a username from a given url
+     *
+     * @param url
+     * @return
+     */
+    @Nullable
+    public static String getUsername(@Nullable String url) {
+        if (TextUtils.isEmpty(url)) return null;
+        Matcher match = USER_PATTERN.matcher(url);
+
+        if (match.find()) {
+            String username = match.group();
+            LogUtil.v(TAG, "Username " + username + " extracted from url " + url);
+            return username;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns a gallery id from a given url
+     *
+     * @param url
+     * @return
+     */
+    @Nullable
+    public static String getGalleryId(@Nullable String url) {
+        if (TextUtils.isEmpty(url)) return null;
+        Matcher match = GALLERY_ID_PATTERN.matcher(url);
+
+        if (match.find()) {
+            String id = match.group();
+            LogUtil.v(TAG, "Gallery Id " + id + " extracted from url " + url);
+            return id;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns an album id from a given url
+     *
+     * @param url
+     * @return
+     */
+    @Nullable
+    public static String getAlbumId(@Nullable String url) {
+        if (TextUtils.isEmpty(url)) return null;
+        Matcher match = ALBUM_ID_PATTERN.matcher(url);
+
+        if (match.find()) {
+            String id = match.group();
+            LogUtil.v(TAG, "Album Id " + id + " extracted from url " + url);
+            return id;
         }
 
         return null;

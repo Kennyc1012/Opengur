@@ -40,6 +40,7 @@ import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -272,7 +273,12 @@ public class ProfileActivity extends BaseActivity {
         });
     }
 
-    private void fetchProfile(String username) {
+    @OnClick(R.id.errorButton)
+    public void retryClick() {
+        if (mSelectedUser != null) fetchProfile(mSelectedUser.getUsername());
+    }
+
+    private void fetchProfile(final String username) {
         ApiClient.getService().getProfile(username).enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
@@ -301,7 +307,7 @@ public class ProfileActivity extends BaseActivity {
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     supportInvalidateOptionsMenu();
                 } else {
-                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
+                    ViewUtils.setErrorText(mMultiView, R.id.errorMessage, getString(R.string.profile_not_found, username));
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
             }

@@ -50,8 +50,6 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
     private static final String KEY_USER = "user";
 
-    private static final String REGEX_GALLERY_PATH = "^\\/gallery\\/\\w+$";
-
     @Bind(R.id.list)
     RecyclerView mList;
 
@@ -167,16 +165,12 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
         if (adapterPosition != RecyclerView.NO_POSITION) {
             ImgurTrophy trophy = mAdapter.getItem(adapterPosition);
             String dataLink = trophy.getDataLink();
+            String id = LinkUtils.getGalleryId(trophy.getDataLink());
 
-            if (!TextUtils.isEmpty(dataLink)) {
-                if (dataLink.matches(REGEX_GALLERY_PATH)) {
-                    // Gallery link, open in ViewActivity
-                    String url = String.format("https://imgur.com%s", dataLink);
-                    startActivity(ViewActivity.createIntent(getActivity(), url));
-                } else {
-                    // Attempt to open link in browser
-                    onLinkTap(null, dataLink);
-                }
+            if (!TextUtils.isEmpty(id)) {
+                startActivity(ViewActivity.createGalleryIntentIntent(getActivity(), id));
+            } else if (!TextUtils.isEmpty(dataLink)) {
+                onLinkTap(null, dataLink);
             }
         }
     }
@@ -193,8 +187,16 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
             switch (match) {
                 case GALLERY:
+                    String id = LinkUtils.getGalleryId(url);
+
+                    if (!TextUtils.isEmpty(id)) {
+                        startActivity(ViewActivity.createGalleryIntentIntent(getActivity(), id));
+                    }
+                    break;
+
                 case ALBUM:
-                    Intent intent = ViewActivity.createIntent(getActivity(), url, match == LinkUtils.LinkMatch.ALBUM).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    String albumId = LinkUtils.getAlbumId(url);
+                    Intent intent = ViewActivity.createAlbumIntent(getActivity(), albumId);
                     startActivity(intent);
                     break;
 
@@ -222,6 +224,14 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
                 case USER_CALLOUT:
                     startActivity(ProfileActivity.createIntent(getActivity(), url.replace("@", "")));
+                    break;
+
+                case USER:
+                    String username = LinkUtils.getUsername(url);
+
+                    if (!TextUtils.isEmpty(username)) {
+                        startActivity(ProfileActivity.createIntent(getActivity(), username));
+                    }
                     break;
 
                 case NONE:

@@ -371,8 +371,16 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
 
             switch (match) {
                 case GALLERY:
+                    String id = LinkUtils.getGalleryId(url);
+
+                    if (!TextUtils.isEmpty(id)) {
+                        startActivity(ViewActivity.createGalleryIntentIntent(getApplicationContext(), id));
+                    }
+                    break;
+
                 case ALBUM:
-                    Intent intent = ViewActivity.createIntent(getApplicationContext(), url, match == LinkUtils.LinkMatch.ALBUM).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    String albumId = LinkUtils.getAlbumId(url);
+                    Intent intent = ViewActivity.createAlbumIntent(getApplicationContext(), albumId);
                     startActivity(intent);
                     break;
 
@@ -393,6 +401,14 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                 case IMAGE:
                     String[] split = url.split("\\/");
                     getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(split[split.length - 1], false, false, false), "popup").commitAllowingStateLoss();
+                    break;
+
+                case USER:
+                    String username = LinkUtils.getUsername(url);
+
+                    if (!TextUtils.isEmpty(username)) {
+                        startActivity(ProfileActivity.createIntent(getApplicationContext(), username));
+                    }
                     break;
 
                 case NONE:
