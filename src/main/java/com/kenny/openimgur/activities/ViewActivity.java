@@ -202,7 +202,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 .putExtra(KEY_VIEW_FOR_ALBUM, isAlbumLink);
     }
 
-    public static Intent createGalleryIntentIntent(Context context, String id) {
+    public static Intent createGalleryIntent(Context context, String id) {
         String url = String.format("http://imgur.com/gallery/%s", id);
         return createIntent(context, url, false);
     }
@@ -541,7 +541,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     String id = LinkUtils.getGalleryId(url);
 
                     if (!TextUtils.isEmpty(id)) {
-                        startActivity(ViewActivity.createGalleryIntentIntent(getApplicationContext(), id).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        startActivity(ViewActivity.createGalleryIntent(getApplicationContext(), id).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     }
                     break;
 

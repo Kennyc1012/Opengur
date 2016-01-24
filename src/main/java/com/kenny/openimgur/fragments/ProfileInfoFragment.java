@@ -168,7 +168,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
             String id = LinkUtils.getGalleryId(trophy.getDataLink());
 
             if (!TextUtils.isEmpty(id)) {
-                startActivity(ViewActivity.createGalleryIntentIntent(getActivity(), id));
+                startActivity(ViewActivity.createGalleryIntent(getActivity(), id));
             } else if (!TextUtils.isEmpty(dataLink)) {
                 onLinkTap(null, dataLink);
             }
@@ -190,7 +190,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                     String id = LinkUtils.getGalleryId(url);
 
                     if (!TextUtils.isEmpty(id)) {
-                        startActivity(ViewActivity.createGalleryIntentIntent(getActivity(), id));
+                        startActivity(ViewActivity.createGalleryIntent(getActivity(), id));
                     }
                     break;
 
@@ -274,6 +274,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
             @Override
             public void onFailure(Call<TrophyResponse> call, Throwable t) {
+                if (!isAdded()) return;
                 mAdapter = new ProfileInfoAdapter(getActivity(), null, mSelectedUser, ProfileInfoFragment.this);
                 mList.setAdapter(mAdapter);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
@@ -284,7 +285,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mAdapter != null) {
+        if (mAdapter != null && !mAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_TROPHIES, mAdapter.retainItems());
         }
 

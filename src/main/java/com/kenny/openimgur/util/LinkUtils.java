@@ -16,29 +16,29 @@ public class LinkUtils {
 
     private static final String REGEX_IMAGE_URL = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://\\S+(.jpg|.jpeg|.gif|.png)$";
 
-    private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+$";
+    private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://" +
+            "(m.imgur.com|imgur.com|i.imgur.com)/(?!=/)\\w+$";
 
-    private static final String REGEX_IMGUR_GALLERY = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/gallery\\/.+";
+    private static final String REGEX_IMGUR_GALLERY = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://" +
+            "(m.imgur.com|imgur.com|i.imgur.com)/gallery/.+";
 
-    private static final String REGEX_IMGUR_USER = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/user\\/.+";
+    private static final String REGEX_IMGUR_USER = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://" +
+            "(m.imgur.com|imgur.com|i.imgur.com)/user/.+";
 
-    private static final String REGEX_IMGUR_ALBUM = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/a\\/.+";
+    private static final String REGEX_IMGUR_ALBUM = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://" +
+            "(m.imgur.com|imgur.com|i.imgur.com)/a/.+";
 
-    private static final String REGEX_IMGUR_DIRECT_LINK = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/" +
-            "(m.imgur.com|imgur.com|i.imgur.com)\\/(?!=\\/)\\w+(.jpg|.jpeg|.gif|.png|.gifv|.mp4|.webm)$";
+    private static final String REGEX_IMGUR_DIRECT_LINK = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://" +
+            "(m.imgur.com|imgur.com|i.imgur.com)/(?!=/)\\w+(.jpg|.jpeg|.gif|.png|.gifv|.mp4|.webm)$";
 
     private static final String REGEX_IMGUR_USER_CALLOUT = "@\\w+";
 
     private static final String REGEX_IMAGE_URL_QUERY = "([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://\\S+(.jpg|.jpeg|.gif|.png)\\?\\w+$";
 
-    private static final String REGEX_IMGUR_PHOTO_PNG = "([hH][tT][tT][pP]|[hH][tT][tT][pP][sS]):\\/\\/(m.imgur.com\\/|imgur.com\\/|i.imgur.com\\/)\\w+\\.png$";
+    private static final String REGEX_IMGUR_PHOTO_PNG = "([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://(m.imgur.com/|imgur.com/|i.imgur.com/)\\w+\\.png$";
 
     // Patterns used to extract Imgur meta data from Urls
-    private static final Pattern ID_PATTERN = Pattern.compile(".com\\/(.*)\\W");
+    private static final Pattern ID_PATTERN = Pattern.compile("(?<=.com/)\\w+$");
     private static final Pattern USER_PATTERN = Pattern.compile("(?<=/user/)(?!=/)\\w+");
     private static final Pattern GALLERY_ID_PATTERN = Pattern.compile("(?<=/gallery/)(?!=/)\\w+");
     private static final Pattern ALBUM_ID_PATTERN = Pattern.compile("(?<=/a/)(?!=/)\\w+");
@@ -103,7 +103,7 @@ public class LinkUtils {
         Matcher match = ID_PATTERN.matcher(url);
 
         if (match.find()) {
-            String id = match.group(1);
+            String id = match.group(0);
             LogUtil.v(TAG, "Id " + id + " extracted from url " + url);
             return id;
         }

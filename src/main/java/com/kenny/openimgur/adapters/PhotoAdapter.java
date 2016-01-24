@@ -178,10 +178,10 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
                 photoHolder.title.setVisibility(View.GONE);
             }
 
-            Linkify.addLinks(photoHolder.title, Linkify.WEB_URLS);
-            Linkify.addLinks(photoHolder.title, LinkUtils.USER_CALLOUT_PATTERN, null);
-            Linkify.addLinks(photoHolder.desc, Linkify.WEB_URLS);
-            Linkify.addLinks(photoHolder.desc, LinkUtils.USER_CALLOUT_PATTERN, null);
+            //Linkify.addLinks(photoHolder.title, Linkify.WEB_URLS);
+            //Linkify.addLinks(photoHolder.title, LinkUtils.USER_CALLOUT_PATTERN, null);
+            //Linkify.addLinks(photoHolder.desc, Linkify.WEB_URLS);
+            //Linkify.addLinks(photoHolder.desc, LinkUtils.USER_CALLOUT_PATTERN, null);
             displayImage(photoHolder.image, url);
         }
     }
@@ -240,8 +240,8 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
             }
         });
 
-        holder.title.setMovementMethod(CustomLinkMovement.getInstance());
-        holder.desc.setMovementMethod(CustomLinkMovement.getInstance());
+        //holder.title.setMovementMethod(CustomLinkMovement.getInstance());
+        //holder.desc.setMovementMethod(CustomLinkMovement.getInstance());
     }
 
     /**

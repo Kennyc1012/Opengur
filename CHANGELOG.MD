@@ -1,4 +1,8 @@
 #Open Imgur Changelog
+<b>4.3.1</b> January 23, 2016
+- Fix profile info crash
+- Revert link clicking on photo titles/descriptions. 
+
 <b>4.3.0</b> January 23, 2016
 - Revamp of uploading
 - Display trophies on profiles
