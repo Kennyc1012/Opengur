@@ -11,9 +11,9 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 9/17/14.
@@ -104,7 +104,7 @@ public class RoutingActivity extends BaseActivity {
     private void fetchImageDetails(String id) {
         ApiClient.getService().getImageDetails(id).enqueue(new Callback<PhotoResponse>() {
             @Override
-            public void onResponse(Response<PhotoResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<PhotoResponse> call, Response<PhotoResponse> response) {
                 if (response != null && response.body() != null && response.body().data != null) {
                     ImgurPhoto photo = response.body().data;
 
@@ -116,7 +116,7 @@ public class RoutingActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<PhotoResponse> call, Throwable t) {
                 finish();
             }
         });
