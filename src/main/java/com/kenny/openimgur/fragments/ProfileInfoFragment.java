@@ -288,7 +288,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mAdapter != null) {
+        if (mAdapter != null && !mAdapter.isEmpty()) {
             outState.putParcelableArrayList(KEY_TROPHIES, mAdapter.retainItems());
         }
 
