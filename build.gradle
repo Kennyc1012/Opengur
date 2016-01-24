@@ -81,26 +81,34 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Support Library
     compile "com.android.support:support-annotations:${project.ext.support_version}"
     compile "com.android.support:support-v13:${project.ext.support_version}"
     compile "com.android.support:cardview-v7:${project.ext.support_version}"
     compile "com.android.support:appcompat-v7:${project.ext.support_version}"
     compile "com.android.support:recyclerview-v7:${project.ext.support_version}"
     compile "com.android.support:design:${project.ext.support_version}"
+
+    // UI
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.11'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.kennyc:multistateview:1.1'
-    compile 'com.github.Kennyc1012:BottomSheet:2.0.4'
     compile 'com.kennyc:text-drawable:1.0'
+    compile 'com.github.Kennyc1012:BottomSheet:2.0.4'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.pacioianu.david:ink-page-indicator:1.0.1'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.4.1'
-    compile 'com.google.android.apps.muzei:muzei-api:2.0'
+    compile(name: 'sliding_panel', ext: 'aar')
+
+    // Networking
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-SNAPSHOT'
     compile 'com.squareup.retrofit2:retrofit:2.0.0-SNAPSHOT'
     compile 'com.squareup.okhttp3:okhttp:3.0.1'
     compile 'com.google.code.gson:gson:2.5'
-    compile 'com.pacioianu.david:ink-page-indicator:1.0.1'
-    compile(name: 'sliding_panel', ext: 'aar')
+
+    // Misc
+    compile 'com.google.android.apps.muzei:muzei-api:2.0'
     compile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;
     }
