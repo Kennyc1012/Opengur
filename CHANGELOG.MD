@@ -1,4 +1,9 @@
 #Open Imgur Changelog
+<b>4.3.2</b> January 26, 2016
+- Fix another profile info crash
+- Handle all Imgur Links
+- Update Gif Drawable V 1.1.13
+
 <b>4.3.1</b> January 23, 2016
 - Fix profile info crash
 - Revert link clicking on photo titles/descriptions. 
