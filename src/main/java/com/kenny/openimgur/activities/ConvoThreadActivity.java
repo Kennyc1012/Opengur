@@ -372,7 +372,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                     String id = LinkUtils.getGalleryId(url);
 
                     if (!TextUtils.isEmpty(id)) {
-                        startActivity(ViewActivity.createGalleryIntentIntent(getApplicationContext(), id));
+                        startActivity(ViewActivity.createGalleryIntent(getApplicationContext(), id));
                     }
                     break;
 

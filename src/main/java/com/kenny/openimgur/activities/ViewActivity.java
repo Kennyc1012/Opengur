@@ -203,7 +203,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 .putExtra(KEY_VIEW_FOR_ALBUM, isAlbumLink);
     }
 
-    public static Intent createGalleryIntentIntent(Context context, String id) {
+    public static Intent createGalleryIntent(Context context, String id) {
         String url = String.format("http://imgur.com/gallery/%s", id);
         return createIntent(context, url, false);
     }
@@ -542,7 +542,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     String id = LinkUtils.getGalleryId(url);
 
                     if (!TextUtils.isEmpty(id)) {
-                        startActivity(ViewActivity.createGalleryIntentIntent(getApplicationContext(), id).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        startActivity(ViewActivity.createGalleryIntent(getApplicationContext(), id).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     }
                     break;
 
@@ -738,7 +738,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         }
 
                         if (response == null || response.body() == null) {
-                            ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
+                            ViewUtils.setErrorText(mMultiView, R.id.errorMessage, response != null ? ApiClient.getErrorCode(response.code()) : R.string.error_generic);
                             mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                             return;
                         }

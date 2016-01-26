@@ -5,8 +5,15 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.responses.PhotoResponse;
+import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
+
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Created by kcampagna on 9/17/14.
@@ -48,15 +55,20 @@ public class RoutingActivity extends BaseActivity {
                 break;
 
             case GALLERY:
-                String id = LinkUtils.getGalleryId(link);
+                String galleryId = LinkUtils.getGalleryId(link);
 
-                if (!TextUtils.isEmpty(id)) {
-                    routingIntent = ViewActivity.createGalleryIntentIntent(getApplicationContext(), id);
+                if (!TextUtils.isEmpty(galleryId)) {
+                    routingIntent = ViewActivity.createGalleryIntent(getApplicationContext(), galleryId);
                 }
                 break;
 
             case IMAGE:
-                routingIntent = ViewActivity.createIntent(getApplicationContext(), link, false);
+                String id = LinkUtils.getId(link);
+
+                if (!TextUtils.isEmpty(id)) {
+                    fetchImageDetails(id);
+                    return;
+                }
                 break;
 
             case ALBUM:
@@ -87,5 +99,26 @@ public class RoutingActivity extends BaseActivity {
     protected int getStyleRes() {
         // Routing activity is barely visible so the theme won't matter
         return R.style.Theme_Opengur_Light_DarkActionBar;
+    }
+
+    private void fetchImageDetails(String id) {
+        ApiClient.getService().getImageDetails(id).enqueue(new Callback<PhotoResponse>() {
+            @Override
+            public void onResponse(Response<PhotoResponse> response, Retrofit retrofit) {
+                if (response != null && response.body() != null && response.body().data != null) {
+                    ImgurPhoto photo = response.body().data;
+
+                    if (photo != null) {
+                        startActivity(FullScreenPhotoActivity.createIntent(getApplicationContext(), photo));
+                    }
+                }
+                finish();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                finish();
+            }
+        });
     }
 }
