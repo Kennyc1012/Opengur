@@ -738,7 +738,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         }
 
                         if (response == null || response.body() == null) {
-                            ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
+                            ViewUtils.setErrorText(mMultiView, R.id.errorMessage, response != null ? ApiClient.getErrorCode(response.code()) : R.string.error_generic);
                             mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                             return;
                         }
