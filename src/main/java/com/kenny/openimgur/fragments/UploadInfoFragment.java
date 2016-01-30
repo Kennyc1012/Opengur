@@ -138,7 +138,7 @@ public class UploadInfoFragment extends BaseFragment {
             ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
                 @Override
                 public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
-                    if (response != null && response.body() != null) {
+                    if (isAdded() && response != null && response.body() != null) {
                         SqlHelper sql = SqlHelper.getInstance(getActivity());
                         sql.addTopics(response.body().data);
                         List<ImgurTopic> topics = sql.getTopics();
