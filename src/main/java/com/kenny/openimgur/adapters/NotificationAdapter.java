@@ -9,12 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.amulyakhare.textdrawable.MaterialColor;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.util.ColorUtils;
 import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
@@ -86,12 +86,11 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
     }
 
     private void renderMessage(ImgurNotification notification, NotificationHolder holder) {
-        String firstLetter = notification.getAuthor().substring(0, 1);
-        int color = MaterialColor.getColor(notification.getAuthor());
+        String firstLetter = notification.getAuthor().substring(0, 1).toUpperCase();
+        int color = ColorUtils.getColor(notification.getAuthor());
 
         holder.image.setImageDrawable(
                 new TextDrawable.Builder()
-                        .toUpperCase()
                         .setWidth(mCircleSize)
                         .setHeight(mCircleSize)
                         .setShape(TextDrawable.DRAWABLE_SHAPE_OVAL)

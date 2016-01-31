@@ -242,10 +242,9 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
     private void updateUserHeader(@Nullable ImgurUser user) {
         if (user != null) {
             int size = getResources().getDimensionPixelSize(R.dimen.avatar_size);
-            String firstLetter = user.getUsername().substring(0, 1);
+            String firstLetter = user.getUsername().substring(0, 1).toUpperCase();
 
             mAvatar.setImageDrawable(new TextDrawable.Builder()
-                    .toUpperCase()
                     .setWidth(size)
                     .setHeight(size)
                     .setShape(TextDrawable.DRAWABLE_SHAPE_OVAL)

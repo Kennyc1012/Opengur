@@ -7,10 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.amulyakhare.textdrawable.MaterialColor;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurConvo;
+import com.kenny.openimgur.util.ColorUtils;
 
 import java.util.List;
 
@@ -51,12 +51,11 @@ public class ConvoAdapter extends BaseRecyclerAdapter<ImgurConvo> {
         ConvoViewHolder convoViewHolder = (ConvoViewHolder) holder;
         ImgurConvo convo = getItem(position);
 
-        String firstLetter = convo.getWithAccount().substring(0, 1);
-        int color = MaterialColor.getColor(convo.getWithAccount());
+        String firstLetter = convo.getWithAccount().substring(0, 1).toUpperCase();
+        int color = ColorUtils.getColor(convo.getWithAccount());
 
         convoViewHolder.image.setImageDrawable(
                 new TextDrawable.Builder()
-                        .toUpperCase()
                         .setWidth(mCircleSize)
                         .setHeight(mCircleSize)
                         .setText(firstLetter)
