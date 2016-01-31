@@ -6,7 +6,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0-alpha7'
+        classpath 'com.android.tools.build:gradle:2.0.0-alpha8'
         classpath 'io.fabric.tools:gradle:+'
     }
 }
@@ -15,8 +15,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 project.ext {
-    version_code = 67
-    version_name = '4.4.0'
+    version_name = '4.3.2'
+    version_code = 68
     support_version = '23.1.1'
 }
 
@@ -91,7 +91,7 @@ dependencies {
     compile "com.android.support:design:${project.ext.support_version}"
 
     // UI
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.11'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.13'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.kennyc:multistateview:1.1'
     compile 'com.kennyc:text-drawable:1.0'
