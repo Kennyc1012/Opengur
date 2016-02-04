@@ -6,7 +6,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0-alpha8'
+        classpath 'com.android.tools.build:gradle:2.0.0-alpha9'
         classpath 'io.fabric.tools:gradle:+'
     }
 }
@@ -24,9 +24,6 @@ repositories {
     maven { url 'https://dl.bintray.com/kennyc1012/maven' }
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
-    // TODO Remove when Retrofit is updated
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    flatDir { dirs 'libs' }
     mavenCentral()
     jcenter()
 }
@@ -94,16 +91,16 @@ dependencies {
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.13'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.kennyc:multistateview:1.1'
-    compile 'com.kennyc:text-drawable:1.0'
     compile 'com.github.Kennyc1012:BottomSheet:2.0.4'
+    compile 'com.github.Kennyc1012:TextDrawable:1.1'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.pacioianu.david:ink-page-indicator:1.0.1'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.4.1'
-    compile(name: 'sliding_panel', ext: 'aar')
+    compile 'com.github.Kennyc1012:AndroidSlidingUpPanel:3.2.1-fork'
 
     // Networking
-    compile 'com.squareup.retrofit2:converter-gson:2.0.0-SNAPSHOT'
-    compile 'com.squareup.retrofit2:retrofit:2.0.0-SNAPSHOT'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
+    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
     compile 'com.squareup.okhttp3:okhttp:3.0.1'
     compile 'com.google.code.gson:gson:2.5'
 
