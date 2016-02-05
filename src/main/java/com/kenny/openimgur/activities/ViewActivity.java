@@ -747,9 +747,15 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                         if (!commentResponse.data.isEmpty()) {
                             ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
-                            ImgurComment comment = commentResponse.data.get(0);
+                            String imageId = commentResponse.data.get(0).getImageId();
 
-                            if (comment.getImageId().equals(imgurBaseObject.getId())) {
+                            if (TextUtils.isEmpty(imageId) || imgurBaseObject == null) {
+                                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
+                                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                                return;
+                            }
+
+                            if (imageId.equals(imgurBaseObject.getId())) {
                                 // Reverse the list for worst sorting as it will be loading the Top comments
                                 if (mCommentSort == CommentSort.WORST)
                                     Collections.reverse(commentResponse.data);
