@@ -1,4 +1,12 @@
 #Open Imgur Changelog
+<b>4.3.3</b> February 7, 2016
+- Fix a bug from the Api respnding incorrectly
+- Fix potential crash when uploading
+- Show toast when unable to open link
+- Update TextDrawable V1.1 (fork)
+- Update SlidingPanel V3.2.1 (fork)
+- Update gradle plugin V2.0.0-beta2
+
 <b>4.3.2</b> January 26, 2016
 - Fix another profile info crash
 - Handle all Imgur Links
