@@ -550,7 +550,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                         File file = FileUtil.createFile(uri, resolver);
                         if (FileUtil.isFileValid(file))
                             uploads.add(new Upload(file.getAbsolutePath()));
-                    } catch (Exception ex) {
+                    } catch (Throwable ex) {
                         LogUtil.e("DecodeImageTask", "Unable to decode image", ex);
                     }
                 }
@@ -565,6 +565,11 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
         protected void onPostExecute(List<Upload> uploads) {
             if (mFragment != null && mFragment.get() != null) {
                 UploadFragment fragment = mFragment.get();
+                if (!fragment.isAdded()) {
+                    mFragment.clear();
+                    mFragment = null;
+                    return;
+                }
 
                 if (needsPermission) {
                     fragment.onNeedsReadPermission(photoUris);

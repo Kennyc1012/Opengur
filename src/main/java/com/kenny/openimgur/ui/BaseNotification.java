@@ -12,10 +12,10 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 
-import com.amulyakhare.textdrawable.MaterialColor;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.OpengurApp;
+import com.kenny.openimgur.util.ColorUtils;
 
 /**
  * Created by kcampagna on 8/12/15.
@@ -145,7 +145,7 @@ public abstract class BaseNotification {
                 .setHeight(iconSize);
 
         if (drawableResource < 0) {
-            color = MaterialColor.getColor(from);
+            color = ColorUtils.getColor(from);
             String firstLetter = from.substring(0, 1).toUpperCase();
             builder.setText(firstLetter);
         } else {

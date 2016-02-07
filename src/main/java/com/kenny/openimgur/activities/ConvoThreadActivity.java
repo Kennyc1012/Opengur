@@ -21,7 +21,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.amulyakhare.textdrawable.MaterialColor;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;
@@ -33,6 +32,7 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurMessage;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.ui.VideoView;
+import com.kenny.openimgur.util.ColorUtils;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
@@ -145,7 +145,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         }
 
         if (mConvo.getMessages() != null && !mConvo.getMessages().isEmpty()) {
-            mAdapter = new MessagesAdapter(getApplicationContext(), MaterialColor.getColor(mConvo.getWithAccount()), mConvo.getMessages(), this);
+            mAdapter = new MessagesAdapter(getApplicationContext(), ColorUtils.getColor(mConvo.getWithAccount()), mConvo.getMessages(), this);
             mConvoList.setAdapter(mAdapter);
             mConvoList.scrollToPosition(mAdapter.getItemCount() - 1);
             mHasScrolledInitially = true;
@@ -213,7 +213,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                     boolean scrollToBottom = false;
 
                     if (mAdapter == null) {
-                        mAdapter = new MessagesAdapter(getApplicationContext(), MaterialColor.getColor(mConvo.getWithAccount()), conversationResponse.data.getMessages(), ConvoThreadActivity.this);
+                        mAdapter = new MessagesAdapter(getApplicationContext(), ColorUtils.getColor(mConvo.getWithAccount()), conversationResponse.data.getMessages(), ConvoThreadActivity.this);
                         mConvoList.setAdapter(mAdapter);
                         // Start at the bottom of the list when we receive the first set of messages
                         scrollToBottom = true;
@@ -260,7 +260,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         if (mAdapter == null) {
             List<ImgurMessage> messages = new ArrayList<>();
             messages.add(message);
-            mAdapter = new MessagesAdapter(getApplicationContext(), MaterialColor.getColor(mConvo.getWithAccount()), messages, this);
+            mAdapter = new MessagesAdapter(getApplicationContext(), ColorUtils.getColor(mConvo.getWithAccount()), messages, this);
             mConvoList.setAdapter(mAdapter);
         } else {
             mAdapter.addItem(message);
