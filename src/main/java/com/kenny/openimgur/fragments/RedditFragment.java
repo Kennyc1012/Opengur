@@ -240,6 +240,7 @@ public class RedditFragment extends BaseGridFragment {
 
                 getActivity().invalidateOptionsMenu();
                 Snackbar.make(getSnackbarView(), messageId, Snackbar.LENGTH_LONG).show();
+                saveSubreddits();
                 return true;
         }
 
@@ -314,6 +315,8 @@ public class RedditFragment extends BaseGridFragment {
             mHasMore = true;
             fetchGallery();
         }
+
+        saveFilterSettings();
     }
 
     @Override
@@ -348,21 +351,22 @@ public class RedditFragment extends BaseGridFragment {
         if (pinned != null) mPinnedSubs.addAll(pinned);
     }
 
-    @Override
-    protected void saveFilterSettings() {
-        SharedPreferences.Editor edit = app.getPreferences().edit();
-        edit.putString(KEY_SORT, mSort.getSort()).putString(KEY_TOP_SORT, mTopSort.getSort());
+    private void saveFilterSettings() {
+        app.getPreferences().edit()
+                .putString(KEY_SORT, mSort.getSort()).putString(KEY_TOP_SORT, mTopSort.getSort())
+                .apply();
+    }
 
+    private void saveSubreddits() {
         if (mPinnedSubs.isEmpty()) {
             // Remove from shared preferences if saved
             if (app.getPreferences().contains(KEY_PINNED_SUBREDDITS))
-                edit.remove(KEY_PINNED_SUBREDDITS);
+                app.getPreferences().edit().remove(KEY_PINNED_SUBREDDITS).apply();
         } else {
-            edit.putStringSet(KEY_PINNED_SUBREDDITS, mPinnedSubs);
+            app.getPreferences().edit().putStringSet(KEY_PINNED_SUBREDDITS, mPinnedSubs).apply();
         }
-
-        edit.apply();
     }
+
 
     @Override
     public void onDestroyView() {

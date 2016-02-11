@@ -106,6 +106,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 mSort = CommentSort.getSortType(items[which]);
+                                app.getPreferences().edit().putString(KEY_SORT, mSort.getSort()).apply();
                                 if (mAdapter != null) mAdapter.clear();
                                 mPage = 0;
                                 mHasMore = true;
@@ -244,7 +245,6 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
     @Override
     public void onDestroyView() {
         if (mAdapter != null) mAdapter.onDestroy();
-        app.getPreferences().edit().putString(KEY_SORT, mSort.getSort()).apply();
         super.onDestroyView();
     }
 
