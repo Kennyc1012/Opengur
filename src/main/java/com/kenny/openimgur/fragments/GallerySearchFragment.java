@@ -112,7 +112,7 @@ public class GallerySearchFragment extends GalleryFragment {
     @Override
     protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
         super.onApiResult(galleryResponse);
-        if (mCurrentPage == 0 && !galleryResponse.data.isEmpty()) {
+        if (mSearchView != null && mCurrentPage == 0 && !galleryResponse.data.isEmpty()) {
             SqlHelper sql = SqlHelper.getInstance(getActivity());
             sql.addPreviousGallerySearch(mQuery);
 
