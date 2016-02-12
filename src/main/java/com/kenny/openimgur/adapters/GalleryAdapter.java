@@ -131,53 +131,56 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
         } else if (obj instanceof ImgurAlbum) {
             ImgurAlbum album = ((ImgurAlbum) obj);
             displayImage(galleryHolder.image, album.getCoverUrl(mThumbnailQuality));
-            int albumImageId;
+            int albumSize = album.getAlbumImageCount();
 
-            switch (album.getAlbumImageCount()) {
-                case 1:
-                    albumImageId = R.drawable.numeric_1_box_24dp;
-                    break;
+            if (albumSize <= 1) {
+                galleryHolder.itemType.setVisibility(View.GONE);
+                galleryHolder.itemType.setBackground(null);
+            } else {
+                int albumImageId;
 
-                case 2:
-                    albumImageId = R.drawable.numeric_2_box_24dp;
-                    break;
+                switch (albumSize) {
+                    case 2:
+                        albumImageId = R.drawable.numeric_2_box_24dp;
+                        break;
 
-                case 3:
-                    albumImageId = R.drawable.numeric_3_box_24dp;
-                    break;
+                    case 3:
+                        albumImageId = R.drawable.numeric_3_box_24dp;
+                        break;
 
-                case 4:
-                    albumImageId = R.drawable.numeric_4_box_24dp;
-                    break;
+                    case 4:
+                        albumImageId = R.drawable.numeric_4_box_24dp;
+                        break;
 
-                case 5:
-                    albumImageId = R.drawable.numeric_5_box_24dp;
-                    break;
+                    case 5:
+                        albumImageId = R.drawable.numeric_5_box_24dp;
+                        break;
 
-                case 6:
-                    albumImageId = R.drawable.numeric_6_box_24dp;
-                    break;
+                    case 6:
+                        albumImageId = R.drawable.numeric_6_box_24dp;
+                        break;
 
-                case 7:
-                    albumImageId = R.drawable.numeric_7_box_24dp;
-                    break;
+                    case 7:
+                        albumImageId = R.drawable.numeric_7_box_24dp;
+                        break;
 
-                case 8:
-                    albumImageId = R.drawable.numeric_8_box_24dp;
-                    break;
+                    case 8:
+                        albumImageId = R.drawable.numeric_8_box_24dp;
+                        break;
 
-                case 9:
-                    albumImageId = R.drawable.numeric_9_box_24dp;
-                    break;
+                    case 9:
+                        albumImageId = R.drawable.numeric_9_box_24dp;
+                        break;
 
-                default:
-                    albumImageId = R.drawable.numeric_9_plus_box_24dp;
-                    break;
+                    default:
+                        albumImageId = R.drawable.numeric_9_plus_box_24dp;
+                        break;
+                }
+
+                galleryHolder.itemType.setImageResource(albumImageId);
+                galleryHolder.itemType.setVisibility(View.VISIBLE);
+                galleryHolder.itemType.setBackground(null);
             }
-
-            galleryHolder.itemType.setImageResource(albumImageId);
-            galleryHolder.itemType.setVisibility(View.VISIBLE);
-            galleryHolder.itemType.setBackground(null);
         } else {
             String url = ImgurBaseObject.getThumbnail(obj.getId(), obj.getLink(), ImgurPhoto.THUMBNAIL_GALLERY);
             displayImage(galleryHolder.image, url);
