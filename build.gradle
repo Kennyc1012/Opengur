@@ -98,6 +98,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.5'
     compile 'com.pacioianu.david:ink-page-indicator:1.0.1'
     compile 'com.github.Kennyc1012:AndroidSlidingUpPanel:3.2.1-fork'
+    compile 'com.github.Kennyc1012:ColorChooser:0.2.2:standardRelease@aar'
     compile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;
     }

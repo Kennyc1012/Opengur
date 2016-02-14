@@ -175,4 +175,17 @@
         <item>120</item>
     </string-array>
 
+    <string-array name="pref_colors" translatable="false">
+        <item>#242424</item>
+        <item>#2196F3</item>
+        <item>#00BCD4</item>
+        <item>#4CAF50</item>
+        <item>#616161</item>
+        <item>#FF5722</item>
+        <item>#E91E63</item>
+        <item>#673AB7</item>
+        <item>#da4336</item>
+        <item>#009688</item>
+    </string-array>
+
 </resources>

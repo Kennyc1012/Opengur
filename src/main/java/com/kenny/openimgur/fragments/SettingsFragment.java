@@ -9,14 +9,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.RingtonePreference;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.view.View;
 import android.webkit.WebView;
 
 import com.kenny.openimgur.BuildConfig;
@@ -34,8 +32,6 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 
 public class SettingsFragment extends BasePreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
-    private boolean mFirstLaunch = true;
-
     public static SettingsFragment createInstance() {
         return new SettingsFragment();
     }
@@ -44,7 +40,6 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bindListPreference(findPreference(SettingsActivity.KEY_CACHE_SIZE));
-        bindListPreference(findPreference(SettingsActivity.KEY_THEME));
         bindListPreference(findPreference(SettingsActivity.KEY_CACHE_LOC));
         bindListPreference(findPreference(SettingsActivity.KEY_THUMBNAIL_QUALITY));
         bindListPreference(findPreference(SettingsActivity.KEY_NOTIFICATION_FREQUENCY));
@@ -58,12 +53,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         findPreference(SettingsActivity.KEY_ADB).setOnPreferenceChangeListener(this);
         findPreference(SettingsActivity.KEY_DARK_THEME).setOnPreferenceChangeListener(this);
         findPreference(SettingsActivity.KEY_NOTIFICATION_RINGTONE).setOnPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mFirstLaunch = false;
+        findPreference(SettingsActivity.KEY_THEME_NEW).setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -79,9 +69,11 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
             LogUtil.e(TAG, "Unable to get version summary", e);
         }
 
-
         String ringtone = mApp.getPreferences().getString(SettingsActivity.KEY_NOTIFICATION_RINGTONE, null);
-        if (!TextUtils.isEmpty(ringtone)) findPreference(SettingsActivity.KEY_NOTIFICATION_RINGTONE).setSummary(getNotificationRingtone(ringtone));
+
+        if (!TextUtils.isEmpty(ringtone)) {
+            findPreference(SettingsActivity.KEY_NOTIFICATION_RINGTONE).setSummary(getNotificationRingtone(ringtone));
+        }
     }
 
     @Override
@@ -89,20 +81,14 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         boolean updated = super.onPreferenceChange(preference, object);
         String key = preference.getKey();
 
-        if (preference instanceof ListPreference) {
-            ListPreference listPreference = (ListPreference) preference;
-            int prefIndex = listPreference.findIndexOfValue(object.toString());
-
-            switch (key) {
-                case SettingsActivity.KEY_THEME:
-                    boolean isDarkTheme = mApp.getImgurTheme().isDarkTheme;
-                    ImgurTheme theme = ImgurTheme.getThemeFromString(listPreference.getEntries()[prefIndex].toString());
-                    theme.isDarkTheme = isDarkTheme;
-                    mApp.setImgurTheme(theme);
-                    if (!mFirstLaunch) getActivity().recreate();
-                    updated = true;
-                    break;
-            }
+        if (SettingsActivity.KEY_THEME_NEW.equals(key)) {
+            int color = (Integer) object;
+            boolean isDarkTheme = mApp.getImgurTheme().isDarkTheme;
+            ImgurTheme theme = ImgurTheme.fromPreferences(getResources(), color);
+            theme.isDarkTheme = isDarkTheme;
+            mApp.setImgurTheme(theme);
+            getActivity().recreate();
+            updated = true;
         } else if (preference instanceof CheckBoxPreference) {
             switch (key) {
                 case SettingsActivity.KEY_ADB:
