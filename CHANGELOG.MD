@@ -1,4 +1,14 @@
 #Open Imgur Changelog
+<b>4.3.4</b> February 15, 2016
+- Open posters profile on callout of OP
+- Use [ColorChooser](https://github.com/Kennyc1012/ColorChooser) for selecting app theme
+- Better saving of filters
+- Don't display album count on single image albums
+- Several bug fixes
+- Fix incorrect join date on a cached user
+- Update BottomSheet V2.1.1
+- Update Gradle Plugin V2.0.0-beta4
+
 <b>4.3.3</b> February 7, 2016
 - Fix a bug from the Api respnding incorrectly
 - Fix potential crash when uploading
