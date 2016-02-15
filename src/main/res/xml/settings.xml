@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory android:title="@string/pref_category_title">
 
-        <ListPreference
-            android:key="app_theme"
+        <com.kennyc.colorchooser.ColorChooserPreference
+            android:key="color"
             android:title="@string/pref_theme_title"
-            android:entries="@array/pref_themes_items"
-            android:entryValues="@array/pref_theme_keys"
-            android:defaultValue="grey" />
+            android:positiveButtonText="@string/okay"
+            android:negativeButtonText="@string/cancel"
+            app:cc_colors="@array/pref_colors"
+            app:cc_colorNames="@array/pref_themes_items"/>
 
         <CheckBoxPreference
             android:key="darkTheme"

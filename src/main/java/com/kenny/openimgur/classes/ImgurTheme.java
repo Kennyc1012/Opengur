@@ -206,4 +206,24 @@ public enum ImgurTheme {
 
         return theme;
     }
+
+    /**
+     * Returns the {@link ImgurTheme} based on the saved primary color
+     *
+     * @param res          App Resources to decode the color
+     * @param primaryColor The themes primary color
+     * @return The Imgur theme containing the primary color, will return {@link #GREY} if nothing was found
+     */
+    public static ImgurTheme fromPreferences(Resources res, int primaryColor) {
+        ImgurTheme theme = null;
+
+        for (ImgurTheme t : ImgurTheme.values()) {
+            if (res.getColor(t.primaryColor) == primaryColor) {
+                theme = t;
+                break;
+            }
+        }
+
+        return theme != null ? theme : GREY;
+    }
 }

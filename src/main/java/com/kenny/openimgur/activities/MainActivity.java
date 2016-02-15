@@ -367,13 +367,8 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
             mTopicsSpinner.setVisibility(hasSpinner ? View.VISIBLE : View.GONE);
             getSupportActionBar().setDisplayShowTitleEnabled(!hasSpinner);
             mAppBar.setExpanded(true);
+            app.getPreferences().edit().putInt(KEY_CURRENT_PAGE, mCurrentPage).apply();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        app.getPreferences().edit().putInt(KEY_CURRENT_PAGE, mCurrentPage).apply();
-        super.onDestroy();
     }
 
     @Override

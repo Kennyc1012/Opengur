@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurAlbum;
@@ -253,7 +254,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         values.put(ProfileContract.COLUMN_BIO, profile.getBio());
         values.put(ProfileContract.COLUMN_REP, profile.getReputation());
         values.put(ProfileContract.COLUMN_LAST_SEEN, profile.getLastSeen());
-        values.put(ProfileContract.COLUMN_CREATED, profile.getCreated());
+        values.put(ProfileContract.COLUMN_CREATED, profile.getCreated() / DateUtils.SECOND_IN_MILLIS);
         db.insertWithOnConflict(ProfileContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
