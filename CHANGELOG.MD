@@ -1,4 +1,27 @@
 #Open Imgur Changelog
+<b>4.3.4</b> February 15, 2016
+- Open posters profile on callout of OP
+- Use [ColorChooser](https://github.com/Kennyc1012/ColorChooser) for selecting app theme
+- Better saving of filters
+- Don't display album count on single image albums
+- Several bug fixes
+- Fix incorrect join date on a cached user
+- Update BottomSheet V2.1.1
+- Update Gradle Plugin V2.0.0-beta4
+
+<b>4.3.3</b> February 7, 2016
+- Fix a bug from the Api respnding incorrectly
+- Fix potential crash when uploading
+- Show toast when unable to open link
+- Update TextDrawable V1.1 (fork)
+- Update SlidingPanel V3.2.1 (fork)
+- Update gradle plugin V2.0.0-beta2
+
+<b>4.3.2</b> January 26, 2016
+- Fix another profile info crash
+- Handle all Imgur Links
+- Update Gif Drawable V 1.1.13
+
 <b>4.3.1</b> January 23, 2016
 - Fix profile info crash
 - Revert link clicking on photo titles/descriptions. 

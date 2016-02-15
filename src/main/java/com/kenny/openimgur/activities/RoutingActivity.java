@@ -3,6 +3,7 @@ package com.kenny.openimgur.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
@@ -90,6 +91,7 @@ public class RoutingActivity extends BaseActivity {
             startActivity(routingIntent);
         } else {
             LogUtil.w(TAG, "Routing intent not set, bailing");
+            Toast.makeText(getApplicationContext(),R.string.error_link_open,Toast.LENGTH_SHORT).show();
         }
 
         finish();

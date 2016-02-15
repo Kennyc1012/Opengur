@@ -182,7 +182,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
     @Override
     public void onLinkTap(View view, @Nullable String url) {
-        if (!TextUtils.isEmpty(url)) {
+        if (!TextUtils.isEmpty(url) && isAdded()) {
             LinkUtils.LinkMatch match = LinkUtils.findImgurLinkMatch(url);
 
             switch (match) {

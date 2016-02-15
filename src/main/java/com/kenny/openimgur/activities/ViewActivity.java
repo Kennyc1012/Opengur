@@ -441,7 +441,6 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             mPagerAdapter = null;
         }
 
-        app.getPreferences().edit().putString(KEY_SORT, mCommentSort.name()).apply();
         super.onDestroy();
     }
 
@@ -499,6 +498,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                                 if (sort != mCommentSort) {
                                     mCommentSort = sort;
+                                    app.getPreferences().edit().putString(KEY_SORT, mCommentSort.name()).apply();
 
                                     // Don't bother making an Api call if the item has no comments
                                     if (mCommentAdapter != null && !mCommentAdapter.isEmpty()) {
@@ -571,7 +571,18 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                     break;
 
                 case USER_CALLOUT:
-                    startActivity(ProfileActivity.createIntent(getApplicationContext(), url.replace("@", "")));
+                    String uName = url.replace("@", "");
+
+                    if ("op".equalsIgnoreCase(uName)) {
+                        try {
+                            uName = mPagerAdapter.getImgurItem(mCurrentPosition).getAccount();
+                        } catch (Exception ex) {
+                            LogUtil.e(TAG, "Unable to determine OP username from " + uName, ex);
+                            uName = null;
+                        }
+                    }
+
+                    if (!TextUtils.isEmpty(uName)) startActivity(ProfileActivity.createIntent(getApplicationContext(), uName));
                     break;
 
                 case USER:
@@ -746,9 +757,15 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                         if (!commentResponse.data.isEmpty()) {
                             ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
-                            ImgurComment comment = commentResponse.data.get(0);
+                            String imageId = commentResponse.data.get(0).getImageId();
 
-                            if (comment.getImageId().equals(imgurBaseObject.getId())) {
+                            if (TextUtils.isEmpty(imageId) || imgurBaseObject == null) {
+                                ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
+                                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                                return;
+                            }
+
+                            if (imageId.equals(imgurBaseObject.getId())) {
                                 // Reverse the list for worst sorting as it will be loading the Top comments
                                 if (mCommentSort == CommentSort.WORST)
                                     Collections.reverse(commentResponse.data);

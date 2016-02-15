@@ -226,6 +226,7 @@ public class GalleryFragment extends BaseGridFragment {
 
         fetchGallery();
         getActivity().invalidateOptionsMenu();
+        saveFilterSettings();
     }
 
     @Override
@@ -270,7 +271,6 @@ public class GalleryFragment extends BaseGridFragment {
             mListener.onUpdateActionBarTitle(getString(mSection.getResourceId()));
     }
 
-    @Override
     protected void saveFilterSettings() {
         app.getPreferences().edit()
                 .putString(KEY_SECTION, mSection.getSection())

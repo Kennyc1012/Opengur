@@ -151,10 +151,10 @@ public class TopicsFragment extends BaseGridFragment {
         }
 
         fetchGallery();
+        saveFilterSettings();
     }
 
-    @Override
-    protected void saveFilterSettings() {
+    private void saveFilterSettings() {
         app.getPreferences().edit()
                 .putInt(KEY_TOPIC_ID, mTopic != null ? mTopic.getId() : -1)
                 .putString(KEY_TOP_SORT, mTimeSort.getSort())

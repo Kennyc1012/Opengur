@@ -254,7 +254,6 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     public void onDestroyView() {
         GalleryAdapter adapter = getAdapter();
         if (adapter != null) adapter.onDestroy();
-        saveFilterSettings();
         super.onDestroyView();
     }
 
@@ -341,13 +340,6 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         if (mMultiStateView.getView(MultiStateView.VIEW_STATE_EMPTY) != null && (getAdapter() == null || getAdapter().isEmpty())) {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
         }
-    }
-
-    /**
-     * Save any filter settings when the fragment is destroyed
-     */
-    protected void saveFilterSettings() {
-
     }
 
     /**
