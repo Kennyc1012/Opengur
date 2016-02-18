@@ -11,9 +11,8 @@ import android.view.ViewGroup;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.collections.SetUniqueList;
 import com.kenny.openimgur.util.ViewUtils;
-
-import org.apache.commons.collections15.list.SetUniqueList;
 
 import java.util.ArrayList;
 

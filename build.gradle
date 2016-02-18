@@ -77,7 +77,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.android.support:support-annotations:${project.ext.support_version}"
     compile "com.android.support:support-v13:${project.ext.support_version}"
     compile "com.android.support:cardview-v7:${project.ext.support_version}"
