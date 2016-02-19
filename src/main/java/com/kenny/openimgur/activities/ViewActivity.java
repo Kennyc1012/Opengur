@@ -799,6 +799,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                     @Override
                     public void onFailure(Throwable t) {
+                        LogUtil.e(TAG, "Error fetching comments", t);
                         ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
                         mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                     }

@@ -22,6 +22,7 @@ import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.collections.SetUniqueList;
+import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
@@ -292,6 +293,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
 
     @Override
     public void onFailure(Throwable t) {
+        LogUtil.e(TAG, "Error fetching gallery items", t);
         if (!isAdded()) return;
         onApiFailure(ApiClient.getErrorCode(t));
         if (mLoadingFooter != null) mLoadingFooter.setVisibility(View.GONE);
