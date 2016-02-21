@@ -14,12 +14,11 @@ import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
+import com.kenny.openimgur.collections.SetUniqueList;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-
-import org.apache.commons.collections15.list.SetUniqueList;
 
 import java.util.ArrayList;
 import java.util.List;

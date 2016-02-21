@@ -6,7 +6,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0-beta4'
+        classpath 'com.android.tools.build:gradle:2.0.0-beta5'
         classpath 'io.fabric.tools:gradle:+'
     }
 }
@@ -77,8 +77,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
     // Support Library
     compile "com.android.support:support-annotations:${project.ext.support_version}"
     compile "com.android.support:support-v13:${project.ext.support_version}"

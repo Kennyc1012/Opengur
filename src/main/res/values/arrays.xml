@@ -120,24 +120,10 @@
         <item>unlimited</item>
     </string-array>
 
-    <string-array name="pref_theme_keys" translatable="false">
-        <item>Black</item>
-        <item>blue</item>
-        <item>cyan</item>
-        <item>green</item>
-        <item>grey</item>
-        <item>orange</item>
-        <item>pink</item>
-        <item>purple</item>
-        <item>red</item>
-        <item>teal</item>
-    </string-array>
-
     <string-array name="pref_cache_loc_keys" translatable="false">
         <item>internal</item>
         <item>external</item>
     </string-array>
-
 
     <string-array name="pref_thread_keys" translatable="false">
         <item>5</item>

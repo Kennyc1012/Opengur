@@ -42,8 +42,8 @@ public class OAuthInterceptor implements Interceptor {
         Request.Builder builder = original.newBuilder();
         builder.addHeader(AUTHORIZATION_HEADER, getAuthorizationHeader());
         Request request = builder.method(original.method(), original.body()).build();
-        LogUtil.v(TAG, "Making request to " + request.url().toString());
         Response response = chain.proceed(request);
+        LogUtil.v(TAG, "Response to " + request.url().toString() + " - " + response.code());
 
         if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED || response.code() == HttpURLConnection.HTTP_FORBIDDEN) {
             String token = sAccessToken;
