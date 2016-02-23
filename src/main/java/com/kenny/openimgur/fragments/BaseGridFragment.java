@@ -1,6 +1,7 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,6 +23,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.collections.SetUniqueList;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
@@ -254,7 +256,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
      * @param items    The list of items that will be able to paged between
      */
     protected void onItemSelected(View view, int position, ArrayList<ImgurBaseObject> items) {
-        startActivity(ViewActivity.createIntent(getActivity(), items, position));
+        startActivityForResult(ViewActivity.createIntent(getActivity(), items, position), RequestCodes.GALLERY_VIEW);
     }
 
     /**
@@ -354,5 +356,28 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     @NonNull
     protected View getSnackbarView() {
         return mListener != null ? mListener.getSnackbarView() : mMultiStateView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RequestCodes.GALLERY_VIEW && data != null && mAdapter != null) {
+            ImgurBaseObject obj = data.getParcelableExtra(ViewActivity.KEY_ENDING_ITEM);
+
+            if (obj != null) {
+                int adapterPosition = mAdapter.indexOf(obj);
+                if (adapterPosition >= 0) {
+                    if (mManager == null) mManager = (GridLayoutManager) mGrid.getLayoutManager();
+                    int visibleItemCount = mManager.getChildCount();
+                    int firstVisibleItemPosition = mManager.findFirstVisibleItemPosition();
+
+                    // Update the grid to the item they ended on
+                    if (adapterPosition < firstVisibleItemPosition || adapterPosition > firstVisibleItemPosition + visibleItemCount) {
+                        mGrid.scrollToPosition(adapterPosition);
+                    }
+                }
+            }
+        }
     }
 }

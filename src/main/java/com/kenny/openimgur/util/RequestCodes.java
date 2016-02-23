@@ -31,4 +31,6 @@ public final class RequestCodes {
     public static final int DOWNLOAD_SHARE = 700;
 
     public static final int DOWNLOAD_VIEW = 701;
+
+    public static final int GALLERY_VIEW = 800;
 }
