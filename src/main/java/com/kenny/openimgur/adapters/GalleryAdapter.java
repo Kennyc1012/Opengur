@@ -2,6 +2,7 @@ package com.kenny.openimgur.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.collections.SetUniqueList;
+import com.kenny.openimgur.ui.CenteredDrawable;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -205,7 +207,10 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
 
     @Override
     protected DisplayImageOptions getDisplayOptions() {
-        return ImageUtil.getDisplayOptionsForGallery().build();
+        // The drawable CAN NOT be Vectors as they do not get converted to bitmap on decoding
+        int drawableRes = mIsDarkTheme ? R.drawable.ic_broken_image_white_48dp : R.drawable.ic_broken_image_black_48dp;
+        CenteredDrawable dr = new CenteredDrawable(BitmapFactory.decodeResource(mResources, drawableRes));
+        return ImageUtil.getDisplayOptionsForGallery().showImageOnFail(dr).build();
     }
 
     public void setAllowNSFW(boolean allowNSFW) {
