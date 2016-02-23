@@ -3,7 +3,6 @@ package com.kenny.openimgur.fragments;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -88,12 +87,6 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mAllowNSFW = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(SettingsActivity.NSFW_KEY, false);
     }
 
     @Override
@@ -196,10 +189,6 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         }
     }
 
-    public boolean allowNSFW() {
-        return mAllowNSFW;
-    }
-
     public void refresh() {
         mHasMore = true;
         mCurrentPage = 0;
@@ -281,8 +270,11 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         if (!isAdded()) return;
 
         if (response != null) {
-            if (response.body() != null) {
-                onApiResult(response.body());
+            GalleryResponse galleryResponse = response.body();
+
+            if (galleryResponse != null) {
+                galleryResponse.purgeNSFW(mAllowNSFW);
+                onApiResult(galleryResponse);
             } else {
                 onApiFailure(ApiClient.getErrorCode(response.code()));
             }
@@ -301,6 +293,8 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
 
     protected void onApiResult(@NonNull GalleryResponse galleryResponse) {
         if (!galleryResponse.data.isEmpty()) {
+            galleryResponse.purgeNSFW(mAllowNSFW);
+
             if (getAdapter() == null) {
                 setAdapter(new GalleryAdapter(getActivity(), SetUniqueList.decorate(galleryResponse.data), this, showPoints()));
             } else {

@@ -209,8 +209,10 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
     }
 
     public void setAllowNSFW(boolean allowNSFW) {
-        mAllowNSFWThumb = allowNSFW;
-        notifyDataSetChanged();
+        if (mAllowNSFWThumb != allowNSFW) {
+            mAllowNSFWThumb = allowNSFW;
+            notifyDataSetChanged();
+        }
     }
 
     public void setThumbnailQuality(String quality) {

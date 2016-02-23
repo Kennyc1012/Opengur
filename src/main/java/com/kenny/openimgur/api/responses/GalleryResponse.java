@@ -13,4 +13,17 @@ import java.util.List;
 public class GalleryResponse extends BaseResponse {
     @NonNull
     public List<ImgurBaseObject> data = new ArrayList<>();
+
+    public void purgeNSFW(boolean allowNSFW) {
+        if (!allowNSFW && !data.isEmpty()) {
+            List<ImgurBaseObject> filtered = new ArrayList<>();
+
+            for (ImgurBaseObject obj : data) {
+                if (!obj.isNSFW()) filtered.add(obj);
+            }
+
+            data.clear();
+            data.addAll(filtered);
+        }
+    }
 }
