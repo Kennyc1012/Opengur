@@ -91,7 +91,6 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
         }
 
         int startingSize = 0;
-        int endSize = 0;
 
         if (mItems == null) {
             mItems = items;
@@ -100,7 +99,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
             mItems.addAll(items);
         }
 
-        endSize = mItems.size();
+        int endSize = mItems.size();
         notifyItemRangeInserted(startingSize, endSize);
     }
 

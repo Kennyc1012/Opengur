@@ -19,7 +19,6 @@ import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
-import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.util.FileUtil;
@@ -98,7 +97,6 @@ public class UploadService extends IntentService {
         wakeLock.acquire();
 
         try {
-            OpengurApp app = OpengurApp.getInstance(getApplicationContext());
             mNotification = new UploadNotification(getApplicationContext());
 
             ImgurTopic topic = intent.getParcelableExtra(KEY_TOPIC);

@@ -33,6 +33,7 @@ import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
 import com.kennyc.view.MultiStateView;
@@ -103,13 +104,10 @@ public class MemeActivity extends BaseActivity {
         }
 
         getSupportActionBar().setTitle(mObject.getTitle());
-        loadImage();
+        loadImage(hasTransition);
         mView.setDrawingCacheEnabled(true);
 
         if (hasTransition) {
-            mTopText.setVisibility(View.GONE);
-            mBottomText.setVisibility(View.GONE);
-
             getWindow().getEnterTransition().addListener(new Transition.TransitionListener() {
                 @Override
                 public void onTransitionStart(Transition transition) {
@@ -228,12 +226,19 @@ public class MemeActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadImage() {
+    private void loadImage(boolean hasTransition) {
+        if (hasTransition) {
+            mTopText.setVisibility(View.GONE);
+            mBottomText.setVisibility(View.GONE);
+            ActivityCompat.postponeEnterTransition(this);
+        }
+
         app.getImageLoader().displayImage(mObject.getLink(), mImage, new SimpleImageLoadingListener() {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 super.onLoadingComplete(imageUri, view, loadedImage);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                ActivityCompat.startPostponedEnterTransition(MemeActivity.this);
             }
 
             @Override
@@ -322,6 +327,12 @@ public class MemeActivity extends BaseActivity {
                         }
                     }
                 }).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ViewUtils.fixTransitionLeak(this);
     }
 
     @Override

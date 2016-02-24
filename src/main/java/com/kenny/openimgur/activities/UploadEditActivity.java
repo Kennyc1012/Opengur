@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.util.ImageUtil;
+import com.kenny.openimgur.util.ViewUtils;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -197,6 +198,12 @@ public class UploadEditActivity extends BaseActivity {
         }
 
         supportFinishAfterTransition();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ViewUtils.fixTransitionLeak(this);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.kenny.openimgur.activities;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -148,6 +149,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private static final String KEY_PANEL_EXPANDED = "panelExpanded";
 
     private static final String PREF_HIDE_PANEL = "hide_panel";
+
+    public static final String KEY_ENDING_ITEM = "ending_item";
 
     @Bind(R.id.pager)
     ViewPager mViewPager;
@@ -322,6 +325,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             return;
         }
 
+        setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_ITEM, mPagerAdapter.getImgurItem(mCurrentPosition)));
         super.onBackPressed();
     }
 
@@ -352,6 +356,11 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 int height = isChecked ? ViewUtils.getActionBarHeight(this) : 0;
                 mSlidingPane.setPanelHeight(height);
                 return true;
+
+            case android.R.id.home:
+                setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_ITEM, mPagerAdapter.getImgurItem(mCurrentPosition)));
+                // Not retuning on purpose
+                break;
         }
 
         return super.onOptionsItemSelected(item);
