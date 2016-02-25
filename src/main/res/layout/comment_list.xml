@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/commentList"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollingCache="false"
-    android:animationCache="false"
-    android:drawSelectorOnTop="true"
-    android:cacheColorHint="@null"
-    android:footerDividersEnabled="false"
-    android:scrollbars="vertical"
-    tools:listitem="@layout/comment_item" />
+    android:scrollbars="vertical" />
