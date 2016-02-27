@@ -21,7 +21,6 @@ project.ext {
 }
 
 repositories {
-    maven { url 'https://dl.bintray.com/kennyc1012/maven' }
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
     mavenCentral()
@@ -85,7 +84,7 @@ dependencies {
     compile "com.android.support:design:${project.ext.support_version}"
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.13'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'com.kennyc:multistateview:1.1'
+    compile 'com.github.Kennyc1012:MultiStateView:1.1.1'
     compile 'com.github.Kennyc1012:BottomSheet:2.1.1'
     compile 'com.github.Kennyc1012:TextDrawable:1.1'
     compile 'com.squareup.okhttp:okhttp:2.7.1'
