@@ -325,7 +325,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             return;
         }
 
-        setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_ITEM, mPagerAdapter.getImgurItem(mCurrentPosition)));
+        ImgurBaseObject obj = mPagerAdapter != null ? mPagerAdapter.getImgurItem(mCurrentPosition) : null;
+        setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_ITEM, obj));
         super.onBackPressed();
     }
 
@@ -358,7 +359,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 return true;
 
             case android.R.id.home:
-                setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_ITEM, mPagerAdapter.getImgurItem(mCurrentPosition)));
+                ImgurBaseObject obj = mPagerAdapter != null ? mPagerAdapter.getImgurItem(mCurrentPosition) : null;
+                setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_ITEM, obj));
                 // Not retuning on purpose
                 break;
         }
@@ -591,7 +593,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         }
                     }
 
-                    if (!TextUtils.isEmpty(uName)) startActivity(ProfileActivity.createIntent(getApplicationContext(), uName));
+                    if (!TextUtils.isEmpty(uName))
+                        startActivity(ProfileActivity.createIntent(getApplicationContext(), uName));
                     break;
 
                 case USER:
