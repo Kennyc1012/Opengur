@@ -186,9 +186,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
             @Override
             public void onClick(View view) {
                 if (mListener != null) {
-                    if (mListener != null) {
-                        mListener.onPlayTap(holder.prog, holder.play, holder.image, holder.video, holder.itemView);
-                    }
+                    mListener.onPlayTap(holder.prog, holder.play, holder.image, holder.video, holder.itemView);
                 }
             }
         });
