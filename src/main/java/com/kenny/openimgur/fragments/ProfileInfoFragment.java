@@ -262,6 +262,8 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
         ApiClient.getService().getProfileTrophies(mSelectedUser.getUsername()).enqueue(new Callback<TrophyResponse>() {
             @Override
             public void onResponse(Call<TrophyResponse> call, Response<TrophyResponse> response) {
+                if (!isAdded()) return;
+
                 if (response.body() != null && response.body().data != null) {
                     mAdapter = new ProfileInfoAdapter(getActivity(), response.body().data.trophies, mSelectedUser, ProfileInfoFragment.this);
                 } else {
