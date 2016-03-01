@@ -286,22 +286,25 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
 
     private CharSequence getAuthorDateLine(@Nullable String username, long commentDate) {
         StringBuilder sb = new StringBuilder("- ");
-        sb.append(TextUtils.isEmpty(username) ? "?????" : username).append(", ");
+        sb.append(TextUtils.isEmpty(username) ? "?????" : username);
 
-        // The comment date comes in seconds
-        commentDate = commentDate * DateUtils.SECOND_IN_MILLIS;
-        long now = System.currentTimeMillis();
-        long difference = System.currentTimeMillis() - commentDate;
+        if (commentDate > 0) {
+            // The comment date comes in seconds
+            sb.append(", ");
+            commentDate = commentDate * DateUtils.SECOND_IN_MILLIS;
+            long now = System.currentTimeMillis();
+            long difference = System.currentTimeMillis() - commentDate;
 
-        if (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) {
-            sb.append(mResources.getString(R.string.moments_ago));
-        } else {
-            sb.append(DateUtils.getRelativeTimeSpanString(
-                    commentDate,
-                    now,
-                    DateUtils.MINUTE_IN_MILLIS,
-                    DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_RELATIVE
-                            | DateUtils.FORMAT_ABBREV_ALL));
+            if (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) {
+                sb.append(mResources.getString(R.string.moments_ago));
+            } else {
+                sb.append(DateUtils.getRelativeTimeSpanString(
+                        commentDate,
+                        now,
+                        DateUtils.MINUTE_IN_MILLIS,
+                        DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_RELATIVE
+                                | DateUtils.FORMAT_ABBREV_ALL));
+            }
         }
 
         return sb.toString();
