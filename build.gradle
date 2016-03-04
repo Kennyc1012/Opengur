@@ -100,7 +100,7 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta4'
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
-    compile 'com.google.code.gson:gson:2.6'
+    compile 'com.google.code.gson:gson:2.6.2'
 
     // Misc
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
