@@ -98,7 +98,7 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
                         .setText(firstLetter)
                         .build());
 
-        holder.author.setText(notification.getAuthor() + " " + getDateFormattedTime(notification.getDate(), holder.author.getContext()));
+        holder.author.setText(notification.getAuthor() + " " + getDateFormattedTime(notification.getDate()));
         holder.content.setText(notification.getContent());
         boolean selected = mSelected.contains(notification);
         holder.itemView.setBackgroundColor(selected ? mSelectedColor : Color.TRANSPARENT);
@@ -107,7 +107,7 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
     private void renderReply(ImgurNotification notification, NotificationHolder holder) {
         String photoUrl;
 
-        holder.author.setText(notification.getAuthor() + " " + getDateFormattedTime(notification.getDate(), holder.author.getContext()));
+        holder.author.setText(notification.getAuthor() + " " + getDateFormattedTime(notification.getDate()));
         holder.content.setText(notification.getContent());
 
         if (TextUtils.isEmpty(notification.getAlbumCover())) {
@@ -166,7 +166,7 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
         return new ArrayList<>(mSelected);
     }
 
-    private CharSequence getDateFormattedTime(long commentDate, Context context) {
+    private CharSequence getDateFormattedTime(long commentDate) {
         long now = System.currentTimeMillis();
         long difference = System.currentTimeMillis() - commentDate;
 

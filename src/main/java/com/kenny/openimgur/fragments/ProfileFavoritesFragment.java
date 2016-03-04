@@ -56,11 +56,6 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
     public boolean onLongClick(View v) {
         int adapterPosition = mGrid.getChildAdapterPosition(v);
 
