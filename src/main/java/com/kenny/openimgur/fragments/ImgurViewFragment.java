@@ -1,6 +1,7 @@
 package com.kenny.openimgur.fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -341,7 +342,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         // Adjust position for header
         final int position = mListView.getLayoutManager().getPosition(view) - 1;
-        startActivity(FullScreenPhotoActivity.createIntent(getActivity(), mPhotoAdapter.retainItems(), position));
+        startActivityForResult(FullScreenPhotoActivity.createIntent(getActivity(), mPhotoAdapter.retainItems(), position), RequestCodes.FULL_SCREEN_VIEW);
     }
 
     @Override
@@ -736,6 +737,17 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     Snackbar.make(mMultiView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RequestCodes.FULL_SCREEN_VIEW && resultCode == Activity.RESULT_OK) {
+            int endingPosition = data != null ? data.getIntExtra(FullScreenPhotoActivity.KEY_ENDING_POSITION, -1) : -1;
+            // Pad the ending position to account for the header
+            if (endingPosition >= 0 && mListView != null) mListView.scrollToPosition(endingPosition + 1);
         }
     }
 }
