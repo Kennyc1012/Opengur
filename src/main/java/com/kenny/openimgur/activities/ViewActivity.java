@@ -767,7 +767,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
                         CommentResponse commentResponse = response.body();
 
-                        if (!commentResponse.data.isEmpty()) {
+                        if (commentResponse.hasComments()) {
                             ImgurBaseObject imgurBaseObject = mPagerAdapter.getImgurItem(mCurrentPosition);
                             String imageId = commentResponse.data.get(0).getImageId();
 
