@@ -19,7 +19,6 @@ import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
-import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.util.FileUtil;
@@ -27,14 +26,14 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.Response;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 6/30/15.
@@ -98,7 +97,6 @@ public class UploadService extends IntentService {
         wakeLock.acquire();
 
         try {
-            OpengurApp app = OpengurApp.getInstance(getApplicationContext());
             mNotification = new UploadNotification(getApplicationContext());
 
             ImgurTopic topic = intent.getParcelableExtra(KEY_TOPIC);

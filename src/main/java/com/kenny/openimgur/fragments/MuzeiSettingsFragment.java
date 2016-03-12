@@ -16,9 +16,9 @@ import com.kenny.openimgur.util.SqlHelper;
 
 import java.util.List;
 
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Kenny-PC on 6/21/2015.
@@ -58,7 +58,7 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
             LogUtil.v(TAG, "No topics found, fetching");
             ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
                 @Override
-                public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
+                public void onResponse(Call<TopicResponse> call, Response<TopicResponse> response) {
                     if (!isAdded() || response == null || response.body() == null) return;
 
                     TopicResponse topicResponse = response.body();
@@ -82,7 +82,7 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(Call<TopicResponse> call, Throwable t) {
                     LogUtil.e(TAG, "Failed to receive topics", t);
                 }
             });

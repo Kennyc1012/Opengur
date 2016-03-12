@@ -89,13 +89,13 @@ public class MessagesAdapter extends BaseRecyclerAdapter<ImgurMessage> {
         if (message.isSending()) {
             messagesViewHolder.timeStamp.setText(R.string.convo_message_sending);
         } else if (message.getDate() > 0) {
-            messagesViewHolder.timeStamp.setText(getDateFormattedTime(message.getDate() * DateUtils.SECOND_IN_MILLIS, messagesViewHolder.container.getContext()));
+            messagesViewHolder.timeStamp.setText(getDateFormattedTime(message.getDate() * DateUtils.SECOND_IN_MILLIS));
         } else {
             messagesViewHolder.timeStamp.setText(R.string.convo_message_failed);
         }
     }
 
-    private CharSequence getDateFormattedTime(long commentDate, Context context) {
+    private CharSequence getDateFormattedTime(long commentDate) {
         long now = System.currentTimeMillis();
         long difference = System.currentTimeMillis() - commentDate;
 

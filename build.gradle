@@ -6,7 +6,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0-beta4'
+        classpath 'com.android.tools.build:gradle:2.1.0-alpha1'
         classpath 'io.fabric.tools:gradle:+'
     }
 }
@@ -15,13 +15,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 project.ext {
-    version_name = '4.3.4'
-    version_code = 70
+    version_name = '4.4.0'
+    version_code = 73
     support_version = '23.1.1'
 }
 
 repositories {
-    maven { url 'https://dl.bintray.com/kennyc1012/maven' }
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
     mavenCentral()
@@ -77,28 +76,34 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    // Support Library
     compile "com.android.support:support-annotations:${project.ext.support_version}"
     compile "com.android.support:support-v13:${project.ext.support_version}"
     compile "com.android.support:cardview-v7:${project.ext.support_version}"
     compile "com.android.support:appcompat-v7:${project.ext.support_version}"
     compile "com.android.support:recyclerview-v7:${project.ext.support_version}"
     compile "com.android.support:design:${project.ext.support_version}"
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.13'
+
+    // UI
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.14'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'com.kennyc:multistateview:1.1'
+    compile 'com.github.Kennyc1012:MultiStateView:1.1.1'
     compile 'com.github.Kennyc1012:BottomSheet:2.1.1'
     compile 'com.github.Kennyc1012:TextDrawable:1.1'
-    compile 'com.squareup.okhttp:okhttp:2.7.1'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.pacioianu.david:ink-page-indicator:1.1.1'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.4.1'
-    compile 'com.google.android.apps.muzei:muzei-api:2.0'
-    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
-    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
-    compile 'com.google.code.gson:gson:2.5'
-    compile 'com.pacioianu.david:ink-page-indicator:1.0.1'
     compile 'com.github.Kennyc1012:AndroidSlidingUpPanel:3.2.1-fork'
     compile 'com.github.Kennyc1012:ColorChooser:0.2.2:standardRelease@aar'
+
+    // Networking
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0'
+    compile 'com.squareup.retrofit2:retrofit:2.0.0'
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'com.google.code.gson:gson:2.6.2'
+
+    // Misc
+    compile 'com.google.android.apps.muzei:muzei-api:2.0'
     compile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;
     }

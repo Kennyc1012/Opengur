@@ -264,10 +264,26 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
      * @return If the selected item was already selected
      */
     public boolean setSelectedIndex(int index) {
-        boolean wasSelected = mSelectedIndex == index;
-        mSelectedIndex = wasSelected ? -1 : index;
-        notifyDataSetChanged();
+        int positionToUpdate;
+        boolean wasSelected;
 
+        if (index >= 0) {
+            wasSelected = mSelectedIndex == index;
+
+            if (wasSelected) {
+                positionToUpdate = mSelectedIndex;
+                mSelectedIndex = -1;
+            } else {
+                positionToUpdate = index;
+                mSelectedIndex = index;
+            }
+        } else {
+            positionToUpdate = mSelectedIndex;
+            mSelectedIndex = -1;
+            wasSelected = false;
+        }
+
+        notifyItemChanged(positionToUpdate);
         return wasSelected;
     }
 

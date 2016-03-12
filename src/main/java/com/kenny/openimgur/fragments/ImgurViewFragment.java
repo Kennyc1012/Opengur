@@ -1,6 +1,7 @@
 package com.kenny.openimgur.fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -64,10 +65,9 @@ import java.util.List;
 
 import butterknife.Bind;
 import pl.droidsonroids.gif.GifDrawable;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 7/12/14.
@@ -342,7 +342,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         // Adjust position for header
         final int position = mListView.getLayoutManager().getPosition(view) - 1;
-        startActivity(FullScreenPhotoActivity.createIntent(getActivity(), mPhotoAdapter.retainItems(), position));
+        startActivityForResult(FullScreenPhotoActivity.createIntent(getActivity(), mPhotoAdapter.retainItems(), position), RequestCodes.FULL_SCREEN_VIEW);
     }
 
     @Override
@@ -588,7 +588,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void fetchAlbumImages() {
         ApiClient.getService().getAlbumImages(mImgurObject.getId()).enqueue(new Callback<AlbumResponse>() {
             @Override
-            public void onResponse(Response<AlbumResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<AlbumResponse> call, Response<AlbumResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && !response.body().data.isEmpty()) {
@@ -604,7 +604,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<AlbumResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch album images", t);
                 ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
@@ -618,7 +618,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         if (mDisplayTags && mImgurObject.isListed() && (mImgurObject.getTags() == null || mImgurObject.getTags().isEmpty())) {
             ApiClient.getService().getTags(mImgurObject.getId()).enqueue(new Callback<TagResponse>() {
                 @Override
-                public void onResponse(Response<TagResponse> response, Retrofit retrofit) {
+                public void onResponse(Call<TagResponse> call, Response<TagResponse> response) {
                     if (!isAdded() || response == null || response.body() == null) return;
 
                     TagResponse tagResponse = response.body();
@@ -632,7 +632,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(Call<TagResponse> call, Throwable t) {
                     LogUtil.e(TAG, "Received an error while fetching tags", t);
                 }
             });
@@ -642,7 +642,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void fetchGalleryDetails() {
         ApiClient.getService().getGalleryDetails(mImgurObject.getId()).enqueue(new Callback<BasicObjectResponse>() {
             @Override
-            public void onResponse(Response<BasicObjectResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<BasicObjectResponse> call, Response<BasicObjectResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data != null) {
@@ -654,7 +654,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicObjectResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch gallery details", t);
                 ViewUtils.setErrorText(mMultiView, R.id.errorMessage, ApiClient.getErrorCode(t));
@@ -675,7 +675,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         call.enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().success) {
@@ -687,7 +687,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to favorite item", t);
                 Snackbar.make(mMultiView, R.string.error_generic, Snackbar.LENGTH_LONG).show();
@@ -698,7 +698,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private void reportItem(int reason) {
         ApiClient.getService().reportPost(mImgurObject.getId(), reason).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data) {
@@ -709,7 +709,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Error reporting post", t);
                 Snackbar.make(mMultiView, R.string.report_post_failure, Snackbar.LENGTH_LONG).show();
@@ -737,6 +737,17 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     Snackbar.make(mMultiView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RequestCodes.FULL_SCREEN_VIEW && resultCode == Activity.RESULT_OK) {
+            int endingPosition = data != null ? data.getIntExtra(FullScreenPhotoActivity.KEY_ENDING_POSITION, -1) : -1;
+            // Pad the ending position to account for the header
+            if (endingPosition >= 0 && mListView != null) mListView.scrollToPosition(endingPosition + 1);
         }
     }
 }

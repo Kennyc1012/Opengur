@@ -4,10 +4,11 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
-import android.text.util.Linkify;
+import android.text.format.DateUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.classes.CustomLinkMovement;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -24,7 +24,6 @@ import com.kenny.openimgur.ui.PointsBar;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
-import com.kenny.openimgur.util.LinkUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
@@ -99,19 +98,9 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
         if (holder instanceof PhotoTitleHolder) {
             PhotoTitleHolder titleHolder = (PhotoTitleHolder) holder;
 
-            if (!TextUtils.isEmpty(mImgurObject.getTitle())) {
-                titleHolder.title.setText(mImgurObject.getTitle());
-            }
-
-            if (!TextUtils.isEmpty(mImgurObject.getAccount())) {
-                titleHolder.author.setText("- " + mImgurObject.getAccount());
-            } else {
-                titleHolder.author.setText("- ?????");
-            }
-
-            if (!TextUtils.isEmpty(mImgurObject.getTopic())) {
-                titleHolder.topic.setText(mImgurObject.getTopic());
-            }
+            if (!TextUtils.isEmpty(mImgurObject.getTitle())) titleHolder.title.setText(mImgurObject.getTitle());
+            if (!TextUtils.isEmpty(mImgurObject.getTopic())) titleHolder.topic.setText(mImgurObject.getTopic());
+            titleHolder.author.setText(getAuthorDateLine(mImgurObject.getAccount(), mImgurObject.getDate()));
 
             int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
             int votePoints = mImgurObject.getUpVotes() - mImgurObject.getDownVotes();
@@ -191,14 +180,13 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
      *
      * @param holder
      */
+
     private void setClickListener(final PhotoViewHolder holder) {
         holder.play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mListener != null) {
-                    if (mListener != null) {
-                        mListener.onPlayTap(holder.prog, holder.play, holder.image, holder.video, holder.itemView);
-                    }
+                    mListener.onPlayTap(holder.prog, holder.play, holder.image, holder.video, holder.itemView);
                 }
             }
         });
@@ -294,6 +282,32 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
         }
 
         return false;
+    }
+
+    private CharSequence getAuthorDateLine(@Nullable String username, long commentDate) {
+        StringBuilder sb = new StringBuilder("- ");
+        sb.append(TextUtils.isEmpty(username) ? "?????" : username);
+
+        if (commentDate > 0) {
+            // The comment date comes in seconds
+            sb.append(", ");
+            commentDate = commentDate * DateUtils.SECOND_IN_MILLIS;
+            long now = System.currentTimeMillis();
+            long difference = System.currentTimeMillis() - commentDate;
+
+            if (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) {
+                sb.append(mResources.getString(R.string.moments_ago));
+            } else {
+                sb.append(DateUtils.getRelativeTimeSpanString(
+                        commentDate,
+                        now,
+                        DateUtils.MINUTE_IN_MILLIS,
+                        DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_RELATIVE
+                                | DateUtils.FORMAT_ABBREV_ALL));
+            }
+        }
+
+        return sb.toString();
     }
 
     @Override

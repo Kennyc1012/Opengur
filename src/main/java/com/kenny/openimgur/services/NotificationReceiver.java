@@ -22,9 +22,9 @@ import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Kenny-PC on 3/22/2015.
@@ -115,7 +115,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                     if (!TextUtils.isEmpty(ids)) {
                         ApiClient.getService().markNotificationsRead(ids).enqueue(new Callback<BasicResponse>() {
                             @Override
-                            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                                 if (response != null && response.body() != null) {
                                     LogUtil.v(TAG, "Result of marking notifications read " + response.body().data);
                                 } else {
@@ -124,7 +124,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                             }
 
                             @Override
-                            public void onFailure(Throwable t) {
+                            public void onFailure(Call<BasicResponse> call, Throwable t) {
                                 LogUtil.e(TAG, "Failure marking notifications read, error", t);
                             }
                         });
@@ -143,7 +143,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 if (!TextUtils.isEmpty(ids)) {
                     ApiClient.getService().markNotificationsRead(ids).enqueue(new Callback<BasicResponse>() {
                         @Override
-                        public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                             if (response != null && response.body() != null) {
                                 LogUtil.v(TAG, "Result of marking notifications read " + response.body().data);
                             } else {
@@ -152,7 +152,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                         }
 
                         @Override
-                        public void onFailure(Throwable t) {
+                        public void onFailure(Call<BasicResponse> call, Throwable t) {
                             LogUtil.e(TAG, "Failure marking notifications read, error", t);
                         }
                     });

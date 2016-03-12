@@ -30,9 +30,9 @@ import com.kennyc.view.MultiStateView;
 import java.util.ArrayList;
 
 import butterknife.Bind;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 12/22/14.
@@ -190,7 +190,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
         mIsLoading = true;
         ApiClient.getService().getProfileComments(mSelectedUser.getUsername(), mSort.getSort(), mPage).enqueue(new Callback<CommentResponse>() {
             @Override
-            public void onResponse(Response<CommentResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<CommentResponse> call, Response<CommentResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && !response.body().data.isEmpty()) {
@@ -228,7 +228,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<CommentResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch comments", t);
 

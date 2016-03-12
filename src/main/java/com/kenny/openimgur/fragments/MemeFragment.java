@@ -20,6 +20,7 @@ import com.kenny.openimgur.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
+import com.kenny.openimgur.collections.SetUniqueList;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -27,8 +28,6 @@ import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
-
-import org.apache.commons.collections15.list.SetUniqueList;
 
 import java.io.File;
 import java.util.ArrayList;

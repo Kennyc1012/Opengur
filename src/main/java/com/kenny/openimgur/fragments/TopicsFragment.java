@@ -28,9 +28,9 @@ import com.kennyc.view.MultiStateView;
 
 import java.util.List;
 
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 2/19/15.
@@ -239,7 +239,7 @@ public class TopicsFragment extends BaseGridFragment {
 
         ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
             @Override
-            public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<TopicResponse> call, Response<TopicResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && !response.body().data.isEmpty()) {
@@ -261,7 +261,7 @@ public class TopicsFragment extends BaseGridFragment {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<TopicResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch topics", t);
                 ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(t));

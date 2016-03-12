@@ -28,9 +28,9 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Kenny-PC on 7/4/2015.
@@ -137,7 +137,7 @@ public class UploadInfoFragment extends BaseFragment {
             LogUtil.v(TAG, "No topics found, fetching");
             ApiClient.getService().getDefaultTopics().enqueue(new Callback<TopicResponse>() {
                 @Override
-                public void onResponse(Response<TopicResponse> response, Retrofit retrofit) {
+                public void onResponse(Call<TopicResponse> call, Response<TopicResponse> response) {
                     if (isAdded() && response != null && response.body() != null) {
                         SqlHelper sql = SqlHelper.getInstance(getActivity());
                         sql.addTopics(response.body().data);
@@ -147,7 +147,7 @@ public class UploadInfoFragment extends BaseFragment {
                 }
 
                 @Override
-                public void onFailure(Throwable t) {
+                public void onFailure(Call<TopicResponse> call, Throwable t) {
                     LogUtil.e(TAG, "Failed to receive topics", t);
                 }
             });

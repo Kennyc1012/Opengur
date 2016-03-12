@@ -38,9 +38,9 @@ import com.kennyc.view.MultiStateView;
 import java.util.List;
 
 import butterknife.Bind;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 12/14/14.
@@ -261,7 +261,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     private void fetchTrophies() {
         ApiClient.getService().getProfileTrophies(mSelectedUser.getUsername()).enqueue(new Callback<TrophyResponse>() {
             @Override
-            public void onResponse(Response<TrophyResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<TrophyResponse> call, Response<TrophyResponse> response) {
                 if (!isAdded()) return;
 
                 if (response.body() != null && response.body().data != null) {
@@ -275,9 +275,8 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<TrophyResponse> call, Throwable t) {
                 if (!isAdded()) return;
-
                 mAdapter = new ProfileInfoAdapter(getActivity(), null, mSelectedUser, ProfileInfoFragment.this);
                 mList.setAdapter(mAdapter);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);

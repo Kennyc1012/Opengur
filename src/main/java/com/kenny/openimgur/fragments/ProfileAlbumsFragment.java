@@ -26,9 +26,9 @@ import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.view.MultiStateView;
 
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Kenny-PC on 7/4/2015.
@@ -154,7 +154,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements View.OnLo
 
         ApiClient.getService().deleteAlbum(album.getDeleteHash()).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data) {
@@ -177,7 +177,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements View.OnLo
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to delete Album", t);
                 Snackbar.make(mMultiStateView, R.string.error_generic, Snackbar.LENGTH_LONG).show();

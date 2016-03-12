@@ -367,7 +367,6 @@ public class RedditFragment extends BaseGridFragment {
         }
     }
 
-
     @Override
     public void onDestroyView() {
         mSearchMenuItem = null;

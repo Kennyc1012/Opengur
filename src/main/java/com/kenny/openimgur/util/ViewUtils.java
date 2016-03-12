@@ -1,19 +1,29 @@
 package com.kenny.openimgur.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Transition;
+import android.transition.TransitionManager;
+import android.util.ArrayMap;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.ui.GridItemDecoration;
 import com.kennyc.view.MultiStateView;
+
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 /**
  * Created by kcampagna on 7/27/14.
@@ -139,5 +149,38 @@ public class ViewUtils {
     public static void setRecyclerViewGridDefaults(@NonNull Context context, @NonNull RecyclerView recyclerView, int numColumns, int gridSpacing) {
         recyclerView.setLayoutManager(new GridLayoutManager(context, numColumns));
         recyclerView.addItemDecoration(new GridItemDecoration(gridSpacing, numColumns));
+    }
+
+    /**
+     * Attempts to clear the decor view from the transition manager which causes a leak.
+     * <p/><a href="http://stackoverflow.com/questions/32698049/sharedelement-and-custom-entertransition-causes-memory-leak">StackOverflow
+     * Explanation</a>
+     *
+     * @param activity
+     */
+    public static void fixTransitionLeak(@NonNull Activity activity) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
+
+        Class transitionManagerClass = TransitionManager.class;
+        try {
+            Field runningTransitionsField = transitionManagerClass.getDeclaredField("sRunningTransitions");
+            runningTransitionsField.setAccessible(true);
+            //noinspection unchecked
+            ThreadLocal<WeakReference<ArrayMap<ViewGroup, ArrayList<Transition>>>> runningTransitions
+                    = (ThreadLocal<WeakReference<ArrayMap<ViewGroup, ArrayList<Transition>>>>)
+                    runningTransitionsField.get(transitionManagerClass);
+            if (runningTransitions.get() == null || runningTransitions.get().get() == null) {
+                return;
+            }
+            ArrayMap map = runningTransitions.get().get();
+            View decorView = activity.getWindow().getDecorView();
+            if (map.containsKey(decorView)) {
+                map.remove(decorView);
+            }
+        } catch (NoSuchFieldException e) {
+            // Nothing
+        } catch (IllegalAccessException e) {
+            // Nothing
+        }
     }
 }

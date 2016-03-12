@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 
-import com.davidpacioianu.inkpageindicator.InkPageIndicator;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.UploadListener;
@@ -26,6 +25,7 @@ import com.kenny.openimgur.services.UploadService;
 import com.kenny.openimgur.ui.FragmentPagerAdapter;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.LogUtil;
+import com.pixelcan.inkpageindicator.InkPageIndicator;
 
 import java.io.File;
 import java.util.ArrayList;

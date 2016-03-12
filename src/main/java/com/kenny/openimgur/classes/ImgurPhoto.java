@@ -9,10 +9,15 @@ import android.text.TextUtils;
 import com.google.gson.annotations.SerializedName;
 import com.kenny.openimgur.util.LinkUtils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by kcampagna on 7/11/15.
  */
 public class ImgurPhoto extends ImgurBaseObject {
+    private static final Pattern ID_PATTERN = Pattern.compile("(?<=.com\\/)\\w+");
+
     // 160x160
     public static final String THUMBNAIL_SMALL = "s";
 
@@ -113,8 +118,14 @@ public class ImgurPhoto extends ImgurBaseObject {
             return false;
         }
 
-        String idFromUrl = LinkUtils.getId(getLink());
-        return !getId().equals(idFromUrl);
+        Matcher match = ID_PATTERN.matcher(getLink());
+
+        if (match.find()) {
+            String id = match.group(0);
+            return !getId().equals(id);
+        }
+
+        return false;
     }
 
     public void writeToParcel(Parcel out, int flags) {

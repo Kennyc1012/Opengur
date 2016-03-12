@@ -39,7 +39,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import retrofit.Response;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 8/12/15.

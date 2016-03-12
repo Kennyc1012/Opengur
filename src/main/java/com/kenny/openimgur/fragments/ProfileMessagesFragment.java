@@ -27,9 +27,9 @@ import com.kennyc.view.MultiStateView;
 import java.util.List;
 
 import butterknife.Bind;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 12/24/14.
@@ -111,7 +111,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
     private void fetchConvos() {
         ApiClient.getService().getConversations().enqueue(new Callback<ConvoResponse>() {
             @Override
-            public void onResponse(Response<ConvoResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<ConvoResponse> call, Response<ConvoResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null) {
@@ -132,7 +132,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<ConvoResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to fetch convos", t);
                 ViewUtils.setErrorText(mMultiStateView, R.id.errorMessage, ApiClient.getErrorCode(t));
@@ -151,7 +151,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
 
         ApiClient.getService().deleteConversation(id).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 if (response != null && response.body() != null) {
                     LogUtil.v(TAG, "Result of convo deletion " + response);
                 } else {
@@ -160,7 +160,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
                 LogUtil.e(TAG, "Error deleting conversation", t);
             }
         });

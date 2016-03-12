@@ -1,6 +1,7 @@
 package com.kenny.openimgur.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -49,6 +50,8 @@ public class FullScreenPhotoActivity extends BaseActivity {
     private static final String KEY_IMAGE = "image";
 
     private static final String KEY_START_POSITION = "start_position";
+
+    public static final String KEY_ENDING_POSITION = "ending_position";
 
     @Bind(R.id.pager)
     ViewPager mPager;
@@ -194,6 +197,12 @@ public class FullScreenPhotoActivity extends BaseActivity {
                 }
 
                 return true;
+
+            case android.R.id.home:
+                int position = mPager != null ? mPager.getCurrentItem() : -1;
+                if (position >= 0) setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_POSITION, position));
+                // intentional break
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -275,6 +284,13 @@ public class FullScreenPhotoActivity extends BaseActivity {
         }
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onBackPressed() {
+        int position = mPager != null ? mPager.getCurrentItem() : -1;
+        if (position >= 0) setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_POSITION, position));
+        super.onBackPressed();
     }
 
     private static class FullScreenPagerAdapter extends FragmentStatePagerAdapter {

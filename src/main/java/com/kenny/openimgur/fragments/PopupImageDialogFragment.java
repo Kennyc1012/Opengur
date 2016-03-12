@@ -31,9 +31,9 @@ import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 7/19/14.
@@ -259,7 +259,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     private void fetchImageDetails() {
         ApiClient.getService().getImageDetails(mImageUrl).enqueue(new Callback<PhotoResponse>() {
             @Override
-            public void onResponse(Response<PhotoResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<PhotoResponse> call, Response<PhotoResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data != null) {
@@ -284,7 +284,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<PhotoResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 Toast.makeText(getActivity(), R.string.error_generic, Toast.LENGTH_SHORT).show();
                 dismissAllowingStateLoss();

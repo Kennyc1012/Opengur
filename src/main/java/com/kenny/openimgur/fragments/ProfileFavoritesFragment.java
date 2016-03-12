@@ -29,10 +29,9 @@ import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 12/20/14.
@@ -54,11 +53,6 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_gallery, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -174,7 +168,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
 
         call.enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().success) {
@@ -195,7 +189,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to favorite item", t);
                 Snackbar.make(mMultiStateView, R.string.error_generic, Snackbar.LENGTH_LONG).show();

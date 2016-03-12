@@ -26,9 +26,9 @@ import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
 
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 12/27/14.
@@ -138,7 +138,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements View.OnL
 
         ApiClient.getService().deletePhoto(photo.getDeleteHash()).enqueue(new Callback<BasicResponse>() {
             @Override
-            public void onResponse(Response<BasicResponse> response, Retrofit retrofit) {
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
                 if (!isAdded()) return;
 
                 if (response != null && response.body() != null && response.body().data) {
@@ -161,7 +161,7 @@ public class ProfileUploadsFragment extends BaseGridFragment implements View.OnL
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
                 if (!isAdded()) return;
                 LogUtil.e(TAG, "Unable to delete photo", t);
                 mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
