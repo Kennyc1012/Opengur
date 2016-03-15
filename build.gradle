@@ -17,7 +17,7 @@ apply plugin: 'io.fabric'
 project.ext {
     version_name = '4.4.0'
     version_code = 72
-    support_version = '23.1.1'
+    support_version = '23.2.1'
 }
 
 repositories {
@@ -29,7 +29,7 @@ repositories {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    buildToolsVersion '24.0.0-rc1'
 
     defaultConfig {
         applicationId "com.kennyc.open.imgur"
