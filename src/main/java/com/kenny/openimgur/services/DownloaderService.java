@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.R;
@@ -95,18 +96,19 @@ public class DownloaderService extends IntentService {
 
                     // Single image downloads will show multiple options and a preview in the notification
                     if (!isMultiUpload) {
+                        Uri shareUri = FileProvider.getUriForFile(getApplicationContext(), OpengurApp.AUTHORITY, savedFile);
                         String photoType = LinkUtils.getImageType(url);
                         boolean isVideoLink = savedFile.getAbsolutePath().endsWith(FileUtil.EXTENSION_MP4);
 
                         Intent shareIntent = new Intent(Intent.ACTION_SEND);
                         shareIntent.setType(photoType);
-                        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+                        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, shareUri);
                         PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), RequestCodes.DOWNLOAD_SHARE, Intent.createChooser(shareIntent, getString(R.string.share)), PendingIntent.FLAG_UPDATE_CURRENT);
 
                         Intent viewIntent = new Intent(Intent.ACTION_VIEW);
                         viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        viewIntent.setDataAndType(fileUri, isVideoLink ? "video/mp4" : photoType);
+                        viewIntent.setDataAndType(shareUri, isVideoLink ? "video/mp4" : photoType);
                         PendingIntent viewP = PendingIntent.getActivity(getApplicationContext(), RequestCodes.DOWNLOAD_VIEW, viewIntent, PendingIntent.FLAG_ONE_SHOT);
 
                         // Get the correct preview image for the notification based on if it is a video or not

@@ -43,6 +43,8 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
 
     private ImgurTheme mTheme = ImgurTheme.GREY;
 
+    public static final String AUTHORITY = "com.kennyc.open.imgur";
+
     @Override
     public void onCreate() {
         super.onCreate();
