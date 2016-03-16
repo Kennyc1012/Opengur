@@ -1,4 +1,19 @@
 #Open Imgur Changelog
+<b>4.4.0</b> March 12, 2016
+- Update Retrofit V2.0.0 
+- Update Okhttp V3.2.0
+- Fix NSFW
+- Properly detect for gifs
+- Returned to last viewed item when returning to grid
+- Resource/Code cleanup
+- Add error drawables for grids
+- Add date to gallery item header
+- Update Gif Drawable V1.1.14
+- Update Ink Page Indicator V1.1.1
+- Remove collections jar and import only the used classes
+- Update Gradle Plugin V2.1.0-alpha1
+- Various minor bug fixes
+
 <b>4.3.4</b> February 15, 2016
 - Open posters profile on callout of OP
 - Use [ColorChooser](https://github.com/Kennyc1012/ColorChooser) for selecting app theme
