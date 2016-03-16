@@ -137,4 +137,15 @@ public class PermissionUtils {
     public static boolean hasPermission(Activity activity, @NonNull String permission) {
         return getPermissionLevel(activity, permission) == PERMISSION_AVAILABLE;
     }
+
+    /**
+     * Returns if the user has granted the given permission
+     *
+     * @param context
+     * @param permissions
+     * @return
+     */
+    public static boolean hasPermission(Context context, @NonNull String... permissions) {
+        return verifyPermissions(getGrantResults(context, permissions));
+    }
 }

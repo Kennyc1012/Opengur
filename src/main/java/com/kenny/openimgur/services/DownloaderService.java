@@ -35,7 +35,7 @@ import java.util.ArrayList;
  * Created by kcampagna on 6/30/14.
  */
 public class DownloaderService extends IntentService {
-    private static final String FOLDER_NAME = "OpenImgur";
+    private static final String FOLDER_NAME = "Opengur";
 
     private static final String TAG = DownloaderService.class.getSimpleName();
 

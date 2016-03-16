@@ -1,5 +1,6 @@
 package com.kenny.openimgur.classes;
 
+import android.Manifest;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,6 +18,7 @@ import com.kenny.openimgur.services.AlarmReceiver;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.SqlHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -56,6 +58,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         if (mUser != null) AlarmReceiver.createNotificationAlarm(this);
         ImageUtil.initImageLoader(getApplicationContext());
         migrateThemePreference();
+        migrateDownloadFolder();
 
         // Start crashlytics if enabled
         if (!BuildConfig.DEBUG && mPref.getBoolean(SettingsActivity.KEY_CRASHLYTICS, true)) {
@@ -228,5 +231,32 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         }
 
         mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, true);
+    }
+
+    /**
+     * TODO Remove after several versions
+     */
+    private void migrateDownloadFolder() {
+        if (!mPref.getBoolean("migrated_downloads", false)) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "OpenImgur");
+                    boolean hasPermission = PermissionUtils.hasPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    if (!hasPermission) return;
+
+                    if (FileUtil.isFileValid(dir)) {
+                        File newDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Opengur");
+                        boolean success = dir.renameTo(newDir);
+                        if (success) FileUtil.scanDirectory(newDir, getApplicationContext());
+                        LogUtil.v(TAG, "Result of folder renaming " + success);
+                    } else {
+                        LogUtil.v(TAG, "Directory not found, nothing to do here");
+                    }
+
+                    mPref.edit().putBoolean("migrated_downloads", true).apply();
+                }
+            }).start();
+        }
     }
 }
