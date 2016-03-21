@@ -52,7 +52,6 @@ import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -181,12 +180,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
 
             case R.id.share:
-                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), mImgurObject.getShareIntent(), R.string.share, true);
-                if (shareDialog != null) {
-                    shareDialog.show();
-                } else {
-                    Snackbar.make(mMultiView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
-                }
+                share(mImgurObject.getShareIntent(), R.string.share);
                 return true;
 
             case R.id.report:
@@ -377,13 +371,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                                     shareIntent.setType("text/plain");
                                     shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-                                    BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, true);
-
-                                    if (shareDialog != null) {
-                                        shareDialog.show();
-                                    } else {
-                                        Snackbar.make(mMultiView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
-                                    }
+                                    share(shareIntent, R.string.share);
                                     break;
                             }
                         }

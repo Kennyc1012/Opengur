@@ -44,7 +44,6 @@ import com.kenny.openimgur.fragments.UploadedPhotosFragment;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
-import com.kennyc.bottomsheet.BottomSheet;
 
 import java.util.List;
 
@@ -320,13 +319,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                         "mailto", "kennyc.developer@gmail.com", null));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Opengur Feedback");
-                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(this, emailIntent, R.string.send_feedback, true);
-
-                if (shareDialog != null) {
-                    shareDialog.show();
-                } else {
-                    Snackbar.make(mCoordinatorLayout, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
-                }
+                share(emailIntent, R.string.send_feedback);
                 break;
 
             case R.id.nav_topics:

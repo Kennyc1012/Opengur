@@ -36,7 +36,6 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -388,13 +387,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
                 }
 
                 shareIntent.putExtra(Intent.EXTRA_TEXT, link);
-                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, true);
-
-                if (shareDialog != null) {
-                    shareDialog.show();
-                } else {
-                    Snackbar.make(mMultiView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
-                }
+                share(shareIntent, R.string.share);
                 return true;
         }
 
