@@ -208,7 +208,8 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
                 VideoCache.getInstance().setCacheDirectory(dir);
             }
 
-            return FileUtil.getDirectorySize(frag.mApp.getCacheDir());
+
+            return ImageUtil.getTotalImageCacheSize(frag.mApp);
         }
 
         @Override
