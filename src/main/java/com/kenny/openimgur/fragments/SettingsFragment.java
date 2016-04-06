@@ -199,17 +199,22 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         @Override
         protected Long doInBackground(Void... voids) {
             SettingsFragment frag = mFragment.get();
-            Activity activity = frag.getActivity();
-            frag.mApp.deleteAllCache();
 
-            if (!TextUtils.isEmpty(mCacheDirKey)) {
-                File dir = ImageUtil.getCacheDirectory(activity, mCacheDirKey);
-                ImageUtil.initImageLoader(activity);
-                VideoCache.getInstance().setCacheDirectory(dir);
+            if (frag != null) {
+                Activity activity = frag.getActivity();
+                frag.mApp.deleteAllCache();
+
+                if (!TextUtils.isEmpty(mCacheDirKey)) {
+                    File dir = ImageUtil.getCacheDirectory(activity, mCacheDirKey);
+                    ImageUtil.initImageLoader(activity);
+                    VideoCache.getInstance().setCacheDirectory(dir);
+                }
+
+
+                return ImageUtil.getTotalImageCacheSize(frag.mApp);
+            } else {
+                return -1L;
             }
-
-
-            return ImageUtil.getTotalImageCacheSize(frag.mApp);
         }
 
         @Override
