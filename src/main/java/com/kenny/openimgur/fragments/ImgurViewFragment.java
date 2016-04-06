@@ -579,7 +579,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
             public void onResponse(Call<AlbumResponse> call, Response<AlbumResponse> response) {
                 if (!isAdded()) return;
 
-                if (response != null && response.body() != null && !response.body().data.isEmpty()) {
+                if (response != null && response.body() != null && response.body().hasData()) {
                     ((ImgurAlbum) mImgurObject).addPhotosToAlbum(response.body().data);
                     mPhotoAdapter = new PhotoAdapter(getActivity(), ((ImgurAlbum) mImgurObject).getAlbumPhotos(), mImgurObject, ImgurViewFragment.this);
                     mListView.setAdapter(mPhotoAdapter);
