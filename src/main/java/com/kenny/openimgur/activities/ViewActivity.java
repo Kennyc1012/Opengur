@@ -471,7 +471,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
             case R.id.upVoteBtn:
             case R.id.downVoteBtn:
-                if (user != null) {
+                if (user != null && mPagerAdapter != null) {
                     ImgurBaseObject obj = mPagerAdapter.getImgurItem(mCurrentPosition);
                     if (obj == null) return;
 
@@ -491,7 +491,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 break;
 
             case R.id.commentBtn:
-                if (user != null) {
+                if (user != null && mPagerAdapter != null) {
                     DialogFragment fragment = CommentPopupFragment.createInstance(mPagerAdapter.getImgurItem(mCurrentPosition).getId(), null);
                     showDialogFragment(fragment, "comment");
                 } else {
