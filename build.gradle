@@ -15,9 +15,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 project.ext {
-    version_name = '4.4.0'
-    version_code = 73
+    version_name = '4.5.0'
+    version_code = 74
     support_version = '23.3.0'
+    beta_number = 1
 }
 
 repositories {
@@ -46,7 +47,7 @@ android {
         }
 
         beta {
-            versionName project.ext.version_name + "-beta"
+            versionName project.ext.version_name + "-beta" + beta_number
         }
     }
 
