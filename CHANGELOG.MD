@@ -1,4 +1,16 @@
 #Open Imgur Changelog
+<b>4.5.0</b>
+- Use FileProvider for sharing files
+- Change download folder name to Opengur
+- Use native share menu for Lollipop+ devices
+- Calculate cache directory correctly
+- Numerous bug fixes
+- Update gif drawable V1.1.15
+- Update subsampling image view V3.5.0
+- Update support library V23.3.0
+- Update Retrofit V2.0.1
+- Update gradle plugin V2.1.0-beta1
+
 <b>4.4.0</b> March 12, 2016
 - Update Retrofit V2.0.0 
 - Update Okhttp V3.2.0
