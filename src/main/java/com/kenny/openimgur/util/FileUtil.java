@@ -42,17 +42,6 @@ public class FileUtil {
     private static final String FOLDER_NAME = "OpenImgur";
 
     /**
-     * Saves a photo to the given file. If the file currently exists, it will be deleted
-     *
-     * @param photo The object to save
-     * @param file  the file to save to
-     * @return if successful
-     */
-    public static boolean savePhoto(@NonNull ImgurPhoto photo, @NonNull File file) {
-        return saveUrl(photo.getLink(), file);
-    }
-
-    /**
      * Saves a url to a given file
      *
      * @param url  The url to save
@@ -140,8 +129,12 @@ public class FileUtil {
         }
 
         long size = 0;
-        for (File file : directory.listFiles()) {
-            if (!file.isDirectory()) size += file.length();
+        File[] files = directory.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (!file.isDirectory()) size += file.length();
+            }
         }
 
         return size;
@@ -223,6 +216,24 @@ public class FileUtil {
         Intent scan = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         scan.setData(file);
         context.sendBroadcast(scan);
+    }
+
+    /**
+     * Tells the Media Scanner to scan an entire directory if present
+     *
+     * @param directory
+     * @param context
+     */
+    public static void scanDirectory(@Nullable File directory, Context context) {
+        if (isFileValid(directory) && directory.isDirectory()) {
+            File[] files = directory.listFiles();
+
+            if (files != null) {
+                for (File f : files) {
+                    scanFile(Uri.fromFile(f), context);
+                }
+            }
+        }
     }
 
     /**

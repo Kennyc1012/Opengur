@@ -35,7 +35,6 @@ import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.view.MultiStateView;
 
 import java.util.List;
@@ -171,13 +170,7 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
                                 shareIntent.setType("text/plain");
                                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
                                 shareIntent.putExtra(Intent.EXTRA_TEXT, photo.getUrl());
-                                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, true);
-
-                                if (shareDialog != null) {
-                                    shareDialog.show();
-                                } else {
-                                    Snackbar.make(mListener != null ? mListener.getSnackbarView() : mMultiStateView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
-                                }
+                                share(shareIntent, R.string.share);
                                 break;
 
                             case 1:

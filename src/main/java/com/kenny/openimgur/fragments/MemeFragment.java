@@ -26,7 +26,6 @@ import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
-import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
 import java.io.File;
@@ -54,7 +53,6 @@ public class MemeFragment extends BaseGridFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (mListener != null) mListener.onUpdateActionBarTitle(getString(R.string.meme_gen));
-        ViewUtils.setRecyclerViewGridDefaults(getActivity(), mGrid);
     }
 
     @Override

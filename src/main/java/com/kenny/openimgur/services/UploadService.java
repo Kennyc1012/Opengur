@@ -106,7 +106,7 @@ public class UploadService extends IntentService {
             boolean submitToGallery = intent.getBooleanExtra(KEY_SUBMIT_TO_GALLERY, false);
 
             int totalUploads = uploads.size();
-            LogUtil.v(TAG, "Starting upload of " + uploads.size() + " images");
+            LogUtil.v(TAG, "Starting upload of " + totalUploads + " images");
             List<ImgurPhoto> uploadedPhotos = new ArrayList<>(totalUploads);
             SqlHelper sql = SqlHelper.getInstance(getApplicationContext());
 
@@ -138,10 +138,15 @@ public class UploadService extends IntentService {
                             RequestBody uploadTitle = null;
                             RequestBody uploadDesc = null;
                             RequestBody uploadType = RequestBody.create(MediaType.parse("text/plain"), "file");
-                            if (!TextUtils.isEmpty(u.getTitle()))
+
+                            if (!TextUtils.isEmpty(u.getTitle())) {
                                 uploadTitle = RequestBody.create(MediaType.parse("text/plain"), u.getTitle());
-                            if (!TextUtils.isEmpty(u.getDescription()))
+                            }
+
+                            if (!TextUtils.isEmpty(u.getDescription())) {
                                 uploadDesc = RequestBody.create(MediaType.parse("text/plain"), u.getDescription());
+                            }
+
                             response = ApiClient.getService().uploadPhoto(uploadFile, uploadTitle, uploadDesc, uploadType).execute();
                         } else {
                             LogUtil.w(TAG, "Unable to find file at location " + u.getLocation());

@@ -248,7 +248,7 @@
     <string name="upload_notif_starting">Starting upload</string>
     <string name="upload_notif_starting_content">Your upload will begin shortly</string>
     <string name="upload_notif_in_progress">Upload in Progress</string>
-    <string name="upload_notif_error">There was a problem uploading your photos. Please try again.</string>
+    <string name="upload_notif_error">Unable to upload photos. Please try again.</string>
     <string name="upload_notif_error_upload_incomplete_short">Unable to upload all photos</string>
     <string name="upload_notif_error_upload_complete_long">There was a problem while uploading. Only %1$d of %2$d photos were uploaded successfully</string>
     <string name="upload_gallery_title">Submitting to Gallery</string>

@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -11,17 +12,21 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
+import com.kennyc.bottomsheet.BottomSheet;
 
 import butterknife.ButterKnife;
 
@@ -235,5 +240,29 @@ abstract public class BaseActivity extends AppCompatActivity {
      */
     protected boolean isApiLevel(int apiLevel) {
         return Build.VERSION.SDK_INT >= apiLevel;
+    }
+
+    /**
+     * Shares a given {@link Intent} with the system. If Lollipop or higher, the built in sharing system will be used. If lower,
+     * {@link BottomSheet} will be used to resemble the style. If the system is unable to handle the intent, an error will be displayed
+     *
+     * @param intent The intent to share
+     * @param title  Title of the share intent
+     */
+    protected void share(@NonNull Intent intent, @StringRes int title) {
+        if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(Intent.createChooser(intent, getString(title)));
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            BottomSheet shareDialog = BottomSheet.createShareBottomSheet(this, intent, title, true);
+            if (shareDialog != null) {
+                shareDialog.show();
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

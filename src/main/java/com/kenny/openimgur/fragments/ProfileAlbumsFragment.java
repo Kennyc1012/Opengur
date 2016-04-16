@@ -23,7 +23,6 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
-import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.view.MultiStateView;
 
 import retrofit2.Call;
@@ -81,13 +80,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements View.OnLo
                                 shareIntent.setType("text/plain");
                                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share));
                                 shareIntent.putExtra(Intent.EXTRA_TEXT, album.getLink());
-                                BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), shareIntent, R.string.share, true);
-
-                                if (shareDialog != null) {
-                                    shareDialog.show();
-                                } else {
-                                    Snackbar.make(mMultiStateView, R.string.cant_launch_intent, Snackbar.LENGTH_LONG).show();
-                                }
+                                share(shareIntent, R.string.share);
                                 break;
 
                             case 1:

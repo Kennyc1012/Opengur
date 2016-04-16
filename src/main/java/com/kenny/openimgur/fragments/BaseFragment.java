@@ -1,9 +1,13 @@
 package com.kenny.openimgur.fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.view.View;
+import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.BaseActivity;
@@ -11,6 +15,7 @@ import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
+import com.kennyc.bottomsheet.BottomSheet;
 
 import butterknife.ButterKnife;
 
@@ -89,5 +94,29 @@ abstract public class BaseFragment extends Fragment {
      */
     protected boolean isApiLevel(int apiLevel) {
         return Build.VERSION.SDK_INT >= apiLevel;
+    }
+
+    /**
+     * Shares a given {@link Intent} with the system. If Lollipop or higher, the built in sharing system will be used. If lower,
+     * {@link BottomSheet} will be used to resemble the style. If the system is unable to handle the intent, an error will be displayed
+     *
+     * @param intent The intent to share
+     * @param title  Title of the share intent
+     */
+    protected void share(@NonNull Intent intent, @StringRes int title) {
+        if (isApiLevel(Build.VERSION_CODES.LOLLIPOP)) {
+            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                startActivity(Intent.createChooser(intent, getString(title)));
+            } else {
+                Toast.makeText(getActivity(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            BottomSheet shareDialog = BottomSheet.createShareBottomSheet(getActivity(), intent, title, true);
+            if (shareDialog != null) {
+                shareDialog.show();
+            } else {
+                Toast.makeText(getActivity(), R.string.cant_launch_intent, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
