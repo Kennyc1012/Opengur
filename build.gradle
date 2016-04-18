@@ -49,6 +49,10 @@ android {
         beta {
             versionName project.ext.version_name + "-beta" + beta_number
         }
+
+        f_droid {
+            versionName project.ext.version_name + "-F-Droid"
+        }
     }
 
     buildTypes {
@@ -105,7 +109,10 @@ dependencies {
 
     // Misc
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
-    compile('com.crashlytics.sdk.android:crashlytics:+@aar') {
+    releaseCompile('com.crashlytics.sdk.android:crashlytics:+@aar') {
+        transitive = true;
+    }
+    betaCompile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;
     }
 }

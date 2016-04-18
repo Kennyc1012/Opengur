@@ -10,11 +10,11 @@ import android.os.UserManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
-import com.crashlytics.android.Crashlytics;
 import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.api.OAuthInterceptor;
 import com.kenny.openimgur.services.AlarmReceiver;
+import com.kenny.openimgur.util.FabricUtil;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -24,8 +24,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.File;
 import java.lang.reflect.Method;
-
-import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by kcampagna on 6/14/14.
@@ -59,11 +57,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         ImageUtil.initImageLoader(getApplicationContext());
         migrateThemePreference();
         migrateDownloadFolder();
-
-        // Start crashlytics if enabled
-        if (!BuildConfig.DEBUG && mPref.getBoolean(SettingsActivity.KEY_CRASHLYTICS, true)) {
-            Fabric.with(this, new Crashlytics());
-        }
+        FabricUtil.init(this, mPref);
 
         // Check if for ADB logging on a non debug build
         if (!BuildConfig.DEBUG) {
