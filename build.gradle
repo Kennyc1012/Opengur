@@ -51,7 +51,7 @@ android {
         }
 
         f_droid {
-            versionName project.ext.version_name + "-F-Droid"
+            versionName project.ext.version_name + "-F_Droid"
         }
     }
 

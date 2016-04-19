@@ -21,4 +21,8 @@ public class FabricUtil {
             Fabric.with(context, new Crashlytics());
         }
     }
+
+    public static boolean hasFabricAvailable() {
+        return true;
+    }
 }

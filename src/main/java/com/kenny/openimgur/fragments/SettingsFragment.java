@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.RingtonePreference;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -23,6 +24,7 @@ import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.util.DBContracts;
+import com.kenny.openimgur.util.FabricUtil;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -54,6 +56,10 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         findPreference(SettingsActivity.KEY_DARK_THEME).setOnPreferenceChangeListener(this);
         findPreference(SettingsActivity.KEY_NOTIFICATION_RINGTONE).setOnPreferenceChangeListener(this);
         findPreference(SettingsActivity.KEY_THEME_NEW).setOnPreferenceChangeListener(this);
+
+        if (!FabricUtil.hasFabricAvailable()) {
+            ((PreferenceCategory) findPreference("developerSettings")).removePreference(findPreference(SettingsActivity.KEY_CRASHLYTICS));
+        }
     }
 
     @Override

@@ -12,4 +12,8 @@ public class FabricUtil {
     public static void init(@NonNull Context context, @NonNull SharedPreferences preferences) {
         // Do nothing
     }
+
+    public static boolean hasFabricAvailable(){
+        return false;
+    }
 }

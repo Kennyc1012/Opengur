@@ -10,7 +10,7 @@
             android:positiveButtonText="@string/okay"
             android:negativeButtonText="@string/cancel"
             app:cc_colors="@array/pref_colors"
-            app:cc_colorNames="@array/pref_themes_items"/>
+            app:cc_colorNames="@array/pref_themes_items" />
 
         <CheckBoxPreference
             android:key="darkTheme"
@@ -138,7 +138,9 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/developer">
+    <PreferenceCategory
+        android:title="@string/developer"
+        android:key="developerSettings">
 
         <Preference
             android:key="experimentalSettings"
