@@ -109,7 +109,7 @@ dependencies {
 
     // Misc
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
-    releaseCompile('com.crashlytics.sdk.android:crashlytics:+@aar') {
+    fullCompile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;
     }
     betaCompile('com.crashlytics.sdk.android:crashlytics:+@aar') {
