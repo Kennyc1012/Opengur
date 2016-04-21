@@ -26,7 +26,9 @@ public class ImgurSerializer implements JsonDeserializer<ImgurBaseObject> {
         ImgurBaseObject obj = gson.fromJson(json, isAlbum ? ImgurAlbum.class : ImgurPhoto.class);
 
         // Need to manually check if the up/down votes are set to null as GSON will initialize it to 0
-        if (object.has("ups") && object.has("downs")) {
+        if (object.has("in_gallery")) {
+            obj.setIsListed(object.get("in_gallery").getAsBoolean());
+        } else if (object.has("ups") && object.has("downs")) {
             boolean hasUpVotes = !object.get("ups").isJsonNull();
             boolean hasDownVotes = !object.get("downs").isJsonNull();
             obj.setIsListed(hasUpVotes && hasDownVotes);
