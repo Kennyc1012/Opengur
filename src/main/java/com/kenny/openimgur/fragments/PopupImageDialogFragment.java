@@ -267,7 +267,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
 
                     if (photo.isAnimated()) {
                         if (photo.isLinkAThumbnail() || photo.getSize() > PHOTO_SIZE_LIMIT) {
-                            mImageUrl = photo.getMP4Link();
+                            mImageUrl = photo.getVideoLink();
                             displayVideo(mImageUrl);
                         } else {
                             mImageUrl = photo.getLink();

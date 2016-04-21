@@ -114,7 +114,7 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
             String photoUrl;
 
             // Check if the link is a thumbed version of a large gif
-            if (photoObject.hasMP4Link() && photoObject.isLinkAThumbnail() && ImgurPhoto.IMAGE_TYPE_GIF.equals(photoObject.getType())) {
+            if (photoObject.hasVideoLink() && photoObject.isLinkAThumbnail() && ImgurPhoto.IMAGE_TYPE_GIF.equals(photoObject.getType())) {
                 photoUrl = photoObject.getThumbnail(ImgurPhoto.THUMBNAIL_GALLERY, true, FileUtil.EXTENSION_GIF);
             } else {
                 photoUrl = ((ImgurPhoto) obj).getThumbnail(ImgurPhoto.THUMBNAIL_GALLERY, false, null);

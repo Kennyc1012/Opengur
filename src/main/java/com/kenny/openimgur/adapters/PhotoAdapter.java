@@ -242,7 +242,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
         String url;
 
         // Check if we have an mp4 and if we should load its thumbnail
-        if (photo.isAnimated() && photo.hasMP4Link() && photo.isLinkAThumbnail()) {
+        if (photo.isAnimated() && photo.hasVideoLink() && photo.isLinkAThumbnail()) {
             if (photo.getSize() > PHOTO_SIZE_LIMIT || photo.getHeight() > PHOTO_PIXEL_LIMIT || photo.getWidth() > PHOTO_PIXEL_LIMIT) {
                 url = photo.getThumbnail(ImgurPhoto.THUMBNAIL_HUGE, true, FileUtil.EXTENSION_GIF);
             } else {

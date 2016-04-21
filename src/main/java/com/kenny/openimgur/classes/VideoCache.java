@@ -67,7 +67,6 @@ public class VideoCache {
             return;
         }
 
-        url = getMP4Url(url);
         String key = mKeyGenerator.generate(url);
         File file = getVideoFile(key);
 
@@ -78,7 +77,14 @@ public class VideoCache {
 
         try {
             if (file == null) {
-                file = new File(mCacheDir, key + ".mp4");
+                String ext = getExtension(url);
+
+                if (TextUtils.isEmpty(ext)) {
+                    if (listener != null) listener.onVideoDownloadFailed(new IllegalArgumentException("Invalid extension for url " + url), url);
+                    return;
+                }
+
+                file = new File(mCacheDir, key + ext);
             }
 
             file.createNewFile();
@@ -105,9 +111,11 @@ public class VideoCache {
     public File getVideoFile(String url) {
         if (TextUtils.isEmpty(url)) return null;
 
+        String ext = getExtension(url);
+        if (TextUtils.isEmpty(url)) return null;
 
-        String key = mKeyGenerator.generate(getMP4Url(url));
-        File file = new File(mCacheDir, key + ".mp4");
+        String key = mKeyGenerator.generate(url);
+        File file = new File(mCacheDir, key + ext);
         return FileUtil.isFileValid(file) ? file : null;
     }
 
@@ -142,6 +150,7 @@ public class VideoCache {
             this.mKey = key;
             this.mListener = listener;
             this.mUrl = url;
+            if (mUrl.endsWith(".gifv")) mUrl = mUrl.replace(".gifv", ".mp4");
         }
 
         @Override
@@ -194,20 +203,14 @@ public class VideoCache {
         }
     }
 
-    /**
-     * Removes either a .gifv or .webm extension in favor for .mp4
-     *
-     * @param url
-     * @return
-     */
-    @NonNull
-    private String getMP4Url(@NonNull String url) {
-        if (url.endsWith(".gifv")) {
-            return url.replace(".gifv", ".mp4");
+    @Nullable
+    private String getExtension(@NonNull String url) {
+        if (url.endsWith(".gifv") || url.endsWith(".mp4")) {
+            return ".mp4";
         } else if (url.endsWith(".webm")) {
-            return url.replace(".webm", ".mp4");
+            return ".webm";
         }
 
-        return url;
+        return null;
     }
 }

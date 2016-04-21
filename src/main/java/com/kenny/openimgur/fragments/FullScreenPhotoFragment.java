@@ -120,7 +120,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
     private void configView(Bundle savedInstanceState) {
         if (mPhoto.isAnimated()) {
             if (mPhoto.isLinkAThumbnail() || mPhoto.getSize() > (1024 * 1024 * 5)) {
-                mUrl = mPhoto.getMP4Link();
+                mUrl = mPhoto.getVideoLink();
                 displayVideo(savedInstanceState);
             } else {
                 mUrl = mPhoto.getLink();
