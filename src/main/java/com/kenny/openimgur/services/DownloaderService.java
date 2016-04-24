@@ -63,6 +63,7 @@ public class DownloaderService extends IntentService {
         wakeLock.acquire();
 
         try {
+            Context context = getApplicationContext();
             ArrayList<String> photoUrls = intent.getStringArrayListExtra(KEY_IMAGE_URLS);
 
             if (photoUrls == null || photoUrls.isEmpty()) {
@@ -72,7 +73,7 @@ public class DownloaderService extends IntentService {
 
 
             boolean isMultiUpload = photoUrls.size() > 1;
-            DownloadNotification notification = new DownloadNotification(getApplicationContext(), photoUrls.size());
+            DownloadNotification notification = new DownloadNotification(context, photoUrls.size());
             int count = 1;
             int totalDownloaded = 0;
             int totalPhotos = photoUrls.size();
@@ -92,11 +93,11 @@ public class DownloaderService extends IntentService {
                     LogUtil.v(TAG, "Image download completed for URL " + url);
                     Uri fileUri = Uri.fromFile(savedFile);
                     // Let the system know we have a new file
-                    FileUtil.scanFile(fileUri, getApplicationContext());
+                    FileUtil.scanFile(fileUri, context);
 
                     // Single image downloads will show multiple options and a preview in the notification
                     if (!isMultiUpload) {
-                        Uri shareUri = FileProvider.getUriForFile(getApplicationContext(), OpengurApp.AUTHORITY, savedFile);
+                        Uri shareUri = FileProvider.getUriForFile(context, OpengurApp.AUTHORITY, savedFile);
                         String photoType = LinkUtils.getImageType(url);
                         boolean isVideoLink = savedFile.getAbsolutePath().endsWith(FileUtil.EXTENSION_MP4);
 
@@ -104,18 +105,21 @@ public class DownloaderService extends IntentService {
                         shareIntent.setType(photoType);
                         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                         shareIntent.putExtra(Intent.EXTRA_STREAM, shareUri);
-                        PendingIntent shareP = PendingIntent.getActivity(getApplicationContext(), RequestCodes.DOWNLOAD_SHARE, Intent.createChooser(shareIntent, getString(R.string.share)), PendingIntent.FLAG_UPDATE_CURRENT);
+                        PendingIntent shareP = PendingIntent.getActivity(context, RequestCodes.DOWNLOAD_SHARE, Intent.createChooser(shareIntent, getString(R.string.share)), PendingIntent.FLAG_UPDATE_CURRENT);
 
                         Intent viewIntent = new Intent(Intent.ACTION_VIEW);
                         viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         viewIntent.setDataAndType(shareUri, isVideoLink ? "video/mp4" : photoType);
-                        PendingIntent viewP = PendingIntent.getActivity(getApplicationContext(), RequestCodes.DOWNLOAD_VIEW, viewIntent, PendingIntent.FLAG_ONE_SHOT);
+                        PendingIntent viewP = PendingIntent.getActivity(context, RequestCodes.DOWNLOAD_VIEW, viewIntent, PendingIntent.FLAG_ONE_SHOT);
+
+                        Intent deleteIntent = NotificationReceiver.createDeleteIntent(context, notification.getNotificationId(), savedFile.getAbsolutePath());
+                        PendingIntent deleteP = PendingIntent.getBroadcast(context, RequestCodes.DOWNLOAD_DELETE, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
                         // Get the correct preview image for the notification based on if it is a video or not
                         Bitmap bm = isVideoLink ? ImageUtil.toGrayScale(ThumbnailUtils.createVideoThumbnail(savedFile.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND)) :
                                 ImageUtil.toGrayScale(ImageUtil.decodeSampledBitmapFromResource(savedFile, 256, 256));
 
-                        notification.onSingleImageDownloadComplete(bm, viewP, shareP);
+                        notification.onSingleImageDownloadComplete(bm, viewP, shareP, deleteP);
                     }
                 } else if (!isMultiUpload) {
                     notification.onError();
@@ -245,7 +249,7 @@ public class DownloaderService extends IntentService {
          * @param viewIntent  The {@link PendingIntent} for viewing the image
          * @param shareIntent The {@link PendingIntent} for sharing the image
          */
-        public void onSingleImageDownloadComplete(Bitmap bitmap, PendingIntent viewIntent, PendingIntent shareIntent) {
+        public void onSingleImageDownloadComplete(Bitmap bitmap, PendingIntent viewIntent, PendingIntent shareIntent, PendingIntent deleteIntent) {
             String title = resources.getString(R.string.download_notif_complete);
 
             if (bitmap != null) {
@@ -260,6 +264,7 @@ public class DownloaderService extends IntentService {
             builder.setProgress(0, 0, false)
                     .setContentIntent(viewIntent)
                     .addAction(R.drawable.ic_share_24dp, resources.getString(R.string.share), shareIntent)
+                    .addAction(R.drawable.ic_delete_24dp, resources.getString(R.string.delete), deleteIntent)
                     .setContentTitle(title)
                     .setContentText(resources.getString(R.string.tap_to_view));
 
