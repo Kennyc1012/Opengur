@@ -6,7 +6,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0-rc1'
+        classpath 'com.android.tools.build:gradle:2.1.0'
         classpath 'io.fabric.tools:gradle:+'
     }
 }
@@ -30,7 +30,7 @@ repositories {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '24.0.0-rc2'
+    buildToolsVersion '24.0.0-rc3'
 
     defaultConfig {
         applicationId "com.kennyc.open.imgur"
