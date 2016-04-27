@@ -18,6 +18,7 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kennyc.bottomsheet.BottomSheet;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Created by kcampagna on 9/5/14.
@@ -30,6 +31,8 @@ abstract public class BaseFragment extends Fragment {
     public ImgurUser user;
 
     public ImgurTheme theme;
+
+    private Unbinder mUnbinder;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +47,7 @@ abstract public class BaseFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         LogUtil.v(TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.bind(this, view);
+        mUnbinder = ButterKnife.bind(this, view);
     }
 
     @Override
@@ -74,7 +77,7 @@ abstract public class BaseFragment extends Fragment {
     @Override
     public void onDestroyView() {
         LogUtil.v(TAG, "onDestroyView");
-        ButterKnife.unbind(this);
+        if (mUnbinder != null) mUnbinder.unbind();
         super.onDestroyView();
     }
 

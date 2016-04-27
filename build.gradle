@@ -8,11 +8,13 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.0'
         classpath 'io.fabric.tools:gradle:+'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'com.neenbedankt.android-apt'
 
 project.ext {
     version_name = '4.5.0'
@@ -95,11 +97,11 @@ dependencies {
     compile 'com.github.Kennyc1012:MultiStateView:1.1.1'
     compile 'com.github.Kennyc1012:BottomSheet:2.1.2'
     compile 'com.github.Kennyc1012:TextDrawable:1.1'
-    compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.pacioianu.david:ink-page-indicator:1.1.1'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'
     compile 'com.github.Kennyc1012:AndroidSlidingUpPanel:3.2.1-fork'
     compile 'com.github.Kennyc1012:ColorChooser:0.2.2:standardRelease@aar'
+    compile 'com.jakewharton:butterknife:8.0.0'
 
     // Networking
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
@@ -108,6 +110,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
 
     // Misc
+    apt 'com.jakewharton:butterknife-compiler:8.0.0'
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
     fullCompile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;

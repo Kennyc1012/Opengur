@@ -39,7 +39,7 @@ import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,16 +61,16 @@ public class ProfileActivity extends BaseActivity {
 
     private static final String KEY_USER = "user";
 
-    @Bind(R.id.slidingTabs)
+    @BindView(R.id.slidingTabs)
     TabLayout mSlidingTabs;
 
-    @Bind(R.id.pager)
+    @BindView(R.id.pager)
     ViewPager mPager;
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     MultiStateView mMultiView;
 
-    @Bind(R.id.toolBar)
+    @BindView(R.id.toolBar)
     Toolbar mToolBar;
 
     private ImgurUser mSelectedUser;

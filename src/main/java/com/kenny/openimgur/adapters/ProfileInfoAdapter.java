@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by kcampagna on 1/21/16.
@@ -121,16 +121,16 @@ public class ProfileInfoAdapter extends BaseRecyclerAdapter<ImgurTrophy> {
     }
 
     static class InfoHolder extends BaseViewHolder {
-        @Bind(R.id.notoriety)
+        @BindView(R.id.notoriety)
         TextView notoriety;
 
-        @Bind(R.id.rep)
+        @BindView(R.id.rep)
         TextView rep;
 
-        @Bind(R.id.bio)
+        @BindView(R.id.bio)
         TextView bio;
 
-        @Bind(R.id.date)
+        @BindView(R.id.date)
         TextView date;
 
         public InfoHolder(View v) {
@@ -139,16 +139,16 @@ public class ProfileInfoAdapter extends BaseRecyclerAdapter<ImgurTrophy> {
     }
 
     static class TrophyHolder extends BaseViewHolder {
-        @Bind(R.id.image)
+        @BindView(R.id.image)
         ImageView trophyImage;
 
-        @Bind(R.id.name)
+        @BindView(R.id.name)
         TextView trophyName;
 
-        @Bind(R.id.desc)
+        @BindView(R.id.desc)
         TextView trophyDesc;
 
-        @Bind(R.id.divider)
+        @BindView(R.id.divider)
         View divider;
 
         public TrophyHolder(View v) {

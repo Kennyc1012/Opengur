@@ -29,7 +29,7 @@ import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,17 +50,17 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
 
     private static final String KEY_HAS_MORE = "hasMore";
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     protected MultiStateView mMultiStateView;
 
-    @Bind(R.id.grid)
+    @BindView(R.id.grid)
     protected RecyclerView mGrid;
 
-    @Bind(R.id.refreshLayout)
+    @BindView(R.id.refreshLayout)
     protected SwipeRefreshLayout mRefreshLayout;
 
     @Nullable
-    @Bind(R.id.loadingFooter)
+    @BindView(R.id.loadingFooter)
     View mLoadingFooter;
 
     protected FragmentListener mListener;

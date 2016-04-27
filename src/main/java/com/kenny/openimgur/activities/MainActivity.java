@@ -47,7 +47,7 @@ import com.kenny.openimgur.util.SqlHelper;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
@@ -76,25 +76,25 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
     public static final int PAGE_FEEDBACK = 9;
 
-    @Bind(R.id.drawerLayout)
+    @BindView(R.id.drawerLayout)
     DrawerLayout mDrawer;
 
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton mUploadButton;
 
-    @Bind(R.id.toolBar)
+    @BindView(R.id.toolBar)
     Toolbar mToolBar;
 
-    @Bind(R.id.navigationView)
+    @BindView(R.id.navigationView)
     NavigationView mNavigationView;
 
-    @Bind(R.id.topicsSpinner)
+    @BindView(R.id.topicsSpinner)
     Spinner mTopicsSpinner;
 
-    @Bind(R.id.appbar)
+    @BindView(R.id.appbar)
     AppBarLayout mAppBar;
 
-    @Bind(R.id.coordinatorLayout)
+    @BindView(R.id.coordinatorLayout)
     CoordinatorLayout mCoordinatorLayout;
 
     ImageView mAvatar;

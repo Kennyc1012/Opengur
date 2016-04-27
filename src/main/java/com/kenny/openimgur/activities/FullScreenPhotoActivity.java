@@ -37,7 +37,7 @@ import com.kenny.openimgur.util.RequestCodes;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by kcampagna on 6/2/15.
@@ -53,7 +53,7 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
     public static final String KEY_ENDING_POSITION = "ending_position";
 
-    @Bind(R.id.pager)
+    @BindView(R.id.pager)
     ViewPager mPager;
 
     private View mDecorView;

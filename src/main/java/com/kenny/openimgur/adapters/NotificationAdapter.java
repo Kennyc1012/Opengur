@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by Kenny-PC on 8/9/2015.
@@ -181,16 +181,16 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
     }
 
     static class NotificationHolder extends BaseViewHolder {
-        @Bind(R.id.author)
+        @BindView(R.id.author)
         TextView author;
 
-        @Bind(R.id.comment)
+        @BindView(R.id.comment)
         TextView content;
 
-        @Bind(R.id.image)
+        @BindView(R.id.image)
         ImageView image;
 
-        @Bind(R.id.divider)
+        @BindView(R.id.divider)
         View divider;
 
         public NotificationHolder(View view) {

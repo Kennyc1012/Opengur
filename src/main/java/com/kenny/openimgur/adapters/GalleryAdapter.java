@@ -25,7 +25,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
     public static final int MAX_ITEMS = 200;
@@ -231,13 +231,13 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
     }
 
     public static class GalleryHolder extends BaseViewHolder {
-        @Bind(R.id.image)
+        @BindView(R.id.image)
         ImageView image;
 
-        @Bind(R.id.score)
+        @BindView(R.id.score)
         TextView score;
 
-        @Bind(R.id.itemType)
+        @BindView(R.id.itemType)
         ImageView itemType;
 
         public GalleryHolder(View view) {

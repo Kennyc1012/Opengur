@@ -26,7 +26,7 @@ import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.ViewUtils;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 
 public class UploadEditActivity extends BaseActivity {
@@ -38,22 +38,22 @@ public class UploadEditActivity extends BaseActivity {
 
     public static final String KEY_UPDATED_DELETED = "updated_deleted";
 
-    @Bind(R.id.image)
+    @BindView(R.id.image)
     ImageView mImage;
 
-    @Bind(R.id.title)
+    @BindView(R.id.title)
     EditText mTitle;
 
-    @Bind(R.id.desc)
+    @BindView(R.id.desc)
     EditText mDescription;
 
-    @Bind(R.id.titleWrapper)
+    @BindView(R.id.titleWrapper)
     TextInputLayout mTitleWrapper;
 
-    @Bind(R.id.descWrapper)
+    @BindView(R.id.descWrapper)
     TextInputLayout mDescWrapper;
 
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton mFab;
 
     private Upload mUpload;

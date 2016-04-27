@@ -37,7 +37,7 @@ import com.kennyc.view.MultiStateView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,10 +50,10 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
     private static final String KEY_USER = "user";
 
-    @Bind(R.id.list)
+    @BindView(R.id.list)
     RecyclerView mList;
 
-    @Bind(R.id.container)
+    @BindView(R.id.container)
     MultiStateView mMultiStateView;
 
     private ProfileInfoAdapter mAdapter;

@@ -21,7 +21,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by Kenny-PC on 8/1/2015.
@@ -118,16 +118,16 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     }
 
     static class CommentViewHolder extends BaseViewHolder {
-        @Bind(R.id.author)
+        @BindView(R.id.author)
         TextView author;
 
-        @Bind(R.id.comment)
+        @BindView(R.id.comment)
         TextView comment;
 
-        @Bind(R.id.image)
+        @BindView(R.id.image)
         ImageView image;
 
-        @Bind(R.id.divider)
+        @BindView(R.id.divider)
         View divider;
 
         public CommentViewHolder(View view) {

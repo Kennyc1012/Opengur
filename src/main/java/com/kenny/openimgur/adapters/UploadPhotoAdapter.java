@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by Kenny-PC on 6/21/2015.
@@ -110,16 +110,16 @@ public class UploadPhotoAdapter extends BaseRecyclerAdapter<Upload> {
     }
 
     static class UploadPhotoHolder extends BaseViewHolder {
-        @Bind(R.id.image)
+        @BindView(R.id.image)
         ImageView image;
 
-        @Bind(R.id.contentContainer)
+        @BindView(R.id.contentContainer)
         View contentContainer;
 
-        @Bind(R.id.title)
+        @BindView(R.id.title)
         View title;
 
-        @Bind(R.id.desc)
+        @BindView(R.id.desc)
         View desc;
 
         public UploadPhotoHolder(View view) {

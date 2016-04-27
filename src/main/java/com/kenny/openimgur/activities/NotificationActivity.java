@@ -31,7 +31,7 @@ import com.kennyc.view.MultiStateView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,10 +47,10 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
 
     private static final String KEY_POSITION = "position";
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     MultiStateView mMultiView;
 
-    @Bind(R.id.list)
+    @BindView(R.id.list)
     RecyclerView mList;
 
     private NotificationAdapter mAdapter;

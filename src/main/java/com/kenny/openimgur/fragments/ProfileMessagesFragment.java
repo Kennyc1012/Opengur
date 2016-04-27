@@ -26,7 +26,7 @@ import com.kennyc.view.MultiStateView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,10 +37,10 @@ import retrofit2.Response;
 public class ProfileMessagesFragment extends BaseFragment implements View.OnClickListener, View.OnLongClickListener {
     private static final String KEY_ITEMS = "items";
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     MultiStateView mMultiStateView;
 
-    @Bind(R.id.commentList)
+    @BindView(R.id.commentList)
     RecyclerView mMessageList;
 
     private ConvoAdapter mAdapter;

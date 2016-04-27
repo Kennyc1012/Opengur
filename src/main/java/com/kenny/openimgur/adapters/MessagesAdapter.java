@@ -19,7 +19,7 @@ import com.kenny.openimgur.classes.OpengurApp;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by kcampagna on 7/27/15.
@@ -136,13 +136,13 @@ public class MessagesAdapter extends BaseRecyclerAdapter<ImgurMessage> {
     }
 
     static class MessagesViewHolder extends BaseViewHolder {
-        @Bind(R.id.messageContainer)
+        @BindView(R.id.messageContainer)
         LinearLayout container;
 
-        @Bind(R.id.message)
+        @BindView(R.id.message)
         TextView message;
 
-        @Bind(R.id.timeStamp)
+        @BindView(R.id.timeStamp)
         TextView timeStamp;
 
         public MessagesViewHolder(View view) {
