@@ -52,10 +52,12 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
         stopUserManagerLeak();
         mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         mPref.registerOnSharedPreferenceChangeListener(this);
+        mTheme = ImgurTheme.fromPreferences(getResources(), mPref.getInt(SettingsActivity.KEY_THEME_NEW, ImgurTheme.GREY.primaryColor));
+        mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, true);
         mUser = SqlHelper.getInstance(this).getUser();
         if (mUser != null) AlarmReceiver.createNotificationAlarm(this);
         ImageUtil.initImageLoader(getApplicationContext());
-        migrateThemePreference();
+
         migrateDownloadFolder();
         FabricUtil.init(this, mPref);
 
@@ -209,22 +211,6 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
                 }
                 break;
         }
-    }
-
-    /**
-     * TODO Remove after several versions
-     */
-    private void migrateThemePreference() {
-        if (mPref.contains(SettingsActivity.KEY_THEME)) {
-            mTheme = ImgurTheme.getThemeFromString(mPref.getString(SettingsActivity.KEY_THEME, ImgurTheme.GREY.themeName));
-            mPref.edit()
-                    .putInt(SettingsActivity.KEY_THEME_NEW, mTheme.primaryColor)
-                    .remove(SettingsActivity.KEY_THEME).apply();
-        } else {
-            mTheme = ImgurTheme.fromPreferences(getResources(), mPref.getInt(SettingsActivity.KEY_THEME_NEW, ImgurTheme.GREY.primaryColor));
-        }
-
-        mTheme.isDarkTheme = mPref.getBoolean(SettingsActivity.KEY_DARK_THEME, true);
     }
 
     /**
