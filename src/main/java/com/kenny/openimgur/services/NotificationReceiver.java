@@ -118,7 +118,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 if (content instanceof ImgurConvo) {
                     dest = ConvoThreadActivity.createIntent(context, (ImgurConvo) content);
                 } else if (content instanceof ImgurComment) {
-                    dest = ViewActivity.createIntent(context, "https://imgur.com/gallery/" + ((ImgurComment) content).getImageId(), false);
+                    dest = ViewActivity.createIntent(context, ApiClient.IMGUR_GALLERY_URL + ((ImgurComment) content).getImageId(), false);
                 } else {
                     dest = NotificationActivity.createIntent(context);
                 }

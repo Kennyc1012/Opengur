@@ -36,6 +36,7 @@ public class ImgurSerializer implements JsonDeserializer<ImgurBaseObject> {
             obj.setIsListed(false);
         }
 
+        obj.toHttps();
         return obj;
     }
 }

@@ -173,7 +173,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
     @Override
     public void onClick(View v) {
         ImgurComment comment = mAdapter.getItem(mCommentList.getChildAdapterPosition(v));
-        String url = "https://imgur.com/gallery/" + comment.getImageId();
+        String url = ApiClient.IMGUR_GALLERY_URL + comment.getImageId();
         startActivity(ViewActivity.createIntent(getActivity(), url, false));
     }
 

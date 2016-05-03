@@ -39,10 +39,17 @@ public class LinkUtils {
 
     // Patterns used to extract Imgur meta data from Urls
     private static final Pattern ID_PATTERN = Pattern.compile("(?<=.com/)\\w+$");
+
     private static final Pattern USER_PATTERN = Pattern.compile("(?<=/user/)(?!=/)\\w+");
+
     private static final Pattern GALLERY_ID_PATTERN = Pattern.compile("(?<=/gallery/)(?!=/)\\w+");
+
     private static final Pattern ALBUM_ID_PATTERN = Pattern.compile("(?<=/a/)(?!=/)\\w+");
+
+    private static final Pattern HTTP_PATTERN = Pattern.compile("^http:");
+
     public static final Pattern USER_CALLOUT_PATTERN = Pattern.compile("@\\w+");
+
 
     public enum LinkMatch {
         IMAGE_URL,
@@ -228,5 +235,18 @@ public class LinkUtils {
         if (TextUtils.isEmpty(url)) return false;
 
         return url.matches(REGEX_IMGUR_PHOTO_PNG);
+    }
+
+    /**
+     * Returns if a link is http scheme
+     *
+     * @param url
+     * @return
+     */
+    public static boolean isHttpLink(@Nullable String url) {
+        if (TextUtils.isEmpty(url)) return false;
+
+        Matcher match = HTTP_PATTERN.matcher(url);
+        return match.find();
     }
 }

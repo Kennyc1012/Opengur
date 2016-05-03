@@ -224,7 +224,7 @@ public class NotificationService extends IntentService {
                     String photoUrl;
 
                     if (TextUtils.isEmpty(comment.getAlbumCoverId())) {
-                        photoUrl = "https://i.imgur.com/" + comment.getImageId() + ImgurPhoto.THUMBNAIL_MEDIUM + ".jpeg";
+                        photoUrl = ApiClient.IMGUR_URL + comment.getImageId() + ImgurPhoto.THUMBNAIL_MEDIUM + ".jpeg";
                     } else {
                         photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, comment.getAlbumCoverId() + ImgurPhoto.THUMBNAIL_MEDIUM);
                     }

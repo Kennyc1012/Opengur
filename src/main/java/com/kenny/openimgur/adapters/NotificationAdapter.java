@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -111,7 +112,7 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
         holder.content.setText(notification.getContent());
 
         if (TextUtils.isEmpty(notification.getAlbumCover())) {
-            photoUrl = "https://imgur.com/" + notification.getContentId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
+            photoUrl = ApiClient.IMGUR_URL + notification.getContentId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
         } else {
             photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, notification.getAlbumCover() + ImgurPhoto.THUMBNAIL_SMALL);
         }

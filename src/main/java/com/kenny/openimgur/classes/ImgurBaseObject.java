@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
+import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.util.LinkUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,7 +163,7 @@ public class ImgurBaseObject implements Parcelable {
         mVote = vote;
     }
 
-    public void setTags(List tags) {
+    public void setTags(List<ImgurTag> tags) {
         mTags = tags;
     }
 
@@ -175,7 +177,7 @@ public class ImgurBaseObject implements Parcelable {
      * @return
      */
     public String getGalleryLink() {
-        return "https://imgur.com/gallery/" + getId();
+        return ApiClient.IMGUR_GALLERY_URL + getId();
     }
 
     public void setLink(String link) {
@@ -188,6 +190,19 @@ public class ImgurBaseObject implements Parcelable {
 
     public boolean isListed() {
         return mIsListed;
+    }
+
+    /**
+     * Converts an objects link from http to https
+     */
+    public void toHttps() {
+        if (LinkUtils.isHttpLink(mLink)) {
+            mLink = mLink.replace("http:", "https:");
+        }
+
+        if (LinkUtils.isHttpLink(mRedditLink)) {
+            mRedditLink = mRedditLink.replace("http:", "https:");
+        }
     }
 
     @Override

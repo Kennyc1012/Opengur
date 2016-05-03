@@ -159,6 +159,19 @@ public class ImgurPhoto extends ImgurBaseObject {
         return false;
     }
 
+    @Override
+    public void toHttps() {
+        super.toHttps();
+
+        if (LinkUtils.isHttpLink(mMP4Link)) {
+            mMP4Link = mMP4Link.replace("http:", "https:");
+        }
+
+        if (LinkUtils.isHttpLink(mWebMLink)) {
+            mWebMLink = mWebMLink.replace("http:", "https:");
+        }
+    }
+
     public void writeToParcel(Parcel out, int flags) {
         super.writeToParcel(out, flags);
         out.writeString(mType);

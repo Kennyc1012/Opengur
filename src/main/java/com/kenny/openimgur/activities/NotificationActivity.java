@@ -177,7 +177,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
             ImgurConvo convo = new ImgurConvo(notification.getContentId(), notification.getAuthor(), 0);
             startActivity(ConvoThreadActivity.createIntent(getApplicationContext(), convo));
         } else {
-            String url = "https://imgur.com/gallery/" + notification.getContentId();
+            String url = ApiClient.IMGUR_GALLERY_URL + notification.getContentId();
             Intent intent = ViewActivity.createIntent(getApplicationContext(), url, !TextUtils.isEmpty(notification.getAlbumCover()));
             startActivity(intent);
         }
