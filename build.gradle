@@ -17,8 +17,8 @@ apply plugin: 'io.fabric'
 apply plugin: 'com.neenbedankt.android-apt'
 
 project.ext {
-    version_name = '4.5.0'
-    version_code = 75
+    version_name = '4.5.1'
+    version_code = 76
     support_version = '23.3.0'
     beta_number = 1
 }
