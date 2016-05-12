@@ -94,7 +94,7 @@ dependencies {
     // UI
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.15'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'com.github.Kennyc1012:MultiStateView:1.1.1'
+    compile 'com.github.Kennyc1012:MultiStateView:1.2.0'
     compile 'com.github.Kennyc1012:BottomSheet:2.1.2'
     compile 'com.github.Kennyc1012:TextDrawable:1.1'
     compile 'com.pacioianu.david:ink-page-indicator:1.1.1'
