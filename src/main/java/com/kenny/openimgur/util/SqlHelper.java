@@ -329,7 +329,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         if (photo == null) return;
 
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL(String.format(UploadContract.DELETE_PHOTO_SQL, photo.getId()));
+        db.delete(UploadContract.TABLE_NAME, UploadContract._ID + "=?", new String[]{String.valueOf(photo.getId())});
     }
 
     /**
@@ -404,7 +404,7 @@ public class SqlHelper extends SQLiteOpenHelper {
      */
     public void deleteTopic(int id) {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL(String.format(TopicsContract.DELETE_TOPIC_SQL, id));
+        db.delete(TopicsContract.TABLE_NAME, TopicsContract._ID + " =?", new String[]{String.valueOf(id)});
     }
 
     /**

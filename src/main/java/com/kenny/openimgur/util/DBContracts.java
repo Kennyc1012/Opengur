@@ -125,9 +125,6 @@ public class DBContracts {
 
         public static final String GET_UPLOADS_SQL = "SELECT * FROM " + TABLE_NAME +
                 " ORDER BY " + COLUMN_DATE + " %s";
-
-        public static final String DELETE_PHOTO_SQL = " DELETE FROM " + TABLE_NAME +
-                " WHERE " + _ID + "=%d";
     }
 
     public static class TopicsContract implements BaseColumns {
@@ -153,9 +150,6 @@ public class DBContracts {
 
         public static final String GET_TOPIC_SQL = "SELECT * FROM " + TABLE_NAME + " WHERE " +
                 _ID + " = %d LIMIT 0,1";
-
-        public static final String DELETE_TOPIC_SQL = "DELETE FROM " + TABLE_NAME + " WHERE " +
-                _ID + " =%d";
     }
 
     public static class SubRedditContract implements BaseColumns {
