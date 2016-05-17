@@ -61,6 +61,15 @@ public class CommentPopupFragment extends DialogFragment implements DialogInterf
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        if (getDialog() == null) {
+            setShowsDialog(false);
+        }
+
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public void onPause() {
         mComment.setCursorVisible(false);
         super.onPause();

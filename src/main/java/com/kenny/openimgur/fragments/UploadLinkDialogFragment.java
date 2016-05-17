@@ -69,6 +69,15 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        if (getDialog() == null) {
+            setShowsDialog(false);
+        }
+
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         if (getDialog() == null) return;
