@@ -231,7 +231,7 @@ public class SqlHelper extends SQLiteOpenHelper {
     public ImgurUser getUser(String username) {
         ImgurUser user = null;
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(String.format(ProfileContract.SEARCH_USER_SQL, username), null);
+        Cursor cursor = db.rawQuery(ProfileContract.SEARCH_USER_SQL, new String[]{username});
 
         if (cursor.moveToFirst()) {
             user = new ImgurUser(cursor, false);
@@ -382,7 +382,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         // Wrap in a try/catch to avoid a crash that can occur when a '?' is passed as id
         try {
             SQLiteDatabase db = getReadableDatabase();
-            Cursor cursor = db.rawQuery(String.format(TopicsContract.GET_TOPIC_SQL, id), null);
+            Cursor cursor = db.rawQuery(TopicsContract.GET_TOPIC_SQL, new String[]{String.valueOf(id)});
             ImgurTopic topic = null;
 
             if (cursor.moveToFirst()) {

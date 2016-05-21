@@ -231,6 +231,7 @@ public class TopicsFragment extends BaseGridFragment {
             if (adapter != null) adapter.clear();
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
             fetchGallery();
+            saveFilterSettings();
         }
     }
 

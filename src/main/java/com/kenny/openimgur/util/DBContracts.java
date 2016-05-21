@@ -87,7 +87,7 @@ public class DBContracts {
                 COLUMN_CREATED + " INTEGER);";
 
         public static final String SEARCH_USER_SQL = "SELECT * FROM " + TABLE_NAME +
-                " WHERE " + COLUMN_USERNAME + " LIKE '%s' LIMIT 0,1";
+                " WHERE " + COLUMN_USERNAME + " LIKE ? LIMIT 0,1";
     }
 
     public static class UploadContract implements BaseColumns {
@@ -149,7 +149,7 @@ public class DBContracts {
                 + " ORDER BY " + COLUMN_NAME + " COLLATE NOCASE ASC";
 
         public static final String GET_TOPIC_SQL = "SELECT * FROM " + TABLE_NAME + " WHERE " +
-                _ID + " = %d LIMIT 0,1";
+                _ID + " = ? LIMIT 0,1";
     }
 
     public static class SubRedditContract implements BaseColumns {
