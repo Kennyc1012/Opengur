@@ -237,7 +237,7 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
     private void refresh() {
         if (mAdapter != null) mAdapter.clear();
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
-        List<UploadedPhoto> photos = SqlHelper.getInstance(getActivity()).getUploadedPhotos(true);
+        List<UploadedPhoto> photos = SqlHelper.getInstance(getActivity()).getUploadedPhotos();
 
         if (!photos.isEmpty()) {
             if (mAdapter == null) {

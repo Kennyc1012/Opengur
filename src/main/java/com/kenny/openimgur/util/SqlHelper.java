@@ -303,14 +303,13 @@ public class SqlHelper extends SQLiteOpenHelper {
     /**
      * Returns all upload photos from device
      *
-     * @param newestFirst
      * @return
      */
     @NonNull
-    public List<UploadedPhoto> getUploadedPhotos(boolean newestFirst) {
+    public List<UploadedPhoto> getUploadedPhotos() {
         List<UploadedPhoto> photos = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(String.format(UploadContract.GET_UPLOADS_SQL, newestFirst ? "DESC" : "ASC"), null);
+        Cursor cursor = db.rawQuery(UploadContract.GET_UPLOADS_SQL, null);
 
         while (cursor.moveToNext()) {
             photos.add(new UploadedPhoto(cursor));
@@ -525,7 +524,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         if (TextUtils.isEmpty(link)) return -1;
 
         long lastSeen = -1;
-        Cursor cursor = getReadableDatabase().rawQuery(String.format(MuzeiContract.GET_LAST_SEEN_SQL, link), null);
+        Cursor cursor = getReadableDatabase().rawQuery(MuzeiContract.GET_LAST_SEEN_SQL, new String[]{link});
         if (cursor.moveToFirst()) lastSeen = cursor.getLong(0);
         cursor.close();
         return lastSeen;

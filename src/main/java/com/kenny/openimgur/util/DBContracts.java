@@ -124,7 +124,7 @@ public class DBContracts {
                 COLUMN_COVER_ID + " TEXT);";
 
         public static final String GET_UPLOADS_SQL = "SELECT * FROM " + TABLE_NAME +
-                " ORDER BY " + COLUMN_DATE + " %s";
+                " ORDER BY " + COLUMN_DATE + " DESC";
     }
 
     public static class TopicsContract implements BaseColumns {
@@ -230,7 +230,7 @@ public class DBContracts {
                 COLUMN_LAST_SEEN + " INTEGER)";
 
         public static final String GET_LAST_SEEN_SQL = "SELECT " + COLUMN_LAST_SEEN + " FROM " + TABLE_NAME +
-                " WHERE " + COLUMN_LINK + " ='%s' LIMIT 0,1";
+                " WHERE " + COLUMN_LINK + " =? LIMIT 0,1";
     }
 
     public static class NotificationContract implements BaseColumns {
