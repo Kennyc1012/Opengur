@@ -1,5 +1,23 @@
 #Open Imgur Changelog
-<b>4.5.0</b>
+<b>4.5.1</b> May 29, 2016
+- Convert links to HTTPS
+- Fix SQL statements
+- DialogFragment crash fix
+- Better handling of video links
+- Add Delete option for single image downloads
+- Check for "in_gallery" flag in JSON response
+- Code Cleanup
+- Update BottomSheet V2.1.2
+- Update Retrofit V2.0.2
+- Update Butterknife V8.0.1
+- Update ColorChooser V0.3.0
+- Update MultiStateView V1.2.0
+- Update Support Library V23.4.0
+- Update Gradle Plugin V2.2.0-alpha2
+- Update Gradle V2.13
+- Create F-Droid flavor
+
+<b>4.5.0</b> April 16, 2016
 - Use FileProvider for sharing files
 - Change download folder name to Opengur
 - Use native share menu for Lollipop+ devices
