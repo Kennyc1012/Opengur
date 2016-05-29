@@ -106,9 +106,7 @@ public class SqlHelper extends SQLiteOpenHelper {
             // No records found to see if the column exists, delete it and it will get recreated
             db.execSQL("DROP TABLE IF EXISTS " + UploadContract.TABLE_NAME);
         }
-
-        // Only people who uses the 3.4.0 beta will be effected by this change, just drop the table so its remade
-        if (oldV == 10) db.execSQL("DROP TABLE IF EXISTS " + NotificationContract.TABLE_NAME);
+        
         cursor.close();
         onCreate(db);
     }
