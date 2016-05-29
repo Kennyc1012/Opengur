@@ -29,8 +29,9 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.io.File;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,16 +50,18 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
 
     private static final String KEY_IS_VIDEO = "video";
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     MultiStateView mMultiView;
 
-    @Bind(R.id.image)
+    @BindView(R.id.image)
     ImageView mImage;
 
-    @Bind(R.id.video)
+    @BindView(R.id.video)
     VideoView mVideo;
 
     private String mImageUrl;
+
+    private Unbinder mUnbinder;
 
     public static PopupImageDialogFragment getInstance(String url, boolean isAnimated, boolean isDirectLink, boolean isVideo) {
         PopupImageDialogFragment fragment = new PopupImageDialogFragment();
@@ -69,6 +72,15 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
         args.putBoolean(KEY_IS_VIDEO, isVideo);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        if (getDialog() == null) {
+            setShowsDialog(false);
+        }
+
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -94,7 +106,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
             return;
         }
 
-        ButterKnife.bind(this, view);
+        mUnbinder = ButterKnife.bind(this, view);
         mImageUrl = bundle.getString(KEY_URL, null);
         boolean isAnimated = bundle.getBoolean(KEY_ANIMATED, false);
         boolean isDirectLink = bundle.getBoolean(KEY_DIRECT_LINK, true);
@@ -149,7 +161,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     @Override
     public void onDestroyView() {
         OpengurApp.getInstance(getActivity()).getImageLoader().cancelDisplayTask(mImage);
-        ButterKnife.unbind(this);
+        if (mUnbinder != null) mUnbinder.unbind();
         super.onDestroyView();
     }
 
@@ -267,7 +279,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
 
                     if (photo.isAnimated()) {
                         if (photo.isLinkAThumbnail() || photo.getSize() > PHOTO_SIZE_LIMIT) {
-                            mImageUrl = photo.getMP4Link();
+                            mImageUrl = photo.getVideoLink();
                             displayVideo(mImageUrl);
                         } else {
                             mImageUrl = photo.getLink();

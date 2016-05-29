@@ -16,13 +16,13 @@ import com.kenny.openimgur.util.ViewUtils;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by kcampagna on 9/27/14.
  */
 public class SideGalleryFragment extends BaseFragment implements View.OnClickListener {
-    @Bind(R.id.list)
+    @BindView(R.id.list)
     RecyclerView mList;
 
     private GalleryAdapter mAdapter;

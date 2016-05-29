@@ -43,7 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
@@ -58,7 +58,7 @@ public class RedditFragment extends BaseGridFragment {
 
     private static final String KEY_TOP_SORT = "redditTopSort";
 
-    @Bind(R.id.mySubreddits)
+    @BindView(R.id.mySubreddits)
     Button mMySubredditsBtn;
 
     private String mQuery;

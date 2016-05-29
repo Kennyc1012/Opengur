@@ -29,7 +29,7 @@ import com.kennyc.view.MultiStateView;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,10 +48,10 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
 
     private static final String KEY_PAGE = "page";
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     MultiStateView mMultiStatView;
 
-    @Bind(R.id.commentList)
+    @BindView(R.id.commentList)
     RecyclerView mCommentList;
 
     private int mPage = 0;
@@ -173,7 +173,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
     @Override
     public void onClick(View v) {
         ImgurComment comment = mAdapter.getItem(mCommentList.getChildAdapterPosition(v));
-        String url = "https://imgur.com/gallery/" + comment.getImageId();
+        String url = ApiClient.IMGUR_GALLERY_URL + comment.getImageId();
         startActivity(ViewActivity.createIntent(getActivity(), url, false));
     }
 

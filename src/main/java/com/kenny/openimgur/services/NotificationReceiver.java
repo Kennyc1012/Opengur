@@ -1,11 +1,13 @@
 package com.kenny.openimgur.services;
 
+import android.Manifest;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -20,7 +22,10 @@ import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.SqlHelper;
+
+import java.io.File;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,11 +45,15 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     private static final String KEY_NOTIFICATION_CONTENT = "notification_content";
 
+    private static final String KEY_FILE_PATH = "file_path";
+
     private static final int ACTION_UPLOAD_COPY = 1;
 
     private static final int ACTION_NOTIFICATION_CLICKED = 2;
 
     private static final int ACTION_NOTIFICATIONS_READ = 3;
+
+    private static final int ACTION_DELETE = 4;
 
     /**
      * Returns an intent for when an image is successfully uploaded
@@ -70,6 +79,13 @@ public class NotificationReceiver extends BroadcastReceiver {
     public static Intent createReadNotificationsIntent(Context context, int notificationId) {
         return new Intent(context, NotificationReceiver.class)
                 .putExtra(KEY_ACTION, ACTION_NOTIFICATIONS_READ)
+                .putExtra(KEY_NOTIF_ID, notificationId);
+    }
+
+    public static Intent createDeleteIntent(@NonNull Context context, int notificationId, @NonNull String fileLocation) {
+        return new Intent(context, NotificationReceiver.class)
+                .putExtra(KEY_ACTION, ACTION_DELETE)
+                .putExtra(KEY_FILE_PATH, fileLocation)
                 .putExtra(KEY_NOTIF_ID, notificationId);
     }
 
@@ -102,7 +118,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 if (content instanceof ImgurConvo) {
                     dest = ConvoThreadActivity.createIntent(context, (ImgurConvo) content);
                 } else if (content instanceof ImgurComment) {
-                    dest = ViewActivity.createIntent(context, "https://imgur.com/gallery/" + ((ImgurComment) content).getImageId(), false);
+                    dest = ViewActivity.createIntent(context, ApiClient.IMGUR_GALLERY_URL + ((ImgurComment) content).getImageId(), false);
                 } else {
                     dest = NotificationActivity.createIntent(context);
                 }
@@ -156,6 +172,17 @@ public class NotificationReceiver extends BroadcastReceiver {
                             LogUtil.e(TAG, "Failure marking notifications read, error", t);
                         }
                     });
+                }
+
+                ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(notificationId);
+                break;
+
+            case ACTION_DELETE:
+                String filePath = intent.getStringExtra(KEY_FILE_PATH);
+
+                if (!TextUtils.isEmpty(filePath) && PermissionUtils.hasPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    boolean deleted = new File(filePath).delete();
+                    LogUtil.v(TAG, "Result of file deletion " + deleted);
                 }
 
                 ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(notificationId);

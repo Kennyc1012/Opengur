@@ -25,7 +25,7 @@ import com.kenny.openimgur.util.SqlHelper;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import retrofit2.Call;
@@ -36,22 +36,22 @@ import retrofit2.Response;
  * Created by Kenny-PC on 7/4/2015.
  */
 public class UploadInfoFragment extends BaseFragment {
-    @Bind(R.id.title)
+    @BindView(R.id.title)
     EditText mTitle;
 
-    @Bind(R.id.desc)
+    @BindView(R.id.desc)
     EditText mDesc;
 
-    @Bind(R.id.titleInputLayout)
+    @BindView(R.id.titleInputLayout)
     TextInputLayout mTitleInputLayout;
 
-    @Bind(R.id.topicSpinner)
+    @BindView(R.id.topicSpinner)
     Spinner mTopicSpinner;
 
-    @Bind(R.id.gallerySwitch)
+    @BindView(R.id.gallerySwitch)
     CheckBox mGallerySwitch;
 
-    @Bind(R.id.topicHeader)
+    @BindView(R.id.topicHeader)
     View mTopicHeader;
 
     private UploadListener mListener;

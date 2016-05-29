@@ -14,7 +14,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by Kenny-PC on 1/14/2015.
@@ -69,10 +69,10 @@ public class UploadAdapter extends BaseRecyclerAdapter<UploadedPhoto> {
     }
 
     static class UploadHolder extends BaseRecyclerAdapter.BaseViewHolder {
-        @Bind(R.id.image)
+        @BindView(R.id.image)
         ImageView image;
 
-        @Bind(R.id.albumIndicator)
+        @BindView(R.id.albumIndicator)
         ImageView albumIndicator;
 
         public UploadHolder(View view) {

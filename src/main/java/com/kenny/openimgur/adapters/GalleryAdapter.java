@@ -25,7 +25,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
     public static final int MAX_ITEMS = 200;
@@ -114,7 +114,7 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
             String photoUrl;
 
             // Check if the link is a thumbed version of a large gif
-            if (photoObject.hasMP4Link() && photoObject.isLinkAThumbnail() && ImgurPhoto.IMAGE_TYPE_GIF.equals(photoObject.getType())) {
+            if (photoObject.hasVideoLink() && photoObject.isLinkAThumbnail() && ImgurPhoto.IMAGE_TYPE_GIF.equals(photoObject.getType())) {
                 photoUrl = photoObject.getThumbnail(ImgurPhoto.THUMBNAIL_GALLERY, true, FileUtil.EXTENSION_GIF);
             } else {
                 photoUrl = ((ImgurPhoto) obj).getThumbnail(ImgurPhoto.THUMBNAIL_GALLERY, false, null);
@@ -231,13 +231,13 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
     }
 
     public static class GalleryHolder extends BaseViewHolder {
-        @Bind(R.id.image)
+        @BindView(R.id.image)
         ImageView image;
 
-        @Bind(R.id.score)
+        @BindView(R.id.score)
         TextView score;
 
-        @Bind(R.id.itemType)
+        @BindView(R.id.itemType)
         ImageView itemType;
 
         public GalleryHolder(View view) {

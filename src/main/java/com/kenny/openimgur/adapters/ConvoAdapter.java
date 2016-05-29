@@ -14,7 +14,7 @@ import com.kenny.openimgur.util.ColorUtils;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by Kenny-PC on 8/1/2015.
@@ -79,16 +79,16 @@ public class ConvoAdapter extends BaseRecyclerAdapter<ImgurConvo> {
     }
 
     static class ConvoViewHolder extends BaseViewHolder {
-        @Bind(R.id.author)
+        @BindView(R.id.author)
         TextView author;
 
-        @Bind(R.id.comment)
+        @BindView(R.id.comment)
         TextView message;
 
-        @Bind(R.id.image)
+        @BindView(R.id.image)
         ImageView image;
 
-        @Bind(R.id.divider)
+        @BindView(R.id.divider)
         View divider;
 
         public ConvoViewHolder(View view) {

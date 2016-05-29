@@ -250,7 +250,7 @@ public class UploadService extends IntentService {
                 ImgurBaseObject object = response.body().data;
 
                 // The response only contains the id and the delete hash, we need to construct the object from them
-                String link = "https://imgur.com/a/" + object.getId();
+                String link = ApiClient.IMGUR_URL + "a/" + object.getId();
                 ImgurAlbum album = new ImgurAlbum(object.getId(), title, link, object.getDeleteHash());
                 album.setCoverId(coverId);
                 SqlHelper.getInstance(getApplicationContext()).insertUploadedAlbum(album);

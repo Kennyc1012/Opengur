@@ -41,7 +41,7 @@ import com.kennyc.view.MultiStateView;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,13 +55,13 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
 
     private static final String KEY_CONVO = "convo";
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     MultiStateView mMultiView;
 
-    @Bind(R.id.convoList)
+    @BindView(R.id.convoList)
     RecyclerView mConvoList;
 
-    @Bind(R.id.messageInput)
+    @BindView(R.id.messageInput)
     EditText mMessageInput;
 
     private ImgurConvo mConvo;

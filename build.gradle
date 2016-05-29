@@ -6,18 +6,20 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0-beta1'
+        classpath 'com.android.tools.build:gradle:2.2.0-alpha2'
         classpath 'io.fabric.tools:gradle:+'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'com.neenbedankt.android-apt'
 
 project.ext {
-    version_name = '4.5.0'
-    version_code = 75
-    support_version = '23.3.0'
+    version_name = '4.5.1'
+    version_code = 78
+    support_version = '23.4.0'
     beta_number = 1
 }
 
@@ -30,7 +32,7 @@ repositories {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '24.0.0-rc2'
+    buildToolsVersion '24.0.0-rc4'
 
     defaultConfig {
         applicationId "com.kennyc.open.imgur"
@@ -48,6 +50,10 @@ android {
 
         beta {
             versionName project.ext.version_name + "-beta" + beta_number
+        }
+
+        f_droid {
+            versionName project.ext.version_name + "-F_Droid"
         }
     }
 
@@ -88,24 +94,28 @@ dependencies {
     // UI
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.15'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'com.github.Kennyc1012:MultiStateView:1.1.1'
-    compile 'com.github.Kennyc1012:BottomSheet:2.1.1'
+    compile 'com.github.Kennyc1012:MultiStateView:1.2.0'
+    compile 'com.github.Kennyc1012:BottomSheet:2.1.2'
     compile 'com.github.Kennyc1012:TextDrawable:1.1'
-    compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.pacioianu.david:ink-page-indicator:1.1.1'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'
     compile 'com.github.Kennyc1012:AndroidSlidingUpPanel:3.2.1-fork'
-    compile 'com.github.Kennyc1012:ColorChooser:0.2.2:standardRelease@aar'
+    compile 'com.github.Kennyc1012:ColorChooser:0.3.0:standardRelease@aar'
+    compile 'com.jakewharton:butterknife:8.0.1'
 
     // Networking
-    compile 'com.squareup.retrofit2:converter-gson:2.0.0'
-    compile 'com.squareup.retrofit2:retrofit:2.0.1'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.google.code.gson:gson:2.6.2'
 
     // Misc
+    apt 'com.jakewharton:butterknife-compiler:8.0.1'
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
-    compile('com.crashlytics.sdk.android:crashlytics:+@aar') {
+    fullCompile('com.crashlytics.sdk.android:crashlytics:+@aar') {
+        transitive = true;
+    }
+    betaCompile('com.crashlytics.sdk.android:crashlytics:+@aar') {
         transitive = true;
     }
 }

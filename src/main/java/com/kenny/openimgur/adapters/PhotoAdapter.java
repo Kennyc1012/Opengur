@@ -28,7 +28,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import pl.droidsonroids.gif.GifDrawable;
 
 public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
@@ -242,7 +242,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
         String url;
 
         // Check if we have an mp4 and if we should load its thumbnail
-        if (photo.isAnimated() && photo.hasMP4Link() && photo.isLinkAThumbnail()) {
+        if (photo.isAnimated() && photo.hasVideoLink() && photo.isLinkAThumbnail()) {
             if (photo.getSize() > PHOTO_SIZE_LIMIT || photo.getHeight() > PHOTO_PIXEL_LIMIT || photo.getWidth() > PHOTO_PIXEL_LIMIT) {
                 url = photo.getThumbnail(ImgurPhoto.THUMBNAIL_HUGE, true, FileUtil.EXTENSION_GIF);
             } else {
@@ -328,22 +328,22 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
     }
 
     static class PhotoViewHolder extends BaseViewHolder {
-        @Bind(R.id.image)
+        @BindView(R.id.image)
         ImageView image;
 
-        @Bind(R.id.play)
+        @BindView(R.id.play)
         FloatingActionButton play;
 
-        @Bind(R.id.progressBar)
+        @BindView(R.id.progressBar)
         ProgressBar prog;
 
-        @Bind(R.id.desc)
+        @BindView(R.id.desc)
         TextView desc;
 
-        @Bind(R.id.title)
+        @BindView(R.id.title)
         TextView title;
 
-        @Bind(R.id.videoView)
+        @BindView(R.id.videoView)
         VideoView video;
 
         public PhotoViewHolder(View view) {
@@ -352,22 +352,22 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
     }
 
     static class PhotoTitleHolder extends BaseViewHolder {
-        @Bind(R.id.title)
+        @BindView(R.id.title)
         TextView title;
 
-        @Bind(R.id.author)
+        @BindView(R.id.author)
         TextView author;
 
-        @Bind(R.id.pointText)
+        @BindView(R.id.pointText)
         TextView points;
 
-        @Bind(R.id.topic)
+        @BindView(R.id.topic)
         TextView topic;
 
-        @Bind(R.id.tags)
+        @BindView(R.id.tags)
         TextView tags;
 
-        @Bind(R.id.pointsBar)
+        @BindView(R.id.pointsBar)
         PointsBar pointsBar;
 
         public PhotoTitleHolder(View view) {

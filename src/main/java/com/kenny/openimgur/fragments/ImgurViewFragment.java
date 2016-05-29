@@ -62,7 +62,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import pl.droidsonroids.gif.GifDrawable;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -78,10 +78,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     private static final String KEY_ITEMS = "items";
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     MultiStateView mMultiView;
 
-    @Bind(R.id.list)
+    @BindView(R.id.list)
     RecyclerView mListView;
 
     private ImgurBaseObject mImgurObject;
@@ -453,7 +453,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 });
             }
         } else {
-            File file = VideoCache.getInstance().getVideoFile(photo.getMP4Link());
+            File file = VideoCache.getInstance().getVideoFile(photo.getVideoLink());
 
             if (FileUtil.isFileValid(file)) {
                 video.setVisibility(View.VISIBLE);
@@ -462,7 +462,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 prog.setVisibility(View.GONE);
                 video.start();
             } else {
-                VideoCache.getInstance().putVideo(photo.getMP4Link(), new VideoCache.VideoCacheListener() {
+                VideoCache.getInstance().putVideo(photo.getVideoLink(), new VideoCache.VideoCacheListener() {
                     @Override
                     public void onVideoDownloadStart(String key, String url) {
                         if (image != null && getActivity() != null) {
@@ -520,8 +520,8 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     private String getLink(ImgurPhoto photo) {
         String link;
 
-        if (photo.isLinkAThumbnail() && photo.hasMP4Link()) {
-            link = photo.getMP4Link();
+        if (photo.isLinkAThumbnail() && photo.hasVideoLink()) {
+            link = photo.getVideoLink();
         } else {
             link = photo.getLink();
         }

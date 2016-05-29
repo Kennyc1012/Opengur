@@ -87,7 +87,7 @@ public class DBContracts {
                 COLUMN_CREATED + " INTEGER);";
 
         public static final String SEARCH_USER_SQL = "SELECT * FROM " + TABLE_NAME +
-                " WHERE " + COLUMN_USERNAME + " LIKE '%s' LIMIT 0,1";
+                " WHERE " + COLUMN_USERNAME + " LIKE ? LIMIT 0,1";
     }
 
     public static class UploadContract implements BaseColumns {
@@ -124,10 +124,7 @@ public class DBContracts {
                 COLUMN_COVER_ID + " TEXT);";
 
         public static final String GET_UPLOADS_SQL = "SELECT * FROM " + TABLE_NAME +
-                " ORDER BY " + COLUMN_DATE + " %s";
-
-        public static final String DELETE_PHOTO_SQL = " DELETE FROM " + TABLE_NAME +
-                " WHERE " + _ID + "=%d";
+                " ORDER BY " + COLUMN_DATE + " DESC";
     }
 
     public static class TopicsContract implements BaseColumns {
@@ -152,10 +149,7 @@ public class DBContracts {
                 + " ORDER BY " + COLUMN_NAME + " COLLATE NOCASE ASC";
 
         public static final String GET_TOPIC_SQL = "SELECT * FROM " + TABLE_NAME + " WHERE " +
-                _ID + " = %d LIMIT 0,1";
-
-        public static final String DELETE_TOPIC_SQL = "DELETE FROM " + TABLE_NAME + " WHERE " +
-                _ID + " =%d";
+                _ID + " = ? LIMIT 0,1";
     }
 
     public static class SubRedditContract implements BaseColumns {
@@ -236,7 +230,7 @@ public class DBContracts {
                 COLUMN_LAST_SEEN + " INTEGER)";
 
         public static final String GET_LAST_SEEN_SQL = "SELECT " + COLUMN_LAST_SEEN + " FROM " + TABLE_NAME +
-                " WHERE " + COLUMN_LINK + " ='%s' LIMIT 0,1";
+                " WHERE " + COLUMN_LINK + " =? LIMIT 0,1";
     }
 
     public static class NotificationContract implements BaseColumns {

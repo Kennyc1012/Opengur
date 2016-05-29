@@ -17,7 +17,7 @@ import com.kenny.openimgur.fragments.GallerySearchFragment;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by kcampagna on 3/21/15.
@@ -25,10 +25,10 @@ import butterknife.Bind;
 public class GallerySearchActivity extends BaseActivity implements FragmentListener {
     private static final String KEY_QUERY = "query";
 
-    @Bind(R.id.toolBar)
+    @BindView(R.id.toolBar)
     Toolbar mToolBar;
 
-    @Bind(R.id.coordinatorLayout)
+    @BindView(R.id.coordinatorLayout)
     CoordinatorLayout mCoordinatorLayout;
 
     public static Intent createIntent(Context context, String query) {

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -23,7 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by Kenny-PC on 8/9/2015.
@@ -111,7 +112,7 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
         holder.content.setText(notification.getContent());
 
         if (TextUtils.isEmpty(notification.getAlbumCover())) {
-            photoUrl = "https://imgur.com/" + notification.getContentId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
+            photoUrl = ApiClient.IMGUR_URL + notification.getContentId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
         } else {
             photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, notification.getAlbumCover() + ImgurPhoto.THUMBNAIL_SMALL);
         }
@@ -181,16 +182,16 @@ public class NotificationAdapter extends BaseRecyclerAdapter<ImgurNotification> 
     }
 
     static class NotificationHolder extends BaseViewHolder {
-        @Bind(R.id.author)
+        @BindView(R.id.author)
         TextView author;
 
-        @Bind(R.id.comment)
+        @BindView(R.id.comment)
         TextView content;
 
-        @Bind(R.id.image)
+        @BindView(R.id.image)
         ImageView image;
 
-        @Bind(R.id.divider)
+        @BindView(R.id.divider)
         View divider;
 
         public NotificationHolder(View view) {

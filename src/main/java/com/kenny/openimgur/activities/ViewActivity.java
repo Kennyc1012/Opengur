@@ -64,7 +64,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -152,25 +152,25 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     public static final String KEY_ENDING_ITEM = "ending_item";
 
-    @Bind(R.id.pager)
+    @BindView(R.id.pager)
     ViewPager mViewPager;
 
-    @Bind(R.id.sliding_layout)
+    @BindView(R.id.sliding_layout)
     SlidingUpPanelLayout mSlidingPane;
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     MultiStateView mMultiView;
 
-    @Bind(R.id.commentList)
+    @BindView(R.id.commentList)
     RecyclerView mCommentList;
 
-    @Bind(R.id.panelUpBtn)
+    @BindView(R.id.panelUpBtn)
     ImageButton mPanelButton;
 
-    @Bind(R.id.upVoteBtn)
+    @BindView(R.id.upVoteBtn)
     ImageButton mUpVoteBtn;
 
-    @Bind(R.id.downVoteBtn)
+    @BindView(R.id.downVoteBtn)
     ImageButton mDownVoteBtn;
 
     private CommentAdapter mCommentAdapter;

@@ -24,9 +24,10 @@ import com.kenny.openimgur.classes.OpengurApp;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 
 /**
  * Created by Kenny-PC on 6/28/2015.
@@ -38,20 +39,22 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
     private static final long TEXT_DELAY = DateUtils.SECOND_IN_MILLIS;
 
-    @Bind(R.id.link)
+    @BindView(R.id.link)
     EditText mLink;
 
-    @Bind(R.id.loadingContainer)
+    @BindView(R.id.loadingContainer)
     View mLoadingContainer;
 
-    @Bind(R.id.linkValidation)
+    @BindView(R.id.linkValidation)
     TextView mLinkValidation;
 
-    @Bind(R.id.add)
+    @BindView(R.id.add)
     Button mAddButton;
 
-    @Bind(R.id.loadingIndicator)
+    @BindView(R.id.loadingIndicator)
     ProgressBar mLoadingIndicator;
+
+    private Unbinder mUnbinder;
 
     public static DialogFragment newInstance(@Nullable String link) {
         UploadLinkDialogFragment fragment = new UploadLinkDialogFragment();
@@ -63,6 +66,15 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
         }
 
         return fragment;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        if (getDialog() == null) {
+            setShowsDialog(false);
+        }
+
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -88,7 +100,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.bind(this, view);
+        mUnbinder = ButterKnife.bind(this, view);
         mLink.addTextChangedListener(this);
         Bundle args = getArguments();
 
@@ -99,7 +111,7 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
     @Override
     public void onDestroyView() {
-        ButterKnife.unbind(this);
+        if (mUnbinder != null) mUnbinder.unbind();
         super.onDestroyView();
     }
 

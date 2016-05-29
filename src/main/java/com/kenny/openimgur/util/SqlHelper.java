@@ -107,8 +107,6 @@ public class SqlHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + UploadContract.TABLE_NAME);
         }
 
-        // Only people who uses the 3.4.0 beta will be effected by this change, just drop the table so its remade
-        if (oldV == 10) db.execSQL("DROP TABLE IF EXISTS " + NotificationContract.TABLE_NAME);
         cursor.close();
         onCreate(db);
     }
@@ -231,7 +229,7 @@ public class SqlHelper extends SQLiteOpenHelper {
     public ImgurUser getUser(String username) {
         ImgurUser user = null;
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(String.format(ProfileContract.SEARCH_USER_SQL, username), null);
+        Cursor cursor = db.rawQuery(ProfileContract.SEARCH_USER_SQL, new String[]{username});
 
         if (cursor.moveToFirst()) {
             user = new ImgurUser(cursor, false);
@@ -303,14 +301,13 @@ public class SqlHelper extends SQLiteOpenHelper {
     /**
      * Returns all upload photos from device
      *
-     * @param newestFirst
      * @return
      */
     @NonNull
-    public List<UploadedPhoto> getUploadedPhotos(boolean newestFirst) {
+    public List<UploadedPhoto> getUploadedPhotos() {
         List<UploadedPhoto> photos = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(String.format(UploadContract.GET_UPLOADS_SQL, newestFirst ? "DESC" : "ASC"), null);
+        Cursor cursor = db.rawQuery(UploadContract.GET_UPLOADS_SQL, null);
 
         while (cursor.moveToNext()) {
             photos.add(new UploadedPhoto(cursor));
@@ -329,7 +326,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         if (photo == null) return;
 
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL(String.format(UploadContract.DELETE_PHOTO_SQL, photo.getId()));
+        db.delete(UploadContract.TABLE_NAME, UploadContract._ID + "=?", new String[]{String.valueOf(photo.getId())});
     }
 
     /**
@@ -382,7 +379,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         // Wrap in a try/catch to avoid a crash that can occur when a '?' is passed as id
         try {
             SQLiteDatabase db = getReadableDatabase();
-            Cursor cursor = db.rawQuery(String.format(TopicsContract.GET_TOPIC_SQL, id), null);
+            Cursor cursor = db.rawQuery(TopicsContract.GET_TOPIC_SQL, new String[]{String.valueOf(id)});
             ImgurTopic topic = null;
 
             if (cursor.moveToFirst()) {
@@ -404,7 +401,7 @@ public class SqlHelper extends SQLiteOpenHelper {
      */
     public void deleteTopic(int id) {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL(String.format(TopicsContract.DELETE_TOPIC_SQL, id));
+        db.delete(TopicsContract.TABLE_NAME, TopicsContract._ID + " =?", new String[]{String.valueOf(id)});
     }
 
     /**
@@ -525,7 +522,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         if (TextUtils.isEmpty(link)) return -1;
 
         long lastSeen = -1;
-        Cursor cursor = getReadableDatabase().rawQuery(String.format(MuzeiContract.GET_LAST_SEEN_SQL, link), null);
+        Cursor cursor = getReadableDatabase().rawQuery(MuzeiContract.GET_LAST_SEEN_SQL, new String[]{link});
         if (cursor.moveToFirst()) lastSeen = cursor.getLong(0);
         cursor.close();
         return lastSeen;

@@ -46,7 +46,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 public class UploadFragment extends BaseFragment implements View.OnClickListener {
     private static final String KEY_PASSED_FILE = "passed_file";
@@ -57,10 +57,10 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
 
     private static final String KEY_SAVED_ITEMS = "saved_items";
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     MultiStateView mMultiView;
 
-    @Bind(R.id.list)
+    @BindView(R.id.list)
     RecyclerView mRecyclerView;
 
     private UploadPhotoAdapter mAdapter;

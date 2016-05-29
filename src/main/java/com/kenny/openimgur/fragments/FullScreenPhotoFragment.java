@@ -43,7 +43,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 import java.io.File;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import pl.droidsonroids.gif.GifDrawable;
 
 /**
@@ -56,16 +56,16 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
     private static final long GIF_DELAY = 350L;
 
-    @Bind(R.id.image)
+    @BindView(R.id.image)
     SubsamplingScaleImageView mImageView;
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     MultiStateView mMultiView;
 
-    @Bind(R.id.video)
+    @BindView(R.id.video)
     VideoView mVideoView;
 
-    @Bind(R.id.gifImage)
+    @BindView(R.id.gifImage)
     ImageView mGifImageView;
 
     private ImgurPhoto mPhoto;
@@ -120,7 +120,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
     private void configView(Bundle savedInstanceState) {
         if (mPhoto.isAnimated()) {
             if (mPhoto.isLinkAThumbnail() || mPhoto.getSize() > (1024 * 1024 * 5)) {
-                mUrl = mPhoto.getMP4Link();
+                mUrl = mPhoto.getVideoLink();
                 displayVideo(savedInstanceState);
             } else {
                 mUrl = mPhoto.getLink();

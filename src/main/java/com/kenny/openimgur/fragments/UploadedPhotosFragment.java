@@ -39,7 +39,7 @@ import com.kennyc.view.MultiStateView;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,13 +48,13 @@ import retrofit2.Response;
  * Created by Kenny-PC on 1/14/2015.
  */
 public class UploadedPhotosFragment extends BaseFragment implements View.OnClickListener, View.OnLongClickListener {
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     public MultiStateView mMultiStateView;
 
-    @Bind(R.id.grid)
+    @BindView(R.id.grid)
     public RecyclerView mGrid;
 
-    @Bind(R.id.refreshLayout)
+    @BindView(R.id.refreshLayout)
     protected SwipeRefreshLayout mRefreshLayout;
 
     private FragmentListener mListener;
@@ -237,7 +237,7 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
     private void refresh() {
         if (mAdapter != null) mAdapter.clear();
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
-        List<UploadedPhoto> photos = SqlHelper.getInstance(getActivity()).getUploadedPhotos(true);
+        List<UploadedPhoto> photos = SqlHelper.getInstance(getActivity()).getUploadedPhotos();
 
         if (!photos.isEmpty()) {
             if (mAdapter == null) {

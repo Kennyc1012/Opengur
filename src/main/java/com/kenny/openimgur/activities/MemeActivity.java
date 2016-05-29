@@ -43,7 +43,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
@@ -54,19 +54,19 @@ public class MemeActivity extends BaseActivity {
 
     private static final String KEY_FILE_PATH = "file_path";
 
-    @Bind(R.id.image)
+    @BindView(R.id.image)
     ImageView mImage;
 
-    @Bind(R.id.topText)
+    @BindView(R.id.topText)
     TextView mTopText;
 
-    @Bind(R.id.bottomText)
+    @BindView(R.id.bottomText)
     TextView mBottomText;
 
-    @Bind(R.id.content)
+    @BindView(R.id.content)
     View mView;
 
-    @Bind(R.id.multiView)
+    @BindView(R.id.multiView)
     MultiStateView mMultiStateView;
 
     private ImgurBaseObject mObject;

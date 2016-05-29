@@ -30,7 +30,7 @@ import com.pixelcan.inkpageindicator.InkPageIndicator;
 import java.io.File;
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
@@ -45,19 +45,19 @@ public class UploadActivity extends BaseActivity implements UploadListener, View
 
     private static final String PREF_NOTIFY_NO_USER = "notify_no_user";
 
-    @Bind(R.id.pager)
+    @BindView(R.id.pager)
     ViewPager mPager;
 
-    @Bind(R.id.indicator)
+    @BindView(R.id.indicator)
     InkPageIndicator mIndicator;
 
-    @Bind(R.id.indicatorContainer)
+    @BindView(R.id.indicatorContainer)
     View mIndicatorContainer;
 
-    @Bind(R.id.back)
+    @BindView(R.id.back)
     Button mBackButton;
 
-    @Bind(R.id.next)
+    @BindView(R.id.next)
     Button mNextButton;
 
     private UploadPagerAdapter mAdapter;

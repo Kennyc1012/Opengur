@@ -48,7 +48,7 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
 
     private static final Random sRandom = new Random();
 
-    private static final int RETY_ATTEMPTS = 5;
+    private static final int RETRY_ATTEMPTS = 5;
 
     @Nullable
     private String mSubreddit = null;
@@ -92,7 +92,7 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
                 LogUtil.v(TAG, "Got an image we have already seen, going to try for another");
                 int retryCount = 0;
 
-                while (retryCount < RETY_ATTEMPTS) {
+                while (retryCount < RETRY_ATTEMPTS) {
                     photo = photos.get(sRandom.nextInt(photos.size()));
 
                     if (sql.getMuzeiLastSeen(photo.getLink()) == -1) {

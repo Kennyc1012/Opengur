@@ -29,9 +29,6 @@ public class SettingsActivity extends BaseActivity {
 
     public static final String NSFW_KEY = "allowNSFW";
 
-    @Deprecated
-    public static final String KEY_THEME = "app_theme";
-
     public static final String KEY_THEME_NEW ="color";
 
     public static final String KEY_CACHE_SIZE = "cacheSize";

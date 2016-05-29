@@ -41,6 +41,12 @@ public class ImgurPhoto extends ImgurBaseObject {
     @SerializedName("type")
     private String mType;
 
+    @SerializedName("mp4")
+    private String mMP4Link;
+
+    @SerializedName("webm")
+    private String mWebMLink;
+
     @SerializedName("width")
     private int mWidth;
 
@@ -52,6 +58,12 @@ public class ImgurPhoto extends ImgurBaseObject {
 
     @SerializedName("size")
     private long mSize;
+
+    @SerializedName("mp4_size")
+    private long mMP4Size;
+
+    @SerializedName("webm_size")
+    private long mWebMSize;
 
     public ImgurPhoto(String link) {
         super(null, null, link);
@@ -78,13 +90,32 @@ public class ImgurPhoto extends ImgurBaseObject {
         return mType;
     }
 
+    public boolean hasVideoLink() {
+        return !TextUtils.isEmpty(mMP4Link) || !TextUtils.isEmpty(mWebMLink);
+    }
+
+    @Nullable
+    public String getVideoLink() {
+        if (!TextUtils.isEmpty(mWebMLink) && mWebMSize < mMP4Size) {
+            return mWebMLink;
+        } else if (!TextUtils.isEmpty(mMP4Link)) {
+            return mMP4Link;
+        }
+
+        return null;
+    }
+
     private ImgurPhoto(Parcel in) {
         super(in);
         mType = in.readString();
+        mMP4Link = in.readString();
+        mWebMLink = in.readString();
         mWidth = in.readInt();
         mHeight = in.readInt();
         mIsAnimated = in.readInt() == 1;
         mSize = in.readLong();
+        mMP4Size = in.readLong();
+        mWebMSize = in.readLong();
     }
 
     /**
@@ -128,13 +159,30 @@ public class ImgurPhoto extends ImgurBaseObject {
         return false;
     }
 
+    @Override
+    public void toHttps() {
+        super.toHttps();
+
+        if (LinkUtils.isHttpLink(mMP4Link)) {
+            mMP4Link = mMP4Link.replace("http:", "https:");
+        }
+
+        if (LinkUtils.isHttpLink(mWebMLink)) {
+            mWebMLink = mWebMLink.replace("http:", "https:");
+        }
+    }
+
     public void writeToParcel(Parcel out, int flags) {
         super.writeToParcel(out, flags);
         out.writeString(mType);
+        out.writeString(mMP4Link);
+        out.writeString(mWebMLink);
         out.writeInt(mWidth);
         out.writeInt(mHeight);
         out.writeInt(mIsAnimated ? 1 : 0);
         out.writeLong(mSize);
+        out.writeLong(mMP4Size);
+        out.writeLong(mWebMSize);
     }
 
     public int describeContents() {

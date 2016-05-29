@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurPhoto;
@@ -21,7 +22,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by Kenny-PC on 8/1/2015.
@@ -69,7 +70,7 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         if (comment.isAlbumComment() && !TextUtils.isEmpty(comment.getAlbumCoverId())) {
             photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, comment.getAlbumCoverId() + ImgurPhoto.THUMBNAIL_SMALL);
         } else {
-            photoUrl = "https://imgur.com/" + comment.getImageId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
+            photoUrl = ApiClient.IMGUR_URL+ comment.getImageId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
         }
 
         displayImage(commentViewHolder.image, photoUrl);
@@ -118,16 +119,16 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     }
 
     static class CommentViewHolder extends BaseViewHolder {
-        @Bind(R.id.author)
+        @BindView(R.id.author)
         TextView author;
 
-        @Bind(R.id.comment)
+        @BindView(R.id.comment)
         TextView comment;
 
-        @Bind(R.id.image)
+        @BindView(R.id.image)
         ImageView image;
 
-        @Bind(R.id.divider)
+        @BindView(R.id.divider)
         View divider;
 
         public CommentViewHolder(View view) {

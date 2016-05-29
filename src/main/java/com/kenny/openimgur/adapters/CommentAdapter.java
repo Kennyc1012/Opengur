@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 /**
  * Created by kcampagna on 6/10/15.
@@ -302,16 +302,16 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     }
 
     public static class CommentViewHolder extends BaseViewHolder {
-        @Bind(R.id.author)
+        @BindView(R.id.author)
         TextView author;
 
-        @Bind(R.id.comment)
+        @BindView(R.id.comment)
         TextView comment;
 
-        @Bind(R.id.replies)
+        @BindView(R.id.replies)
         ImageButton replies;
 
-        @Bind(R.id.indicator)
+        @BindView(R.id.indicator)
         View indicator;
 
         public CommentViewHolder(View view) {
