@@ -106,7 +106,7 @@ public class SqlHelper extends SQLiteOpenHelper {
             // No records found to see if the column exists, delete it and it will get recreated
             db.execSQL("DROP TABLE IF EXISTS " + UploadContract.TABLE_NAME);
         }
-        
+
         cursor.close();
         onCreate(db);
     }
