@@ -19,7 +19,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 project.ext {
     version_name = '4.5.1'
     version_code = 78
-    support_version = '23.4.0'
+    support_version = '23.3.0'
     beta_number = 1
 }
 
