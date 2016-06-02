@@ -1,4 +1,10 @@
 #Open Imgur Changelog
+<b>4.5.3</b> June 2, 2016
+- Crash Fix
+
+<b>4.5.2</b> May 30, 2016
+- Crash Fix
+
 <b>4.5.1</b> May 29, 2016
 - Convert links to HTTPS
 - Fix SQL statements
