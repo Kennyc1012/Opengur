@@ -29,8 +29,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Implementation of {@link android.support.v4.view.PagerAdapter} that
- * represents each page as a {@link android.app.Fragment} that is persistently
+ * Implementation of {@link PagerAdapter} that
+ * represents each page as a {@link Fragment} that is persistently
  * kept in the fragment manager as long as the user can return to the page.
  * <p/>
  * <p>This version of the pager is best for use when there are a handful of

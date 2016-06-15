@@ -251,7 +251,7 @@ public class ImgurUser implements Parcelable {
         parcel.writeLong(mLastSeen);
     }
 
-    public static final Parcelable.Creator<ImgurUser> CREATOR = new Parcelable.Creator<ImgurUser>() {
+    public static final Creator<ImgurUser> CREATOR = new Creator<ImgurUser>() {
         public ImgurUser createFromParcel(Parcel in) {
             return new ImgurUser(in);
         }

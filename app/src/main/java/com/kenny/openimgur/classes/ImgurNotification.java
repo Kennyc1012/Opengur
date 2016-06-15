@@ -119,7 +119,7 @@ public class ImgurNotification implements Parcelable, Comparable<ImgurNotificati
         return result;
     }
 
-    public static final Parcelable.Creator<ImgurNotification> CREATOR = new Parcelable.Creator<ImgurNotification>() {
+    public static final Creator<ImgurNotification> CREATOR = new Creator<ImgurNotification>() {
         public ImgurNotification createFromParcel(Parcel in) {
             return new ImgurNotification(in);
         }

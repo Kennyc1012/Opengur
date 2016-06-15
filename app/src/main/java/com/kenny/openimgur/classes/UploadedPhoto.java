@@ -79,7 +79,7 @@ public class UploadedPhoto implements Parcelable {
         dest.writeInt(mIsAlbum ? 1 : 0);
     }
 
-    public static final Parcelable.Creator<UploadedPhoto> CREATOR = new Parcelable.Creator<UploadedPhoto>() {
+    public static final Creator<UploadedPhoto> CREATOR = new Creator<UploadedPhoto>() {
         public UploadedPhoto createFromParcel(Parcel in) {
             return new UploadedPhoto(in);
         }

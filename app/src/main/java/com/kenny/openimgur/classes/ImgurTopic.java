@@ -54,7 +54,7 @@ public class ImgurTopic implements Parcelable {
         return 0;
     }
 
-    public static final Parcelable.Creator<ImgurTopic> CREATOR = new Parcelable.Creator<ImgurTopic>() {
+    public static final Creator<ImgurTopic> CREATOR = new Creator<ImgurTopic>() {
         public ImgurTopic createFromParcel(Parcel in) {
             return new ImgurTopic(in);
         }

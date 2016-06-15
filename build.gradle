@@ -1,121 +1,24 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
         jcenter()
-        mavenCentral()
-        maven { url 'https://maven.fabric.io/public' }
-
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
-        classpath 'io.fabric.tools:gradle:+'
+        classpath 'com.android.tools.build:gradle:2.1.2'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
-apply plugin: 'com.neenbedankt.android-apt'
-
-project.ext {
-    version_name = '4.5.3'
-    version_code = 80
-    support_version = '23.4.0'
-    beta_number = 1
-}
-
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-    maven { url "https://jitpack.io" }
-    mavenCentral()
-    jcenter()
-}
-
-android {
-    compileSdkVersion 23
-    buildToolsVersion '24.0.0-rc4'
-
-    defaultConfig {
-        applicationId "com.kennyc.open.imgur"
-        minSdkVersion 17
-        targetSdkVersion 23
-        versionCode project.ext.version_code
-        buildConfigField "String", "API_CLIENT_ID", project.API_CLIENT_ID
-        buildConfigField "String", "API_CLIENT_SECRET", project.API_CLIENT_SECRET
-    }
-
-    productFlavors {
-        full {
-            versionName project.ext.version_name
-        }
-
-        beta {
-            versionName project.ext.version_name + "-beta" + beta_number
-        }
-
-        f_droid {
-            versionName project.ext.version_name + "-F_Droid"
-        }
-    }
-
-    buildTypes {
-
-        release {
-            ext.enableCrashlytics = true
-            minifyEnabled false
-            manifestPlaceholders = [fabric_key: project.FABRIC_KEY]
-        }
-
-        debug {
-            ext.enableCrashlytics = false
-            minifyEnabled false
-            manifestPlaceholders = [fabric_key: ""]
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-
-    lintOptions {
-        abortOnError false
+allprojects {
+    repositories {
+        jcenter()
+        maven { url "https://jitpack.io" }
     }
 }
 
-dependencies {
-    // Support Library
-    compile "com.android.support:support-annotations:${project.ext.support_version}"
-    compile "com.android.support:support-v13:${project.ext.support_version}"
-    compile "com.android.support:cardview-v7:${project.ext.support_version}"
-    compile "com.android.support:appcompat-v7:${project.ext.support_version}"
-    compile "com.android.support:recyclerview-v7:${project.ext.support_version}"
-    compile "com.android.support:design:${project.ext.support_version}"
-
-    // UI
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.15'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'com.github.Kennyc1012:MultiStateView:1.2.0'
-    compile 'com.github.Kennyc1012:BottomSheet:2.1.2'
-    compile 'com.github.Kennyc1012:TextDrawable:1.1'
-    compile 'com.pacioianu.david:ink-page-indicator:1.1.1'
-    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'
-    compile 'com.github.Kennyc1012:AndroidSlidingUpPanel:3.2.1-fork'
-    compile 'com.github.Kennyc1012:ColorChooser:0.3.0:standardRelease@aar'
-    compile 'com.jakewharton:butterknife:8.0.1'
-
-    // Networking
-    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
-    compile 'com.squareup.retrofit2:retrofit:2.0.2'
-    compile 'com.squareup.okhttp3:okhttp:3.2.0'
-    compile 'com.google.code.gson:gson:2.6.2'
-
-    // Misc
-    apt 'com.jakewharton:butterknife-compiler:8.0.1'
-    compile 'com.google.android.apps.muzei:muzei-api:2.0'
-    fullCompile('com.crashlytics.sdk.android:crashlytics:+@aar') {
-        transitive = true;
-    }
-    betaCompile('com.crashlytics.sdk.android:crashlytics:+@aar') {
-        transitive = true;
-    }
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }

@@ -56,7 +56,7 @@ public class ImgurTag implements Parcelable {
         dest.writeInt(mDownVotes);
     }
 
-    public static final Parcelable.Creator<ImgurTag> CREATOR = new Parcelable.Creator<ImgurTag>() {
+    public static final Creator<ImgurTag> CREATOR = new Creator<ImgurTag>() {
         public ImgurTag createFromParcel(Parcel in) {
             return new ImgurTag(in);
         }

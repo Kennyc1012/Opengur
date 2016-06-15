@@ -74,7 +74,7 @@ public class Upload implements Parcelable {
         return ((Upload) o).getLocation().equals(getLocation());
     }
 
-    public static final Parcelable.Creator<Upload> CREATOR = new Parcelable.Creator<Upload>() {
+    public static final Creator<Upload> CREATOR = new Creator<Upload>() {
         public Upload createFromParcel(Parcel in) {
             return new Upload(in);
         }

@@ -42,7 +42,7 @@ public class PermissionUtils {
      * given array is of the value {@link PackageManager#PERMISSION_GRANTED}.
      *
      * @param grantResults The results of a permission grant
-     * @see {@link android.app.Activity#onRequestPermissionsResult(int, String[], int[])}
+     * @see {@link Activity#onRequestPermissionsResult(int, String[], int[])}
      */
     public static boolean verifyPermissions(int[] grantResults) {
         // At least one result must be checked.
@@ -82,7 +82,7 @@ public class PermissionUtils {
     }
 
     /**
-     * Returns the {@link com.kenny.openimgur.util.PermissionUtils.PermissionLevel} the app has over the set of permissions
+     * Returns the {@link PermissionLevel} the app has over the set of permissions
      *
      * @param fragment    Fragment requesting the permissions
      * @param permissions Permissions to get info about
@@ -105,7 +105,7 @@ public class PermissionUtils {
     }
 
     /**
-     * Returns the {@link com.kenny.openimgur.util.PermissionUtils.PermissionLevel} the app has over the set of permissions
+     * Returns the {@link PermissionLevel} the app has over the set of permissions
      *
      * @param activity    Activity requesting the permissions
      * @param permissions Permissions to get info about

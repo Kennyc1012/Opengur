@@ -225,7 +225,7 @@ public class ImgurBaseObject implements Parcelable {
         out.writeTypedList(mTags);
     }
 
-    public static final Parcelable.Creator<ImgurBaseObject> CREATOR = new Parcelable.Creator<ImgurBaseObject>() {
+    public static final Creator<ImgurBaseObject> CREATOR = new Creator<ImgurBaseObject>() {
         public ImgurBaseObject createFromParcel(Parcel in) {
             return new ImgurBaseObject(in);
         }
