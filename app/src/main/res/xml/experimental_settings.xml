@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="threadSize"
+        android:title="@string/pref_experimental_thread_size"
+        android:entries="@array/pref_thread_items"
+        android:entryValues="@array/pref_thread_keys"
+        android:defaultValue="5" />
+
+</PreferenceScreen>

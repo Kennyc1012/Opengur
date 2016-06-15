@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/profile"
+        android:title="@string/view_user"
+        android:icon="@drawable/ic_action_user_24dp"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/refresh"
+        android:title="@string/convo_check_for_messages"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/block"
+        android:title="@string/convo_block"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/report"
+        android:title="@string/convo_report"
+        app:showAsAction="never" />
+</menu>

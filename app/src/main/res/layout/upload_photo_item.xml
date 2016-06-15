@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/gallery_column_height"
+    android:foreground="@drawable/pressed_drawable"
+    tools:layout_width="200dp">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/gallery_column_height"
+        android:scaleType="centerCrop"
+        android:transitionName="@string/transition_upload_photo" />
+
+    <LinearLayout
+        android:id="@+id/contentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:padding="4dp"
+        android:background="#80000000">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:drawableRight="@drawable/ic_done_24dp"
+            android:textSize="12sp"
+            android:text="@string/title" />
+
+        <TextView
+            android:id="@+id/desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:gravity="center_vertical"
+            android:drawableRight="@drawable/ic_done_24dp"
+            android:textSize="12sp"
+            android:text="@string/description" />
+
+    </LinearLayout>
+
+</FrameLayout>

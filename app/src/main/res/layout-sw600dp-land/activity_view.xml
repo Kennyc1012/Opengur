@@ -1,0 +1,59 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/sliding_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        app:umanoPanelHeight="?actionBarSize"
+        app:umanoShadowHeight="4dp"
+        app:umanoDragView="@+id/topContainer"
+        android:layout_weight="1">
+
+        <!-- MAIN CONTENT -->
+        <com.kenny.openimgur.ui.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- SLIDING LAYOUT -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/topContainer"
+                layout="@layout/sliding_tab_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize" />
+
+            <com.kennyc.view.MultiStateView
+                android:id="@+id/multiView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:msv_loadingView="@layout/loading_view"
+                app:msv_emptyView="@layout/empty_comment_view"
+                app:msv_errorView="@layout/error_view"
+                app:msv_viewState="loading">
+
+                <include layout="@layout/comment_list" />
+
+            </com.kennyc.view.MultiStateView>
+
+        </LinearLayout>
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+    <fragment
+        android:id="@+id/sideGallery"
+        android:name="com.kenny.openimgur.fragments.SideGalleryFragment"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?actionBarSize" />
+
+</LinearLayout>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="activity_horizontal_margin">96dp</dimen>
+    <dimen name="view_activity_margin">16dp</dimen>
+    <dimen name="upload_edit_picture_margins">@dimen/activity_horizontal_margin</dimen>
+
+</resources>

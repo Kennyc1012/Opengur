@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="activity_horizontal_margin">24dp</dimen>
+    <dimen name="view_activity_margin">24dp</dimen>
+
+    <!-- Material Design Guidelines -->
+    <dimen name="keyline_margin">80dp</dimen>
+    <dimen name="content_padding">24dp</dimen>
+
+</resources>

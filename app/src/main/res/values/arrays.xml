@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pref_cache_size_items">
+        <item>256MB</item>
+        <item>512MB</item>
+        <item>1GB</item>
+        <item>2GB</item>
+        <item>Unlimited</item>
+    </string-array>
+
+    <string-array name="pref_themes_items">
+        <item>Black</item>
+        <item>Blue</item>
+        <item>Cyan</item>
+        <item>Green</item>
+        <item>Grey</item>
+        <item>Orange</item>
+        <item>Pink</item>
+        <item>Purple</item>
+        <item>Red</item>
+        <item>Teal</item>
+    </string-array>
+
+    <string-array name="pref_cache_loc_items">
+        <item>Internal Partition</item>
+        <item>External Partition</item>
+    </string-array>
+
+    <string-array name="profile_tabs">
+        <item>Info</item>
+        <item>Submissions</item>
+        <item>Favorites</item>
+        <item>Albums</item>
+        <item>Comments</item>
+        <item>Uploads</item>
+        <item>Messages</item>
+    </string-array>
+
+    <string-array name="uploaded_photos_options">
+        <item>Share Link</item>
+        <item>Copy Link</item>
+        <item>Remove</item>
+    </string-array>
+
+    <string-array name="uploaded_albums_options_not_self">
+        <item>Share Link</item>
+        <item>Copy Link</item>
+    </string-array>
+
+    <string-array name="comments_sort">
+        <item>Newest</item>
+        <item>Oldest</item>
+        <item>Best</item>
+        <item>Worst</item>
+    </string-array>
+
+    <string-array name="meme_font_sizes">
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+        <item>X-Large</item>
+    </string-array>
+
+    <string-array name="pref_thread_items">
+        <item>5 Threads</item>
+        <item>7 Threads</item>
+        <item>10 Threads</item>
+        <item>12 Threads</item>
+    </string-array>
+
+    <string-array name="photo_long_press_options">
+        <item>Copy Link</item>
+        <item>Download</item>
+        <item>Share</item>
+    </string-array>
+
+    <string-array name="pref_gallery_thumbnails">
+        <item>Low (Less bandwidth)</item>
+        <item>Medium (Moderate bandwidth)</item>
+        <item>High (More bandwidth)</item>
+    </string-array>
+
+    <string-array name="muzei_update">
+        <item>Every hour</item>
+        <item>Every 3 hours</item>
+        <item>Every 6 hours</item>
+        <item>Every 12 hours</item>
+        <item>Every 24 hours</item>
+    </string-array>
+
+    <string-array name="muzei_sources">
+        <item>Most Viral</item>
+        <item>User Sub</item>
+        <item>Topics</item>
+        <item>Subreddit</item>
+    </string-array>
+
+    <string-array name="report_reasons">
+        <item>Doesn\'t belong on Imgur</item>
+        <item>Spam</item>
+        <item>Abusive</item>
+        <item>Mature content not marked as mature</item>
+        <item>Pornography</item>
+    </string-array>
+
+    <string-array name="notification_times">
+        <item>15 Minutes</item>
+        <item>30 Minutes</item>
+        <item>1 Hour</item>
+        <item>2 Hours</item>
+    </string-array>
+
+    <!-- DO NOT TRANSLATE ANYTHING BELOW THIS LINE -->
+    <string-array name="pref_cache_size_keys" translatable="false">
+        <item>256</item>
+        <item>512</item>
+        <item>1024</item>
+        <item>2048</item>
+        <item>unlimited</item>
+    </string-array>
+
+    <string-array name="pref_cache_loc_keys" translatable="false">
+        <item>internal</item>
+        <item>external</item>
+    </string-array>
+
+    <string-array name="pref_thread_keys" translatable="false">
+        <item>5</item>
+        <item>7</item>
+        <item>10</item>
+        <item>12</item>
+    </string-array>
+
+    <!-- These are the thumbnail keys for imgur (b being gallery thumbnail)-->
+    <string-array name="pref_thumbanail_keys" translatable="false">
+        <item>s</item>
+        <item>b</item>
+        <item>l</item>
+    </string-array>
+
+    <string-array name="muzei_update_keys" translatable="false">
+        <item>1</item>
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
+
+    <string-array name="muzei_sources_keys" translatable="false">
+        <item>viral</item>
+        <item>usersub</item>
+        <item>topics</item>
+        <item>reddit</item>
+    </string-array>
+
+    <string-array name="pref_notification_keys" translatable="false">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+    </string-array>
+
+    <string-array name="pref_colors" translatable="false">
+        <item>#242424</item>
+        <item>#2196F3</item>
+        <item>#00BCD4</item>
+        <item>#4CAF50</item>
+        <item>#616161</item>
+        <item>#FF5722</item>
+        <item>#E91E63</item>
+        <item>#673AB7</item>
+        <item>#da4336</item>
+        <item>#009688</item>
+    </string-array>
+
+</resources>

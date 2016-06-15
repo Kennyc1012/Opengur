@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kenny.openimgur">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Requires Asking for Permission -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- Needed to work on Chromebooks -->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <application
+        android:name=".classes.OpengurApp"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AppCompat">
+        <activity android:name=".activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.ViewActivity" />
+        <activity android:name=".activities.FullScreenPhotoActivity" />
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/action_settings" />
+        <activity android:name=".activities.ProfileActivity" />
+        <activity
+            android:name=".activities.UploadActivity"
+            android:label="@string/upload">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.RoutingActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTask">
+
+            <!-- Standard Url -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="www.imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="http" />
+                <data
+                    android:host="imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="http" />
+                <data
+                    android:host="imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="https" />
+                <data
+                    android:host="www.imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="https" />
+            </intent-filter>
+
+            <!-- Mobile Url -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="www.m.imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="http" />
+                <data
+                    android:host="m.imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="http" />
+                <data
+                    android:host="m.imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="https" />
+                <data
+                    android:host="www.m.imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="https" />
+            </intent-filter>
+
+            <!-- Direct Image Urls -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="www.i.imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="http" />
+                <data
+                    android:host="i.imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="http" />
+                <data
+                    android:host="i.imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="https" />
+                <data
+                    android:host="www.i.imgur.com"
+                    android:pathPrefix="/"
+                    android:scheme="https" />
+            </intent-filter>
+
+        </activity>
+        <activity android:name=".activities.ConvoThreadActivity" />
+        <activity android:name=".activities.MemeActivity" />
+        <activity android:name=".activities.GallerySearchActivity">
+            <intent-filter android:label="@string/search_opengur">
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.NotificationActivity" />
+        <activity
+            android:name=".activities.MuzeiSettingsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.UploadEditActivity"
+            android:windowSoftInputMode="stateHidden" />
+
+        <service android:name=".services.DownloaderService" />
+        <service android:name=".services.UploadService" />
+        <service android:name=".services.NotificationService" />
+
+        <service
+            android:name=".services.ImgurMuzeiService"
+            android:description="@string/muzei_description"
+            android:icon="@drawable/ic_muzei"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
+            </intent-filter>
+
+            <meta-data
+                android:name="color"
+                android:value="@color/theme_green_primary" />
+            <meta-data
+                android:name="settingsActivity"
+                android:value="com.kenny.openimgur.activities.MuzeiSettingsActivity" />
+        </service>
+
+        <receiver android:name=".services.NotificationReceiver" />
+        <receiver android:name=".services.AlarmReceiver" />
+
+        <receiver android:name="com.kenny.openimgur.services.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="${fabric_key}" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.kennyc.open.imgur"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider" />
+        </provider>
+
+    </application>
+
+</manifest>
