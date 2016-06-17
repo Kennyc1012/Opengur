@@ -32,7 +32,7 @@ repositories {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '24.0.0-rc4'
+    buildToolsVersion '24.0.0'
 
     defaultConfig {
         applicationId "com.kennyc.open.imgur"
