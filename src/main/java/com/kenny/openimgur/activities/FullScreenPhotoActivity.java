@@ -15,10 +15,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,13 +29,17 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
+import com.kenny.openimgur.adapters.GalleryAdapter;
+import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
+import com.kenny.openimgur.collections.SetUniqueList;
 import com.kenny.openimgur.fragments.FullScreenPhotoFragment;
 import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.ViewPager;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +49,7 @@ import butterknife.BindView;
 /**
  * Created by kcampagna on 6/2/15.
  */
-public class FullScreenPhotoActivity extends BaseActivity {
+public class FullScreenPhotoActivity extends BaseActivity implements View.OnClickListener {
     private static final String KEY_IMAGES = "images";
 
     private static final String KEY_URL = "url";
@@ -56,12 +63,18 @@ public class FullScreenPhotoActivity extends BaseActivity {
     @BindView(R.id.pager)
     ViewPager mPager;
 
+    @BindView(R.id.grid)
+    RecyclerView mGrid;
+
     private View mDecorView;
 
     private FullScreenPagerAdapter mAdapter;
 
     @Nullable
     private VisibilityHandler mHandler;
+
+    @Nullable
+    private BottomSheetBehavior mBottomSheetBehavior;
 
     public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {
         return new Intent(context, FullScreenPhotoActivity.class).putExtra(KEY_IMAGE, photo);
@@ -130,12 +143,14 @@ public class FullScreenPhotoActivity extends BaseActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean isAlbumDownloadable = mAdapter != null && mAdapter.getCount() > 1;
         menu.findItem(R.id.download_album).setVisible(isAlbumDownloadable);
+        menu.findItem(R.id.gallery_view).setVisible(isAlbumDownloadable);
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     protected void onDestroy() {
         if (mHandler != null) mHandler.removeMessages(0);
+        if (mGrid.getAdapter() instanceof GalleryAdapter) ((GalleryAdapter) mGrid.getAdapter()).onDestroy();
         super.onDestroy();
     }
 
@@ -198,6 +213,12 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
                 return true;
 
+            case R.id.gallery_view:
+                if (mBottomSheetBehavior != null) {
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+                return true;
+
             case android.R.id.home:
                 int position = mPager != null ? mPager.getCurrentItem() : -1;
                 if (position >= 0) setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_POSITION, position));
@@ -256,6 +277,31 @@ public class FullScreenPhotoActivity extends BaseActivity {
             });
         }
 
+        if (photos.size() > 1) {
+            mBottomSheetBehavior = BottomSheetBehavior.from(mGrid);
+            ViewUtils.setRecyclerViewGridDefaults(this, mGrid);
+            List<ImgurBaseObject> adapterList = new ArrayList<>(photos.size());
+            adapterList.addAll(photos);
+            mGrid.setAdapter(new GalleryAdapter(this, SetUniqueList.decorate(adapterList), this, false));
+            mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+                @Override
+                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                    ActionBar ab = getSupportActionBar();
+
+                    if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                        ab.hide();
+                    } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        ab.show();
+                    }
+                }
+
+                @Override
+                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+                }
+            });
+        }
+
         supportInvalidateOptionsMenu();
     }
 
@@ -288,9 +334,26 @@ public class FullScreenPhotoActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        if (mBottomSheetBehavior != null && mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            return;
+        }
+
         int position = mPager != null ? mPager.getCurrentItem() : -1;
         if (position >= 0) setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_POSITION, position));
         super.onBackPressed();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (mBottomSheetBehavior == null) return;
+
+        int adapterPosition = mGrid.getChildAdapterPosition(v);
+
+        if (adapterPosition != RecyclerView.NO_POSITION) {
+            mPager.setCurrentItem(adapterPosition);
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
     }
 
     private static class FullScreenPagerAdapter extends FragmentStatePagerAdapter {
