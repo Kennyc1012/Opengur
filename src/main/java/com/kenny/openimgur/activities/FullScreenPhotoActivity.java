@@ -215,7 +215,7 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
 
             case R.id.gallery_view:
                 if (mBottomSheetBehavior != null) {
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
                 return true;
 
@@ -290,7 +290,7 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
 
                     if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                         ab.hide();
-                    } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    } else if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                         ab.show();
                     }
                 }
@@ -300,6 +300,7 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
 
                 }
             });
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }
 
         supportInvalidateOptionsMenu();
@@ -334,8 +335,8 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
 
     @Override
     public void onBackPressed() {
-        if (mBottomSheetBehavior != null && mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        if (mBottomSheetBehavior != null && (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED || mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             return;
         }
 
@@ -352,7 +353,7 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
 
         if (adapterPosition != RecyclerView.NO_POSITION) {
             mPager.setCurrentItem(adapterPosition);
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }
     }
 

@@ -14,6 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/bottom_sheet_bg_dark"
-        app:layout_behavior="@string/bottom_sheet_behavior" />
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:behavior_peekHeight="120dp"
+        app:behavior_hideable="true" />
 
 </android.support.design.widget.CoordinatorLayout>
