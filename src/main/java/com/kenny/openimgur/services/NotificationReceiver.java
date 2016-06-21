@@ -7,8 +7,10 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.RemoteInput;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -37,6 +39,8 @@ import retrofit2.Response;
 public class NotificationReceiver extends BroadcastReceiver {
     private static final String TAG = "NotificationReceiver";
 
+    public static final String KEY_QUICK_REPLY_KEY = "opengur.quickreply";
+
     private static final String KEY_ACTION = "action";
 
     private static final String KEY_UPLOADED_URL = "uploaded_url";
@@ -47,6 +51,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     private static final String KEY_FILE_PATH = "file_path";
 
+    private static final String KEY_WITH = "chat_with";
+
     private static final int ACTION_UPLOAD_COPY = 1;
 
     private static final int ACTION_NOTIFICATION_CLICKED = 2;
@@ -54,6 +60,8 @@ public class NotificationReceiver extends BroadcastReceiver {
     private static final int ACTION_NOTIFICATIONS_READ = 3;
 
     private static final int ACTION_DELETE = 4;
+
+    private static final int ACTION_QUICK_REPLY = 5;
 
     /**
      * Returns an intent for when an image is successfully uploaded
@@ -89,11 +97,18 @@ public class NotificationReceiver extends BroadcastReceiver {
                 .putExtra(KEY_NOTIF_ID, notificationId);
     }
 
+    public static Intent createQuickReplyIntent(@NonNull Context context, int notificationId, @NonNull String with) {
+        return new Intent(context, NotificationReceiver.class)
+                .putExtra(KEY_ACTION, ACTION_QUICK_REPLY)
+                .putExtra(KEY_WITH, with)
+                .putExtra(KEY_NOTIF_ID, notificationId);
+    }
+
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, Intent intent) {
         int action = intent.getIntExtra(KEY_ACTION, -1);
         LogUtil.v(TAG, "Action Received: " + action);
-        int notificationId = intent.getIntExtra(KEY_NOTIF_ID, -1);
+        final int notificationId = intent.getIntExtra(KEY_NOTIF_ID, -1);
 
         switch (action) {
             case ACTION_UPLOAD_COPY:
@@ -186,6 +201,31 @@ public class NotificationReceiver extends BroadcastReceiver {
                 }
 
                 ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(notificationId);
+                break;
+
+            case ACTION_QUICK_REPLY:
+                Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+                if (remoteInput != null) {
+                    CharSequence reply = remoteInput.getCharSequence(KEY_QUICK_REPLY_KEY);
+                    String with = intent.getStringExtra(KEY_WITH);
+
+                    if (!TextUtils.isEmpty(reply) && !TextUtils.isEmpty(with)) {
+                        ApiClient.getService().sendMessage(with, reply.toString()).enqueue(new Callback<BasicResponse>() {
+                            @Override
+                            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                boolean success = response != null && response.body() != null && response.body().data;
+                                ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(notificationId);
+                                LogUtil.v(TAG, "Message send result " + success);
+                            }
+
+                            @Override
+                            public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancel(notificationId);
+                                LogUtil.e(TAG, "Error sending message", t);
+                            }
+                        });
+                    }
+                }
                 break;
 
             default:

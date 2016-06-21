@@ -12,6 +12,7 @@ import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -40,6 +41,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import retrofit2.Response;
+
+import static android.os.Build.VERSION_CODES.N;
 
 /**
  * Created by kcampagna on 8/12/15.
@@ -179,6 +182,7 @@ public class NotificationService extends IntentService {
 
                     // The Large icon will be the users names first letter
                     builder.setLargeIcon(createLargeIcon(-1, newMessage.getFrom()));
+                    setupQuickReply(newMessage.getFrom());
                 } else {
                     // Multiple messages, show the first 3
                     NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
@@ -312,6 +316,24 @@ public class NotificationService extends IntentService {
             }
 
             return null;
+        }
+
+        private void setupQuickReply(@NonNull String with) {
+            if (Build.VERSION.SDK_INT >= N) {
+                RemoteInput remoteInput = new RemoteInput.Builder(NotificationReceiver.KEY_QUICK_REPLY_KEY)
+                        .setLabel(resources.getString(R.string.convo_message_hint))
+                        .build();
+
+                Intent intent = NotificationReceiver.createQuickReplyIntent(app, getNotificationId(), with);
+
+                NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_action_send_24dp,
+                        resources.getString(R.string.reply),
+                        PendingIntent.getBroadcast(app, getNotificationId(), intent, PendingIntent.FLAG_ONE_SHOT))
+                        .addRemoteInput(remoteInput)
+                        .build();
+
+                builder.addAction(action);
+            }
         }
     }
 }
