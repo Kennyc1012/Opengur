@@ -275,12 +275,12 @@ public class MemeActivity extends BaseActivity {
                     .setTitle(R.string.meme_success)
                     .setListener(new BottomSheetListener() {
                         @Override
-                        public void onSheetShown() {
+                        public void onSheetShown(BottomSheet bottomSheet) {
                             // NOOP
                         }
 
                         @Override
-                        public void onSheetItemSelected(MenuItem menuItem) {
+                        public void onSheetItemSelected(BottomSheet bottomSheet, MenuItem menuItem) {
                             switch (menuItem.getItemId()) {
                                 case R.id.share:
                                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -297,7 +297,7 @@ public class MemeActivity extends BaseActivity {
                         }
 
                         @Override
-                        public void onSheetDismissed(int which) {
+                        public void onSheetDismissed(BottomSheet bottomSheet, int which) {
                             finish();
                         }
                     })

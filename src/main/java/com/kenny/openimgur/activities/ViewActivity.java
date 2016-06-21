@@ -688,12 +688,12 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                         .setTitle(R.string.options)
                         .setListener(new BottomSheetListener() {
                             @Override
-                            public void onSheetShown() {
+                            public void onSheetShown(BottomSheet bottomSheet) {
                                 LogUtil.v(TAG, "ImgurComment Selected " + comment);
                             }
 
                             @Override
-                            public void onSheetItemSelected(MenuItem menuItem) {
+                            public void onSheetItemSelected(BottomSheet bottomSheet, MenuItem menuItem) {
                                 int id = menuItem.getItemId();
 
                                 switch (id) {
@@ -732,7 +732,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                             }
 
                             @Override
-                            public void onSheetDismissed(int which) {
+                            public void onSheetDismissed(BottomSheet bottomSheet, int which) {
                                 mCommentAdapter.setSelectedIndex(-1);
                             }
                         })
