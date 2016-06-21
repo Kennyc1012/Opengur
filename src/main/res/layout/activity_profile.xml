@@ -29,7 +29,7 @@
                 android:minHeight="?actionBarSize"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:layout_scrollFlags="scroll|enterAlways"
-                app:navigationIcon="@drawable/abc_ic_ab_back_mtrl_am_alpha"
+                app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
                 app:popupTheme="?toolBarPopupTheme" />
 
             <android.support.design.widget.TabLayout
