@@ -14,7 +14,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -29,6 +31,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.kenny.openimgur.R;
@@ -57,7 +60,6 @@ import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.bottomsheet.BottomSheet;
 import com.kennyc.bottomsheet.BottomSheetListener;
 import com.kennyc.view.MultiStateView;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -156,7 +158,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     ViewPager mViewPager;
 
     @BindView(R.id.sliding_layout)
-    SlidingUpPanelLayout mSlidingPane;
+    LinearLayout mSlidingRoot;
 
     @BindView(R.id.multiView)
     MultiStateView mMultiView;
@@ -190,6 +192,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     private CommentSort mCommentSort;
 
     private SideGalleryFragment mSideGalleryFragment;
+
+    private BottomSheetBehavior mBottomSheetBehavior;
 
     public static Intent createIntent(Context context, ArrayList<ImgurBaseObject> objects, int position) {
         Intent intent = new Intent(context, ViewActivity.class);
@@ -255,36 +259,34 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void initSlidingView() {
-        mSlidingPane.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+        mBottomSheetBehavior = BottomSheetBehavior.from(mSlidingRoot);
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
-            public void onPanelSlide(View view, float v) {
-                if (v >= 0.75f && mIsActionBarShowing) {
-                    getSupportActionBar().hide();
-                    mIsActionBarShowing = false;
-                } else if (v <= 0.75 && !mIsActionBarShowing) {
-                    getSupportActionBar().show();
-                    mIsActionBarShowing = true;
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        if (mPanelButton.getRotation() == 180) {
+                            ObjectAnimator.ofFloat(mPanelButton, "rotation", 180, 0).setDuration(200).start();
+                        }
+                        break;
+
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        if (mPanelButton.getRotation() == 0) {
+                            ObjectAnimator.ofFloat(mPanelButton, "rotation", 0, 180).setDuration(200).start();
+                        }
+                        break;
                 }
             }
 
             @Override
-            public void onPanelCollapsed(View view) {
-                if (mPanelButton.getRotation() == 180)
-                    ObjectAnimator.ofFloat(mPanelButton, "rotation", 180, 0).setDuration(200).start();
-            }
-
-            @Override
-            public void onPanelExpanded(View view) {
-                if (mPanelButton.getRotation() == 0)
-                    ObjectAnimator.ofFloat(mPanelButton, "rotation", 0, 180).setDuration(200).start();
-            }
-
-            @Override
-            public void onPanelAnchored(View view) {
-            }
-
-            @Override
-            public void onPanelHidden(View view) {
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                if (slideOffset >= 0.75f && mIsActionBarShowing) {
+                    getSupportActionBar().hide();
+                    mIsActionBarShowing = false;
+                } else if (slideOffset <= 0.75 && !mIsActionBarShowing) {
+                    getSupportActionBar().show();
+                    mIsActionBarShowing = true;
+                }
             }
         });
     }
@@ -320,8 +322,8 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onBackPressed() {
-        if (mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
-            mSlidingPane.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             return;
         }
 
@@ -338,9 +340,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mSlidingPane != null) {
+        if (mBottomSheetBehavior != null) {
             boolean hidePanel = app.getPreferences().getBoolean(PREF_HIDE_PANEL, false);
-            if (hidePanel) mSlidingPane.setPanelHeight(0);
+            mBottomSheetBehavior.setPeekHeight(hidePanel ? 0 : ViewUtils.getActionBarHeight(this));
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             menu.findItem(R.id.hideBar).setChecked(hidePanel);
         }
 
@@ -353,9 +356,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.hideBar:
                 boolean isChecked = item.isChecked();
                 item.setChecked(!isChecked);
-                app.getPreferences().edit().putBoolean(PREF_HIDE_PANEL, !isChecked).commit();
-                int height = isChecked ? ViewUtils.getActionBarHeight(this) : 0;
-                mSlidingPane.setPanelHeight(height);
+                app.getPreferences().edit().putBoolean(PREF_HIDE_PANEL, !isChecked).apply();
+                mBottomSheetBehavior.setPeekHeight(isChecked ? 0 : ViewUtils.getActionBarHeight(this));
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 return true;
 
             case android.R.id.home:
@@ -462,10 +465,10 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
 
         switch (view.getId()) {
             case R.id.panelUpBtn:
-                if (mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
-                    mSlidingPane.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 } else {
-                    mSlidingPane.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 }
                 break;
 
@@ -663,8 +666,9 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
             outState.putParcelableArrayList(KEY_OBJECTS, mPagerAdapter.retainItems());
         }
 
-        if (mSlidingPane != null)
-            outState.putBoolean(KEY_PANEL_EXPANDED, mSlidingPane.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
+        if (mBottomSheetBehavior != null) {
+            outState.putBoolean(KEY_PANEL_EXPANDED, mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED);
+        }
     }
 
     private void onListItemClick(final int position) {

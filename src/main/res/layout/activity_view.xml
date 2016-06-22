@@ -1,25 +1,26 @@
-<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="bottom"
-    app:umanoPanelHeight="?actionBarSize"
-    app:umanoShadowHeight="4dp"
-    app:umanoDragView="@+id/topContainer">
+    android:layout_height="match_parent">
 
     <!-- MAIN CONTENT -->
     <com.kenny.openimgur.ui.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?actionBarSize" />
 
     <!-- SLIDING LAYOUT -->
 
     <LinearLayout
+        android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="?android:windowBackground"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:behavior_peekHeight="?actionBarSize"
+        app:behavior_hideable="false">
 
         <include
             android:id="@+id/topContainer"
@@ -41,4 +42,4 @@
         </com.kennyc.view.MultiStateView>
 
     </LinearLayout>
-</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+</android.support.design.widget.CoordinatorLayout>

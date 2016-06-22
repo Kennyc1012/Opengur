@@ -4,28 +4,29 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout
-        android:id="@+id/sliding_layout"
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom"
-        app:umanoPanelHeight="?actionBarSize"
-        app:umanoShadowHeight="4dp"
-        app:umanoDragView="@+id/topContainer"
         android:layout_weight="1">
 
         <!-- MAIN CONTENT -->
         <com.kenny.openimgur.ui.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?actionBarSize" />
 
         <!-- SLIDING LAYOUT -->
 
         <LinearLayout
+            android:id="@+id/sliding_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="?android:windowBackground"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            app:behavior_peekHeight="?actionBarSize"
+            app:behavior_hideable="false">
 
             <include
                 android:id="@+id/topContainer"
@@ -47,7 +48,7 @@
             </com.kennyc.view.MultiStateView>
 
         </LinearLayout>
-    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
     <fragment
         android:id="@+id/sideGallery"
