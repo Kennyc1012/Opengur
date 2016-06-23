@@ -86,7 +86,6 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setStyle(DialogFragment.STYLE_NO_TITLE, OpengurApp.getInstance(getActivity()).getImgurTheme().getDialogTheme());
         super.onCreate(savedInstanceState);
     }
 
