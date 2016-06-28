@@ -6,7 +6,6 @@ bin/
 gen/
 gradle.properties
 openimgur.keystore
-/app
 crashlytics.properties
 /src/main/assets/crashlytics-build.properties
 /src/main/res/values/com_crashlytics_export_strings.xml
