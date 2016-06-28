@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -342,8 +343,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (mBottomSheetBehavior != null) {
             boolean hidePanel = app.getPreferences().getBoolean(PREF_HIDE_PANEL, false);
-            mBottomSheetBehavior.setPeekHeight(hidePanel ? 0 : ViewUtils.getActionBarHeight(this));
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            adjustPeekSize(hidePanel ? 0 : ViewUtils.getActionBarHeight(this));
             menu.findItem(R.id.hideBar).setChecked(hidePanel);
         }
 
@@ -357,8 +357,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 boolean isChecked = item.isChecked();
                 item.setChecked(!isChecked);
                 app.getPreferences().edit().putBoolean(PREF_HIDE_PANEL, !isChecked).apply();
-                mBottomSheetBehavior.setPeekHeight(isChecked ? 0 : ViewUtils.getActionBarHeight(this));
-                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                adjustPeekSize(isChecked ? 0 : ViewUtils.getActionBarHeight(this));
                 return true;
 
             case android.R.id.home:
@@ -959,6 +958,14 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
                 mMultiView.setViewState(viewState);
             }
         });
+    }
+
+    private void adjustPeekSize(int size) {
+        mBottomSheetBehavior.setPeekHeight(size);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mViewPager.getLayoutParams();
+        lp.setMargins(0, 0, 0, size);
+        mViewPager.setLayoutParams(lp);
     }
 
     private static class ZoomOutPageTransformer implements ViewPager.PageTransformer {
