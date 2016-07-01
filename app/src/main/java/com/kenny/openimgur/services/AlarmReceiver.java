@@ -11,6 +11,7 @@ import android.text.format.DateUtils;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.RequestCodes;
 
 import java.util.Calendar;
@@ -44,7 +45,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         OpengurApp app = OpengurApp.getInstance(context);
 
-        if (app.getUser() != null) {
+        if (app.getUser() != null && !NetworkUtils.hasDataSaver(context)) {
             LogUtil.v(TAG, "User present, fetching notifications");
             context.startService(NotificationService.createIntent(context));
         } else {
