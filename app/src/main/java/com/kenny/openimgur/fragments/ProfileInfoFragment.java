@@ -234,6 +234,11 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                     }
                     break;
 
+                case TOPIC:
+                    String topicId = LinkUtils.getTopicGalleryId(url);
+                    startActivity(ViewActivity.createGalleryIntent(getActivity(), topicId));
+                    break;
+
                 case NONE:
                 default:
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));

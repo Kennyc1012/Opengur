@@ -37,6 +37,9 @@ public class LinkUtils {
 
     private static final String REGEX_IMGUR_PHOTO_PNG = "([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://(m.imgur.com/|imgur.com/|i.imgur.com/)\\w+\\.png$";
 
+    private static final String REGEX_IMGUR_TOPIC = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://" +
+            "(m.imgur.com|imgur.com|i.imgur.com)/topic/.+";
+
     // Patterns used to extract Imgur meta data from Urls
     private static final Pattern ID_PATTERN = Pattern.compile("(?<=.com/)\\w+$");
 
@@ -50,6 +53,8 @@ public class LinkUtils {
 
     public static final Pattern USER_CALLOUT_PATTERN = Pattern.compile("@\\w+");
 
+    public static final Pattern TOPIC_PATTERN = Pattern.compile("(?<=\\/topic\\/\\w{1,100}\\/)\\w+");
+
 
     public enum LinkMatch {
         IMAGE_URL,
@@ -60,6 +65,7 @@ public class LinkUtils {
         DIRECT_LINK,
         USER_CALLOUT,
         IMAGE_URL_QUERY,
+        TOPIC,
         NONE
     }
 
@@ -89,6 +95,8 @@ public class LinkUtils {
                 match = LinkMatch.USER_CALLOUT;
             } else if (url.matches(REGEX_IMAGE_URL_QUERY)) {
                 match = LinkMatch.IMAGE_URL_QUERY;
+            } else if (url.matches(REGEX_IMGUR_TOPIC)) {
+                match = LinkMatch.TOPIC;
             }
         }
 
@@ -184,7 +192,7 @@ public class LinkUtils {
      * @param url
      * @return
      */
-    public static String getImageType(String url) {
+    public static String getImageType(@Nullable String url) {
         if (TextUtils.isEmpty(url)) return null;
         url = url.toLowerCase();
 
@@ -195,6 +203,25 @@ public class LinkUtils {
         }
 
         return ImgurPhoto.IMAGE_TYPE_PNG;
+    }
+
+    /**
+     * Returns the gallery id from a given topic url
+     *
+     * @param url
+     * @return
+     */
+    public static String getTopicGalleryId(@Nullable String url) {
+        if (TextUtils.isEmpty(url)) return null;
+        Matcher match = TOPIC_PATTERN.matcher(url);
+
+        if (match.find()) {
+            String id = match.group();
+            LogUtil.v(TAG, "Topic Gallery Id " + id + " extracted from url " + url);
+            return id;
+        }
+
+        return null;
     }
 
     /**

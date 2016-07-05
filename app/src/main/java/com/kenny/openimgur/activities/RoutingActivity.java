@@ -77,6 +77,11 @@ public class RoutingActivity extends BaseActivity {
                 routingIntent = ViewActivity.createAlbumIntent(getApplicationContext(), albumId);
                 break;
 
+            case TOPIC:
+                String topicId = LinkUtils.getTopicGalleryId(link);
+                routingIntent = ViewActivity.createGalleryIntent(getApplicationContext(), topicId);
+                break;
+
             case IMAGE_URL_QUERY:
                 int index = link.indexOf("?");
                 link = link.substring(0, index);
@@ -91,7 +96,7 @@ public class RoutingActivity extends BaseActivity {
             startActivity(routingIntent);
         } else {
             LogUtil.w(TAG, "Routing intent not set, bailing");
-            Toast.makeText(getApplicationContext(),R.string.error_link_open,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.error_link_open, Toast.LENGTH_SHORT).show();
         }
 
         finish();
