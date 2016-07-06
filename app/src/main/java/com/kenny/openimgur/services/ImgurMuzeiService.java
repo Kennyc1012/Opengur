@@ -1,5 +1,6 @@
 package com.kenny.openimgur.services;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -65,14 +66,21 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
 
     @Override
     protected void onTryUpdate(int reason) throws RetryException {
-        OpengurApp app = OpengurApp.getInstance(getApplicationContext());
+        Context context = getApplicationContext();
+
+        if (NetworkUtils.hasDataSaver(context)) {
+            LogUtil.w(TAG, "Data saver enabled, not updating");
+            return;
+        }
+
+        OpengurApp app = OpengurApp.getInstance(context);
         SharedPreferences pref = app.getPreferences();
         boolean allowNSFW = pref.getBoolean(MuzeiSettingsActivity.KEY_NSFW, false);
         boolean wifiOnly = pref.getBoolean(MuzeiSettingsActivity.KEY_WIFI, true);
         String source = pref.getString(MuzeiSettingsActivity.KEY_SOURCE, MuzeiSettingsActivity.SOURCE_VIRAL);
         String updateInterval = pref.getString(MuzeiSettingsActivity.KEY_UPDATE, MuzeiSettingsActivity.UPDATE_3_HOURS);
 
-        if (wifiOnly && !NetworkUtils.isConnectedToWiFi(getApplicationContext())) {
+        if (wifiOnly && !NetworkUtils.isConnectedToWiFi(context)) {
             LogUtil.w(TAG, "Not connected to WiFi when user requires it");
             return;
         }
@@ -85,7 +93,7 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
 
         if (photos != null && !photos.isEmpty()) {
             ImgurPhoto photo = photos.get(sRandom.nextInt(photos.size()));
-            SqlHelper sql = SqlHelper.getInstance(getApplicationContext());
+            SqlHelper sql = SqlHelper.getInstance(context);
 
             if (sql.getMuzeiLastSeen(photo.getLink()) != -1) {
                 // We have seen this image already, lets try to get another
