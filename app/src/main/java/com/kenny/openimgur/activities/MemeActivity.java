@@ -297,7 +297,7 @@ public class MemeActivity extends BaseActivity {
                         }
 
                         @Override
-                        public void onSheetDismissed(BottomSheet bottomSheet, int which) {
+                        public void onSheetDismissed(BottomSheet bottomSheet, @DismissEvent int dismissEvent) {
                             finish();
                         }
                     })
