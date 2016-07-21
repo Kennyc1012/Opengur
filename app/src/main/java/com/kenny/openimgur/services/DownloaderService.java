@@ -188,7 +188,7 @@ public class DownloaderService extends IntentService {
             if (isVideoLink) {
                 cachedFile = VideoCache.getInstance().getVideoFile(url);
             } else {
-                cachedFile = OpengurApp.getInstance(getApplication()).getImageLoader().getDiskCache().get(url);
+                cachedFile = ImageUtil.getImageLoader(getApplicationContext()).getDiskCache().get(url);
             }
 
             if (FileUtil.isFileValid(cachedFile)) {

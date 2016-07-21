@@ -163,7 +163,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
             mUrl = mUrl.replace(".png", ".jpeg");
         }
 
-        app.getImageLoader().loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForFullscreen().build(), new SimpleImageLoadingListener() {
+        ImageUtil.getImageLoader(getActivity()).loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForFullscreen().build(), new SimpleImageLoadingListener() {
             @Override
             public void onLoadingFailed(String s, View view, FailReason failReason) {
                 mStartedToLoad = false;
@@ -190,7 +190,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
                 } else {
                     // Static images will use the TouchImageView to render the image. This allows large(tall) images to render better and be better legible
                     try {
-                        File file = app.getImageLoader().getDiskCache().get(url);
+                        File file = ImageUtil.getImageLoader(getActivity()).getDiskCache().get(url);
                         if (FileUtil.isFileValid(file)) {
                             // We will enable tiling if any of the image dimensions are above 2048 px (Canvas draw limit)
                             int[] dimensions = ImageUtil.getBitmapDimensions(file);
@@ -320,7 +320,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
         if (getUserVisibleHint()) {
             // Auto play the gif if we are visible
-            File file = app.getImageLoader().getDiskCache().get(url);
+            File file = ImageUtil.getImageLoader(getActivity()).getDiskCache().get(url);
             if (!ImageUtil.loadAndDisplayGif(mGifImageView, file)) {
                 mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             } else {
@@ -331,7 +331,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
         } else {
             mVideoView.setVisibility(View.GONE);
             mImageView.setVisibility(View.GONE);
-            app.getImageLoader().displayImage(url, mGifImageView);
+            ImageUtil.getImageLoader(getActivity()).displayImage(url, mGifImageView);
             mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         }
     }

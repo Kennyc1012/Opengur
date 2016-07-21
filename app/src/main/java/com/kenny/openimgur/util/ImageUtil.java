@@ -52,6 +52,8 @@ import pl.droidsonroids.gif.GifDrawable;
 public class ImageUtil {
     private static final String TAG = "ImageUtil";
 
+    private static ImageLoader imageLoader;
+
     /**
      * Converts a bitmap to grayscale
      *
@@ -145,6 +147,15 @@ public class ImageUtil {
         }
 
         return false;
+    }
+
+    public static ImageLoader getImageLoader(@NonNull Context context) {
+        if (imageLoader == null || !imageLoader.isInited()) {
+            initImageLoader(context.getApplicationContext());
+            imageLoader = ImageLoader.getInstance();
+        }
+
+        return imageLoader;
     }
 
     /**
@@ -426,11 +437,11 @@ public class ImageUtil {
     /**
      * Returns the entire size of the image cache, including videos
      *
-     * @param app
+     * @param context
      * @return
      */
-    public static long getTotalImageCacheSize(OpengurApp app) {
-        long cacheSize = FileUtil.getDirectorySize(app.getImageLoader().getDiskCache().getDirectory());
+    public static long getTotalImageCacheSize(@NonNull Context context) {
+        long cacheSize = FileUtil.getDirectorySize(getImageLoader(context).getDiskCache().getDirectory());
         cacheSize += VideoCache.getInstance().getCacheSize();
         return cacheSize;
     }

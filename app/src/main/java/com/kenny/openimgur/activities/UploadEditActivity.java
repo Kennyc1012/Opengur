@@ -70,7 +70,7 @@ public class UploadEditActivity extends BaseActivity {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#33000000")));
         mUpload = getIntent().getParcelableExtra(KEY_UPLOAD);
         String url = mUpload.isLink() ? mUpload.getLocation() : "file://" + mUpload.getLocation();
-        app.getImageLoader().displayImage(url, mImage, ImageUtil.getDisplayOptionsForPhotoPicker().build());
+        ImageUtil.getImageLoader(this).displayImage(url, mImage, ImageUtil.getDisplayOptionsForPhotoPicker().build());
         mTitle.setText(mUpload.getTitle());
         mDescription.setText(mUpload.getDescription());
 

@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.classes.ImgurHandler;
-import com.kenny.openimgur.classes.OpengurApp;
+import com.kenny.openimgur.util.ImageUtil;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -151,42 +151,40 @@ public class UploadLinkDialogFragment extends DialogFragment implements TextWatc
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_SEARCH_URL:
-                    OpengurApp.getInstance(getActivity())
-                            .getImageLoader()
-                            .loadImage((String) msg.obj, new SimpleImageLoadingListener() {
+                    ImageUtil.getImageLoader(getActivity()).loadImage((String) msg.obj, new SimpleImageLoadingListener() {
 
-                                @Override
-                                public void onLoadingStarted(String imageUri, View view) {
-                                    if (!isAdded()) return;
-                                    mLoadingContainer.setVisibility(View.VISIBLE);
-                                    mLoadingIndicator.setVisibility(View.VISIBLE);
-                                    mLinkValidation.setText(R.string.upload_checking_link);
-                                }
+                        @Override
+                        public void onLoadingStarted(String imageUri, View view) {
+                            if (!isAdded()) return;
+                            mLoadingContainer.setVisibility(View.VISIBLE);
+                            mLoadingIndicator.setVisibility(View.VISIBLE);
+                            mLinkValidation.setText(R.string.upload_checking_link);
+                        }
 
-                                @Override
-                                public void onLoadingFailed(String s, View view, FailReason failReason) {
-                                    if (!isAdded()) return;
-                                    mAddButton.setEnabled(false);
-                                    mLoadingIndicator.setVisibility(View.INVISIBLE);
-                                    mLinkValidation.setText(R.string.upload_invalid_link);
-                                }
+                        @Override
+                        public void onLoadingFailed(String s, View view, FailReason failReason) {
+                            if (!isAdded()) return;
+                            mAddButton.setEnabled(false);
+                            mLoadingIndicator.setVisibility(View.INVISIBLE);
+                            mLinkValidation.setText(R.string.upload_invalid_link);
+                        }
 
-                                @Override
-                                public void onLoadingComplete(String url, View view, Bitmap bitmap) {
-                                    if (!isAdded()) return;
-                                    mAddButton.setEnabled(true);
-                                    mLoadingIndicator.setVisibility(View.INVISIBLE);
-                                    mLinkValidation.setText(R.string.upload_valid_link);
-                                }
+                        @Override
+                        public void onLoadingComplete(String url, View view, Bitmap bitmap) {
+                            if (!isAdded()) return;
+                            mAddButton.setEnabled(true);
+                            mLoadingIndicator.setVisibility(View.INVISIBLE);
+                            mLinkValidation.setText(R.string.upload_valid_link);
+                        }
 
-                                @Override
-                                public void onLoadingCancelled(String s, View view) {
-                                    if (!isAdded()) return;
-                                    mAddButton.setEnabled(false);
-                                    mLoadingIndicator.setVisibility(View.INVISIBLE);
-                                    mLinkValidation.setText(R.string.upload_invalid_link);
-                                }
-                            });
+                        @Override
+                        public void onLoadingCancelled(String s, View view) {
+                            if (!isAdded()) return;
+                            mAddButton.setEnabled(false);
+                            mLoadingIndicator.setVisibility(View.INVISIBLE);
+                            mLinkValidation.setText(R.string.upload_invalid_link);
+                        }
+                    });
                     break;
             }
         }

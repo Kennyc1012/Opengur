@@ -160,7 +160,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
 
     @Override
     public void onDestroyView() {
-        OpengurApp.getInstance(getActivity()).getImageLoader().cancelDisplayTask(mImage);
+        ImageUtil.getImageLoader(getActivity()).cancelDisplayTask(mImage);
         if (mUnbinder != null) mUnbinder.unbind();
         super.onDestroyView();
     }
@@ -172,7 +172,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
      * @param isAnimated
      */
     public void displayImage(String url, final boolean isAnimated) {
-        OpengurApp.getInstance(getActivity()).getImageLoader().displayImage(url, mImage, new ImageLoadingListener() {
+        ImageUtil.getImageLoader(getActivity()).displayImage(url, mImage, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String s, View view) {
 
@@ -191,7 +191,7 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
                 if (isAdded()) {
                     mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
                     if (isAnimated) {
-                        if (!ImageUtil.loadAndDisplayGif((ImageView) view, s, OpengurApp.getInstance(getActivity()).getImageLoader())) {
+                        if (!ImageUtil.loadAndDisplayGif((ImageView) view, s, ImageUtil.getImageLoader(getActivity()))) {
                             Toast.makeText(getActivity(), R.string.loading_image_error, Toast.LENGTH_SHORT).show();
                             dismissAllowingStateLoss();
                         }

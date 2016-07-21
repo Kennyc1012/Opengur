@@ -22,10 +22,12 @@ import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.collections.SetUniqueList;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -79,6 +81,8 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
 
     private GalleryAdapter mAdapter;
 
+    private ImageLoader imageLoader;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -95,6 +99,8 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ViewUtils.setRecyclerViewGridDefaults(getActivity(), mGrid);
+        imageLoader = ImageUtil.getImageLoader(getActivity());
+
         mGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -119,11 +125,11 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
                 switch (newState) {
                     case RecyclerView.SCROLL_STATE_IDLE:
                     case RecyclerView.SCROLL_STATE_DRAGGING:
-                        app.getImageLoader().resume();
+                        imageLoader.resume();
                         break;
 
                     case RecyclerView.SCROLL_STATE_SETTLING:
-                        app.getImageLoader().pause();
+                        imageLoader.pause();
                         break;
                 }
             }

@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.kenny.openimgur.classes.ImgurPhoto;
-import com.kenny.openimgur.classes.OpengurApp;
 
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -168,11 +167,12 @@ public class FileUtil {
      * Takes a Uri and saves it to a file
      *
      * @param uri
-     * @param resolver
+     * @param context
      * @return
      */
-    public static File createFile(Uri uri, ContentResolver resolver) {
+    public static File createFile(Uri uri, @NonNull Context context) {
         InputStream in;
+        ContentResolver resolver = context.getContentResolver();
         String type = resolver.getType(uri);
         String extension;
 
@@ -193,7 +193,7 @@ public class FileUtil {
 
         // Create files from a uri in our cache directory so they eventually get deleted
         String timeStamp = String.valueOf(System.currentTimeMillis());
-        File cacheDir = OpengurApp.getInstance().getImageLoader().getDiskCache().getDirectory();
+        File cacheDir = ImageUtil.getImageLoader(context).getDiskCache().getDirectory();
         File tempFile = new File(cacheDir, timeStamp + extension);
 
         if (writeInputStreamToFile(in, tempFile)) {

@@ -35,8 +35,6 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
 
     private static OpengurApp sInstance;
 
-    private ImageLoader mImageLoader;
-
     private SharedPreferences mPref;
 
     private ImgurUser mUser;
@@ -84,16 +82,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
     public void onLowMemory() {
         super.onLowMemory();
         LogUtil.w(TAG, "Received onLowMemory");
-        getImageLoader().clearMemoryCache();
-    }
-
-    public ImageLoader getImageLoader() {
-        if (mImageLoader == null || !mImageLoader.isInited()) {
-            ImageUtil.initImageLoader(getApplicationContext());
-            mImageLoader = ImageLoader.getInstance();
-        }
-
-        return mImageLoader;
+        ImageUtil.getImageLoader(this).clearMemoryCache();
     }
 
     public static OpengurApp getInstance() {
@@ -121,7 +110,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
      * Deletes all of the cache, including the unused partition (external/internal)
      */
     public void deleteAllCache() {
-        ImageLoader imageLoader = getImageLoader();
+        ImageLoader imageLoader = ImageUtil.getImageLoader(this);
         imageLoader.clearDiskCache();
         imageLoader.clearMemoryCache();
         VideoCache.getInstance().deleteCache();

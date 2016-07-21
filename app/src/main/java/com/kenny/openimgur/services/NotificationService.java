@@ -30,6 +30,7 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.ui.BaseNotification;
 import com.kenny.openimgur.ui.CircleBitmapDisplayer;
+import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.RequestCodes;
@@ -304,11 +305,11 @@ public class NotificationService extends IntentService {
         private Bitmap getReplyIcon(String url) {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Bitmap bitmap = app.getImageLoader().loadImageSync(url);
+                    Bitmap bitmap = ImageUtil.getImageLoader(app).loadImageSync(url);
                     if (bitmap != null) return CircleBitmapDisplayer.getRoundedBitmap(bitmap);
                 } else {
                     int iconSize = resources.getDimensionPixelSize(R.dimen.notification_icon);
-                    return app.getImageLoader().loadImageSync(url, new ImageSize(iconSize, iconSize));
+                    return ImageUtil.getImageLoader(app).loadImageSync(url, new ImageSize(iconSize, iconSize));
                 }
             } catch (Exception ex) {
                 LogUtil.e(TAG, "Unable to load gallery thumbnail", ex);

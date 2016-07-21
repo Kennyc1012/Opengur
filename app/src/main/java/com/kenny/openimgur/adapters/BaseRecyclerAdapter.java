@@ -36,7 +36,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
     protected Resources mResources;
 
     public BaseRecyclerAdapter(Context context, List<T> collection, boolean hasImageLoader) {
-        if (hasImageLoader) mImageLoader = OpengurApp.getInstance(context).getImageLoader();
+        if (hasImageLoader) mImageLoader = ImageUtil.getImageLoader(context);
         mItems = collection;
         mInflater = LayoutInflater.from(context);
         mIsDarkTheme = OpengurApp.getInstance(context).getImgurTheme().isDarkTheme;

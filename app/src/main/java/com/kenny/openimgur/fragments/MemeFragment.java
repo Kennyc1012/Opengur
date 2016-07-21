@@ -140,7 +140,7 @@ public class MemeFragment extends BaseGridFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RequestCodes.SELECT_PHOTO && resultCode == Activity.RESULT_OK) {
-            File file = FileUtil.createFile(data.getData(), getActivity().getContentResolver());
+            File file = FileUtil.createFile(data.getData(), getActivity());
 
             if (FileUtil.isFileValid(file)) {
                 startActivity(MemeActivity.createIntent(getActivity(), file));

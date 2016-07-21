@@ -4,7 +4,6 @@ package com.kenny.openimgur.fragments;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -533,7 +532,6 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
         protected List<Upload> doInBackground(List<Uri>... params) {
             if (params != null && params[0] != null && !params[0].isEmpty()) {
                 Activity activity = mFragment.get().getActivity();
-                ContentResolver resolver = activity.getContentResolver();
                 photoUris = params[0];
                 List<Upload> uploads = new ArrayList<>(photoUris.size());
                 boolean hasReadPermission = PermissionUtils.hasPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -547,7 +545,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
                             return null;
                         }
 
-                        File file = FileUtil.createFile(uri, resolver);
+                        File file = FileUtil.createFile(uri, activity);
                         if (FileUtil.isFileValid(file))
                             uploads.add(new Upload(file.getAbsolutePath()));
                     } catch (Throwable ex) {

@@ -402,11 +402,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         // Load regular gifs if they are less than 5mb
         if (photo.getSize() <= FIVE_MB && !photo.isLinkAThumbnail()) {
-            ImageLoader loader = app.getImageLoader();
+            final ImageLoader loader = ImageUtil.getImageLoader(getActivity());
             File file = DiskCacheUtils.findInCache(photo.getLink(), loader.getDiskCache());
 
             if (FileUtil.isFileValid(file)) {
-                if (!ImageUtil.loadAndDisplayGif(image, photo.getLink(), app.getImageLoader())) {
+                if (!ImageUtil.loadAndDisplayGif(image, photo.getLink(), loader)) {
                     Snackbar.make(mMultiView, R.string.loading_image_error, Snackbar.LENGTH_LONG).show();
                     prog.setVisibility(View.GONE);
                     play.setVisibility(View.VISIBLE);
@@ -432,7 +432,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                     @Override
                     public void onLoadingComplete(String s, View view, Bitmap bitmap) {
                         if (image != null && getActivity() != null) {
-                            if (!ImageUtil.loadAndDisplayGif(image, s, app.getImageLoader())) {
+                            if (!ImageUtil.loadAndDisplayGif(image, s, loader)) {
                                 Snackbar.make(mMultiView, R.string.loading_image_error, Snackbar.LENGTH_LONG).show();
                                 prog.setVisibility(View.GONE);
                                 play.setVisibility(View.VISIBLE);

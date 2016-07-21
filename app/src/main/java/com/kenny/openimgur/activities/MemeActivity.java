@@ -158,7 +158,7 @@ public class MemeActivity extends BaseActivity {
                         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
                         // Clear any memory cache before we save to avoid an OOM
-                        app.getImageLoader().clearMemoryCache();
+                        ImageUtil.getImageLoader(this).clearMemoryCache();
                         new SaveMemeTask().execute(this);
                         break;
 
@@ -233,7 +233,7 @@ public class MemeActivity extends BaseActivity {
             ActivityCompat.postponeEnterTransition(this);
         }
 
-        app.getImageLoader().displayImage(mObject.getLink(), mImage, new SimpleImageLoadingListener() {
+        ImageUtil.getImageLoader(this).displayImage(mObject.getLink(), mImage, new SimpleImageLoadingListener() {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 super.onLoadingComplete(imageUri, view, loadedImage);
@@ -347,7 +347,7 @@ public class MemeActivity extends BaseActivity {
                     mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
                     // Clear any memory cache before we save to avoid an OOM
-                    app.getImageLoader().clearMemoryCache();
+                    ImageUtil.getImageLoader(this).clearMemoryCache();
                     new SaveMemeTask().execute(this);
                 } else {
                     Snackbar.make(mMultiStateView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
