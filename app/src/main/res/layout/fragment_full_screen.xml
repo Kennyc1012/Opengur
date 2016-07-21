@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.kennyc.view.MultiStateView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/multiView"
     android:background="@android:color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:msv_loadingView="@layout/loading_view"
     app:msv_errorView="@layout/error_view"
-    app:msv_viewState="loading">
+    app:msv_viewState="content">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -32,6 +32,45 @@
             android:layout_gravity="center"
             android:clickable="true"
             android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/loadingView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingRight="@dimen/grid_padding"
+                android:paddingLeft="@dimen/grid_padding">
+
+                <TextView
+                    android:id="@+id/fileTransfer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    tools:text="240kb/630kb" />
+
+                <TextView
+                    android:id="@+id/percentage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:layout_gravity="right"
+                    tools:text="38%" />
+
+            </FrameLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100" />
+
+        </LinearLayout>
 
     </FrameLayout>
 

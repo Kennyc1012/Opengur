@@ -268,6 +268,11 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
         }
     }
 
+    @Override
+    public void onProgress(int downloaded, int total) {
+
+    }
+
     private void fetchImageDetails() {
         ApiClient.getService().getImageDetails(mImageUrl).enqueue(new Callback<PhotoResponse>() {
             @Override

@@ -20,6 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -39,6 +41,7 @@ import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.io.File;
@@ -57,26 +60,38 @@ public class FullScreenPhotoFragment extends BaseFragment {
     private static final long GIF_DELAY = 350L;
 
     @BindView(R.id.image)
-    SubsamplingScaleImageView mImageView;
+    SubsamplingScaleImageView imageView;
 
     @BindView(R.id.multiView)
-    MultiStateView mMultiView;
+    MultiStateView multiView;
 
     @BindView(R.id.video)
-    VideoView mVideoView;
+    VideoView videoView;
 
     @BindView(R.id.gifImage)
-    ImageView mGifImageView;
+    ImageView gifImageView;
 
-    private ImgurPhoto mPhoto;
+    @BindView(R.id.loadingView)
+    View loadingView;
 
-    private String mUrl;
+    @BindView(R.id.fileTransfer)
+    TextView fileTransfer;
 
-    private boolean mStartedToLoad = false;
+    @BindView(R.id.percentage)
+    TextView percentage;
 
-    private PhotoHandler mHandler = new PhotoHandler();
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
 
-    private boolean mReplacedPNG = false;
+    private ImgurPhoto photo;
+
+    private String url;
+
+    private boolean startedToLoad = false;
+
+    private PhotoHandler handler = new PhotoHandler();
+
+    private boolean replacedPNG = false;
 
     public static FullScreenPhotoFragment createInstance(@NonNull ImgurPhoto photo) {
         FullScreenPhotoFragment fragment = new FullScreenPhotoFragment();
@@ -101,53 +116,53 @@ public class FullScreenPhotoFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ViewUtils.setErrorText(mMultiView, R.id.errorMessage, R.string.error_generic);
-        ((Button) mMultiView.getView(MultiStateView.VIEW_STATE_ERROR).findViewById(R.id.errorButton)).setText(null);
+        ViewUtils.setErrorText(multiView, R.id.errorMessage, R.string.error_generic);
+        ((Button) multiView.getView(MultiStateView.VIEW_STATE_ERROR).findViewById(R.id.errorButton)).setText(null);
 
         if (savedInstanceState != null) {
-            mPhoto = savedInstanceState.getParcelable(KEY_IMGUR_OBJECT);
+            photo = savedInstanceState.getParcelable(KEY_IMGUR_OBJECT);
         } else if (getArguments() != null) {
-            mPhoto = getArguments().getParcelable(KEY_IMGUR_OBJECT);
+            photo = getArguments().getParcelable(KEY_IMGUR_OBJECT);
         }
 
-        if (mPhoto == null) {
-            mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+        if (photo == null) {
+            multiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
         } else {
             configView(savedInstanceState);
         }
     }
 
     private void configView(Bundle savedInstanceState) {
-        if (mPhoto.isAnimated()) {
-            if (mPhoto.isLinkAThumbnail() || mPhoto.getSize() > (1024 * 1024 * 5)) {
-                mUrl = mPhoto.getVideoLink();
+        if (photo.isAnimated()) {
+            if (photo.isLinkAThumbnail() || photo.getSize() > (1024 * 1024 * 5)) {
+                url = photo.getVideoLink();
                 displayVideo(savedInstanceState);
             } else {
-                mUrl = mPhoto.getLink();
-                if (LinkUtils.isVideoLink(mUrl)) {
+                url = photo.getLink();
+                if (LinkUtils.isVideoLink(url)) {
                     displayVideo(savedInstanceState);
                 } else {
                     displayImage();
                 }
             }
         } else {
-            mUrl = mPhoto.getLink();
+            url = photo.getLink();
             displayImage();
         }
     }
 
     @Override
     public void onDestroyView() {
-        mHandler.removeMessages(0);
-        mHandler = null;
+        handler.removeMessages(0);
+        handler = null;
 
         // Free up some memory
-        if (mGifImageView.getDrawable() instanceof GifDrawable) {
-            ((GifDrawable) mGifImageView.getDrawable()).recycle();
-        } else if (mVideoView.getDuration() > 0) {
-            mVideoView.suspend();
+        if (gifImageView.getDrawable() instanceof GifDrawable) {
+            ((GifDrawable) gifImageView.getDrawable()).recycle();
+        } else if (videoView.getDuration() > 0) {
+            videoView.suspend();
         } else {
-            mImageView.recycle();
+            imageView.recycle();
         }
 
         super.onDestroyView();
@@ -157,103 +172,17 @@ public class FullScreenPhotoFragment extends BaseFragment {
      * Displays the image
      */
     private void displayImage() {
-        if (!mReplacedPNG && LinkUtils.isImgurPNG(mUrl)) {
-            mReplacedPNG = true;
+        if (!replacedPNG && LinkUtils.isImgurPNG(url)) {
+            replacedPNG = true;
             LogUtil.v(TAG, "Replacing png link with jpeg");
-            mUrl = mUrl.replace(".png", ".jpeg");
+            url = url.replace(".png", ".jpeg");
         }
 
-        ImageUtil.getImageLoader(getActivity()).loadImage(mUrl, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForFullscreen().build(), new SimpleImageLoadingListener() {
-            @Override
-            public void onLoadingFailed(String s, View view, FailReason failReason) {
-                mStartedToLoad = false;
-                if (!isAdded() || isRemoving()) return;
-
-                if (mReplacedPNG) {
-                    LogUtil.w(TAG, "Replacing png with jpeg failed, reverting back to png");
-                    mUrl = mUrl.replace(".jpeg", ".png");
-                    displayImage();
-                    return;
-                }
-
-                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-            }
-
-            @Override
-            public void onLoadingComplete(String url, View view, Bitmap bitmap) {
-                mStartedToLoad = false;
-                bitmap.recycle();
-                if (!isAdded() || isRemoving()) return;
-
-                if (url.endsWith(".gif")) {
-                    displayGif(url);
-                } else {
-                    // Static images will use the TouchImageView to render the image. This allows large(tall) images to render better and be better legible
-                    try {
-                        File file = ImageUtil.getImageLoader(getActivity()).getDiskCache().get(url);
-                        if (FileUtil.isFileValid(file)) {
-                            // We will enable tiling if any of the image dimensions are above 2048 px (Canvas draw limit)
-                            int[] dimensions = ImageUtil.getBitmapDimensions(file);
-                            boolean enableTiling = dimensions[0] > 2048 || dimensions[1] > 2048;
-                            LogUtil.v(TAG, "Tiling enabled for image " + enableTiling);
-                            Uri fileUri = Uri.fromFile(file);
-
-                            mImageView.setOnImageEventListener(new SubsamplingScaleImageView.OnImageEventListener() {
-                                @Override
-                                public void onReady() {
-
-                                }
-
-                                @Override
-                                public void onImageLoaded() {
-
-                                }
-
-                                @Override
-                                public void onPreviewLoadError(Exception e) {
-
-                                }
-
-                                @Override
-                                public void onImageLoadError(Exception e) {
-                                    LogUtil.e(TAG, "Error loading image", e);
-                                    if (mMultiView != null)
-                                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-                                }
-
-                                @Override
-                                public void onTileLoadError(Exception e) {
-                                    LogUtil.e(TAG, "Error creating tile", e);
-                                    if (mMultiView != null)
-                                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-                                }
-                            });
-
-                            mImageView.setMinimumTileDpi(160);
-                            mImageView.setImage(ImageSource.uri(fileUri).dimensions(dimensions[0], dimensions[1]).tiling(enableTiling));
-                            mVideoView.setVisibility(View.GONE);
-                            mGifImageView.setVisibility(View.GONE);
-                            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-                        } else {
-                            mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-                        }
-                    } catch (Exception e) {
-                        LogUtil.e(TAG, "Error creating tile bitmap", e);
-                        mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
-                    }
-                }
-            }
-
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {
-                super.onLoadingStarted(imageUri, view);
-                mStartedToLoad = true;
-            }
-        });
+        ImageUtil.getImageLoader(getActivity()).loadImage(url, new ImageSize(1, 1), ImageUtil.getDisplayOptionsForFullscreen().build(), simpleImageLoadingListener, progressListener);
     }
 
     private void displayVideo(Bundle savedInstance) {
-        File file = VideoCache.getInstance().getVideoFile(mUrl);
+        File file = VideoCache.getInstance().getVideoFile(url);
         final int position;
 
         // Check if our video was playing during a rotation
@@ -264,11 +193,11 @@ public class FullScreenPhotoFragment extends BaseFragment {
         }
 
         if (FileUtil.isFileValid(file)) {
-            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-            mVideoView.setVisibility(View.VISIBLE);
-            mImageView.setVisibility(View.GONE);
+            multiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+            videoView.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.GONE);
 
-            mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
                     mediaPlayer.setLooping(true);
@@ -276,31 +205,31 @@ public class FullScreenPhotoFragment extends BaseFragment {
                 }
             });
 
-            mVideoView.setVideoPath(file.getAbsolutePath());
-            if (getUserVisibleHint()) mVideoView.start();
+            videoView.setVideoPath(file.getAbsolutePath());
+            if (getUserVisibleHint()) videoView.start();
         } else {
-            VideoCache.getInstance().putVideo(mUrl, new VideoCache.VideoCacheListener() {
+            VideoCache.getInstance().putVideo(url, new VideoCache.VideoCacheListener() {
                 @Override
                 public void onVideoDownloadStart(String key, String url) {
-
+                    loadingView.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onVideoDownloadFailed(Exception ex, String url) {
                     if (!isAdded() || isRemoving()) return;
 
-                    mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                    multiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                 }
 
                 @Override
                 public void onVideoDownloadComplete(File file) {
                     if (!isAdded() || isRemoving()) return;
 
-                    mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-                    mVideoView.setVisibility(View.VISIBLE);
-                    mImageView.setVisibility(View.GONE);
+                    multiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                    videoView.setVisibility(View.VISIBLE);
+                    imageView.setVisibility(View.GONE);
 
-                    mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
                         public void onPrepared(MediaPlayer mediaPlayer) {
                             mediaPlayer.setLooping(true);
@@ -308,8 +237,19 @@ public class FullScreenPhotoFragment extends BaseFragment {
                         }
                     });
 
-                    mVideoView.setVideoPath(file.getAbsolutePath());
-                    if (getUserVisibleHint()) mVideoView.start();
+                    videoView.setVideoPath(file.getAbsolutePath());
+                    if (getUserVisibleHint()) videoView.start();
+                    loadingView.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onProgress(int downloaded, int total) {
+                    if (!isAdded() || isRemoving()) return;
+
+                    int progress = (downloaded * 100) / total;
+                    progressBar.setProgress(progress);
+                    percentage.setText(progress + "%");
+                    fileTransfer.setText(FileUtil.humanReadableByteCount(downloaded, false) + "/" + FileUtil.humanReadableByteCount(total, false));
                 }
             });
         }
@@ -321,18 +261,18 @@ public class FullScreenPhotoFragment extends BaseFragment {
         if (getUserVisibleHint()) {
             // Auto play the gif if we are visible
             File file = ImageUtil.getImageLoader(getActivity()).getDiskCache().get(url);
-            if (!ImageUtil.loadAndDisplayGif(mGifImageView, file)) {
-                mMultiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+            if (!ImageUtil.loadAndDisplayGif(gifImageView, file)) {
+                multiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
             } else {
-                mVideoView.setVisibility(View.GONE);
-                mImageView.setVisibility(View.GONE);
-                mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                videoView.setVisibility(View.GONE);
+                imageView.setVisibility(View.GONE);
+                multiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
             }
         } else {
-            mVideoView.setVisibility(View.GONE);
-            mImageView.setVisibility(View.GONE);
-            ImageUtil.getImageLoader(getActivity()).displayImage(url, mGifImageView);
-            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+            videoView.setVisibility(View.GONE);
+            imageView.setVisibility(View.GONE);
+            ImageUtil.getImageLoader(getActivity()).displayImage(url, gifImageView, null, simpleImageLoadingListener, progressListener);
+            multiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         }
     }
 
@@ -350,11 +290,11 @@ public class FullScreenPhotoFragment extends BaseFragment {
 
                 switch (permissionLevel) {
                     case PermissionUtils.PERMISSION_AVAILABLE:
-                        getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
+                        getActivity().startService(DownloaderService.createIntent(getActivity(), url));
                         break;
 
                     case PermissionUtils.PERMISSION_DENIED:
-                        Snackbar.make(mMultiView, R.string.permission_rationale_download, Snackbar.LENGTH_LONG)
+                        Snackbar.make(multiView, R.string.permission_rationale_download, Snackbar.LENGTH_LONG)
                                 .setAction(R.string.okay, new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -375,15 +315,15 @@ public class FullScreenPhotoFragment extends BaseFragment {
                 shareIntent.setType("text/plain");
                 String link;
 
-                if (mPhoto != null && !TextUtils.isEmpty(mPhoto.getTitle())) {
-                    link = mPhoto.getTitle() + " ";
-                    if (TextUtils.isEmpty(mPhoto.getRedditLink())) {
-                        link += mPhoto.getGalleryLink();
+                if (photo != null && !TextUtils.isEmpty(photo.getTitle())) {
+                    link = photo.getTitle() + " ";
+                    if (TextUtils.isEmpty(photo.getRedditLink())) {
+                        link += photo.getGalleryLink();
                     } else {
-                        link += String.format("https://reddit.com%s", mPhoto.getRedditLink());
+                        link += String.format("https://reddit.com%s", photo.getRedditLink());
                     }
                 } else {
-                    link = mUrl;
+                    link = url;
                 }
 
                 shareIntent.putExtra(Intent.EXTRA_TEXT, link);
@@ -397,9 +337,9 @@ public class FullScreenPhotoFragment extends BaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(KEY_IMGUR_OBJECT, mPhoto);
-        if (mVideoView.isPlaying())
-            outState.putInt(KEY_VIDEO_POSITION, mVideoView.getCurrentPosition());
+        outState.putParcelable(KEY_IMGUR_OBJECT, photo);
+        if (videoView.isPlaying())
+            outState.putInt(KEY_VIDEO_POSITION, videoView.getCurrentPosition());
     }
 
     @Override
@@ -407,18 +347,18 @@ public class FullScreenPhotoFragment extends BaseFragment {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            if (mGifImageView != null && mGifImageView.getDrawable() instanceof GifDrawable) {
-                ((GifDrawable) mGifImageView.getDrawable()).start();
-            } else if (mVideoView != null && mVideoView.getDuration() > 0) {
-                mVideoView.start();
+            if (gifImageView != null && gifImageView.getDrawable() instanceof GifDrawable) {
+                ((GifDrawable) gifImageView.getDrawable()).start();
+            } else if (videoView != null && videoView.getDuration() > 0) {
+                videoView.start();
             } else {
-                mHandler.sendEmptyMessageDelayed(0, GIF_DELAY);
+                handler.sendEmptyMessageDelayed(0, GIF_DELAY);
             }
         } else {
-            if (mGifImageView != null && mGifImageView.getDrawable() instanceof GifDrawable) {
-                ((GifDrawable) mGifImageView.getDrawable()).pause();
-            } else if (mVideoView != null && mVideoView.getDuration() > 0) {
-                mVideoView.pause();
+            if (gifImageView != null && gifImageView.getDrawable() instanceof GifDrawable) {
+                ((GifDrawable) gifImageView.getDrawable()).pause();
+            } else if (videoView != null && videoView.getDuration() > 0) {
+                videoView.pause();
             }
         }
     }
@@ -432,9 +372,9 @@ public class FullScreenPhotoFragment extends BaseFragment {
                 boolean granted = PermissionUtils.verifyPermissions(grantResults);
 
                 if (granted) {
-                    getActivity().startService(DownloaderService.createIntent(getActivity(), mUrl));
+                    getActivity().startService(DownloaderService.createIntent(getActivity(), url));
                 } else {
-                    Snackbar.make(mMultiView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(multiView, R.string.permission_denied, Snackbar.LENGTH_LONG).show();
                 }
                 break;
         }
@@ -443,11 +383,113 @@ public class FullScreenPhotoFragment extends BaseFragment {
     private class PhotoHandler extends ImgurHandler {
         @Override
         public void handleMessage(Message msg) {
-            if (getUserVisibleHint() && !mStartedToLoad && mGifImageView != null && LinkUtils.isLinkAnimated(mUrl) && !LinkUtils.isVideoLink(mUrl)) {
-                displayGif(mUrl);
+            if (getUserVisibleHint() && !startedToLoad && gifImageView != null && LinkUtils.isLinkAnimated(url) && !LinkUtils.isVideoLink(url)) {
+                displayGif(url);
             }
 
             super.handleMessage(msg);
         }
     }
+
+    private final ImageLoadingProgressListener progressListener = new ImageLoadingProgressListener() {
+        @Override
+        public void onProgressUpdate(String imageUri, View view, int current, int total) {
+            if (!isAdded() || isRemoving()) return;
+
+            int progress = (current * 100) / total;
+            progressBar.setProgress(progress);
+            percentage.setText(progress + "%");
+            fileTransfer.setText(FileUtil.humanReadableByteCount(current, false) + "/" + FileUtil.humanReadableByteCount(total, false));
+        }
+    };
+
+    private final SimpleImageLoadingListener simpleImageLoadingListener = new SimpleImageLoadingListener() {
+        @Override
+        public void onLoadingFailed(String s, View view, FailReason failReason) {
+            startedToLoad = false;
+            if (!isAdded() || isRemoving()) return;
+
+            if (replacedPNG) {
+                LogUtil.w(TAG, "Replacing png with jpeg failed, reverting back to png");
+                url = url.replace(".jpeg", ".png");
+                displayImage();
+                return;
+            }
+
+            multiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+        }
+
+        @Override
+        public void onLoadingComplete(String url, View view, Bitmap bitmap) {
+            startedToLoad = false;
+            bitmap.recycle();
+            if (!isAdded() || isRemoving()) return;
+
+            if (url.endsWith(".gif")) {
+                displayGif(url);
+            } else {
+                // Static images will use the TouchImageView to render the image. This allows large(tall) images to render better and be better legible
+                try {
+                    File file = ImageUtil.getImageLoader(getActivity()).getDiskCache().get(url);
+                    if (FileUtil.isFileValid(file)) {
+                        // We will enable tiling if any of the image dimensions are above 2048 px (Canvas draw limit)
+                        int[] dimensions = ImageUtil.getBitmapDimensions(file);
+                        boolean enableTiling = dimensions[0] > 2048 || dimensions[1] > 2048;
+                        LogUtil.v(TAG, "Tiling enabled for image " + enableTiling);
+                        Uri fileUri = Uri.fromFile(file);
+
+                        imageView.setOnImageEventListener(new SubsamplingScaleImageView.OnImageEventListener() {
+                            @Override
+                            public void onReady() {
+
+                            }
+
+                            @Override
+                            public void onImageLoaded() {
+
+                            }
+
+                            @Override
+                            public void onPreviewLoadError(Exception e) {
+
+                            }
+
+                            @Override
+                            public void onImageLoadError(Exception e) {
+                                LogUtil.e(TAG, "Error loading image", e);
+                                if (multiView != null)
+                                    multiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                            }
+
+                            @Override
+                            public void onTileLoadError(Exception e) {
+                                LogUtil.e(TAG, "Error creating tile", e);
+                                if (multiView != null)
+                                    multiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                            }
+                        });
+
+                        imageView.setMinimumTileDpi(160);
+                        imageView.setImage(ImageSource.uri(fileUri).dimensions(dimensions[0], dimensions[1]).tiling(enableTiling));
+                        videoView.setVisibility(View.GONE);
+                        gifImageView.setVisibility(View.GONE);
+                        multiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
+                    } else {
+                        multiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                    }
+                } catch (Exception e) {
+                    LogUtil.e(TAG, "Error creating tile bitmap", e);
+                    multiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
+                }
+            }
+
+            loadingView.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {
+            startedToLoad = true;
+            loadingView.setVisibility(View.VISIBLE);
+        }
+    };
 }

@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Created by kcampagna on 10/9/14.
@@ -137,9 +138,11 @@ public class VideoCache {
 
         // Called when the video download completes
         void onVideoDownloadComplete(File file);
+
+        void onProgress(int downloaded, int total);
     }
 
-    private static class DownloadVideo extends AsyncTask<File, Void, Object> {
+    private static class DownloadVideo extends AsyncTask<File, Integer, Object> {
         private String mKey;
 
         private VideoCacheListener mListener;
@@ -167,14 +170,21 @@ public class VideoCache {
             File writeFile = null;
 
             try {
-                in = new URL(mUrl).openStream();
+                URL url = new URL(mUrl);
+                URLConnection connection = url.openConnection();
+                connection.connect();
+                in = connection.getInputStream();
                 writeFile = file[0];
                 buffer = new BufferedOutputStream(new FileOutputStream(writeFile));
                 byte byt[] = new byte[1024];
                 int i;
+                int total = 0;
+                int size = connection.getContentLength();
 
                 for (long l = 0L; (i = in.read(byt)) != -1; l += i) {
+                    total += i;
                     buffer.write(byt, 0, i);
+                    publishProgress(total, size);
                 }
 
                 buffer.flush();
@@ -187,6 +197,13 @@ public class VideoCache {
             } finally {
                 FileUtil.closeStream(in);
                 FileUtil.closeStream(buffer);
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            if (values != null && values.length == 2) {
+                if (mListener != null) mListener.onProgress(values[0], values[1]);
             }
         }
 

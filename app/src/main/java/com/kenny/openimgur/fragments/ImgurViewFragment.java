@@ -491,6 +491,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                             video.start();
                         }
                     }
+
+                    @Override
+                    public void onProgress(int downloaded, int total) {
+
+                    }
                 });
             }
         }
