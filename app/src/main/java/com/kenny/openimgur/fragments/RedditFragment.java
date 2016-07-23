@@ -98,7 +98,8 @@ public class RedditFragment extends BaseGridFragment {
         if (getAdapter() == null || getAdapter().isEmpty()) {
             mIsLoading = false;
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_EMPTY);
-            if (mListener != null) mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
+            if (mListener != null)
+                mListener.onFragmentStateChange(FragmentListener.STATE_LOADING_COMPLETE);
         }
     }
 
@@ -387,6 +388,7 @@ public class RedditFragment extends BaseGridFragment {
 
         ImgurService apiService = ApiClient.getService();
         String query = mQuery.replaceAll("\\s", "");
+        if (query.startsWith("r/")) query = query.replace("r/", "");
 
         if (mSort == RedditSort.TOP) {
             apiService.getSubRedditForTopSorted(query, mTopSort.getSort(), mCurrentPage).enqueue(this);
