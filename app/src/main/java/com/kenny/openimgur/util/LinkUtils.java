@@ -53,7 +53,7 @@ public class LinkUtils {
 
     public static final Pattern USER_CALLOUT_PATTERN = Pattern.compile("@\\w+");
 
-    public static final Pattern TOPIC_PATTERN = Pattern.compile("(?<=\\/topic\\/\\w{1,100}\\/)\\w+");
+    public static final Pattern TOPIC_PATTERN = Pattern.compile("(?<=/topic/\\w{1,100}/)\\w+");
 
 
     public enum LinkMatch {
