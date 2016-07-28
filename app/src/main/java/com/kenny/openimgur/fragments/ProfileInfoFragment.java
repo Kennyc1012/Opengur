@@ -200,15 +200,20 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
                     startActivity(intent);
                     break;
 
-                case IMAGE_URL:
-                    PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true, false)
-                            .show(getFragmentManager(), "popup");
-                    break;
 
                 case IMAGE_URL_QUERY:
                     int index = url.indexOf("?");
                     url = url.substring(0, index);
                     // Intentional fallthrough
+                case IMAGE_URL:
+                    boolean isDirectLink = LinkUtils.isDirectImageLink(url);
+                    if (!isDirectLink) {
+                        url = LinkUtils.getId(url);
+                    }
+
+                    getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(url, LinkUtils.isLinkAnimated(url), isDirectLink, false), "popup").commitAllowingStateLoss();
+                    break;
+
                 case DIRECT_LINK:
                     boolean isAnimated = LinkUtils.isLinkAnimated(url);
                     boolean isVideo = LinkUtils.isVideoLink(url);

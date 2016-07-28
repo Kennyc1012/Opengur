@@ -385,11 +385,17 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                     break;
 
                 case IMAGE_URL_QUERY:
+
                     int index = url.indexOf("?");
                     url = url.substring(0, index);
                     // Intentional fallthrough
                 case IMAGE_URL:
-                    getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(url, url.endsWith(".gif"), true, false), "popup").commitAllowingStateLoss();
+                    boolean isDirectLink = LinkUtils.isDirectImageLink(url);
+                    if (!isDirectLink) {
+                        url = LinkUtils.getId(url);
+                    }
+
+                    getFragmentManager().beginTransaction().add(PopupImageDialogFragment.getInstance(url, LinkUtils.isLinkAnimated(url), isDirectLink, false), "popup").commitAllowingStateLoss();
                     break;
 
                 case DIRECT_LINK:

@@ -19,6 +19,8 @@ public class LinkUtils {
     private static final String REGEX_IMGUR_IMAGE = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://" +
             "(m.imgur.com|imgur.com|i.imgur.com)/(?!=/)\\w+$";
 
+    private static final String REGEX_IMGUR_IMAGE_QUERY = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://(m.imgur.com|imgur.com|i.imgur.com)/(?!=/)\\w+\\?\\w+$";
+
     private static final String REGEX_IMGUR_GALLERY = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://" +
             "(m.imgur.com|imgur.com|i.imgur.com)/gallery/.+";
 
@@ -94,6 +96,8 @@ public class LinkUtils {
             } else if (url.matches(REGEX_IMGUR_USER_CALLOUT)) {
                 match = LinkMatch.USER_CALLOUT;
             } else if (url.matches(REGEX_IMAGE_URL_QUERY)) {
+                match = LinkMatch.IMAGE_URL_QUERY;
+            } else if (url.matches(REGEX_IMGUR_IMAGE_QUERY)) {
                 match = LinkMatch.IMAGE_URL_QUERY;
             } else if (url.matches(REGEX_IMGUR_TOPIC)) {
                 match = LinkMatch.TOPIC;
@@ -262,6 +266,21 @@ public class LinkUtils {
         if (TextUtils.isEmpty(url)) return false;
 
         return url.matches(REGEX_IMGUR_PHOTO_PNG);
+    }
+
+    /**
+     * Returns if the given url is a direct link to an image
+     *
+     * @param url
+     * @return
+     */
+    public static boolean isDirectImageLink(@Nullable String url) {
+        if (!TextUtils.isEmpty(url)) {
+            url = url.toLowerCase();
+            return url.endsWith(".jpg") || url.endsWith(".jpeg") || url.endsWith("png") || isLinkAnimated(url);
+        }
+
+        return false;
     }
 
     /**

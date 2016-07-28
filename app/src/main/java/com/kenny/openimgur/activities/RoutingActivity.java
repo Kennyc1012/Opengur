@@ -85,7 +85,19 @@ public class RoutingActivity extends BaseActivity {
             case IMAGE_URL_QUERY:
                 int index = link.indexOf("?");
                 link = link.substring(0, index);
-                // Intentional fallthrough
+                boolean isDirectLink = LinkUtils.isDirectImageLink(link);
+
+                if (!isDirectLink) {
+                    String extractedId = LinkUtils.getId(link);
+                    if (!TextUtils.isEmpty(extractedId)) {
+                        fetchImageDetails(extractedId);
+                        return;
+                    }
+                }else{
+                    routingIntent = FullScreenPhotoActivity.createIntent(getApplicationContext(), link);
+                }
+                break;
+
             case DIRECT_LINK:
                 routingIntent = FullScreenPhotoActivity.createIntent(getApplicationContext(), link);
                 break;
