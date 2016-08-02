@@ -144,12 +144,15 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
     @Override
     public void onClick(View v) {
         int adapterPosition = mGrid.getChildAdapterPosition(v);
-        UploadedPhoto photo = mAdapter.getItem(adapterPosition);
 
-        if (photo.isAlbum()) {
-            startActivity(ViewActivity.createIntent(getActivity(), photo.getUrl(), true));
-        } else {
-            startActivity(FullScreenPhotoActivity.createIntent(getActivity(), photo.getUrl()));
+        if (adapterPosition != RecyclerView.NO_POSITION) {
+            UploadedPhoto photo = mAdapter.getItem(adapterPosition);
+
+            if (photo.isAlbum()) {
+                startActivity(ViewActivity.createIntent(getActivity(), photo.getUrl(), true));
+            } else {
+                startActivity(FullScreenPhotoActivity.createIntent(getActivity(), photo.getUrl()));
+            }
         }
     }
 
