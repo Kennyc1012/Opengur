@@ -30,6 +30,9 @@ import android.widget.Toast;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.adapters.GalleryAdapter;
+import com.kenny.openimgur.api.ApiClient;
+import com.kenny.openimgur.api.responses.AlbumResponse;
+import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.collections.SetUniqueList;
@@ -45,6 +48,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by kcampagna on 6/2/15.
@@ -55,6 +61,8 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
     private static final String KEY_URL = "url";
 
     private static final String KEY_IMAGE = "image";
+
+    private static final String KEY_OBJECT = "object";
 
     private static final String KEY_START_POSITION = "start_position";
 
@@ -84,8 +92,13 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
         return new Intent(context, FullScreenPhotoActivity.class).putExtra(KEY_URL, url);
     }
 
-    public static Intent createIntent(@NonNull Context context, @NonNull ArrayList<ImgurPhoto> photos, int startingPosition) {
-        return new Intent(context, FullScreenPhotoActivity.class).putExtra(KEY_IMAGES, photos).putExtra(KEY_START_POSITION, startingPosition);
+    public static Intent createIntent(@NonNull Context context, @NonNull ArrayList<ImgurPhoto> photos, @NonNull ImgurBaseObject obj, int startingPosition) {
+        // Passing too many items in the intent might cause a crash
+        if (photos.size() > GalleryAdapter.MAX_ITEMS) {
+            return new Intent(context, FullScreenPhotoActivity.class).putExtra(KEY_OBJECT, obj).putExtra(KEY_START_POSITION, startingPosition);
+        } else {
+            return new Intent(context, FullScreenPhotoActivity.class).putExtra(KEY_IMAGES, photos).putExtra(KEY_START_POSITION, startingPosition);
+        }
     }
 
     @Override
@@ -93,7 +106,7 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
 
-        if ((intent == null && savedInstanceState == null) || (!intent.hasExtra(KEY_IMAGE) && !intent.hasExtra(KEY_URL) && !intent.hasExtra(KEY_IMAGES))) {
+        if (intent == null && savedInstanceState == null) {
             Toast.makeText(getApplicationContext(), R.string.error_generic, Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -150,7 +163,7 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
     @Override
     protected void onDestroy() {
         if (mHandler != null) mHandler.removeMessages(0);
-        if (mGrid.getAdapter() instanceof GalleryAdapter) ((GalleryAdapter) mGrid.getAdapter()).onDestroy();
+        if (mGrid != null && mGrid.getAdapter() instanceof GalleryAdapter) ((GalleryAdapter) mGrid.getAdapter()).onDestroy();
         super.onDestroy();
     }
 
@@ -243,6 +256,9 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
             } else if (intent.hasExtra(KEY_IMAGE)) {
                 photos = new ArrayList<>(1);
                 photos.add((ImgurPhoto) intent.getParcelableExtra(KEY_IMAGE));
+            } else if (intent.hasExtra(KEY_OBJECT)) {
+                loadObject((ImgurBaseObject) intent.getParcelableExtra(KEY_OBJECT), intent.getIntExtra(KEY_START_POSITION, 0));
+                return;
             } else {
                 photos = new ArrayList<>(1);
                 String url = intent.getStringExtra(KEY_URL);
@@ -252,6 +268,92 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
             startingPosition = intent.getIntExtra(KEY_START_POSITION, 0);
         }
 
+        setupPager(photos, startingPosition);
+    }
+
+    private boolean hasImmersiveMode() {
+        return isApiLevel(Build.VERSION_CODES.KITKAT) && app.getPreferences().getBoolean(SettingsActivity.KEY_IMMERSIVE_MODE, false);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_START_POSITION, mPager.getCurrentItem());
+        if (mAdapter != null) outState.putParcelableArrayList(KEY_IMAGES, mAdapter.retainItems());
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case RequestCodes.REQUEST_PERMISSION_WRITE:
+                if (PermissionUtils.verifyPermissions(grantResults)) {
+                    downloadAlbum();
+                } else {
+                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                break;
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mBottomSheetBehavior != null && (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED || mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            return;
+        }
+
+        int position = mPager != null ? mPager.getCurrentItem() : -1;
+        if (position >= 0) setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_POSITION, position));
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (mBottomSheetBehavior == null) return;
+
+        int adapterPosition = mGrid.getChildAdapterPosition(v);
+
+        if (adapterPosition != RecyclerView.NO_POSITION) {
+            mPager.setCurrentItem(adapterPosition);
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        }
+    }
+
+    private void loadObject(@Nullable ImgurBaseObject obj, final int startingPosition) {
+        if (obj == null) {
+            Toast.makeText(this, R.string.error_generic, Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        // Should be the case
+        if (obj instanceof ImgurAlbum) {
+            ApiClient.getService().getAlbumImages(obj.getId()).enqueue(new Callback<AlbumResponse>() {
+                @Override
+                public void onResponse(Call<AlbumResponse> call, Response<AlbumResponse> response) {
+                    if (response != null && response.body() != null && response.body().hasData()) {
+                        setupPager(response.body().data, startingPosition);
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.error_generic, Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AlbumResponse> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), R.string.error_generic, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
+        } else {
+            Toast.makeText(this, R.string.error_generic, Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
+    private void setupPager(@NonNull List<ImgurPhoto> photos, int startingPosition) {
         mAdapter = new FullScreenPagerAdapter(photos, getFragmentManager());
         mPager.setAdapter(mAdapter);
         mPager.setCurrentItem(startingPosition);
@@ -304,57 +406,6 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
         }
 
         supportInvalidateOptionsMenu();
-    }
-
-    private boolean hasImmersiveMode() {
-        return isApiLevel(Build.VERSION_CODES.KITKAT) && app.getPreferences().getBoolean(SettingsActivity.KEY_IMMERSIVE_MODE, false);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(KEY_START_POSITION, mPager.getCurrentItem());
-        if (mAdapter != null) outState.putParcelableArrayList(KEY_IMAGES, mAdapter.retainItems());
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case RequestCodes.REQUEST_PERMISSION_WRITE:
-                if (PermissionUtils.verifyPermissions(grantResults)) {
-                    downloadAlbum();
-                } else {
-                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                break;
-        }
-
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mBottomSheetBehavior != null && (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED || mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)) {
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            return;
-        }
-
-        int position = mPager != null ? mPager.getCurrentItem() : -1;
-        if (position >= 0) setResult(Activity.RESULT_OK, new Intent().putExtra(KEY_ENDING_POSITION, position));
-        super.onBackPressed();
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (mBottomSheetBehavior == null) return;
-
-        int adapterPosition = mGrid.getChildAdapterPosition(v);
-
-        if (adapterPosition != RecyclerView.NO_POSITION) {
-            mPager.setCurrentItem(adapterPosition);
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }
     }
 
     private static class FullScreenPagerAdapter extends FragmentStatePagerAdapter {

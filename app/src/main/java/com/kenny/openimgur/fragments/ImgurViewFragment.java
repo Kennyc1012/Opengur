@@ -336,7 +336,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
         // Adjust position for header
         final int position = mListView.getLayoutManager().getPosition(view) - 1;
-        startActivityForResult(FullScreenPhotoActivity.createIntent(getActivity(), mPhotoAdapter.retainItems(), position), RequestCodes.FULL_SCREEN_VIEW);
+        startActivityForResult(FullScreenPhotoActivity.createIntent(getActivity(), mPhotoAdapter.retainItems(), mImgurObject, position), RequestCodes.FULL_SCREEN_VIEW);
     }
 
     @Override
