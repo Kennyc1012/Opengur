@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -31,6 +32,7 @@ import android.view.ViewGroup;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.UploadEditActivity;
 import com.kenny.openimgur.adapters.UploadPhotoAdapter;
+import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.classes.UploadListener;
 import com.kenny.openimgur.util.FileUtil;
@@ -316,7 +318,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
 
         if (FileUtil.isFileValid(mTempFile)) {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTempFile));
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(getActivity(), OpengurApp.AUTHORITY, mTempFile));
             if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
                 startActivityForResult(intent, RequestCodes.TAKE_PHOTO);
             } else {
