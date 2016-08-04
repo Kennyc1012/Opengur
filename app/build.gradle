@@ -4,9 +4,9 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 project.ext {
     version_name = '4.6.0'
-    version_code = 82
+    version_code = 83
     support_version = '24.1.1'
-    beta_number = 2
+    beta_number = 3
 }
 
 repositories {
