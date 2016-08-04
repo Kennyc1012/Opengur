@@ -35,6 +35,7 @@ import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
+import com.kenny.openimgur.fragments.BaseGridFragment;
 import com.kenny.openimgur.fragments.GalleryFragment;
 import com.kenny.openimgur.fragments.MemeFragment;
 import com.kenny.openimgur.fragments.RandomFragment;
@@ -487,7 +488,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
                 Fragment fragment = getFragmentManager().findFragmentById(R.id.container);
 
-                if (fragment instanceof RedditFragment) {
+                if (fragment instanceof BaseGridFragment) {
                     fragment.onActivityResult(requestCode, resultCode, data);
                 }
                 break;

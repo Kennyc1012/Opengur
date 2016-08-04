@@ -145,14 +145,6 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     public void onResume() {
         super.onResume();
         GalleryAdapter adapter = getAdapter();
-        SharedPreferences pref = app.getPreferences();
-        boolean nsfwThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
-        mAllowNSFW = pref.getBoolean(SettingsActivity.NSFW_KEY, false);
-
-        if (adapter != null) {
-            adapter.setAllowNSFW(nsfwThumb);
-            adapter.setThumbnailQuality(pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY));
-        }
 
         if (adapter == null || adapter.isEmpty()) {
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
@@ -368,22 +360,38 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RequestCodes.GALLERY_VIEW && data != null && mAdapter != null) {
-            ImgurBaseObject obj = data.getParcelableExtra(ViewActivity.KEY_ENDING_ITEM);
+        switch (requestCode) {
+            case RequestCodes.GALLERY_VIEW:
+                if (data != null && mAdapter != null) {
+                    ImgurBaseObject obj = data.getParcelableExtra(ViewActivity.KEY_ENDING_ITEM);
 
-            if (obj != null) {
-                int adapterPosition = mAdapter.indexOf(obj);
-                if (adapterPosition >= 0) {
-                    if (mManager == null) mManager = (GridLayoutManager) mGrid.getLayoutManager();
-                    int visibleItemCount = mManager.getChildCount();
-                    int firstVisibleItemPosition = mManager.findFirstVisibleItemPosition();
+                    if (obj != null) {
+                        int adapterPosition = mAdapter.indexOf(obj);
+                        if (adapterPosition >= 0) {
+                            if (mManager == null) mManager = (GridLayoutManager) mGrid.getLayoutManager();
+                            int visibleItemCount = mManager.getChildCount();
+                            int firstVisibleItemPosition = mManager.findFirstVisibleItemPosition();
 
-                    // Update the grid to the item they ended on
-                    if (adapterPosition < firstVisibleItemPosition || adapterPosition > firstVisibleItemPosition + visibleItemCount) {
-                        mGrid.scrollToPosition(adapterPosition);
+                            // Update the grid to the item they ended on
+                            if (adapterPosition < firstVisibleItemPosition || adapterPosition > firstVisibleItemPosition + visibleItemCount) {
+                                mGrid.scrollToPosition(adapterPosition);
+                            }
+                        }
                     }
                 }
-            }
+                break;
+
+            case RequestCodes.SETTINGS:
+                GalleryAdapter adapter = getAdapter();
+
+                if (adapter != null) {
+                    SharedPreferences pref = app.getPreferences();
+                    boolean nsfwThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
+                    mAllowNSFW = pref.getBoolean(SettingsActivity.NSFW_KEY, false);
+                    adapter.setAllowNSFW(nsfwThumb);
+                    adapter.setThumbnailQuality(pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY));
+                }
+                break;
         }
     }
 }

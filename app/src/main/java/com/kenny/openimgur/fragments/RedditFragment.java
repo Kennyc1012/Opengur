@@ -33,6 +33,7 @@ import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
+import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
@@ -428,11 +429,13 @@ public class RedditFragment extends BaseGridFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // Reload pinned subreddits
 
-        mPinnedSubs.clear();
-        Set<String> pinned = app.getPreferences().getStringSet(KEY_PINNED_SUBREDDITS, null);
-        if (pinned != null) mPinnedSubs.addAll(pinned);
-        getActivity().invalidateOptionsMenu();
+        if (requestCode == RequestCodes.SETTINGS) {
+            // Reload pinned subreddits
+            mPinnedSubs.clear();
+            Set<String> pinned = app.getPreferences().getStringSet(KEY_PINNED_SUBREDDITS, null);
+            if (pinned != null) mPinnedSubs.addAll(pinned);
+            getActivity().invalidateOptionsMenu();
+        }
     }
 }
