@@ -343,7 +343,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
                         .setPositiveButton(R.string.beta_confirm, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://plus.google.com/u/0/communities/107476382114210885879"));
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/apps/testing/com.kennyc.open.imgur"));
 
                                 if (browserIntent.resolveActivity(getPackageManager()) != null) {
                                     startActivity(browserIntent);
