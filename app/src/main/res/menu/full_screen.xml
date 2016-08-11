@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/gallery_view"
+        android:title="@string/view_gallery"
+        android:icon="@drawable/ic_grid_white_24dp"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/download_album"
+        android:title="@string/download_album"
+        app:showAsAction="never" />
+</menu>
