@@ -222,12 +222,12 @@ public class LinkUtils {
         if (match.find()) {
             String found = match.group();
 
-            if(!TextUtils.isEmpty(found) && found.contains("/")){
+            if (!TextUtils.isEmpty(found) && found.contains("/")) {
                 String[] split = found.split("/");
-                String id=split[1];
+                String id = split[1];
                 LogUtil.v(TAG, "Topic Gallery Id " + id + " extracted from url " + url);
                 return id;
-            }  
+            }
         }
 
         return null;
