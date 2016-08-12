@@ -55,7 +55,7 @@ public class LinkUtils {
 
     public static final Pattern USER_CALLOUT_PATTERN = Pattern.compile("@\\w+");
 
-    public static final Pattern TOPIC_PATTERN = Pattern.compile("(?<=/topic/\\w{1,100}/)\\w+");
+    public static final Pattern TOPIC_PATTERN = Pattern.compile("(?<=/topic/)\\w+/\\w+$");
 
 
     public enum LinkMatch {
@@ -220,9 +220,14 @@ public class LinkUtils {
         Matcher match = TOPIC_PATTERN.matcher(url);
 
         if (match.find()) {
-            String id = match.group();
-            LogUtil.v(TAG, "Topic Gallery Id " + id + " extracted from url " + url);
-            return id;
+            String found = match.group();
+
+            if (!TextUtils.isEmpty(found) && found.contains("/")) {
+                String[] split = found.split("/");
+                String id = split[1];
+                LogUtil.v(TAG, "Topic Gallery Id " + id + " extracted from url " + url);
+                return id;
+            }
         }
 
         return null;
