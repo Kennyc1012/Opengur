@@ -1,4 +1,19 @@
 #Open Imgur Changelog
+<b>4.6.0</b> August 11, 2016
+- Support for Android Nougat (SDK 24)
+- Direct Reply for Android N
+- Gallery View for Full Screen Albums
+- Add data saver for fetching notifications and updating Muzei
+- Add Loading status to full screen view
+- Handle more links and fix some regex patterns
+- Remove AndroidSlidingPanel
+- Restructure files. Thanks [Jawnnypoo](https://github.com/Jawnnypoo)
+- Several crash/bug fixes and performance gains
+- Update Support Library V24.1.1
+- Update Build tools V24.0.1
+- Update Gradle V2.14.1
+- Update Gradle Plugin V2.2.0-beta1
+
 <b>4.5.3</b> June 2, 2016
 - Crash Fix
 
