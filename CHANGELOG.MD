@@ -1,4 +1,7 @@
 #Open Imgur Changelog
+<b>4.6.1</b> August 12, 2016
+- Link Crash Fix
+- 
 <b>4.6.0</b> August 11, 2016
 - Support for Android Nougat (SDK 24)
 - Direct Reply for Android N
