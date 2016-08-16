@@ -353,7 +353,13 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
         }
     }
 
-    private void setupPager(@NonNull List<ImgurPhoto> photos, int startingPosition) {
+    private void setupPager(@Nullable List<ImgurPhoto> photos, int startingPosition) {
+        if (photos == null) {
+            Toast.makeText(getApplicationContext(), R.string.error_generic, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         mAdapter = new FullScreenPagerAdapter(photos, getFragmentManager());
         mPager.setAdapter(mAdapter);
         mPager.setCurrentItem(startingPosition);

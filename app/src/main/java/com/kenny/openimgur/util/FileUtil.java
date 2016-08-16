@@ -38,7 +38,7 @@ public class FileUtil {
 
     public static final String EXTENSION_MP4 = ".mp4";
 
-    private static final String FOLDER_NAME = "OpenImgur";
+    private static final String FOLDER_NAME = "Opengur";
 
     /**
      * Saves a url to a given file

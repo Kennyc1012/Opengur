@@ -98,6 +98,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mAllowNSFW = app.getPreferences().getBoolean(SettingsActivity.NSFW_KEY, false);
         ViewUtils.setRecyclerViewGridDefaults(getActivity(), mGrid);
         imageLoader = ImageUtil.getImageLoader(getActivity());
 

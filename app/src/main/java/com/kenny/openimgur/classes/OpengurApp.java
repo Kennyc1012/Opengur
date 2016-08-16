@@ -206,7 +206,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
      * TODO Remove after several versions
      */
     private void migrateDownloadFolder() {
-        if (!mPref.getBoolean("migrated_downloads", false)) {
+        if (!mPref.getBoolean("migrated_downloads_v2", false)) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -223,7 +223,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
                         LogUtil.v(TAG, "Directory not found, nothing to do here");
                     }
 
-                    mPref.edit().putBoolean("migrated_downloads", true).apply();
+                    mPref.edit().putBoolean("migrated_downloads_v2", true).apply();
                 }
             }).start();
         }
