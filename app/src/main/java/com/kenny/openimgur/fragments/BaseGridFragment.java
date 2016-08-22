@@ -3,6 +3,7 @@ package com.kenny.openimgur.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -232,9 +233,15 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
         outState.putInt(KEY_CURRENT_PAGE, mCurrentPage);
         outState.putString(KEY_REQUEST_ID, mRequestId);
         outState.putBoolean(KEY_HAS_MORE, mHasMore);
+        GalleryAdapter adapter = getAdapter();
 
-        if (getAdapter() != null && !getAdapter().isEmpty()) {
-            outState.putParcelableArrayList(KEY_ITEMS, getAdapter().retainItems());
+        if (adapter != null && !adapter.isEmpty()) {
+            // Saving the entire adapter can cause a crash in N
+            if (isApiLevel(Build.VERSION_CODES.N) && adapter.getItemCount() > GalleryAdapter.MAX_ITEMS) {
+                return;
+            }
+
+            outState.putParcelableArrayList(KEY_ITEMS, adapter.retainItems());
             GridLayoutManager manager = (GridLayoutManager) mGrid.getLayoutManager();
             outState.putInt(KEY_CURRENT_POSITION, manager.findFirstVisibleItemPosition());
         }

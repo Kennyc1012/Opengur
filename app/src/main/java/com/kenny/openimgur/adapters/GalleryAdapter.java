@@ -28,7 +28,7 @@ import java.util.List;
 import butterknife.BindView;
 
 public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
-    public static final int MAX_ITEMS = 200;
+    public static final int MAX_ITEMS = 300;
 
     private int mUpvoteColor;
 
