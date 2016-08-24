@@ -1,4 +1,4 @@
-package com.kenny.openimgur.adapters;
+package com.kenny.openimgur.ui.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;

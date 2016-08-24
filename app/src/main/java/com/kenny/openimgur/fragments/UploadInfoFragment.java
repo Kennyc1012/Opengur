@@ -15,7 +15,7 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.TopicsAdapter;
+import com.kenny.openimgur.ui.adapters.TopicsAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.ImgurTopic;

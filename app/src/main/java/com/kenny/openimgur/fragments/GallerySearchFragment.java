@@ -10,7 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.SearchAdapter;
+import com.kenny.openimgur.ui.adapters.SearchAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;

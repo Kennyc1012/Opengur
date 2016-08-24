@@ -22,7 +22,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.MessagesAdapter;
+import com.kenny.openimgur.ui.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConversationResponse;
