@@ -30,15 +30,15 @@ public class ConvoAdapter extends BaseRecyclerAdapter<ImgurConvo> {
 
     public ConvoAdapter(Context context, List<ImgurConvo> convos, View.OnClickListener clickListener, View.OnLongClickListener longClickListener) {
         super(context, convos);
-        mCircleSize = mResources.getDimensionPixelSize(R.dimen.avatar_size);
+        mCircleSize = getDimension(R.dimen.avatar_size);
         mClickListener = clickListener;
         mLongClickListener = longClickListener;
-        mDividerColor = mIsDarkTheme ? getColor(R.color.primary_dark_light) : Color.BLACK;
+        mDividerColor = isDarkTheme ? getColor(R.color.primary_dark_light) : Color.BLACK;
     }
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.profile_comment_item, parent, false);
+        View view = inflateView(R.layout.profile_comment_item, parent);
         view.setOnLongClickListener(mLongClickListener);
         view.setOnClickListener(mClickListener);
         ConvoViewHolder holder = new ConvoViewHolder(view);

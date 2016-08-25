@@ -16,13 +16,13 @@ import android.view.View;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.SettingsActivity;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.collections.SetUniqueList;
+import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
@@ -397,7 +397,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
                     boolean nsfwThumb = pref.getBoolean(SettingsActivity.KEY_NSFW_THUMBNAILS, false);
                     mAllowNSFW = pref.getBoolean(SettingsActivity.NSFW_KEY, false);
                     adapter.setAllowNSFW(nsfwThumb);
-                    adapter.setThumbnailQuality(pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY));
+                    adapter.setThumbnailQuality(getActivity(), pref.getString(SettingsActivity.KEY_THUMBNAIL_QUALITY, ImgurPhoto.THUMBNAIL_GALLERY));
                 }
                 break;
         }

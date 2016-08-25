@@ -35,7 +35,7 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
     public ProfileCommentAdapter(Context context, List<ImgurComment> comments, View.OnClickListener listener) {
         super(context, comments, true);
         mClickListener = listener;
-        mDividerColor = mIsDarkTheme ? getColor(R.color.primary_dark_light) : Color.BLACK;
+        mDividerColor = isDarkTheme ? getColor(R.color.primary_dark_light) : Color.BLACK;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.profile_comment_item, parent, false);
+        View view = inflateView(R.layout.profile_comment_item, parent);
         view.setOnClickListener(mClickListener);
         CommentViewHolder holder = new CommentViewHolder(view);
         holder.divider.setBackgroundColor(mDividerColor);
@@ -70,7 +70,7 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         if (comment.isAlbumComment() && !TextUtils.isEmpty(comment.getAlbumCoverId())) {
             photoUrl = String.format(ImgurAlbum.ALBUM_COVER_URL, comment.getAlbumCoverId() + ImgurPhoto.THUMBNAIL_SMALL);
         } else {
-            photoUrl = ApiClient.IMGUR_URL+ comment.getImageId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
+            photoUrl = ApiClient.IMGUR_URL + comment.getImageId() + ImgurPhoto.THUMBNAIL_SMALL + ".jpeg";
         }
 
         displayImage(commentViewHolder.image, photoUrl);
@@ -90,7 +90,7 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         int points = (int) comment.getPoints();
 
         sb.append(" ")
-                .append(mResources.getQuantityString(R.plurals.points, points, points))
+                .append(getResources().getQuantityString(R.plurals.points, points, points))
                 .append(" : ")
                 .append(date);
 
@@ -109,7 +109,7 @@ public class ProfileCommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         long difference = System.currentTimeMillis() - commentDate;
 
         return (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) ?
-                mResources.getString(R.string.moments_ago) :
+                getResources().getString(R.string.moments_ago) :
                 DateUtils.getRelativeTimeSpanString(
                         commentDate,
                         now,

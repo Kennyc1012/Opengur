@@ -57,7 +57,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         mListener = listener;
         mGreenTextColor = getColor(R.color.notoriety_positive);
         mRedTextColor = getColor(R.color.notoriety_negative);
-        mCommentIndent = mResources.getDimensionPixelSize(R.dimen.comment_padding);
+        mCommentIndent = getDimension(R.dimen.comment_padding);
     }
 
     /**
@@ -77,7 +77,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final CommentViewHolder holder = new CommentViewHolder(mInflater.inflate(R.layout.comment_item, parent, false));
+        final CommentViewHolder holder = new CommentViewHolder(inflateView(R.layout.comment_item, parent));
         holder.comment.setMovementMethod(CustomLinkMovement.getInstance(mListener));
         holder.replies.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,7 +127,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
             commentHolder.author.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
         }
 
-        int bgColor = position == mSelectedIndex ? mResources.getColor(R.color.comment_bg_selected) : mResources.getColor(android.R.color.transparent);
+        int bgColor = position == mSelectedIndex ? getColor(R.color.comment_bg_selected) : getColor(android.R.color.transparent);
         commentHolder.itemView.setBackgroundColor(bgColor);
     }
 
@@ -143,7 +143,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         StringBuilder sb = new StringBuilder(author);
         boolean isOp = isOP(author);
         int spanLength = author.length();
-        String points = mResources.getQuantityString(R.plurals.points, (int) comment.getPoints(), comment.getPoints());
+        String points = getResources().getQuantityString(R.plurals.points, (int) comment.getPoints(), comment.getPoints());
         int scoreTextLength = points.length();
 
         if (isOp) {
@@ -170,7 +170,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
         long difference = System.currentTimeMillis() - commentDate;
 
         return (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) ?
-                mResources.getString(R.string.moments_ago) :
+                getString(R.string.moments_ago) :
                 DateUtils.getRelativeTimeSpanString(
                         commentDate,
                         now,

@@ -43,7 +43,7 @@ public class UploadAdapter extends BaseRecyclerAdapter<UploadedPhoto> {
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        UploadHolder holder = new UploadHolder(mInflater.inflate(R.layout.upload_item, parent, false));
+        UploadHolder holder = new UploadHolder(inflateView(R.layout.upload_item, parent));
         holder.itemView.setOnClickListener(mClickListener);
         holder.itemView.setOnLongClickListener(mLongClickListener);
         return holder;
