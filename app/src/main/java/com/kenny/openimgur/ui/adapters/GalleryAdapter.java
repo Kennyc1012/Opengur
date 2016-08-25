@@ -1,9 +1,10 @@
-package com.kenny.openimgur.adapters;
+package com.kenny.openimgur.ui.adapters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -28,7 +29,7 @@ import java.util.List;
 import butterknife.BindView;
 
 public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
-    public static final int MAX_ITEMS = 200;
+    public static final int MAX_ITEMS = 300;
 
     private int mUpvoteColor;
 
@@ -94,7 +95,7 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.gallery_item, parent, false);
+        View view = inflateView(R.layout.gallery_item, parent);
         view.setOnClickListener(mClickListener);
         view.setOnLongClickListener(mLongClickListener);
         return new GalleryHolder(view);
@@ -125,7 +126,7 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
             if (photoObject.isAnimated()) {
                 galleryHolder.itemType.setVisibility(View.VISIBLE);
                 galleryHolder.itemType.setImageResource(R.drawable.ic_gif_24dp);
-                galleryHolder.itemType.setBackgroundColor(mResources.getColor(R.color.black_55));
+                galleryHolder.itemType.setBackgroundColor(getColor(R.color.black_55));
             } else {
                 galleryHolder.itemType.setVisibility(View.GONE);
             }
@@ -190,7 +191,7 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
 
         if (mShowPoints) {
             int totalPoints = obj.getUpVotes() - obj.getDownVotes();
-            galleryHolder.score.setText(mResources.getQuantityString(R.plurals.points, totalPoints, totalPoints));
+            galleryHolder.score.setText(getResources().getQuantityString(R.plurals.points, totalPoints, totalPoints));
             galleryHolder.score.setVisibility(View.VISIBLE);
         } else {
             galleryHolder.score.setVisibility(View.GONE);
@@ -208,8 +209,8 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
     @Override
     protected DisplayImageOptions getDisplayOptions() {
         // The drawable CAN NOT be Vectors as they do not get converted to bitmap on decoding
-        int drawableRes = mIsDarkTheme ? R.drawable.ic_broken_image_white_48dp : R.drawable.ic_broken_image_black_48dp;
-        CenteredDrawable dr = new CenteredDrawable(BitmapFactory.decodeResource(mResources, drawableRes));
+        int drawableRes = isDarkTheme ? R.drawable.ic_broken_image_white_48dp : R.drawable.ic_broken_image_black_48dp;
+        CenteredDrawable dr = new CenteredDrawable(BitmapFactory.decodeResource(getResources(), drawableRes));
         return ImageUtil.getDisplayOptionsForGallery().showImageOnFail(dr).build();
     }
 
@@ -220,11 +221,11 @@ public class GalleryAdapter extends BaseRecyclerAdapter<ImgurBaseObject> {
         }
     }
 
-    public void setThumbnailQuality(String quality) {
+    public void setThumbnailQuality(@NonNull Context context, String quality) {
         if (!mThumbnailQuality.equals(quality)) {
             LogUtil.v(TAG, "Updating thumbnail quality to " + quality);
             // Clear any memory cache we may have for the new thumbnail
-            mImageLoader.clearMemoryCache();
+            ImageUtil.getImageLoader(context).clearMemoryCache();
             mThumbnailQuality = quality;
             notifyDataSetChanged();
         }

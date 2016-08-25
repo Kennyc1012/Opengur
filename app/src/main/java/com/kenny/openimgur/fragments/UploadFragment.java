@@ -31,7 +31,7 @@ import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.UploadEditActivity;
-import com.kenny.openimgur.adapters.UploadPhotoAdapter;
+import com.kenny.openimgur.ui.adapters.UploadPhotoAdapter;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.classes.UploadListener;

@@ -26,7 +26,7 @@ import android.widget.TextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.adapters.UploadAdapter;
+import com.kenny.openimgur.ui.adapters.UploadAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.BasicResponse;

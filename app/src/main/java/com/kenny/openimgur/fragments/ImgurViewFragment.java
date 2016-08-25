@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,7 +32,8 @@ import android.widget.ProgressBar;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ProfileActivity;
-import com.kenny.openimgur.adapters.PhotoAdapter;
+import com.kenny.openimgur.ui.adapters.GalleryAdapter;
+import com.kenny.openimgur.ui.adapters.PhotoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
@@ -515,6 +517,10 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         super.onSaveInstanceState(outState);
 
         if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
+            if (isApiLevel(Build.VERSION_CODES.N) && mPhotoAdapter.getItemCount() > GalleryAdapter.MAX_ITEMS) {
+                return;
+            }
+
             outState.putParcelableArrayList(KEY_ITEMS, mPhotoAdapter.retainItems());
         }
 

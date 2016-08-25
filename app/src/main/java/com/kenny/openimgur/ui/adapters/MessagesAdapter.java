@@ -1,4 +1,4 @@
-package com.kenny.openimgur.adapters;
+package com.kenny.openimgur.ui.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -40,14 +40,14 @@ public class MessagesAdapter extends BaseRecyclerAdapter<ImgurMessage> {
     public MessagesAdapter(Context context, int userColor, List<ImgurMessage> messages, ImgurListener listener) {
         super(context, messages);
         mUserId = OpengurApp.getInstance(context).getUser().getId();
-        mMargin = (int) (mResources.getDisplayMetrics().widthPixels * .25);
+        mMargin = (int) (getResources().getDisplayMetrics().widthPixels * .25);
         mListener = listener;
         mUserColor = userColor;
     }
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        MessagesViewHolder holder = new MessagesViewHolder(mInflater.inflate(R.layout.convo_message, parent, false));
+        MessagesViewHolder holder = new MessagesViewHolder(inflateView(R.layout.convo_message, parent));
         holder.message.setMovementMethod(CustomLinkMovement.getInstance(mListener));
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) holder.container.getLayoutParams();
 
@@ -100,7 +100,7 @@ public class MessagesAdapter extends BaseRecyclerAdapter<ImgurMessage> {
         long difference = System.currentTimeMillis() - commentDate;
 
         return (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) ?
-                mResources.getString(R.string.moments_ago) :
+                getString(R.string.moments_ago) :
                 DateUtils.getRelativeTimeSpanString(
                         commentDate,
                         now,

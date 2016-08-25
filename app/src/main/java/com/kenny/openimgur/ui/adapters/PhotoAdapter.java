@@ -1,4 +1,4 @@
-package com.kenny.openimgur.adapters;
+package com.kenny.openimgur.ui.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -74,9 +74,9 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
         BaseViewHolder holder;
 
         if (viewType == VIEW_HEADER) {
-            holder = new PhotoTitleHolder(mInflater.inflate(R.layout.image_header, parent, false));
+            holder = new PhotoTitleHolder(inflateView(R.layout.image_header, parent));
         } else {
-            holder = new PhotoViewHolder(mInflater.inflate(R.layout.view_photo_item, parent, false));
+            holder = new PhotoViewHolder(inflateView(R.layout.view_photo_item, parent));
             setClickListener((PhotoViewHolder) holder);
             holder.itemView.setTag(holder);
         }
@@ -104,7 +104,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
 
             int totalPoints = mImgurObject.getDownVotes() + mImgurObject.getUpVotes();
             int votePoints = mImgurObject.getUpVotes() - mImgurObject.getDownVotes();
-            titleHolder.points.setText(mResources.getQuantityString(R.plurals.points, votePoints, votePoints));
+            titleHolder.points.setText(getResources().getQuantityString(R.plurals.points, votePoints, votePoints));
             titleHolder.pointsBar.setPoints(mImgurObject.getUpVotes(), totalPoints);
 
             if (mImgurObject.isFavorited() || ImgurBaseObject.VOTE_UP.equals(mImgurObject.getVote())) {
@@ -119,10 +119,10 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
                 StringBuilder builder = new StringBuilder();
 
                 // Tag icon is already dark themed
-                if (mIsDarkTheme) {
-                    tagDrawable = ResourcesCompat.getDrawable(mResources, R.drawable.ic_action_tag_16dp, null);
+                if (isDarkTheme) {
+                    tagDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_tag_16dp, null);
                 } else {
-                    tagDrawable = ImageUtil.tintDrawable(R.drawable.ic_action_tag_16dp, mResources, Color.BLACK);
+                    tagDrawable = ImageUtil.tintDrawable(R.drawable.ic_action_tag_16dp, getResources(), Color.BLACK);
                 }
 
                 for (int i = 0; i < size; i++) {
@@ -296,7 +296,7 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
             long difference = System.currentTimeMillis() - commentDate;
 
             if (difference >= 0 && difference <= DateUtils.MINUTE_IN_MILLIS) {
-                sb.append(mResources.getString(R.string.moments_ago));
+                sb.append(getString(R.string.moments_ago));
             } else {
                 sb.append(DateUtils.getRelativeTimeSpanString(
                         commentDate,

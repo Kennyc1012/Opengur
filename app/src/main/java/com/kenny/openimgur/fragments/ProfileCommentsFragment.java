@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.adapters.ProfileCommentAdapter;
+import com.kenny.openimgur.ui.adapters.ProfileCommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.classes.ImgurComment;

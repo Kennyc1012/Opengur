@@ -17,7 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.adapters.NotificationAdapter;
+import com.kenny.openimgur.ui.adapters.NotificationAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.NotificationResponse;

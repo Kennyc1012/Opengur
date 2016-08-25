@@ -1,4 +1,4 @@
-package com.kenny.openimgur.adapters;
+package com.kenny.openimgur.ui.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -45,7 +45,7 @@ public class ProfileInfoAdapter extends BaseRecyclerAdapter<ImgurTrophy> {
         super(context, trophies, true);
         mUser = user;
         mListener = listener;
-        mDividerColor = mIsDarkTheme ? getColor(R.color.primary_dark_light) : Color.BLACK;
+        mDividerColor = isDarkTheme ? getColor(R.color.primary_dark_light) : Color.BLACK;
     }
 
     @Override
@@ -59,12 +59,12 @@ public class ProfileInfoAdapter extends BaseRecyclerAdapter<ImgurTrophy> {
 
         switch (viewType) {
             case VIEW_TYPE_HEADER:
-                holder = new InfoHolder(mInflater.inflate(R.layout.profile_info_header, parent, false));
+                holder = new InfoHolder(inflateView(R.layout.profile_info_header, parent));
                 break;
 
             case VIEW_TYPE_TROPHY:
             default:
-                holder = new TrophyHolder(mInflater.inflate(R.layout.trophy_item, parent, false));
+                holder = new TrophyHolder(inflateView(R.layout.trophy_item, parent));
                 ((TrophyHolder) holder).divider.setBackgroundColor(mDividerColor);
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -85,8 +85,8 @@ public class ProfileInfoAdapter extends BaseRecyclerAdapter<ImgurTrophy> {
             String dateFormat = mDateFormat.format(new Date(mUser.getCreated()));
             infoHolder.notoriety.setText(mUser.getNotoriety().getStringId());
             infoHolder.notoriety.setTextColor(getColor(mUser.getNotoriety().getNotorietyColor()));
-            infoHolder.rep.setText(mResources.getString(R.string.profile_rep, mUser.getReputation()));
-            infoHolder.date.setText(mResources.getString(R.string.profile_date, dateFormat));
+            infoHolder.rep.setText(getResources().getString(R.string.profile_rep, mUser.getReputation()));
+            infoHolder.date.setText(getResources().getString(R.string.profile_date, dateFormat));
 
             if (!TextUtils.isEmpty(mUser.getBio())) {
                 infoHolder.bio.setText(mUser.getBio());
@@ -96,7 +96,7 @@ public class ProfileInfoAdapter extends BaseRecyclerAdapter<ImgurTrophy> {
                     Linkify.addLinks(infoHolder.bio, Linkify.WEB_URLS);
                 }
             } else {
-                infoHolder.bio.setText(mResources.getString(R.string.profile_bio_empty, mUser.getUsername()));
+                infoHolder.bio.setText(getResources().getString(R.string.profile_bio_empty, mUser.getUsername()));
             }
         } else if (holder instanceof TrophyHolder) {
             TrophyHolder trophyHolder = (TrophyHolder) holder;

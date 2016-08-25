@@ -3,8 +3,8 @@ apply plugin: 'io.fabric'
 apply plugin: 'com.neenbedankt.android-apt'
 
 project.ext {
-    version_name = '4.6.2'
-    version_code = 86
+    version_name = '4.6.3'
+    version_code = 87
     support_version = '24.1.1'
     beta_number = 1
 }
@@ -82,6 +82,9 @@ dependencies {
     compile 'com.github.Kennyc1012:MultiStateView:1.2.0'
     compile 'com.github.Kennyc1012:BottomSheet:2.3.1'
     compile 'com.github.Kennyc1012:TextDrawable:1.1'
+    compile("com.github.Kennyc1012:CommonAdapters:1.0") {
+        exclude group: 'com.android.support'
+    }
     compile 'com.pacioianu.david:ink-page-indicator:1.2.0'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'
     compile 'com.github.Kennyc1012:ColorChooser:0.3.0:standardRelease@aar'

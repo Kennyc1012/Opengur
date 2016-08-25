@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
-import com.kenny.openimgur.adapters.ConvoAdapter;
+import com.kenny.openimgur.ui.adapters.ConvoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
