@@ -1,5 +1,5 @@
 #Open Imgur Changelog
-<b>4.6.2</b> August, 25, 2016
+<b>4.6.3</b> August, 25, 2016
 - Fix TransactionToLargeException on N
 - Use CommonAdapters
 - Update Gradle Wrapper V2.2.0-beta3
