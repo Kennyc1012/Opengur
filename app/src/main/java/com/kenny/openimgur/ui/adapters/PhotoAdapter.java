@@ -55,8 +55,8 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
      */
     @Override
     public void onDestroy() {
-        clear();
         mListener = null;
+        super.onDestroy();
     }
 
     @Override

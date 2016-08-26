@@ -300,12 +300,12 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     @Override
     public void onDestroyView() {
+        super.onDestroyView();
+
         if (mPhotoAdapter != null) {
             mPhotoAdapter.onDestroy();
             mPhotoAdapter = null;
         }
-
-        super.onDestroyView();
     }
 
     @Override
@@ -521,7 +521,12 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
                 return;
             }
 
-            outState.putParcelableArrayList(KEY_ITEMS, mPhotoAdapter.retainItems());
+            try {
+                outState.putParcelableArrayList(KEY_ITEMS, mPhotoAdapter.retainItems());
+            } catch (NullPointerException npe) {
+                // This shouldn't be crashing, but for some reason is, need to figure out why
+                LogUtil.e(TAG, "NPE while saving state", npe);
+            }
         }
 
         outState.putBoolean(KEY_DISPLAY_TAGS, mDisplayTags);
