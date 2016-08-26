@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.ui.adapters.MessagesAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConversationResponse;
@@ -32,6 +31,7 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurMessage;
 import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.ui.VideoView;
+import com.kenny.openimgur.ui.adapters.MessagesAdapter;
 import com.kenny.openimgur.util.ColorUtils;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
@@ -64,19 +64,19 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
     @BindView(R.id.messageInput)
     EditText mMessageInput;
 
-    private ImgurConvo mConvo;
+    ImgurConvo mConvo;
 
-    private MessagesAdapter mAdapter;
+    MessagesAdapter mAdapter;
 
-    private boolean mHasMore = true;
+    boolean mHasMore = true;
 
-    private boolean mIsLoading = false;
+    boolean mIsLoading = false;
 
-    private boolean mHasScrolledInitially = false;
+    boolean mHasScrolledInitially = false;
 
-    private int mCurrentPage = 1;
+    int mCurrentPage = 1;
 
-    private LinearLayoutManager mLayoutManager;
+    LinearLayoutManager mLayoutManager;
 
     public static Intent createIntent(Context context, @NonNull ImgurConvo convo) {
         return new Intent(context, ConvoThreadActivity.class).putExtra(KEY_CONVO, convo);
@@ -188,7 +188,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
         super.onDestroy();
     }
 
-    private void fetchMessages() {
+    void fetchMessages() {
         // Having an id of -1 means that they are starting the convo from the Info fragment where an id is not known
         if (mConvo.getId().equals("-1")) {
             onEmpty();
@@ -345,7 +345,7 @@ public class ConvoThreadActivity extends BaseActivity implements ImgurListener {
                 }).show();
     }
 
-    private void onEmpty() {
+    void onEmpty() {
         mHasMore = false;
 
         if (mAdapter == null || mAdapter.isEmpty()) {

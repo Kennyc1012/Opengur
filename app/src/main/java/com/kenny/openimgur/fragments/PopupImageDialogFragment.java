@@ -59,9 +59,9 @@ public class PopupImageDialogFragment extends DialogFragment implements VideoCac
     @BindView(R.id.video)
     VideoView mVideo;
 
-    private String mImageUrl;
+    String mImageUrl;
 
-    private Unbinder mUnbinder;
+    Unbinder mUnbinder;
 
     public static PopupImageDialogFragment getInstance(String url, boolean isAnimated, boolean isDirectLink, boolean isVideo) {
         PopupImageDialogFragment fragment = new PopupImageDialogFragment();

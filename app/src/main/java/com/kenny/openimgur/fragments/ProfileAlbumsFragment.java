@@ -15,12 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
@@ -142,7 +142,7 @@ public class ProfileAlbumsFragment extends BaseGridFragment implements View.OnLo
         }
     }
 
-    private void deleteAlbum(final ImgurBaseObject album) {
+    void deleteAlbum(final ImgurBaseObject album) {
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
 
         ApiClient.getService().deleteAlbum(album.getDeleteHash()).enqueue(new Callback<BasicResponse>() {

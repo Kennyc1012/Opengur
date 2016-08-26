@@ -31,7 +31,7 @@ public class UploadedPhoto implements Parcelable {
         mIsAlbum = cursor.getInt(DBContracts.UploadContract.COLUMN_INDEX_IS_ALBUM) == 1;
     }
 
-    private UploadedPhoto(Parcel in) {
+    UploadedPhoto(Parcel in) {
         mId = in.readInt();
         mUrl = in.readString();
         mDeleteHash = in.readString();

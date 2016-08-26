@@ -82,7 +82,7 @@ public abstract class BaseGridFragment extends BaseFragment implements Callback<
 
     private GalleryAdapter mAdapter;
 
-    private ImageLoader imageLoader;
+    ImageLoader imageLoader;
 
     @Override
     public void onAttach(Activity activity) {

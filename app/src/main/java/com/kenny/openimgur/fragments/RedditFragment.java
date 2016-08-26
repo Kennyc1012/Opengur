@@ -24,13 +24,13 @@ import android.widget.Button;
 import android.widget.FilterQueryProvider;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.ui.adapters.SearchAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurFilters.RedditSort;
+import com.kenny.openimgur.ui.adapters.SearchAdapter;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
@@ -62,13 +62,13 @@ public class RedditFragment extends BaseGridFragment {
     @BindView(R.id.mySubreddits)
     Button mMySubredditsBtn;
 
-    private String mQuery;
+    String mQuery;
 
     private RedditSort mSort;
 
     private ImgurFilters.TimeSort mTopSort;
 
-    private SearchAdapter mCursorAdapter;
+    SearchAdapter mCursorAdapter;
 
     private MenuItem mSearchMenuItem;
 
@@ -249,7 +249,7 @@ public class RedditFragment extends BaseGridFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean search(String query) {
+    boolean search(String query) {
         if (!mIsLoading && !TextUtils.isEmpty(query)) {
             if (getAdapter() != null) {
                 getAdapter().clear();
@@ -298,7 +298,7 @@ public class RedditFragment extends BaseGridFragment {
                 .show();
     }
 
-    private void onFilterChanged(RedditSort sort, ImgurFilters.TimeSort topSort) {
+    void onFilterChanged(RedditSort sort, ImgurFilters.TimeSort topSort) {
         if (sort == mSort && topSort == mTopSort) {
             // Don't fetch data if they haven't changed anything
             LogUtil.v(TAG, "Filters have not been updated");

@@ -21,7 +21,7 @@ public class ImgurTag implements Parcelable {
     @SerializedName("downs")
     private int mDownVotes;
 
-    private ImgurTag(Parcel in) {
+    ImgurTag(Parcel in) {
         mName = in.readString();
         mAuthor = in.readString();
         mUpVotes = in.readInt();

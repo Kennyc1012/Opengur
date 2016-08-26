@@ -18,7 +18,7 @@ public class Upload implements Parcelable {
 
     private boolean mIsLink;
 
-    private Upload(Parcel in) {
+    Upload(Parcel in) {
         mLocation = in.readString();
         mUploadedLink = in.readString();
         mTitle = in.readString();

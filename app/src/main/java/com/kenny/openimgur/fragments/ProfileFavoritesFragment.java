@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.BasicResponse;
@@ -23,6 +22,7 @@ import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
@@ -39,7 +39,7 @@ import retrofit2.Response;
 public class ProfileFavoritesFragment extends BaseGridFragment implements View.OnLongClickListener {
     private static final String KEY_USER = "user";
 
-    private ImgurUser mSelectedUser;
+    ImgurUser mSelectedUser;
 
     public static ProfileFavoritesFragment newInstance(@NonNull ImgurUser user) {
         ProfileFavoritesFragment fragment = new ProfileFavoritesFragment();
@@ -156,7 +156,7 @@ public class ProfileFavoritesFragment extends BaseGridFragment implements View.O
         }
     }
 
-    private void removeFavorite(final ImgurBaseObject object) {
+    void removeFavorite(final ImgurBaseObject object) {
         String id = object.getId();
         Call<BasicResponse> call;
 

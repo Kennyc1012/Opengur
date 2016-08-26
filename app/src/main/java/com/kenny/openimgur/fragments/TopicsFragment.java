@@ -14,13 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.TopicResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurFilters;
 import com.kenny.openimgur.classes.ImgurTopic;
+import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
@@ -44,7 +44,7 @@ public class TopicsFragment extends BaseGridFragment {
 
     private static final String KEY_TOPIC = "topics_topic";
 
-    private ImgurTopic mTopic;
+    ImgurTopic mTopic;
 
     private ImgurFilters.GallerySort mSort = ImgurFilters.GallerySort.TIME;
 
@@ -132,7 +132,7 @@ public class TopicsFragment extends BaseGridFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void onFilterChange(ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort) {
+    void onFilterChange(ImgurFilters.GallerySort sort, ImgurFilters.TimeSort timeSort) {
         if (sort == mSort && mTimeSort == timeSort) {
             LogUtil.v(TAG, "Filters have not been updated");
             return;

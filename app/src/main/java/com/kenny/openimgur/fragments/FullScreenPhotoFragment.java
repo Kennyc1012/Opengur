@@ -83,15 +83,15 @@ public class FullScreenPhotoFragment extends BaseFragment {
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
-    private ImgurPhoto photo;
+    ImgurPhoto photo;
 
-    private String url;
+    String url;
 
-    private boolean startedToLoad = false;
+    boolean startedToLoad = false;
 
-    private PhotoHandler handler = new PhotoHandler();
+    PhotoHandler handler = new PhotoHandler();
 
-    private boolean replacedPNG = false;
+    boolean replacedPNG = false;
 
     public static FullScreenPhotoFragment createInstance(@NonNull ImgurPhoto photo) {
         FullScreenPhotoFragment fragment = new FullScreenPhotoFragment();
@@ -171,7 +171,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
     /**
      * Displays the image
      */
-    private void displayImage() {
+    void displayImage() {
         if (!replacedPNG && LinkUtils.isImgurPNG(url)) {
             replacedPNG = true;
             LogUtil.v(TAG, "Replacing png link with jpeg");
@@ -255,7 +255,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
         }
     }
 
-    private void displayGif(String url) {
+    void displayGif(String url) {
         // Display our gif in a standard image view
 
         if (getUserVisibleHint()) {
@@ -380,7 +380,7 @@ public class FullScreenPhotoFragment extends BaseFragment {
         }
     }
 
-    private class PhotoHandler extends ImgurHandler {
+    class PhotoHandler extends ImgurHandler {
         @Override
         public void handleMessage(Message msg) {
             if (getUserVisibleHint() && !startedToLoad && gifImageView != null && LinkUtils.isLinkAnimated(url) && !LinkUtils.isVideoLink(url)) {

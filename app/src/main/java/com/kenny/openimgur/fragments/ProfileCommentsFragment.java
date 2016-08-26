@@ -17,12 +17,12 @@ import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.ui.adapters.ProfileCommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.CommentResponse;
 import com.kenny.openimgur.classes.ImgurComment;
 import com.kenny.openimgur.classes.ImgurFilters.CommentSort;
 import com.kenny.openimgur.classes.ImgurUser;
+import com.kenny.openimgur.ui.adapters.ProfileCommentAdapter;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
@@ -54,19 +54,19 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
     @BindView(R.id.commentList)
     RecyclerView mCommentList;
 
-    private int mPage = 0;
+    int mPage = 0;
 
-    private boolean mHasMore = true;
+    boolean mHasMore = true;
 
-    private boolean mIsLoading = false;
+    boolean mIsLoading = false;
 
-    private ImgurUser mSelectedUser;
+    ImgurUser mSelectedUser;
 
-    private ProfileCommentAdapter mAdapter;
+    ProfileCommentAdapter mAdapter;
 
-    private CommentSort mSort;
+    CommentSort mSort;
 
-    private LinearLayoutManager mManager;
+    LinearLayoutManager mManager;
 
     public static Fragment createInstance(@NonNull ImgurUser user) {
         ProfileCommentsFragment fragment = new ProfileCommentsFragment();
@@ -186,7 +186,7 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
         }
     }
 
-    private void fetchComments() {
+    void fetchComments() {
         mIsLoading = true;
         ApiClient.getService().getProfileComments(mSelectedUser.getUsername(), mSort.getSort(), mPage).enqueue(new Callback<CommentResponse>() {
             @Override

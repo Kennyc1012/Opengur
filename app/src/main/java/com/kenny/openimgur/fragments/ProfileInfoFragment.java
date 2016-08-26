@@ -56,9 +56,9 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     @BindView(R.id.container)
     MultiStateView mMultiStateView;
 
-    private ProfileInfoAdapter mAdapter;
+    ProfileInfoAdapter mAdapter;
 
-    private ImgurUser mSelectedUser;
+    ImgurUser mSelectedUser;
 
     public static ProfileInfoFragment createInstance(@NonNull ImgurUser user) {
         ProfileInfoFragment fragment = new ProfileInfoFragment();

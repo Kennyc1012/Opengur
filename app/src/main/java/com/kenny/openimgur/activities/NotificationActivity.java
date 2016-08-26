@@ -17,12 +17,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.ui.adapters.NotificationAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurNotification;
+import com.kenny.openimgur.ui.adapters.NotificationAdapter;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
@@ -53,9 +53,9 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
     @BindView(R.id.list)
     RecyclerView mList;
 
-    private NotificationAdapter mAdapter;
+    NotificationAdapter mAdapter;
 
-    private ActionMode mMode;
+    ActionMode mMode;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, NotificationActivity.class);
@@ -291,7 +291,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
         }
     }
 
-    private void markNotificationsRead() {
+    void markNotificationsRead() {
         SqlHelper sql = SqlHelper.getInstance(getApplicationContext());
         String ids = sql.getNotificationIds();
 

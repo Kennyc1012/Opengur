@@ -26,12 +26,12 @@ import android.widget.TextView;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.ui.adapters.UploadAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.UploadedPhoto;
+import com.kenny.openimgur.ui.adapters.UploadAdapter;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
 import com.kenny.openimgur.util.ViewUtils;
@@ -57,9 +57,9 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
     @BindView(R.id.refreshLayout)
     protected SwipeRefreshLayout mRefreshLayout;
 
-    private FragmentListener mListener;
+    FragmentListener mListener;
 
-    private UploadAdapter mAdapter;
+    UploadAdapter mAdapter;
 
     public static Fragment createInstance() {
         return new UploadedPhotosFragment();
@@ -210,7 +210,7 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
         return true;
     }
 
-    private void deleteItem(@NonNull UploadedPhoto photo) {
+    void deleteItem(@NonNull UploadedPhoto photo) {
         ImgurService apiService = ApiClient.getService();
         Call<BasicResponse> call;
 
@@ -237,7 +237,7 @@ public class UploadedPhotosFragment extends BaseFragment implements View.OnClick
         });
     }
 
-    private void refresh() {
+    void refresh() {
         if (mAdapter != null) mAdapter.clear();
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_LOADING);
         List<UploadedPhoto> photos = SqlHelper.getInstance(getActivity()).getUploadedPhotos();

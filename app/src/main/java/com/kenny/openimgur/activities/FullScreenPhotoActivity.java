@@ -29,7 +29,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.classes.ImgurAlbum;
@@ -39,6 +38,7 @@ import com.kenny.openimgur.collections.SetUniqueList;
 import com.kenny.openimgur.fragments.FullScreenPhotoFragment;
 import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.ViewPager;
+import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
@@ -74,15 +74,15 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
     @BindView(R.id.grid)
     RecyclerView mGrid;
 
-    private View mDecorView;
+    View mDecorView;
 
-    private FullScreenPagerAdapter mAdapter;
-
-    @Nullable
-    private VisibilityHandler mHandler;
+    FullScreenPagerAdapter mAdapter;
 
     @Nullable
-    private BottomSheetBehavior mBottomSheetBehavior;
+    VisibilityHandler mHandler;
+
+    @Nullable
+    BottomSheetBehavior mBottomSheetBehavior;
 
     public static Intent createIntent(@NonNull Context context, @NonNull ImgurPhoto photo) {
         return new Intent(context, FullScreenPhotoActivity.class).putExtra(KEY_IMAGE, photo);
@@ -353,7 +353,7 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
         }
     }
 
-    private void setupPager(@Nullable List<ImgurPhoto> photos, int startingPosition) {
+    void setupPager(@Nullable List<ImgurPhoto> photos, int startingPosition) {
         if (photos == null) {
             Toast.makeText(getApplicationContext(), R.string.error_generic, Toast.LENGTH_SHORT).show();
             finish();
@@ -415,7 +415,7 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
     }
 
     private static class FullScreenPagerAdapter extends FragmentStatePagerAdapter {
-        private List<ImgurPhoto> mPhotos;
+        List<ImgurPhoto> mPhotos;
 
         public FullScreenPagerAdapter(List<ImgurPhoto> photos, FragmentManager fm) {
             super(fm);
@@ -437,7 +437,7 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
         }
     }
 
-    private static class VisibilityHandler extends Handler {
+    static class VisibilityHandler extends Handler {
         public static final long HIDE_DELAY = DateUtils.SECOND_IN_MILLIS * 3;
 
         @Override

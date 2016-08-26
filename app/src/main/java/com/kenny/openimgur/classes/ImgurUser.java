@@ -152,7 +152,7 @@ public class ImgurUser implements Parcelable {
         }
     }
 
-    private ImgurUser(Parcel in) {
+    ImgurUser(Parcel in) {
         mUsername = in.readString();
         mBio = in.readString();
         mAccessToken = in.readString();

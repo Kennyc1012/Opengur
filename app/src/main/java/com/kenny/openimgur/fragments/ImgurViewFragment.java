@@ -32,8 +32,6 @@ import android.widget.ProgressBar;
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.FullScreenPhotoActivity;
 import com.kenny.openimgur.activities.ProfileActivity;
-import com.kenny.openimgur.ui.adapters.GalleryAdapter;
-import com.kenny.openimgur.ui.adapters.PhotoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
@@ -47,6 +45,8 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.VideoView;
+import com.kenny.openimgur.ui.adapters.GalleryAdapter;
+import com.kenny.openimgur.ui.adapters.PhotoAdapter;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
 import com.kenny.openimgur.util.LogUtil;
@@ -86,11 +86,11 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
     @BindView(R.id.list)
     RecyclerView mListView;
 
-    private ImgurBaseObject mImgurObject;
+    ImgurBaseObject mImgurObject;
 
-    private PhotoAdapter mPhotoAdapter;
+    PhotoAdapter mPhotoAdapter;
 
-    private boolean mDisplayTags = true;
+    boolean mDisplayTags = true;
 
     private static final long FIVE_MB = 5 * 1024 * 1024;
 
@@ -272,7 +272,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
      *
      * @param object
      */
-    private void setupFragmentWithObject(ImgurBaseObject object) {
+    void setupFragmentWithObject(ImgurBaseObject object) {
         mImgurObject = object;
 
         if (mImgurObject instanceof ImgurPhoto) {
@@ -528,7 +528,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         outState.putParcelable(KEY_IMGUR_OBJECT, mImgurObject);
     }
 
-    private String getLink(ImgurPhoto photo) {
+    String getLink(ImgurPhoto photo) {
         String link;
 
         if (photo.isLinkAThumbnail() && photo.hasVideoLink()) {
@@ -540,7 +540,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         return link;
     }
 
-    private boolean checkPermissions() {
+    boolean checkPermissions() {
         @PermissionUtils.PermissionLevel int permissionLevel = PermissionUtils.getPermissionLevel(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         switch (permissionLevel) {
@@ -566,7 +566,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         return false;
     }
 
-    private void downloadAlbum() {
+    void downloadAlbum() {
         if (mImgurObject instanceof ImgurAlbum) {
             if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
                 ArrayList<String> urls = new ArrayList<>(mPhotoAdapter.getItemCount());
@@ -612,7 +612,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         });
     }
 
-    private void fetchTags() {
+    void fetchTags() {
         // No need to request if the object already has tags, they will be set in the adapter
         if (mDisplayTags && mImgurObject.isListed() && (mImgurObject.getTags() == null || mImgurObject.getTags().isEmpty())) {
             ApiClient.getService().getTags(mImgurObject.getId()).enqueue(new Callback<TagResponse>() {
@@ -638,7 +638,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         }
     }
 
-    private void fetchGalleryDetails() {
+    void fetchGalleryDetails() {
         ApiClient.getService().getGalleryDetails(mImgurObject.getId()).enqueue(new Callback<BasicObjectResponse>() {
             @Override
             public void onResponse(Call<BasicObjectResponse> call, Response<BasicObjectResponse> response) {
@@ -694,7 +694,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         });
     }
 
-    private void reportItem(int reason) {
+    void reportItem(int reason) {
         ApiClient.getService().reportPost(mImgurObject.getId(), reason).enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
