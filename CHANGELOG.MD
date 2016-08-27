@@ -1,5 +1,8 @@
 #Open Imgur Changelog
-<b>4.6.3</b> August, 25, 2016
+<b>4.6.4</b> August 26, 2016
+- Catch NPE
+
+<b>4.6.3</b> August 25, 2016
 - Fix TransactionToLargeException on N
 - Use CommonAdapters
 - Update Gradle Wrapper V2.2.0-beta3
