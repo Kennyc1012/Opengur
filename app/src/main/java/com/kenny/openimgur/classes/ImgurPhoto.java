@@ -105,7 +105,7 @@ public class ImgurPhoto extends ImgurBaseObject {
         return null;
     }
 
-    private ImgurPhoto(Parcel in) {
+    ImgurPhoto(Parcel in) {
         super(in);
         mType = in.readString();
         mMP4Link = in.readString();

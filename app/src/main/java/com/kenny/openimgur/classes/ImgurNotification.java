@@ -31,7 +31,7 @@ public class ImgurNotification implements Parcelable, Comparable<ImgurNotificati
 
     private boolean mViewed;
 
-    private ImgurNotification(Parcel in) {
+    ImgurNotification(Parcel in) {
         mId = in.readInt();
         mType = in.readInt();
         mContent = in.readString();

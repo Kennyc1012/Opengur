@@ -40,9 +40,9 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
 
     private static final long PHOTO_PIXEL_LIMIT = 2048;
 
-    private ImgurListener mListener;
+    ImgurListener mListener;
 
-    private ImgurBaseObject mImgurObject;
+    ImgurBaseObject mImgurObject;
 
     public PhotoAdapter(Context context, List<ImgurPhoto> photos, ImgurBaseObject object, ImgurListener listener) {
         super(context, photos, true);
@@ -55,8 +55,8 @@ public class PhotoAdapter extends BaseRecyclerAdapter<ImgurPhoto> {
      */
     @Override
     public void onDestroy() {
-        clear();
         mListener = null;
+        super.onDestroy();
     }
 
     @Override

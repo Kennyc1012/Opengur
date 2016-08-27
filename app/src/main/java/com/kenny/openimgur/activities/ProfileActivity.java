@@ -73,9 +73,9 @@ public class ProfileActivity extends BaseActivity {
     @BindView(R.id.toolBar)
     Toolbar mToolBar;
 
-    private ImgurUser mSelectedUser;
+    ImgurUser mSelectedUser;
 
-    private ProfilePager mAdapter;
+    ProfilePager mAdapter;
 
     public static Intent createIntent(Context context, @Nullable String userName) {
         Intent intent = new Intent(context, ProfileActivity.class);
@@ -278,7 +278,7 @@ public class ProfileActivity extends BaseActivity {
         if (mSelectedUser != null) fetchProfile(mSelectedUser.getUsername());
     }
 
-    private void fetchProfile(final String username) {
+    void fetchProfile(final String username) {
         ApiClient.getService().getProfile(username).enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {

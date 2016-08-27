@@ -262,7 +262,7 @@ public class MemeActivity extends BaseActivity {
         });
     }
 
-    private void onMemeCreated(@Nullable final File file) {
+    void onMemeCreated(@Nullable final File file) {
         mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         dismissDialogFragment("saving");
 
@@ -361,7 +361,7 @@ public class MemeActivity extends BaseActivity {
         return theme.isDarkTheme ? R.style.Theme_Opengur_Dark : R.style.Theme_Opengur_Light_DarkActionBar;
     }
 
-    private static class SaveMemeTask extends AsyncTask<MemeActivity, Void, File> {
+    static class SaveMemeTask extends AsyncTask<MemeActivity, Void, File> {
         private static final String TAG = "SaveMemeTask";
 
         WeakReference<MemeActivity> mActivity;

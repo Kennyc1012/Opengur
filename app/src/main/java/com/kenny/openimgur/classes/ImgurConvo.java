@@ -27,7 +27,7 @@ public class ImgurConvo extends ImgurBaseObject {
     @SerializedName("messages")
     private ArrayList<ImgurMessage> mMessages;
 
-    private ImgurConvo(Parcel in) {
+    ImgurConvo(Parcel in) {
         super(in);
         mWithAccount = in.readString();
         mLastMessage = in.readString();

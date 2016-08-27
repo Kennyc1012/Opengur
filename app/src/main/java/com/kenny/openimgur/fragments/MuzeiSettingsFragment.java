@@ -27,7 +27,7 @@ public class MuzeiSettingsFragment extends BasePreferenceFragment {
 
     private EditTextPreference mInputPreference;
 
-    private ListPreference mTopicPreference;
+    ListPreference mTopicPreference;
 
     private PreferenceScreen mScreen;
 

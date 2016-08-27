@@ -14,11 +14,11 @@ import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
-import com.kenny.openimgur.ui.adapters.ConvoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.classes.ImgurConvo;
+import com.kenny.openimgur.ui.adapters.ConvoAdapter;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.ViewUtils;
@@ -43,7 +43,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
     @BindView(R.id.commentList)
     RecyclerView mMessageList;
 
-    private ConvoAdapter mAdapter;
+    ConvoAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -141,7 +141,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
         });
     }
 
-    private void deleteConversation(String id) {
+    void deleteConversation(String id) {
         mAdapter.removeItem(id);
 
         if (mAdapter.isEmpty()) {

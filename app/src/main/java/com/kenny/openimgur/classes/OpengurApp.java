@@ -223,7 +223,7 @@ public class OpengurApp extends Application implements SharedPreferences.OnShare
                         LogUtil.v(TAG, "Directory not found, nothing to do here");
                     }
 
-                    mPref.edit().putBoolean("migrated_downloads_v2", true).apply();
+                    getPreferences().edit().putBoolean("migrated_downloads_v2", true).apply();
                 }
             }).start();
         }

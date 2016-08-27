@@ -33,7 +33,7 @@ public class ImgurAlbum extends ImgurBaseObject {
         super(id, title, link, deleteHash);
     }
 
-    private ImgurAlbum(Parcel in) {
+    ImgurAlbum(Parcel in) {
         super(in);
         mAlbumImageCount = in.readInt();
         mCoverId = in.readString();

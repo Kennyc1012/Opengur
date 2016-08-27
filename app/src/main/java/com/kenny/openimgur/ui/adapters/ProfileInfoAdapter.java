@@ -37,7 +37,7 @@ public class ProfileInfoAdapter extends BaseRecyclerAdapter<ImgurTrophy> {
 
     private ImgurUser mUser;
 
-    private ImgurListener mListener;
+    ImgurListener mListener;
 
     private final SimpleDateFormat mDateFormat = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault());
 

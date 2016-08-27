@@ -36,7 +36,7 @@ public class CommentAdapter extends BaseRecyclerAdapter<ImgurComment> {
 
     private static final float COLLAPSED = 0.0f;
 
-    private ImgurListener mListener;
+    ImgurListener mListener;
 
     private int mSelectedIndex = -1;
 

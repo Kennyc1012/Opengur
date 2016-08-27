@@ -31,10 +31,10 @@ import android.view.ViewGroup;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.UploadEditActivity;
-import com.kenny.openimgur.ui.adapters.UploadPhotoAdapter;
 import com.kenny.openimgur.classes.OpengurApp;
 import com.kenny.openimgur.classes.Upload;
 import com.kenny.openimgur.classes.UploadListener;
+import com.kenny.openimgur.ui.adapters.UploadPhotoAdapter;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
@@ -64,13 +64,13 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
     @BindView(R.id.list)
     RecyclerView mRecyclerView;
 
-    private UploadPhotoAdapter mAdapter;
+    UploadPhotoAdapter mAdapter;
 
-    private File mTempFile;
+    File mTempFile;
 
-    private List<Uri> mPhotoUris = null;
+    List<Uri> mPhotoUris = null;
 
-    private UploadListener mListener;
+    UploadListener mListener;
 
     public static UploadFragment newInstance(@Nullable Bundle args) {
         UploadFragment fragment = new UploadFragment();
@@ -210,7 +210,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
         }
     }
 
-    private void onUrisDecoded(@Nullable List<Upload> uploads) {
+    void onUrisDecoded(@Nullable List<Upload> uploads) {
         if (uploads == null || uploads.isEmpty()) {
             boolean isEmpty = mAdapter == null || mAdapter.isEmpty();
             mMultiView.setViewState(isEmpty ? MultiStateView.VIEW_STATE_EMPTY : MultiStateView.VIEW_STATE_CONTENT);
@@ -236,7 +236,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
         }
     }
 
-    private void onNeedsReadPermission(List<Uri> photoUris) {
+    void onNeedsReadPermission(List<Uri> photoUris) {
         mMultiView.setViewState(mAdapter != null && !mAdapter.isEmpty() ? MultiStateView.VIEW_STATE_CONTENT : MultiStateView.VIEW_STATE_EMPTY);
         mPhotoUris = photoUris;
         int level = PermissionUtils.getPermissionLevel(this, Manifest.permission.READ_EXTERNAL_STORAGE);

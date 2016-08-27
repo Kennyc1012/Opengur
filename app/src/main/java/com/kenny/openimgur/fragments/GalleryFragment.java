@@ -21,13 +21,13 @@ import android.widget.FilterQueryProvider;
 
 import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.GallerySearchActivity;
-import com.kenny.openimgur.ui.adapters.SearchAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.ImgurService;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySection;
 import com.kenny.openimgur.classes.ImgurFilters.GallerySort;
 import com.kenny.openimgur.classes.ImgurFilters.TimeSort;
+import com.kenny.openimgur.ui.adapters.SearchAdapter;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
@@ -45,13 +45,13 @@ public class GalleryFragment extends BaseGridFragment {
 
     private static final String KEY_SHOW_VIRAL = "showViral";
 
-    private GallerySection mSection = GallerySection.HOT;
+    protected GallerySection mSection = GallerySection.HOT;
 
     protected GallerySort mSort = GallerySort.TIME;
 
     protected TimeSort mTimeSort = TimeSort.DAY;
 
-    private boolean mShowViral = true;
+    boolean mShowViral = true;
 
     protected SearchView mSearchView;
 

@@ -36,7 +36,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.ui.adapters.CommentAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.AlbumResponse;
 import com.kenny.openimgur.api.responses.BasicObjectResponse;
@@ -55,6 +54,7 @@ import com.kenny.openimgur.fragments.PopupImageDialogFragment;
 import com.kenny.openimgur.fragments.SideGalleryFragment;
 import com.kenny.openimgur.ui.VideoView;
 import com.kenny.openimgur.ui.ViewPager;
+import com.kenny.openimgur.ui.adapters.CommentAdapter;
 import com.kenny.openimgur.util.LinkUtils;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.ViewUtils;
@@ -176,25 +176,25 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
     @BindView(R.id.downVoteBtn)
     ImageButton mDownVoteBtn;
 
-    private CommentAdapter mCommentAdapter;
+    CommentAdapter mCommentAdapter;
 
-    private int mCurrentPosition = 0;
+    int mCurrentPosition = 0;
 
-    private boolean mIsActionBarShowing = true;
+    boolean mIsActionBarShowing = true;
 
-    private String mGalleryId = null;
+    String mGalleryId = null;
 
-    private boolean mIsResuming = false;
+    boolean mIsResuming = false;
 
-    private boolean mLoadComments;
+    boolean mLoadComments;
 
-    private BrowsingAdapter mPagerAdapter;
+    BrowsingAdapter mPagerAdapter;
 
-    private CommentSort mCommentSort;
+    CommentSort mCommentSort;
 
-    private SideGalleryFragment mSideGalleryFragment;
+    SideGalleryFragment mSideGalleryFragment;
 
-    private BottomSheetBehavior mBottomSheetBehavior;
+    BottomSheetBehavior mBottomSheetBehavior;
 
     public static Intent createIntent(Context context, ArrayList<ImgurBaseObject> objects, int position) {
         Intent intent = new Intent(context, ViewActivity.class);
@@ -922,7 +922,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         });
     }
 
-    private void voteOnComment(String id, final String vote) {
+    void voteOnComment(String id, final String vote) {
         ApiClient.getService().voteOnComment(id, vote, vote).enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
@@ -978,7 +978,7 @@ public class ViewActivity extends BaseActivity implements View.OnClickListener, 
         mViewPager.setLayoutParams(lp);
     }
 
-    private static class ZoomOutPageTransformer implements ViewPager.PageTransformer {
+    static class ZoomOutPageTransformer implements ViewPager.PageTransformer {
         private static final float MIN_SCALE = 0.5f;
 
         private static final float MIN_ALPHA = 1.0f;

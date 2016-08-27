@@ -47,7 +47,7 @@ public class ImgurComment extends ImgurBaseObject {
     @SerializedName("points")
     private long mPoints;
 
-    private ImgurComment(Parcel in) {
+    ImgurComment(Parcel in) {
         super(in);
         mAuthor = in.readString();
         mAuthorId = in.readString();

@@ -17,7 +17,7 @@ public class ImgurTrophy extends ImgurBaseObject {
     @SerializedName("image")
     private String mTrophyImage;
 
-    private ImgurTrophy(Parcel in) {
+    ImgurTrophy(Parcel in) {
         super(in);
         mName = in.readString();
         mDataLink = in.readString();
