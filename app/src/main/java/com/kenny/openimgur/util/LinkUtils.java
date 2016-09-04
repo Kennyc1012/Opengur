@@ -27,6 +27,7 @@ public class LinkUtils {
     private static final String REGEX_IMGUR_USER = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://" +
             "(m.imgur.com|imgur.com|i.imgur.com)/user/.+";
 
+
     private static final String REGEX_IMGUR_ALBUM = "^([hH][tT][tT][pP]|[hH][tT][tT][pP][sS])://" +
             "(m.imgur.com|imgur.com|i.imgur.com)/a/.+";
 
