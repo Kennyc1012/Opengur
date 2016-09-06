@@ -619,7 +619,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     void fetchTags() {
         // No need to request if the object already has tags, they will be set in the adapter
-        if (mDisplayTags && mImgurObject.isListed() && (mImgurObject.getTags() == null || mImgurObject.getTags().isEmpty())) {
+        if (mDisplayTags && mImgurObject != null && mImgurObject.isListed() && (mImgurObject.getTags() == null || mImgurObject.getTags().isEmpty())) {
             ApiClient.getService().getTags(mImgurObject.getId()).enqueue(new Callback<TagResponse>() {
                 @Override
                 public void onResponse(Call<TagResponse> call, Response<TagResponse> response) {
