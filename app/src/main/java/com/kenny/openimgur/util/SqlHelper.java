@@ -20,7 +20,6 @@ import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
 import com.kenny.openimgur.classes.ImgurUser;
-import com.kenny.openimgur.classes.UploadedPhoto;
 import com.kenny.openimgur.util.DBContracts.GallerySearchContract;
 import com.kenny.openimgur.util.DBContracts.MemeContract;
 import com.kenny.openimgur.util.DBContracts.MuzeiContract;
@@ -298,35 +297,20 @@ public class SqlHelper extends SQLiteOpenHelper {
         getWritableDatabase().insert(UploadContract.TABLE_NAME, null, values);
     }
 
-    /**
-     * Returns all upload photos from device
-     *
-     * @return
-     */
-    @NonNull
-    public List<UploadedPhoto> getUploadedPhotos() {
-        List<UploadedPhoto> photos = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(UploadContract.GET_UPLOADS_SQL, null);
-
-        while (cursor.moveToNext()) {
-            photos.add(new UploadedPhoto(cursor));
-        }
-
-        cursor.close();
-        return photos;
+    public Cursor getUploadedPhotos() {
+        return getReadableDatabase().rawQuery(UploadContract.GET_UPLOADS_SQL, null);
     }
 
     /**
      * Deletes the given photo from the Uploaded Photos table
      *
-     * @param photo
+     * @param deleteHash
      */
-    public void deleteUploadedPhoto(UploadedPhoto photo) {
-        if (photo == null) return;
+    public void deleteUploadedPhoto(String deleteHash) {
+        if (TextUtils.isEmpty(deleteHash)) return;
 
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(UploadContract.TABLE_NAME, UploadContract._ID + "=?", new String[]{String.valueOf(photo.getId())});
+        db.delete(UploadContract.TABLE_NAME, UploadContract.COLUMN_DELETE_HASH + "=?", new String[]{deleteHash});
     }
 
     /**
