@@ -26,9 +26,11 @@ import com.kenny.openimgur.ui.adapters.NotificationAdapter;
 import com.kenny.openimgur.util.DBContracts;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.SqlHelper;
+import com.kenny.openimgur.util.StateSaver;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -74,16 +76,13 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
         getSupportActionBar().setTitle(R.string.notifications);
         setContentView(R.layout.activity_notifications);
         mList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        ArrayList<ImgurNotification> notifications = StateSaver.instance().getData(savedInstanceState, KEY_ITEMS);
 
-        if (savedInstanceState != null) {
-            List<ImgurNotification> notifications = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
-
-            if (notifications != null && !notifications.isEmpty()) {
-                int position = savedInstanceState.getInt(KEY_POSITION, 0);
-                mList.setAdapter(mAdapter = new NotificationAdapter(this, notifications, this, this));
-                mList.scrollToPosition(position);
-                mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
-            }
+        if (notifications != null && !notifications.isEmpty()) {
+            int position = savedInstanceState.getInt(KEY_POSITION, 0);
+            mList.setAdapter(mAdapter = new NotificationAdapter(this, notifications, this, this));
+            mList.scrollToPosition(position);
+            mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         }
     }
 
@@ -285,7 +284,7 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
         super.onSaveInstanceState(outState);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.retainItems());
+            StateSaver.instance().onSaveState(outState, KEY_ITEMS, mAdapter.retainItems());
             LinearLayoutManager manager = (LinearLayoutManager) mList.getLayoutManager();
             outState.putInt(KEY_POSITION, manager.findFirstVisibleItemPosition());
         }

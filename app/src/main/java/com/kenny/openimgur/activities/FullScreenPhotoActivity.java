@@ -42,6 +42,7 @@ import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.StateSaver;
 import com.kenny.openimgur.util.ViewUtils;
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ import retrofit2.Response;
  * Created by kcampagna on 6/2/15.
  */
 public class FullScreenPhotoActivity extends BaseActivity implements View.OnClickListener {
-    private static final String KEY_IMAGES = "images";
+    private static final String KEY_IMAGES = "full_screen_photo_activity_images";
 
     private static final String KEY_URL = "url";
 
@@ -248,7 +249,7 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
 
         if (savedInstanceState != null) {
             // The adapter should have been set and returned a list when saving state
-            photos = savedInstanceState.getParcelableArrayList(KEY_IMAGES);
+            photos = StateSaver.instance().getData(savedInstanceState, KEY_IMAGES);
             startingPosition = savedInstanceState.getInt(KEY_START_POSITION);
         } else {
             if (intent.hasExtra(KEY_IMAGES)) {
@@ -279,7 +280,7 @@ public class FullScreenPhotoActivity extends BaseActivity implements View.OnClic
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_START_POSITION, mPager.getCurrentItem());
-        if (mAdapter != null) outState.putParcelableArrayList(KEY_IMAGES, mAdapter.retainItems());
+        if (mAdapter != null) StateSaver.instance().onSaveState(outState, KEY_IMAGES, mAdapter.retainItems());
     }
 
     @Override

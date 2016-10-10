@@ -21,6 +21,7 @@ import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.ui.adapters.ConvoAdapter;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
+import com.kenny.openimgur.util.StateSaver;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
@@ -93,9 +94,9 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mMessageList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        List<ImgurConvo> items = StateSaver.instance().getData(savedInstanceState, KEY_ITEMS);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_ITEMS)) {
-            List<ImgurConvo> items = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
+        if (items != null && !items.isEmpty()) {
             mAdapter = new ConvoAdapter(getActivity(), items, this, this);
             mMessageList.setAdapter(mAdapter);
             mMultiStateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
@@ -170,7 +171,7 @@ public class ProfileMessagesFragment extends BaseFragment implements View.OnClic
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.retainItems());
+            StateSaver.instance().onSaveState(outState, KEY_ITEMS, mAdapter.retainItems());
         }
     }
 
