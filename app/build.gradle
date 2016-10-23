@@ -16,13 +16,13 @@ repositories {
 }
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion '24.0.1'
 
     defaultConfig {
         applicationId "com.kennyc.open.imgur"
         minSdkVersion 17
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode project.ext.version_code
         buildConfigField "String", "API_CLIENT_ID", project.API_CLIENT_ID
         buildConfigField "String", "API_CLIENT_SECRET", project.API_CLIENT_SECRET
