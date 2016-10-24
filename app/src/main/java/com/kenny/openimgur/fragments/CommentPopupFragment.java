@@ -70,6 +70,12 @@ public class CommentPopupFragment extends DialogFragment implements DialogInterf
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mComment.setCursorVisible(true);
+    }
+
+    @Override
     public void onPause() {
         mComment.setCursorVisible(false);
         super.onPause();
