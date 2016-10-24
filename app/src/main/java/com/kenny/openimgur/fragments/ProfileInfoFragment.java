@@ -23,6 +23,7 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
 import com.kenny.openimgur.activities.ProfileActivity;
 import com.kenny.openimgur.activities.ViewActivity;
+import com.kenny.openimgur.ui.adapters.ProfileInfoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TrophyResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
@@ -31,9 +32,7 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurTrophy;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.VideoView;
-import com.kenny.openimgur.ui.adapters.ProfileInfoAdapter;
 import com.kenny.openimgur.util.LinkUtils;
-import com.kenny.openimgur.util.StateSaver;
 import com.kennyc.view.MultiStateView;
 
 import java.util.List;
@@ -88,7 +87,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
 
         if (savedInstanceState != null) {
             mSelectedUser = savedInstanceState.getParcelable(KEY_USER);
-            trophies = StateSaver.instance().getData(savedInstanceState, KEY_TROPHIES);
+            trophies = savedInstanceState.getParcelableArrayList(KEY_TROPHIES);
         }
 
         if (mSelectedUser == null) {
@@ -299,7 +298,7 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            StateSaver.instance().onSaveState(outState, KEY_TROPHIES, mAdapter.retainItems());
+            outState.putParcelableArrayList(KEY_TROPHIES, mAdapter.retainItems());
         }
 
         outState.putParcelable(KEY_USER, mSelectedUser);

@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,6 +45,7 @@ import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.VideoCache;
 import com.kenny.openimgur.services.DownloaderService;
 import com.kenny.openimgur.ui.VideoView;
+import com.kenny.openimgur.ui.adapters.GalleryAdapter;
 import com.kenny.openimgur.ui.adapters.PhotoAdapter;
 import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.ImageUtil;
@@ -51,7 +53,6 @@ import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.NetworkUtils;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
-import com.kenny.openimgur.util.StateSaver;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -77,7 +78,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
 
     private static final String KEY_DISPLAY_TAGS = "display_tags";
 
-    public static final String KEY_ITEMS = "items";
+    private static final String KEY_ITEMS = "items";
 
     @BindView(R.id.multiView)
     MultiStateView mMultiView;
@@ -255,7 +256,7 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         if (savedInstanceState != null) {
             mDisplayTags = savedInstanceState.getBoolean(KEY_DISPLAY_TAGS, true);
             mImgurObject = savedInstanceState.getParcelable(KEY_IMGUR_OBJECT);
-            List<ImgurPhoto> photos = StateSaver.instance().getData(savedInstanceState, KEY_ITEMS + "." + mImgurObject.hashCode());
+            List<ImgurPhoto> photos = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
             mPhotoAdapter = new PhotoAdapter(getActivity(), photos, mImgurObject, this);
             mListView.setAdapter(mPhotoAdapter);
             mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
@@ -516,8 +517,12 @@ public class ImgurViewFragment extends BaseFragment implements ImgurListener {
         super.onSaveInstanceState(outState);
 
         if (mPhotoAdapter != null && !mPhotoAdapter.isEmpty()) {
+            if (isApiLevel(Build.VERSION_CODES.N) && mPhotoAdapter.getItemCount() > GalleryAdapter.MAX_ITEMS) {
+                return;
+            }
+
             try {
-                StateSaver.instance().onSaveState(outState, KEY_ITEMS + "." + mImgurObject.hashCode(), mPhotoAdapter.retainItems());
+                outState.putParcelableArrayList(KEY_ITEMS, mPhotoAdapter.retainItems());
             } catch (NullPointerException npe) {
                 // This shouldn't be crashing, but for some reason is, need to figure out why
                 LogUtil.e(TAG, "NPE while saving state", npe);

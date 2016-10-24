@@ -24,7 +24,6 @@ import com.kenny.openimgur.classes.ImgurFilters.CommentSort;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.adapters.ProfileCommentAdapter;
 import com.kenny.openimgur.util.LogUtil;
-import com.kenny.openimgur.util.StateSaver;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
@@ -148,9 +147,9 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
         if (savedInstanceState != null) {
             mSelectedUser = savedInstanceState.getParcelable(KEY_USER);
             mSort = CommentSort.getSortType(savedInstanceState.getString(KEY_SORT, null));
-            ArrayList<ImgurComment> comments = StateSaver.instance().getData(savedInstanceState, KEY_ITEMS);
 
-            if (comments != null && !comments.isEmpty()) {
+            if (savedInstanceState.containsKey(KEY_ITEMS)) {
+                ArrayList<ImgurComment> comments = savedInstanceState.getParcelableArrayList(KEY_ITEMS);
                 mPage = savedInstanceState.getInt(KEY_PAGE, 0);
                 mAdapter = new ProfileCommentAdapter(getActivity(), comments, this);
                 mCommentList.setAdapter(mAdapter);
@@ -257,8 +256,8 @@ public class ProfileCommentsFragment extends BaseFragment implements View.OnClic
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
             outState.putInt(KEY_POSITION, mManager.findFirstVisibleItemPosition());
+            outState.putParcelableArrayList(KEY_ITEMS, mAdapter.retainItems());
             outState.putInt(KEY_PAGE, mPage);
-            StateSaver.instance().onSaveState(outState, KEY_ITEMS, mAdapter.retainItems());
         }
     }
 }

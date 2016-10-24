@@ -39,7 +39,6 @@ import com.kenny.openimgur.util.FileUtil;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.RequestCodes;
-import com.kenny.openimgur.util.StateSaver;
 import com.kenny.openimgur.util.ViewUtils;
 import com.kennyc.view.MultiStateView;
 
@@ -126,9 +125,9 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
         ViewUtils.setRecyclerViewGridDefaults(getActivity(), mRecyclerView, res.getInteger(R.integer.upload_num_columns), res.getDimensionPixelSize(R.dimen.grid_padding));
         ViewUtils.setEmptyText(mMultiView, R.id.emptyMessage, R.string.upload_empty_message);
         new ItemTouchHelper(mSimpleItemTouchCallback).attachToRecyclerView(mRecyclerView);
-        List<Upload> uploads = StateSaver.instance().getData(savedInstanceState, KEY_SAVED_ITEMS);
 
-        if (uploads != null && !uploads.isEmpty()) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_SAVED_ITEMS)) {
+            List<Upload> uploads = savedInstanceState.getParcelableArrayList(KEY_SAVED_ITEMS);
             mAdapter = new UploadPhotoAdapter(getActivity(), uploads, this);
             mRecyclerView.setAdapter(mAdapter);
             mMultiView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
@@ -504,7 +503,7 @@ public class UploadFragment extends BaseFragment implements View.OnClickListener
         super.onSaveInstanceState(outState);
 
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            StateSaver.instance().onSaveState(outState, KEY_SAVED_ITEMS, mAdapter.retainItems());
+            outState.putParcelableArrayList(KEY_SAVED_ITEMS, mAdapter.retainItems());
         }
     }
 
