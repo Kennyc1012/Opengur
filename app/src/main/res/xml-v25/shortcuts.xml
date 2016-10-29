@@ -3,7 +3,7 @@
     <shortcut
         android:shortcutId="upload"
         android:enabled="true"
-        android:icon="@drawable/ic_shortcut_upload"
+        android:icon="@drawable/shortcut_icon"
         android:shortcutShortLabel="@string/upload">
         <intent
             android:action="android.intent.action.SEND"
