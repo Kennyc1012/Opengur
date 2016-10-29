@@ -23,7 +23,6 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.ConvoThreadActivity;
 import com.kenny.openimgur.activities.ProfileActivity;
 import com.kenny.openimgur.activities.ViewActivity;
-import com.kenny.openimgur.ui.adapters.ProfileInfoAdapter;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TrophyResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
@@ -32,7 +31,9 @@ import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurTrophy;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.ui.VideoView;
+import com.kenny.openimgur.ui.adapters.ProfileInfoAdapter;
 import com.kenny.openimgur.util.LinkUtils;
+import com.kenny.openimgur.util.LogUtil;
 import com.kennyc.view.MultiStateView;
 
 import java.util.List;
@@ -298,7 +299,12 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mAdapter != null && !mAdapter.isEmpty()) {
-            outState.putParcelableArrayList(KEY_TROPHIES, mAdapter.retainItems());
+            try {
+                outState.putParcelableArrayList(KEY_TROPHIES, mAdapter.retainItems());
+            } catch (NullPointerException npe) {
+                // This shouldn't be crashing, but for some reason is, need to figure out why
+                LogUtil.e(TAG, "NPE while saving state", npe);
+            }
         }
 
         outState.putParcelable(KEY_USER, mSelectedUser);
