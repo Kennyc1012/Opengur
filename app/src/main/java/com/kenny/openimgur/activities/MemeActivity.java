@@ -373,11 +373,11 @@ public class MemeActivity extends BaseActivity {
             }
 
             mActivity = new WeakReference<>(params[0]);
-            Bitmap drawingCahce = mActivity.get().mView.getDrawingCache();
+            Bitmap drawingCache = mActivity.get().mView.getDrawingCache();
 
             try {
-                if (drawingCahce != null) {
-                    File file = ImageUtil.saveBitmap(drawingCahce);
+                if (drawingCache != null) {
+                    File file = ImageUtil.saveBitmap(drawingCache);
 
                     if (FileUtil.isFileValid(file)) {
                         LogUtil.v(TAG, "Meme saved successfully");
@@ -388,7 +388,7 @@ public class MemeActivity extends BaseActivity {
             } catch (Exception ex) {
                 LogUtil.e(TAG, "Error saving Meme bitmap", ex);
             } finally {
-                if (drawingCahce != null) drawingCahce.recycle();
+                if (drawingCache != null) drawingCache.recycle();
             }
 
             LogUtil.v(TAG, "Unable to save Meme");
