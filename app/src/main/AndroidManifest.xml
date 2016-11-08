@@ -145,7 +145,6 @@
             </intent-filter>
 
         </activity>
-        <activity android:name=".activities.ConvoThreadActivity" />
         <activity android:name=".activities.MemeActivity" />
         <activity android:name=".activities.GallerySearchActivity">
             <intent-filter android:label="@string/search_opengur">

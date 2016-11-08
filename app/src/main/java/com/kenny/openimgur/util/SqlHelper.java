@@ -15,7 +15,6 @@ import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.classes.ImgurAlbum;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
-import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.classes.ImgurPhoto;
 import com.kenny.openimgur.classes.ImgurTopic;
@@ -568,10 +567,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         String where = null;
         String[] args = null;
 
-        if (content instanceof ImgurConvo) {
-            where = NotificationContract.COLUMN_CONTENT_ID + "=?";
-            args = new String[]{content.getId()};
-        } else if (content instanceof ImgurComment) {
+        if (content instanceof ImgurComment) {
             ImgurComment comment = (ImgurComment) content;
             where = NotificationContract.COLUMN_CONTENT + "=? AND " + NotificationContract.COLUMN_CONTENT_ID + "=?";
             args = new String[]{comment.getComment(), comment.getImageId()};
@@ -605,9 +601,9 @@ public class SqlHelper extends SQLiteOpenHelper {
         String query;
         String[] args;
 
-        if (content instanceof ImgurConvo || content instanceof ImgurComment) {
+        if (content instanceof ImgurComment) {
             query = NotificationContract.GET_NOTIFICATION_ID;
-            args = new String[]{content instanceof ImgurConvo ? content.getId() : ((ImgurComment) content).getImageId()};
+            args = new String[]{((ImgurComment) content).getImageId()};
         } else {
             LogUtil.w(TAG, "Invalid type of content for retrieving  notification id :" + content.getClass().getSimpleName());
             return null;

@@ -5,8 +5,6 @@ import com.kenny.openimgur.api.responses.BasicObjectResponse;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.CommentPostResponse;
 import com.kenny.openimgur.api.responses.CommentResponse;
-import com.kenny.openimgur.api.responses.ConversationResponse;
-import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.api.responses.GalleryResponse;
 import com.kenny.openimgur.api.responses.NotificationResponse;
 import com.kenny.openimgur.api.responses.OAuthResponse;
@@ -76,9 +74,6 @@ public interface ImgurService {
     @GET("/3/account/{user}/gallery_profile")
     Call<TrophyResponse> getProfileTrophies(@Path("user") String username);
 
-    @GET("/3/conversations")
-    Call<ConvoResponse> getConversations();
-
     @GET("/3/gallery/r/{subreddit}/{sort}/{page}")
     Call<GalleryResponse> getSubReddit(@Path("subreddit") String query, @Path("sort") String sort, @Path("page") int page);
 
@@ -108,9 +103,6 @@ public interface ImgurService {
 
     @GET("/3/gallery/{id}/tags")
     Call<TagResponse> getTags(@Path("id") String itemId);
-
-    @GET("/3/conversations/{id}/{page}/0")
-    Call<ConversationResponse> getMessages(@Path("id") String conversationId, @Path("page") int page);
 
     @GET("/3/notification?new=true")
     Call<NotificationResponse> getNotifications();
