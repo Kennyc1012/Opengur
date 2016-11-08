@@ -67,6 +67,7 @@
     <string name="clearing_cache">Clearing cache&#8230;</string>
     <string name="images">Images</string>
     <string name="view_gallery">View Gallery</string>
+    <string name="messages_removal">Messages are no longer available through the Imgur API. Sorry for the inconvenience. This tab will be removed in a following update.</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
