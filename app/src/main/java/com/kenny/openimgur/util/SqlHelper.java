@@ -537,22 +537,6 @@ public class SqlHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         SQLiteDatabase db = getWritableDatabase();
 
-        if (!response.data.messages.isEmpty()) {
-            LogUtil.v(TAG, "Inserting " + response.data.messages.size() + " message notifications");
-
-            for (NotificationResponse.Messages m : response.data.messages) {
-                values.clear();
-                values.put(NotificationContract._ID, m.id);
-                values.put(NotificationContract.COLUMN_AUTHOR, m.content.getFrom());
-                values.put(NotificationContract.COLUMN_CONTENT, m.content.getLastMessage());
-                values.put(NotificationContract.COLUMN_DATE, m.content.getDate());
-                values.put(NotificationContract.COLUMN_TYPE, ImgurNotification.TYPE_MESSAGE);
-                values.put(NotificationContract.COLUMN_CONTENT_ID, m.content.getId());
-                values.put(NotificationContract.COLUMN_VIEWED, 0);
-                db.insertWithOnConflict(NotificationContract.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-            }
-        }
-
         if (!response.data.replies.isEmpty()) {
             LogUtil.v(TAG, "Inserting " + response.data.replies.size() + " reply notifications");
 
@@ -562,7 +546,6 @@ public class SqlHelper extends SQLiteOpenHelper {
                 values.put(NotificationContract.COLUMN_AUTHOR, r.content.getAuthor());
                 values.put(NotificationContract.COLUMN_CONTENT, r.content.getComment());
                 values.put(NotificationContract.COLUMN_DATE, r.content.getDate());
-                values.put(NotificationContract.COLUMN_TYPE, ImgurNotification.TYPE_REPLY);
                 values.put(NotificationContract.COLUMN_CONTENT_ID, r.content.getImageId());
                 values.put(NotificationContract.COLUMN_ALBUM_COVER, r.content.getAlbumCoverId());
                 values.put(NotificationContract.COLUMN_VIEWED, 0);
@@ -677,15 +660,8 @@ public class SqlHelper extends SQLiteOpenHelper {
     public List<ImgurNotification> getNotifications(boolean unreadOnly) {
         List<ImgurNotification> notifications = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        String query = unreadOnly ? NotificationContract.GET_UNREAD_MESSAGES_SQL : NotificationContract.GET_MESSAGES_SQL;
-        Cursor messagesCursor = db.rawQuery(query, null);
 
-        while (messagesCursor.moveToNext()) {
-            notifications.add(new ImgurNotification(messagesCursor));
-        }
-
-        messagesCursor.close();
-        query = unreadOnly ? NotificationContract.GET_UNREAD_REPLIES_SQL : NotificationContract.GET_REPLIES_SQL;
+        String query = unreadOnly ? NotificationContract.GET_UNREAD_REPLIES_SQL : NotificationContract.GET_REPLIES_SQL;
         Cursor repliesCursor = db.rawQuery(query, null);
 
         while (repliesCursor.moveToNext()) {
