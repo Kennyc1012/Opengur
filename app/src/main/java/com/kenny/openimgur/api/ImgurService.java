@@ -154,14 +154,6 @@ public interface ImgurService {
     Call<BasicResponse> sendMessage(@Path("recipient") String recipientId, @Field("body") String message);
 
     @FormUrlEncoded
-    @POST("/3/conversations/block/{username}")
-    Call<BasicResponse> blockUser(@Path("username") String username, @Field("username") String user);
-
-    @FormUrlEncoded
-    @POST("/3/conversations/report/{username}")
-    Call<BasicResponse> reportUser(@Path("username") String username, @Field("username") String user);
-
-    @FormUrlEncoded
     @POST("/oauth2/token")
     Call<OAuthResponse> refreshToken(@Field("client_id") String clientId, @Field("client_secret") String clientSecret, @Field("refresh_token") String refreshToken, @Field("grant_type") String grantType);
 
@@ -179,7 +171,4 @@ public interface ImgurService {
 
     @DELETE("/3/image/{deleteHash}")
     Call<BasicResponse> deletePhoto(@Path("deleteHash") String deleteHash);
-
-    @DELETE("/3/conversations/{id}")
-    Call<BasicResponse> deleteConversation(@Path("id") String conversationId);
 }
