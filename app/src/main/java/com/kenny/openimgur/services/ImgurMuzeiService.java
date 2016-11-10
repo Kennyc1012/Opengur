@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
+import com.kenny.openimgur.R;
 import com.kenny.openimgur.activities.MuzeiSettingsActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.GalleryResponse;
@@ -36,11 +37,7 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
     private static final String TAG = "ImgurMuzeiService";
 
     // If unable to get an image, DickButt will be shown, dealwithit.gif
-    private static final String FALLBACK_URL = "http://i.imgur.com/ICt6W7X.png";
-
-    private static final String FALLBACK_TITLE = "DickButt";
-
-    private static final String FALLBACK_BYLINE = "K.C. Green";
+    private static final String FALLBACK_URL = "http://i.imgur.com/myiMdIq.jpeg";
 
     private static final String FALLBACK_SUBREDDIT = "aww";
 
@@ -127,8 +124,8 @@ public class ImgurMuzeiService extends RemoteMuzeiArtSource {
             }
         } else {
             url = FALLBACK_URL;
-            title = FALLBACK_TITLE;
-            byline = FALLBACK_BYLINE;
+            title = getString(R.string.muzei_error_title);
+            byline = getString(R.string.muzei_error_byline);
         }
 
         uri = Uri.parse(url);

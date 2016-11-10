@@ -292,6 +292,8 @@
     <string name="muzei_source">Image Source</string>
     <string name="muzei_description">Imgur images for Muzei</string>
     <string name="muzei_topic">Topic</string>
+    <string name="muzei_error_title">Error</string>
+    <string name="muzei_error_byline">Unable to display wallpaper</string>
 
     <!-- Reporting -->
     <string name="report">Report</string>
