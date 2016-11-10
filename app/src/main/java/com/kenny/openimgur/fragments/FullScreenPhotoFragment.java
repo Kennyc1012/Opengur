@@ -467,6 +467,11 @@ public class FullScreenPhotoFragment extends BaseFragment {
                                 if (multiView != null)
                                     multiView.setViewState(MultiStateView.VIEW_STATE_ERROR);
                             }
+
+                            @Override
+                            public void onPreviewReleased() {
+
+                            }
                         });
 
                         imageView.setMinimumTileDpi(160);
