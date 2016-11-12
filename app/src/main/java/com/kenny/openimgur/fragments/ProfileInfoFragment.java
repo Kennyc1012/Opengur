@@ -11,22 +11,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.activities.ConvoThreadActivity;
 import com.kenny.openimgur.activities.ProfileActivity;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.TrophyResponse;
 import com.kenny.openimgur.classes.CustomLinkMovement;
-import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurListener;
 import com.kenny.openimgur.classes.ImgurTrophy;
 import com.kenny.openimgur.classes.ImgurUser;
@@ -110,34 +105,6 @@ public class ProfileInfoFragment extends BaseFragment implements ImgurListener {
         } else {
             fetchTrophies();
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.profile_info, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.message).setVisible(app.getUser() != null && !mSelectedUser.isSelf(app));
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.message:
-                if (user != null) {
-                    ImgurConvo convo = new ImgurConvo(mSelectedUser.getUsername(), mSelectedUser.getId());
-                    startActivity(ConvoThreadActivity.createIntent(getActivity(), convo));
-                } else {
-                    Snackbar.make(mMultiStateView, R.string.user_not_logged_in, Snackbar.LENGTH_LONG).show();
-                }
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

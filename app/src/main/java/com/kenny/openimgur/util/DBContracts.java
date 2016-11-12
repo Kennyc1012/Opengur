@@ -276,13 +276,6 @@ public class DBContracts {
                 COLUMN_ALBUM_COVER + " TEXT, " +
                 COLUMN_VIEWED + " TEXT);";
 
-        public static final String GET_MESSAGES_SQL = "SELECT * FROM " + TABLE_NAME +
-                " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_MESSAGE + "' GROUP BY " + COLUMN_AUTHOR;
-
-        public static final String GET_UNREAD_MESSAGES_SQL = "SELECT * FROM " + TABLE_NAME +
-                " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_MESSAGE +
-                "' AND " + COLUMN_VIEWED + "='0' GROUP BY " + COLUMN_AUTHOR;
-
         public static final String GET_REPLIES_SQL = "SELECT * FROM " + TABLE_NAME +
                 " WHERE " + COLUMN_TYPE + "='" + ImgurNotification.TYPE_REPLY + "'";
 

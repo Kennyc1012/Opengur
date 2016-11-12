@@ -20,7 +20,6 @@ import com.kenny.openimgur.R;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.api.responses.NotificationResponse;
-import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.classes.ImgurNotification;
 import com.kenny.openimgur.ui.adapters.NotificationAdapter;
 import com.kenny.openimgur.util.DBContracts;
@@ -173,14 +172,9 @@ public class NotificationActivity extends BaseActivity implements View.OnClickLi
             return;
         }
 
-        if (notification.getType() == ImgurNotification.TYPE_MESSAGE) {
-            ImgurConvo convo = new ImgurConvo(notification.getContentId(), notification.getAuthor(), 0);
-            startActivity(ConvoThreadActivity.createIntent(getApplicationContext(), convo));
-        } else {
-            String url = ApiClient.IMGUR_GALLERY_URL + notification.getContentId();
-            Intent intent = ViewActivity.createIntent(getApplicationContext(), url, !TextUtils.isEmpty(notification.getAlbumCover()));
-            startActivity(intent);
-        }
+        String url = ApiClient.IMGUR_GALLERY_URL + notification.getContentId();
+        Intent intent = ViewActivity.createIntent(getApplicationContext(), url, !TextUtils.isEmpty(notification.getAlbumCover()));
+        startActivity(intent);
     }
 
     @Override

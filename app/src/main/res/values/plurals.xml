@@ -6,11 +6,6 @@
         <item quantity="other">%d points</item>
     </plurals>
 
-    <plurals name="notification_messages">
-        <item quantity="one">%d new message</item>
-        <item quantity="other">%d new messages</item>
-    </plurals>
-
     <plurals name="notification_replies">
         <item quantity="one">%d new reply</item>
         <item quantity="other">%d new replies</item>

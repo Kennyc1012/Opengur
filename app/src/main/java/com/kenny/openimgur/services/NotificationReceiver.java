@@ -15,14 +15,12 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.activities.ConvoThreadActivity;
 import com.kenny.openimgur.activities.NotificationActivity;
 import com.kenny.openimgur.activities.ViewActivity;
 import com.kenny.openimgur.api.ApiClient;
 import com.kenny.openimgur.api.responses.BasicResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurComment;
-import com.kenny.openimgur.classes.ImgurConvo;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.PermissionUtils;
 import com.kenny.openimgur.util.SqlHelper;
@@ -130,9 +128,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 Intent dest;
                 ImgurBaseObject content = intent.getParcelableExtra(KEY_NOTIFICATION_CONTENT);
 
-                if (content instanceof ImgurConvo) {
-                    dest = ConvoThreadActivity.createIntent(context, (ImgurConvo) content);
-                } else if (content instanceof ImgurComment) {
+                if (content instanceof ImgurComment) {
                     dest = ViewActivity.createIntent(context, ApiClient.IMGUR_GALLERY_URL + ((ImgurComment) content).getImageId(), false);
                 } else {
                     dest = NotificationActivity.createIntent(context);

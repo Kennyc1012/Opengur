@@ -8,7 +8,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kenny.openimgur.BuildConfig;
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.api.responses.ConvoResponse;
 import com.kenny.openimgur.classes.ImgurBaseObject;
 import com.kenny.openimgur.classes.ImgurUser;
 import com.kenny.openimgur.classes.OpengurApp;
@@ -33,7 +32,7 @@ public class ApiClient {
     public static final String IMGUR_URL = "https://imgur.com/";
 
     public static final String IMGUR_GALLERY_URL = IMGUR_URL + "gallery/";
-    
+
     private static final String API_URL = "https://api.imgur.com";
 
     private static Retrofit sRestAdapter;
@@ -88,7 +87,6 @@ public class ApiClient {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(ImgurBaseObject.class, new ImgurSerializer())
-                .registerTypeAdapter(ConvoResponse.class, new ConvoResponse())
                 .create();
 
         return GsonConverterFactory.create(gson);
