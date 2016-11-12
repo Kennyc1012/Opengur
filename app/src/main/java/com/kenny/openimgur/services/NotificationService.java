@@ -250,23 +250,5 @@ public class NotificationService extends IntentService {
 
             return null;
         }
-
-        private void setupQuickReply(@NonNull String with) {
-            if (Build.VERSION.SDK_INT >= N) {
-                RemoteInput remoteInput = new RemoteInput.Builder(NotificationReceiver.KEY_QUICK_REPLY_KEY)
-                        .setLabel(resources.getString(R.string.convo_message_hint))
-                        .build();
-
-                Intent intent = NotificationReceiver.createQuickReplyIntent(app, getNotificationId(), with);
-
-                NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_action_send_24dp,
-                        resources.getString(R.string.reply),
-                        PendingIntent.getBroadcast(app, getNotificationId(), intent, PendingIntent.FLAG_ONE_SHOT))
-                        .addRemoteInput(remoteInput)
-                        .build();
-
-                builder.addAction(action);
-            }
-        }
     }
 }
