@@ -347,6 +347,11 @@
     <string name="filter_scoring_year">Highest Scoring &#8226; Year</string>
     <string name="filter_scoring_all">Highest Scoring &#8226; All</string>
 
+    <string name="unsupported">Unsupported</string>
+    <string name="unsupported_msg">Opengur is no longer under development and will no longer be receiving any updates. Thank you
+    for all of your support. It is recommended that you install the Official Imgur app.</string>
+    <string name="install">Install</string>
+
     <!-- UI transition names, should not be translated -->
     <string name="transition_upload_photo" translatable="false">uploadPhoto</string>
     <string name="gallery_item_transition" translatable="false">gallery_transition</string>
