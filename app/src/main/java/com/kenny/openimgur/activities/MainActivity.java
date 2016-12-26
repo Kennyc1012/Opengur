@@ -5,9 +5,11 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -29,7 +31,6 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.kenny.openimgur.R;
-import com.kenny.openimgur.ui.adapters.TopicsAdapter;
 import com.kenny.openimgur.classes.FragmentListener;
 import com.kenny.openimgur.classes.ImgurTheme;
 import com.kenny.openimgur.classes.ImgurTopic;
@@ -42,6 +43,7 @@ import com.kenny.openimgur.fragments.RandomFragment;
 import com.kenny.openimgur.fragments.RedditFragment;
 import com.kenny.openimgur.fragments.TopicsFragment;
 import com.kenny.openimgur.fragments.UploadedPhotosFragment;
+import com.kenny.openimgur.ui.adapters.TopicsAdapter;
 import com.kenny.openimgur.util.LogUtil;
 import com.kenny.openimgur.util.RequestCodes;
 import com.kenny.openimgur.util.SqlHelper;
@@ -237,6 +239,7 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
 
         if (getFragmentManager().findFragmentById(R.id.container) == null) changePage(menuItemId);
         updateUserHeader(user);
+        checkForImgurNag();
     }
 
     private void updateUserHeader(@Nullable ImgurUser user) {
@@ -515,6 +518,31 @@ public class MainActivity extends BaseActivity implements FragmentListener, Navi
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void checkForImgurNag() {
+        SharedPreferences pf = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        if (pf.getBoolean("showImgurNag", true)) {
+            new AlertDialog.Builder(this, theme.getAlertDialogTheme())
+                    .setTitle(R.string.unsupported)
+                    .setMessage(R.string.unsupported_msg)
+                    .setNegativeButton(R.string.close, null)
+                    .setPositiveButton(R.string.install, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            String imgurPackage = "com.imgur.mobile";
+
+                            try {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + imgurPackage)));
+                            } catch (android.content.ActivityNotFoundException anfe) {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + imgurPackage)));
+                            }
+                        }
+                    }).show();
+
+            pf.edit().putBoolean("showImgurNag", false).apply();
+        }
     }
 
     @Override

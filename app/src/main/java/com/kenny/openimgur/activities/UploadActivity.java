@@ -173,7 +173,12 @@ public class UploadActivity extends BaseActivity implements UploadListener, View
                             }
                         }
                     })
-                    .setPositiveButton(R.string.yes, null)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            startActivity(ProfileActivity.createIntent(getApplicationContext(), null, true));
+                        }
+                    })
                     .setView(nagView)
                     .show();
 

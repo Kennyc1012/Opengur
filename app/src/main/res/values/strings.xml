@@ -65,8 +65,8 @@
     <string name="back">Back</string>
     <string name="next">Next</string>
     <string name="clearing_cache">Clearing cache&#8230;</string>
-    <string name="images">Images</string>
     <string name="view_gallery">View Gallery</string>
+    <string name="messages_removal">Messages are no longer available through the Imgur API. Sorry for the inconvenience. This tab will be removed in a following update.</string>
 
     <!-- Errors -->
     <string name="error_generic">An unexpected error has occurred. Please try again.</string>
@@ -108,35 +108,18 @@
     <string name="uploaded_remove_album_message">Are you sure you want to remove this Album?</string>
     <string name="uploaded_remove_imgur">Remove from Imgur</string>
 
-    <!-- Convos -->
-    <string name="convo_message_hint">Enter a message</string>
-    <string name="convo_check_for_messages">Check for messages</string>
-    <string name="convo_block">Block</string>
-    <string name="convo_report">Report</string>
-    <string name="convo_message_sending">Sending&#8230;</string>
-    <string name="convo_message_failed">Unable to deliver message</string>
-    <string name="convo_delete">Delete Conversation </string>
-    <string name="convo_delete_message">Are you sure you want to delete this conversation?</string>
-    <string name="convo_report_title">Report %s</string>
-    <string name="convo_block_title">Block %s</string>
-    <string name="convo_report_message">Are you sure you want to report %s?</string>
-    <string name="convo_block_message">Are you sure you want to block %s?</string>
-    <string name="convo_user_reported">%s has been reported</string>
-
     <!-- Profile -->
     <string name="profile_no_uploads">You haven\'t uploaded any images</string>
     <string name="profile_delete_image">Are you sure you want to delete this image?</string>
     <string name="profile_delete_album">Are you sure you want to delete this album?</string>
     <string name="profile_delete_success_image">Image deleted</string>
     <string name="profile_delete_success_album">Album deleted</string>
-    <string name="profile_send_message">Send Message</string>
     <string name="profile_rep">%d Reputation</string>
     <string name="profile_date">Since %s</string>
     <string name="profile_bio_empty">%s does not have a bio.</string>
     <string name="profile_no_favorites">%s has no favorite galleries</string>
     <string name="profile_no_submissions">%s has not shared any images with Imgur</string>
     <string name="profile_no_comments">%s has not posted any comments to Imgur</string>
-    <string name="profile_no_convos">You do not have any active conversations</string>
     <string name="profile_no_albums">%s has not created any albums</string>
     <string name="profile_unfavorite_title">Remove Favorite</string>
     <string name="profile_unfavorite_message">Are you sure you want to remove this from your favorites?</string>
@@ -292,6 +275,8 @@
     <string name="muzei_source">Image Source</string>
     <string name="muzei_description">Imgur images for Muzei</string>
     <string name="muzei_topic">Topic</string>
+    <string name="muzei_error_title">Error</string>
+    <string name="muzei_error_byline">Unable to display wallpaper</string>
 
     <!-- Reporting -->
     <string name="report">Report</string>
@@ -308,8 +293,6 @@
     <string name="permission_title">Permission Request</string>
 
     <!-- Notifications -->
-    <string name="notifications_multiple_types">%d New Notifications</string>
-    <string name="notifications_multiple_types_body">You have %d new notifications</string>
     <string name="notification_remaining">+%d more</string>
     <string name="notification_new_message">New message from %s</string>
     <string name="notification_preview"><![CDATA[<b>%1$s:</b> %2$s ]]></string>
@@ -363,6 +346,11 @@
     <string name="filter_scoring_month">Highest Scoring &#8226; Month</string>
     <string name="filter_scoring_year">Highest Scoring &#8226; Year</string>
     <string name="filter_scoring_all">Highest Scoring &#8226; All</string>
+
+    <string name="unsupported">Unsupported</string>
+    <string name="unsupported_msg">Opengur is no longer under development and will no longer be receiving any updates. Thank you
+    for all of your support. It is recommended that you install the Official Imgur app.</string>
+    <string name="install">Install</string>
 
     <!-- UI transition names, should not be translated -->
     <string name="transition_upload_photo" translatable="false">uploadPhoto</string>

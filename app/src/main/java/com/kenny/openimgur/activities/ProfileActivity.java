@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -61,6 +62,8 @@ public class ProfileActivity extends BaseActivity {
 
     private static final String KEY_USER = "user";
 
+    private static final String KEY_IS_LOGGING_IN = "is_logging_in";
+
     @BindView(R.id.slidingTabs)
     TabLayout mSlidingTabs;
 
@@ -78,9 +81,13 @@ public class ProfileActivity extends BaseActivity {
     ProfilePager mAdapter;
 
     public static Intent createIntent(Context context, @Nullable String userName) {
+        return createIntent(context, userName, false);
+    }
+
+    public static Intent createIntent(@NonNull Context context, @Nullable String userName, boolean isLoggingIn) {
         Intent intent = new Intent(context, ProfileActivity.class);
         if (!TextUtils.isEmpty(userName)) intent.putExtra(KEY_USERNAME, userName);
-        return intent;
+        return intent.putExtra(KEY_IS_LOGGING_IN, isLoggingIn);
     }
 
     @Override
@@ -297,9 +304,17 @@ public class ProfileActivity extends BaseActivity {
 
                     if (mSelectedUser.isSelf(app) && !TextUtils.isEmpty(mSelectedUser.getAccessToken())) {
                         SqlHelper.getInstance(getApplicationContext()).updateUserInfo(mSelectedUser);
+                        Intent intent = getIntent();
+
+                        // If we are logging in for an upload, return
+                        if (intent != null && intent.getBooleanExtra(KEY_IS_LOGGING_IN, false)) {
+                            finish();
+                            return;
+                        }
                     } else {
                         SqlHelper.getInstance(getApplicationContext()).insertProfile(mSelectedUser);
                     }
+
 
                     mAdapter = new ProfilePager(getApplicationContext(), getFragmentManager(), mSelectedUser);
                     mPager.setAdapter(mAdapter);
