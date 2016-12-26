@@ -1,4 +1,10 @@
 #Open Imgur Changelog
+<b>4.7.0</b>
+- Update several libraries
+- Update gradle plugin
+- Fix several bugs and crashes
+- EOL for app, no longer under active development 
+
 <b>4.6.4</b> August 26, 2016
 - Catch NPE
 
