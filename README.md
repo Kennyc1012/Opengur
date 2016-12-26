@@ -1,5 +1,6 @@
 [Opengur](https://kennyc1012.github.io/Opengur/)
 =========
+***NO LONGER UNDER ACTIVE DEVELOPMENT***
 
 Open source Imgur Android App
 
