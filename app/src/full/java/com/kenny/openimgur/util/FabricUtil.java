@@ -17,7 +17,7 @@ public class FabricUtil {
 
     public static void init(@NonNull Context context, @NonNull SharedPreferences preferences) {
         // Start crashlytics if enabled
-        if (!BuildConfig.DEBUG && preferences.getBoolean(SettingsActivity.KEY_CRASHLYTICS, true)) {
+        if (!BuildConfig.DEBUG && preferences.getBoolean(SettingsActivity.KEY_CRASHLYTICS, false)) {
             Fabric.with(context, new Crashlytics());
         }
     }

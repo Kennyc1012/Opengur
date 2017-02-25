@@ -152,7 +152,7 @@
             android:title="@string/pref_crashlytics_title"
             android:summaryOn="@string/pref_crashlytics_on"
             android:summaryOff="@string/pref_crashlytics_off"
-            android:defaultValue="true" />
+            android:defaultValue="false" />
 
         <CheckBoxPreference
             android:key="adb"
