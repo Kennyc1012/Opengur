@@ -9,7 +9,7 @@ The information collected in Opengur is minimal.
 - <b>Crash data using Crashlytics(Fabric)</b>. When using Opengur, if the app were to crash, data is collected from the device and sent to
 Crashlytics for review. The data collected in this process is where within the app crashed, what type of device you were using, including
 Make, model, Android version, orientation of the device, available RAM and Disk Space on the device.
-- <b>Search History.</b> When searching within the app either for a submitted or the Incur Gallery, your search queries are saved locally to
+- <b>Search History.</b> When searching within the app either for a subreddit or the Imgur Gallery, your search queries are saved locally to
 The device to provide a search history.
 - <b>Login Information.</b> When logging into Opengur using an "Imgur" account, a unique token is returned to identify your account.
 
