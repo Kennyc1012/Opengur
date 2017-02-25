@@ -56,6 +56,7 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
         findPreference(SettingsActivity.KEY_DARK_THEME).setOnPreferenceChangeListener(this);
         findPreference(SettingsActivity.KEY_NOTIFICATION_RINGTONE).setOnPreferenceChangeListener(this);
         findPreference(SettingsActivity.KEY_THEME_NEW).setOnPreferenceChangeListener(this);
+        findPreference("privacyPolicy").setOnPreferenceClickListener(this);
 
         if (!FabricUtil.hasFabricAvailable()) {
             ((PreferenceCategory) findPreference("developerSettings")).removePreference(findPreference(SettingsActivity.KEY_CRASHLYTICS));
@@ -175,6 +176,22 @@ public class SettingsFragment extends BasePreferenceFragment implements Preferen
             case "mySubreddits":
                 mApp.getPreferences().edit().remove(RedditFragment.KEY_PINNED_SUBREDDITS).apply();
                 Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.pref_reddit_deleted, Snackbar.LENGTH_LONG).show();
+                return true;
+
+            case "privacyPolicy":
+                Intent privacyIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Kennyc1012/Opengur/blob/master/Privacy_Policy.md"));
+
+                if (privacyIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(privacyIntent);
+                } else {
+                    WebView wv = new WebView(getActivity());
+                    new AlertDialog.Builder(getActivity(), mApp.getImgurTheme().getAlertDialogTheme())
+                            .setPositiveButton(R.string.dismiss, null)
+                            .setView(wv)
+                            .show();
+
+                    wv.loadUrl("https://github.com/Kennyc1012/Opengur/blob/master/Privacy_Policy.md");
+                }
                 return true;
         }
 

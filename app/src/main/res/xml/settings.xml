@@ -172,6 +172,10 @@
             android:summary="@string/view_source" />
 
         <Preference
+            android:key="privacyPolicy"
+            android:title="@string/pref_privacy_policy"/>
+
+        <Preference
             android:key="version"
             android:title="@string/version"
             android:enabled="false" />
