@@ -28,4 +28,20 @@ logged in indefinitely for quick access to your "Imgur" account and the content 
 is not stored anywhere within the app or the device.
 
 ### Permissions Requested
-- <b>READ_EXTERNAL_STORAGE</b>
+- <b>READ_EXTERNAL_STORAGE.</b> Allows an application to read from external storage. Protection level: dangerous
+- <b>WRITE_EXTERNAL_STORAGE.</b> Allows an application to write to external storage. Protection level: dangerous
+- <b>ACCESS_NETWORK_STATE.</b> Allows applications to access information about networks.
+- <b>INTERNET.</b> Allows applications to open network sockets. Protection level: normal
+- <b>WAKE_LOCK.</b> Allows using PowerManager WakeLocks to keep processor from sleeping or screen from dimming. Protection level: normal
+- <b>RECEIVE_BOOT_COMPLETED.</b> Allows an application to receive the ACTION_BOOT_COMPLETED that is broadcast after the system finishes booting. Protection level: normal
+
+
+### Why we need these Permissions
+<b>READ_EXTERNAL_STORAGE</b> and <b>WRITE_EXTERNAL_STORAGE</b> are used for accessing and writing files on your devices external storage. When uploading an image or selecting the external storage as your cache directory, Opengur will need to be able to access these files in order to accomplish these tasks. When creating a Meme, or downloading an image, Opengur will need to have access to your external storage in order to save these files.
+
+<b>ACCESS_NETWORK_STATE and <b>INTERNET</b> are required to connect to the "Imgur" API and for the app to function. Without these permissions, the
+app would not work.
+
+<b>WAKE_LOCK</b> is used when running a long operation such as an upload or download of an image(s). This allows the device to stay awake so the process of the upload/download is not interuptted by the system attemping to sleep.
+
+<b>RECEIVE_BOOT_COMPLETED</b> is used when notifications are enabled. Opengur will check every N minutes (this is set via settings) for new notifications on Imgur. When your device reboots, this check needs to be restarted again in order for notifications to be checked. This allows Opengur to be notified when the device has successfully reboot so it can restart any notification checks if enabled. 
