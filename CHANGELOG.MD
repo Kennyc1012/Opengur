@@ -1,4 +1,8 @@
 #Open Imgur Changelog
+<b>4.7.1</b> February 25, 2017
+- Added Privacy Policy
+- Update gradle
+
 <b>4.7.0</b> December 26,2016
 - Update several libraries
 - Update gradle plugin
